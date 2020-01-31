@@ -70,8 +70,10 @@
       <ModuleDefinitionFile>$(ProjectDir)..\..\dlls\hl.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>cd /D "$(ProjectDir)..\.."
+cmd /c copy-server.bat
+EXIT /B 0</Command>
+      <Message>Execute copy-server.bat</Message>
     </PostBuildEvent>
     <PostBuildEvent />
   </ItemDefinitionGroup>
