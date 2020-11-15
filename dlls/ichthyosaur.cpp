@@ -326,7 +326,7 @@ IMPLEMENT_CUSTOM_SCHEDULES(CIchthyosaur, CFlyingMonster);
 //=========================================================
 int	CIchthyosaur :: Classify ( void )
 {
-	return	CLASS_ALIEN_MONSTER;
+	return m_iClass?m_iClass:CLASS_ALIEN_MONSTER;
 }
 
 
@@ -476,13 +476,17 @@ void CIchthyosaur :: Spawn()
 {
 	Precache( );
 
-	SET_MODEL(ENT(pev), "models/icky.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); //LRC
+	else
+		SET_MODEL(ENT(pev), "models/icky.mdl");
 	UTIL_SetSize( pev, Vector( -32, -32, -32 ), Vector( 32, 32, 32 ) );
 
 	pev->solid			= SOLID_BBOX;
 	pev->movetype		= MOVETYPE_FLY;
 	m_bloodColor		= BLOOD_COLOR_GREEN;
-	pev->health			= gSkillData.ichthyosaurHealth;
+	if (pev->health == 0)
+		pev->health			= gSkillData.ichthyosaurHealth;
 	pev->view_ofs		= Vector ( 0, 0, 16 );
 	m_flFieldOfView		= VIEW_FIELD_WIDE;
 	m_MonsterState		= MONSTERSTATE_NONE;
@@ -513,7 +517,10 @@ void CIchthyosaur :: Spawn()
 //=========================================================
 void CIchthyosaur :: Precache()
 {
-	PRECACHE_MODEL("models/icky.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
+	else
+		PRECACHE_MODEL("models/icky.mdl");
 
 	PRECACHE_SOUND_ARRAY( pIdleSounds );
 	PRECACHE_SOUND_ARRAY( pAlertSounds );
@@ -729,7 +736,7 @@ void CIchthyosaur :: RunTask ( Task_t *pTask )
 	case TASK_ICHTHYOSAUR_FLOAT:
 		pev->angles.x = UTIL_ApproachAngle( 0, pev->angles.x, 20 );
 		pev->velocity = pev->velocity * 0.8;
-		if (pev->waterlevel > 1 && pev->velocity.z < 64)
+		if (pev->waterlevel > 1 && pev->watertype != CONTENT_FOG && pev->velocity.z < 64)
 		{
 			pev->velocity.z += 8;
 		}

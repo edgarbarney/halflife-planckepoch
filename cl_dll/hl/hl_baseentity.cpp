@@ -55,6 +55,11 @@ int CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState ) { return 0;
 int	CBaseEntity :: DamageDecal( int bitsDamageType ) { return -1; }
 CBaseEntity * CBaseEntity::Create( const char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner ) { return NULL; }
 void CBaseEntity::SUB_Remove( void ) { }
+void CBaseEntity::Activate( void ) { } //LRC
+void CBaseEntity::InitMoveWith( void ) { } //LRC
+void CBaseEntity::SetNextThink( float delay, BOOL correctSpeed ) { }//LRC
+void CBaseEntity::AbsoluteNextThink( float time, BOOL correctSpeed ) { }//LRC
+void CBaseEntity::ThinkCorrection( ) { }//LRC
 
 // CBaseDelay Stubs
 void CBaseDelay :: KeyValue( struct KeyValueData_s * ) { }
@@ -76,7 +81,7 @@ void UTIL_DecalTrace( TraceResult *pTrace, int decalNumber ) { }
 void UTIL_GunshotDecalTrace( TraceResult *pTrace, int decalNumber ) { }
 void UTIL_MakeVectors( const Vector &vecAngles ) { }
 BOOL UTIL_IsValidEntity( edict_t *pent ) { return TRUE; }
-void UTIL_SetOrigin( entvars_t *, const Vector &org ) { }
+void UTIL_SetOrigin( CBaseEntity *, const Vector &org ) { }
 BOOL UTIL_GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon ) { return TRUE; }
 void UTIL_LogPrintf(char *,...) { }
 void UTIL_ClientPrintAll( int,char const *,char const *,char const *,char const *,char const *) { }
@@ -86,6 +91,7 @@ void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, const c
 int CBaseToggle::Restore( class CRestore & ) { return 1; }
 int CBaseToggle::Save( class CSave & ) { return 1; }
 void CBaseToggle :: KeyValue( struct KeyValueData_s * ) { }
+STATE CBaseToggle::GetState( void ) { return STATE_ON; } //LRC
 
 // CGrenade Stubs
 void CGrenade::BounceSound( void ) { }
@@ -201,7 +207,7 @@ int CBaseMonster :: FindHintNode ( void ) { return NO_NODE; }
 void CBaseMonster::ReportAIState( void ) { }
 void CBaseMonster :: KeyValue( KeyValueData *pkvd ) { }
 BOOL CBaseMonster :: FCheckAITrigger ( void ) { return FALSE; }
-int CBaseMonster :: CanPlaySequence( BOOL fDisregardMonsterState, int interruptLevel ) { return FALSE; }
+int CBaseMonster :: CanPlaySequence( int interruptLevel ) { return FALSE; } //LRC - prototype changed
 BOOL CBaseMonster :: FindLateralCover ( const Vector &vecThreat, const Vector &vecViewOffset ) { return FALSE; }
 Vector CBaseMonster :: ShootAtEnemy( const Vector &shootOrigin ) { return g_vecZero; }
 BOOL CBaseMonster :: FacingIdeal( void ) { return FALSE; }

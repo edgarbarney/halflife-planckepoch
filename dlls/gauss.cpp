@@ -144,7 +144,7 @@ void CGauss::Holster( int skiplocal /* = 0 */ )
 void CGauss::PrimaryAttack()
 {
 	// don't fire underwater
-	if ( m_pPlayer->pev->waterlevel == 3 )
+	if ( m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD )
 	{
 		PlayEmptySound( );
 		m_flNextSecondaryAttack = m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
@@ -172,7 +172,7 @@ void CGauss::PrimaryAttack()
 void CGauss::SecondaryAttack()
 {
 	// don't fire underwater
-	if ( m_pPlayer->pev->waterlevel == 3 )
+	if ( m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD )
 	{
 		if ( m_fInAttack != 0 )
 		{
@@ -268,7 +268,7 @@ void CGauss::SecondaryAttack()
 		// ALERT( at_console, "%d %d %d\n", m_fInAttack, m_iSoundState, pitch );
 
 		if ( m_iSoundState == 0 )
-			ALERT( at_console, "sound state %d\n", m_iSoundState );
+			ALERT( at_debug, "sound state %d\n", m_iSoundState );
 
 		PLAYBACK_EVENT_FULL( FEV_NOTHOST, m_pPlayer->edict(), m_usGaussSpin, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, pitch, 0, ( m_iSoundState == SND_CHANGE_PITCH ) ? 1 : 0, 0 );
 

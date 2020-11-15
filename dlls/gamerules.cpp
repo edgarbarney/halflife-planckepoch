@@ -70,6 +70,12 @@ edict_t *CGameRules :: GetPlayerSpawnSpot( CBasePlayer *pPlayer )
 	pPlayer->pev->angles = VARS(pentSpawnSpot)->angles;
 	pPlayer->pev->punchangle = g_vecZero;
 	pPlayer->pev->fixangle = TRUE;
+
+	//LRC
+	if (pentSpawnSpot->v.spawnflags & 1) // the START WITH SUIT flag
+	{
+		g_startSuit = TRUE;
+	}
 	
 	return pentSpawnSpot;
 }
@@ -128,7 +134,7 @@ void CGameRules::RefreshSkillData ( void )
 
 	gSkillData.iSkillLevel = iSkill;
 
-	ALERT ( at_console, "\nGAME SKILL LEVEL:%d\n",iSkill );
+	ALERT ( at_debug, "\nGAME SKILL LEVEL:%d\n",iSkill );
 
 	//Agrunt		
 	gSkillData.agruntHealth = GetSkillCvar( "sk_agrunt_health" );

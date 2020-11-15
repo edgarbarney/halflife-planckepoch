@@ -148,7 +148,7 @@ void CCrowbar::PrimaryAttack()
 	if (! Swing( 1 ))
 	{
 		SetThink( &CCrowbar::SwingAgain );
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink( 0.1 );
 	}
 }
 
@@ -264,7 +264,10 @@ int CCrowbar::Swing( int fFirst )
 				}
 				m_pPlayer->m_iWeaponVolume = CROWBAR_BODYHIT_VOLUME;
 				if ( !pEntity->IsAlive() )
+				{
+					m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.25; //LRC: corrected half-life bug
 					  return TRUE;
+				}
 				else
 					  flVol = 0.1;
 
@@ -307,7 +310,7 @@ int CCrowbar::Swing( int fFirst )
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 		
 		SetThink( &CCrowbar::Smack );
-		pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
+		SetNextThink( 0.2 );
 
 		
 	}

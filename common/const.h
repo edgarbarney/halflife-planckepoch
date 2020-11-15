@@ -325,7 +325,7 @@
 // coord, coord, coord (pos) 
 // byte (radius in 10's) 
 // byte byte byte (color)
-// byte (brightness)
+//LRC - ignore this, they're lying // byte (brightness)
 // byte (life in 10's)
 // byte (decay rate in 10's)
 
@@ -713,6 +713,7 @@ enum
 	kRenderFxGlowShell,			// Glowing Shell
 	kRenderFxClampMinScale,		// Keep this sprite from getting very small (SPRITES only!)
 	kRenderFxLightMultiplier,   //CTM !!!CZERO added to tell the studiorender that the value in iuser2 is a lightmultiplier
+	kRenderFxReflection,		//LRC - draw a reflection under my feet
 };
 
 

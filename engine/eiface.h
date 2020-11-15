@@ -54,6 +54,10 @@ typedef enum
 	at_logged		// Server print to console ( only in multiplayer games ).
 	} ALERT_TYPE;
 
+//LRC- identifies the ALERT statements which don't need removing before release
+#define at_debug at_console
+//#define at_aiconsole at_console
+
 // 4-22-98  JOHN: added for use in pfnClientPrintf
 typedef enum
 	{

@@ -120,6 +120,11 @@ public:
 	void EXPORT			CorpseUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
 // overrideable Monster member functions
+
+	// LRC- to allow level-designers to change monster allegiances
+	int					m_iClass;
+	int					m_iPlayerReact;
+	virtual int			Classify( void ) { return m_iClass?m_iClass:CLASS_NONE; }
 	
 	virtual int	 BloodColor( void ) { return m_bloodColor; }
 
@@ -188,8 +193,7 @@ public:
 		virtual Schedule_t *GetScheduleOfType( int Type );
 		virtual Schedule_t *GetSchedule( void );
 		virtual void ScheduleChange( void ) {}
-		// virtual int CanPlaySequence( void ) { return ((m_pCine == NULL) && (m_MonsterState == MONSTERSTATE_NONE || m_MonsterState == MONSTERSTATE_IDLE || m_IdealMonsterState == MONSTERSTATE_IDLE)); }
-		virtual int CanPlaySequence( BOOL fDisregardState, int interruptLevel );
+		virtual int CanPlaySequence( int interruptFlags );
 		virtual int CanPlaySentence( BOOL fDisregardState ) { return IsAlive(); }
 		virtual void PlaySentence( const char *pszSentence, float duration, float volume, float attenuation );
 		virtual void PlayScriptedSentence( const char *pszSentence, float duration, float volume, float attenuation, BOOL bConcurrent, CBaseEntity *pListener );
@@ -296,6 +300,7 @@ public:
 	virtual void GibMonster( void );
 	BOOL		 ShouldGibMonster( int iGib );
 	void		 CallGibMonster( void );
+	virtual int		HasCustomGibs( void ) { return FALSE; } //LRC
 	virtual BOOL	HasHumanGibs( void );
 	virtual BOOL	HasAlienGibs( void );
 	virtual void	FadeMonster( void );	// Called instead of GibMonster() when gibs are disabled
@@ -331,7 +336,11 @@ public:
 	BOOL ExitScriptedSequence( );
 	BOOL CineCleanup( );
 
+	void StartPatrol( CBaseEntity *path );
+
 	CBaseEntity* DropItem ( const char *pszItemName, const Vector &vecPos, const Vector &vecAng );// drop an item.
+
+	float CalcRatio( void ) { return pev->health / pev->max_health; } //LRC
 };
 
 

@@ -516,6 +516,15 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	// view is the weapon model (only visible from inside body )
 	view = gEngfuncs.GetViewModel();
 
+	//LRC - thanks to Omega. (This is from his tutorial.)
+	view->curstate.rendermode = ent->curstate.rendermode;
+	view->curstate.renderfx = ent->curstate.renderfx;
+	view->curstate.rendercolor.r = ent->curstate.rendercolor.r;
+	view->curstate.rendercolor.g = ent->curstate.rendercolor.g;
+	view->curstate.rendercolor.b = ent->curstate.rendercolor.b;
+	view->curstate.renderamt = ent->curstate.renderamt;
+//    CONPRINT ("View rendermode %d, amt %d\n", view->curstate.rendermode, view->curstate.renderamt);
+
 	// transform the view offset by the model's matrix to get the offset from
 	// model origin for the view
 	bob = V_CalcBob ( pparams );

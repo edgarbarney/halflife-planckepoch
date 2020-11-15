@@ -44,7 +44,7 @@ public:
 	int		Restore( CRestore &restore );
 	static	TYPEDESCRIPTION m_SaveData[];
 	int		ObjectCaps( void ) { return CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	
+
 	void Spawn( void );
 	void Precache( void );
 	int  Classify( void ) { return CLASS_MACHINE; };
@@ -141,7 +141,6 @@ TYPEDESCRIPTION	COsprey::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( COsprey, CBaseMonster );
 
-
 void COsprey :: Spawn( void )
 {
 	Precache( );
@@ -149,15 +148,22 @@ void COsprey :: Spawn( void )
 	pev->movetype = MOVETYPE_FLY;
 	pev->solid = SOLID_BBOX;
 
-	SET_MODEL(ENT(pev), "models/osprey.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); //LRC
+	else
+		SET_MODEL(ENT(pev), "models/osprey.mdl");
 	UTIL_SetSize(pev, Vector( -400, -400, -100), Vector(400, 400, 32));
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
+
+	//ALERT(at_console, "Osprey origin %f %f %f\n", pev->origin.x, pev->origin.y, pev->origin.z);
 
 	pev->flags |= FL_MONSTER;
 	pev->takedamage		= DAMAGE_YES;
 	m_flRightHealth		= 200;
 	m_flLeftHealth		= 200;
 	pev->health			= 400;
+
+	pev->speed = 80; //LRC - default speed, in case path corners don't give a speed.
 
 	m_flFieldOfView = 0; // 180 degrees
 
@@ -172,7 +178,7 @@ void COsprey :: Spawn( void )
 
 	if (!(pev->spawnflags & SF_WAITFORTRIGGER))
 	{
-		pev->nextthink = gpGlobals->time + 1.0;
+		SetNextThink( 1.0 );
 	}
 
 	m_pos2 = pev->origin;
@@ -185,7 +191,10 @@ void COsprey::Precache( void )
 {
 	UTIL_PrecacheOther( "monster_human_grunt" );
 
-	PRECACHE_MODEL("models/osprey.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
+	else
+		PRECACHE_MODEL("models/osprey.mdl");
 	PRECACHE_MODEL("models/HVR.mdl");
 
 	PRECACHE_SOUND("apache/ap_rotor4.wav");
@@ -201,7 +210,7 @@ void COsprey::Precache( void )
 
 void COsprey::CommandUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 }
 
 void COsprey :: FindAllThink( void )
@@ -221,12 +230,14 @@ void COsprey :: FindAllThink( void )
 
 	if (m_iUnits == 0)
 	{
-		ALERT( at_console, "osprey error: no grunts to resupply\n");
-		UTIL_Remove( this );
-		return;
+		m_iUnits = 4; //LRC - stop whining, just make the damn grunts...
+
+//		ALERT( at_console, "osprey error: no grunts to resupply\n");
+//		UTIL_Remove( this );
+//		return;
 	}
 	SetThink( &COsprey::FlyThink );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	m_startTime = gpGlobals->time;
 }
 
@@ -258,7 +269,7 @@ void COsprey :: DeployThink( void )
 	m_hRepel[3] = MakeGrunt( vecSrc );
 
 	SetThink( &COsprey::HoverThink );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 }
 
 
@@ -309,7 +320,7 @@ CBaseMonster *COsprey :: MakeGrunt( Vector vecSrc )
 			pBeam->SetFlags( BEAM_FSOLID );
 			pBeam->SetColor( 255, 255, 255 );
 			pBeam->SetThink( &CBeam::SUB_Remove );
-			pBeam->pev->nextthink = gpGlobals->time + -4096.0 * tr.flFraction / pGrunt->pev->velocity.z + 0.5;
+			pBeam->SetNextThink( -4096.0 * tr.flFraction / pGrunt->pev->velocity.z + 0.5 );
 
 			// ALERT( at_console, "%d at %.0f %.0f %.0f\n", i, m_vecOrigin[i].x, m_vecOrigin[i].y, m_vecOrigin[i].z );  
 			pGrunt->m_vecLastPosition = m_vecOrigin[i];
@@ -339,7 +350,7 @@ void COsprey :: HoverThink( void )
 		SetThink( &COsprey::FlyThink );
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	UTIL_MakeAimVectors( pev->angles );
 	ShowDamage( );
 }
@@ -355,10 +366,17 @@ void COsprey::UpdateGoal( )
 		m_pos2 = m_pGoalEnt->pev->origin;
 		m_ang2 = m_pGoalEnt->pev->angles;
 		UTIL_MakeAimVectors( Vector( 0, m_ang2.y, 0 ) );
-		m_vel2 = gpGlobals->v_forward * m_pGoalEnt->pev->speed;
+
+		//LRC - ugh. we shouldn't require our path corners to specify a speed!
+		if (m_pGoalEnt->pev->speed)
+			pev->speed = m_pGoalEnt->pev->speed;
+
+		m_vel2 = gpGlobals->v_forward * pev->speed; //LRC
 
 		m_startTime = m_startTime + m_dTime;
-		m_dTime = 2.0 * (m_pos1 - m_pos2).Length() / (m_vel1.Length() + m_pGoalEnt->pev->speed);
+		m_dTime = 2.0 * (m_pos1 - m_pos2).Length() / (m_vel1.Length() + pev->speed);
+
+		//ALERT(at_console, "osprey m_dTime = %f / %f + %f\n", (m_pos1 - m_pos2).Length(), m_vel1.Length(), m_pGoalEnt->pev->speed);
 
 		if (m_ang1.y - m_ang2.y < -180)
 		{
@@ -369,14 +387,14 @@ void COsprey::UpdateGoal( )
 			m_ang1.y -= 360;
 		}
 
-		if (m_pGoalEnt->pev->speed < 400)
+		if (pev->speed < 400)
 			m_flIdealtilt = 0;
 		else
 			m_flIdealtilt = -90;
 	}
 	else
 	{
-		ALERT( at_console, "osprey missing target");
+		ALERT( at_debug, "osprey missing target");
 	}
 }
 
@@ -384,11 +402,11 @@ void COsprey::UpdateGoal( )
 void COsprey::FlyThink( void )
 {
 	StudioFrameAdvance( );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	if ( m_pGoalEnt == NULL && !FStringNull(pev->target) )// this monster has a target
 	{
-		m_pGoalEnt = CBaseEntity::Instance( FIND_ENTITY_BY_TARGETNAME ( NULL, STRING( pev->target ) ) );
+		m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( pev->target ) );
 		UpdateGoal( );
 	}
 
@@ -398,9 +416,11 @@ void COsprey::FlyThink( void )
 		{
 			SetThink( &COsprey::DeployThink );
 		}
-		do {
-			m_pGoalEnt = CBaseEntity::Instance( FIND_ENTITY_BY_TARGETNAME ( NULL, STRING( m_pGoalEnt->pev->target ) ) );
-		} while (m_pGoalEnt->pev->speed < 400 && !HasDead());
+		int loopbreaker = 100; //LRC - <slap> don't loop indefinitely!
+ 		do {
+			m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( m_pGoalEnt->pev->target ) );
+			loopbreaker--; //LRC
+		} while (m_pGoalEnt->pev->speed < 400 && !HasDead() && loopbreaker > 0);
 		UpdateGoal( );
 	}
 
@@ -416,11 +436,13 @@ void COsprey::Flight( )
 	
 	float f = UTIL_SplineFraction( t * scale, 1.0 );
 
+//	ALERT(at_console, "Osprey setorigin m_pos1 %f, m_vel1 %f, m_pos2 %f, m_vel2 %f, m_dTime %f, t %f, f %f\n", m_pos1.x, m_vel1.x, m_pos2.x, m_vel2.x, m_dTime, t, f);
+
 	Vector pos = (m_pos1 + m_vel1 * t) * (1.0 - f) + (m_pos2 - m_vel2 * (m_dTime - t)) * f;
 	Vector ang = (m_ang1) * (1.0 - f) + (m_ang2) * f;
 	m_velocity = m_vel1 * (1.0 - f) + m_vel2 * f;
 
-	UTIL_SetOrigin( pev, pos );
+	UTIL_SetOrigin( this, pos );
 	pev->angles = ang;
 	UTIL_MakeAimVectors( pev->angles );
 	float flSpeed = DotProduct( gpGlobals->v_forward, m_velocity );
@@ -487,7 +509,7 @@ void COsprey::Flight( )
 
 void COsprey::HitTouch( CBaseEntity *pOther )
 {
-	pev->nextthink = gpGlobals->time + 2.0;
+	SetNextThink( 2.0 );
 }
 
 
@@ -520,7 +542,7 @@ void COsprey :: Killed( entvars_t *pevAttacker, int iGib )
 	UTIL_SetSize( pev, Vector( -32, -32, -64), Vector( 32, 32, 0) );
 	SetThink( &COsprey::DyingThink );
 	SetTouch( &COsprey::CrashTouch );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	pev->health = 0;
 	pev->takedamage = DAMAGE_NO;
 
@@ -534,7 +556,7 @@ void COsprey::CrashTouch( CBaseEntity *pOther )
 	{
 		SetTouch( NULL );
 		m_startTime = gpGlobals->time;
-		pev->nextthink = gpGlobals->time;
+		SetNextThink( 0 );
 		m_velocity = pev->velocity;
 	}
 }
@@ -543,7 +565,7 @@ void COsprey::CrashTouch( CBaseEntity *pOther )
 void COsprey :: DyingThink( void )
 {
 	StudioFrameAdvance( );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	pev->avelocity = pev->avelocity * 1.02;
 
@@ -619,7 +641,7 @@ void COsprey :: DyingThink( void )
 
 		// don't stop it we touch a entity
 		pev->flags &= ~FL_ONGROUND;
-		pev->nextthink = gpGlobals->time + 0.2;
+		SetNextThink( 0.2 );
 		return;
 	}
 	else

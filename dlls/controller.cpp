@@ -26,6 +26,7 @@
 #include	"schedule.h"
 #include	"weapons.h"
 #include	"squadmonster.h"
+#include	"scripted.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -157,7 +158,7 @@ const char *CController::pDeathSounds[] =
 //=========================================================
 int	CController :: Classify ( void )
 {
-	return	CLASS_ALIEN_MILITARY;
+	return m_iClass?m_iClass:CLASS_ALIEN_MILITARY;
 }
 
 //=========================================================
@@ -269,6 +270,7 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 	{
 		case CONTROLLER_AE_HEAD_OPEN:
 		{
+			//ALERT(at_console,"Controller Head Open\n");
 			Vector vecStart, angleGun;
 			
 			GetAttachment( 0, vecStart, angleGun );
@@ -297,6 +299,7 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 		case CONTROLLER_AE_BALL_SHOOT:
 		{
+			//ALERT(at_console,"Controller Ball Shoot\n");
 			Vector vecStart, angleGun;
 			
 			GetAttachment( 0, vecStart, angleGun );
@@ -318,7 +321,14 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			CBaseMonster *pBall = (CBaseMonster*)Create( "controller_head_ball", vecStart, pev->angles, edict() );
 
 			pBall->pev->velocity = Vector( 0, 0, 32 );
-			pBall->m_hEnemy = m_hEnemy;
+			if (m_pCine)
+			{
+				pBall->m_hEnemy = m_hTargetEnt;
+			}
+			else
+			{
+			    pBall->m_hEnemy = m_hEnemy;
+			}
 
 			m_iBall[0] = 0;
 			m_iBall[1] = 0;
@@ -327,6 +337,7 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 		case CONTROLLER_AE_SMALL_SHOOT:
 		{
+			//ALERT(at_console,"Controller Small Shoot\n");
 			AttackSound( );
 			m_flShootTime = gpGlobals->time;
 			m_flShootEnd = m_flShootTime + atoi( pEvent->options ) / 15.0;
@@ -334,6 +345,7 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		break;
 		case CONTROLLER_AE_POWERUP_FULL:
 		{
+			//ALERT(at_console,"Controller Powerup Full\n");
 			m_iBall[0] = 255;
 			m_iBallTime[0] = gpGlobals->time + atoi( pEvent->options ) / 15.0;
 			m_iBall[1] = 255;
@@ -342,6 +354,7 @@ void CController :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		break;
 		case CONTROLLER_AE_POWERUP_HALF:
 		{
+			//ALERT(at_console,"Controller Powerup Half\n");
 			m_iBall[0] = 192;
 			m_iBallTime[0] = gpGlobals->time + atoi( pEvent->options ) / 15.0;
 			m_iBall[1] = 192;
@@ -361,14 +374,18 @@ void CController :: Spawn()
 {
 	Precache( );
 
-	SET_MODEL(ENT(pev), "models/controller.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); //LRC
+	else
+	    SET_MODEL(ENT(pev), "models/controller.mdl");
 	UTIL_SetSize( pev, Vector( -32, -32, 0 ), Vector( 32, 32, 64 ));
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_FLY;
 	pev->flags			|= FL_FLY;
 	m_bloodColor		= BLOOD_COLOR_GREEN;
-	pev->health			= gSkillData.controllerHealth;
+	if (pev->health == 0)
+	    pev->health			= gSkillData.controllerHealth;
 	pev->view_ofs		= Vector( 0, 0, -2 );// position of the eyes relative to monster's origin.
 	m_flFieldOfView		= VIEW_FIELD_FULL;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
@@ -381,7 +398,10 @@ void CController :: Spawn()
 //=========================================================
 void CController :: Precache()
 {
-	PRECACHE_MODEL("models/controller.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
+	else
+	    PRECACHE_MODEL("models/controller.mdl");
 
 	PRECACHE_SOUND_ARRAY( pAttackSounds );
 	PRECACHE_SOUND_ARRAY( pIdleSounds );
@@ -627,7 +647,6 @@ int CController::LookupFloat( )
 //=========================================================
 void CController :: RunTask ( Task_t *pTask )
 {
-
 	if (m_flShootEnd > gpGlobals->time)
 	{
 		Vector vecHand, vecAngle;
@@ -639,17 +658,33 @@ void CController :: RunTask ( Task_t *pTask )
 			Vector vecSrc = vecHand + pev->velocity * (m_flShootTime - gpGlobals->time);
 			Vector vecDir;
 			
-			if (m_hEnemy != NULL)
+			if (m_pCine != NULL || m_hEnemy != NULL)
 			{
-				if (HasConditions( bits_COND_SEE_ENEMY ))
+				if (m_pCine != NULL) // LRC- is this a script that's telling it to fire?
 				{
-					m_vecEstVelocity = m_vecEstVelocity * 0.5 + m_hEnemy->pev->velocity * 0.5;
+					if (m_hTargetEnt != NULL && m_pCine->PreciseAttack())
+					{
+						vecDir = (m_hTargetEnt->pev->origin - pev->origin).Normalize() * gSkillData.controllerSpeedBall;
+					}
+					else
+					{
+						UTIL_MakeVectors(pev->angles);
+						vecDir = gpGlobals->v_forward * gSkillData.controllerSpeedBall;
+					}
 				}
-				else
-				{
-					m_vecEstVelocity = m_vecEstVelocity * 0.8;
+				else if (m_hEnemy != NULL)
+			    {
+				    if (HasConditions( bits_COND_SEE_ENEMY ))
+				    {
+					    m_vecEstVelocity = m_vecEstVelocity * 0.5 + m_hEnemy->pev->velocity * 0.5;
+				    }
+				    else
+				    {
+					    m_vecEstVelocity = m_vecEstVelocity * 0.8;
+				    }
+				    vecDir = Intersect( vecSrc, m_hEnemy->BodyTarget( pev->origin ), m_vecEstVelocity, gSkillData.controllerSpeedBall );
 				}
-				vecDir = Intersect( vecSrc, m_hEnemy->BodyTarget( pev->origin ), m_vecEstVelocity, gSkillData.controllerSpeedBall );
+
 				float delta = 0.03490; // +-2 degree
 				vecDir = vecDir + Vector( RANDOM_FLOAT( -delta, delta ), RANDOM_FLOAT( -delta, delta ), RANDOM_FLOAT( -delta, delta ) ) * gSkillData.controllerSpeedBall;
 
@@ -865,7 +900,7 @@ void CController :: RunAI( void )
 		m_pBall[i]->SetBrightness( m_iBallCurrent[i] );
 
 		GetAttachment( i + 2, vecStart, angleGun );
-		UTIL_SetOrigin( m_pBall[i]->pev, vecStart );
+		UTIL_SetOrigin( m_pBall[i], vecStart );
 		
 		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
 			WRITE_BYTE( TE_ELIGHT );
@@ -1168,14 +1203,14 @@ void CControllerHeadBall :: Spawn( void )
 	pev->scale = 2.0;
 
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
 
 	SetThink( &CControllerHeadBall::HuntThink );
 	SetTouch( &CControllerHeadBall::BounceTouch );
 
 	m_vecIdeal = Vector( 0, 0, 0 );
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	m_hOwner = Instance( pev->owner );
 	pev->dmgtime = gpGlobals->time;
@@ -1192,7 +1227,7 @@ void CControllerHeadBall :: Precache( void )
 
 void CControllerHeadBall :: HuntThink( void  )
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	pev->renderamt -= 5;
 
@@ -1258,7 +1293,7 @@ void CControllerHeadBall :: HuntThink( void  )
 		m_flNextAttack = gpGlobals->time + 3.0;
 
 		SetThink( &CControllerHeadBall::DieThink );
-		pev->nextthink = gpGlobals->time + 0.3;
+		SetNextThink( 0.3 );
 	}
 
 	// Crawl( );
@@ -1362,14 +1397,14 @@ void CControllerZapBall :: Spawn( void )
 	pev->scale = 0.5;
 
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
 
 	SetThink( &CControllerZapBall::AnimateThink );
 	SetTouch( &CControllerZapBall::ExplodeTouch );
 
 	m_hOwner = Instance( pev->owner );
 	pev->dmgtime = gpGlobals->time; // keep track of when ball spawned
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 }
 
 
@@ -1383,7 +1418,7 @@ void CControllerZapBall :: Precache( void )
 
 void CControllerZapBall :: AnimateThink( void  )
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	
 	pev->frame = ((int)pev->frame + 1) % 11;
 
