@@ -25,6 +25,7 @@
 #include "player.h" //LRC - footstep stuff
 #include "locus.h" //LRC - locus utilities
 #include "movewith.h" //LRC - the DesiredThink system
+#include "UserMessages.h"
 
 #define SF_FUNNEL_REVERSE			1 // funnel effect repels particles instead of attracting them.
 #define SF_FUNNEL_REPEATABLE		2 // allows a funnel to be refired
@@ -4227,6 +4228,9 @@ public:
 
 void CItemSoda :: Precache ( void )
 {
+	// added for Nemo1024  --LRC
+	PRECACHE_MODEL( "models/can.mdl" );
+	PRECACHE_SOUND( "weapons/g_bounce3.wav" );
 }
 
 LINK_ENTITY_TO_CLASS( item_sodacan, CItemSoda );
@@ -4552,29 +4556,73 @@ void CEnvSky :: Think ()
 LINK_ENTITY_TO_CLASS( env_sky, CEnvSky );
 
 
-//LRCTEMP
-class CEnvFlag : public CBaseAnimating
+
+//=========================================================
+// LRC - env_particle, uses the aurora particle system
+//=========================================================
+//extern int gmsgParticle = 0;
+#define SF_PARTICLE_ON 1
+
+class CParticle : public CPointEntity
 {
 public:
 	void Spawn( void );
-	void Think( void );
-};
-LINK_ENTITY_TO_CLASS( env_flag, CEnvFlag );
+	void Activate( void );
+	void Precache( void );
+	void DesiredAction( void );
+	void EXPORT Think( void );
 
-void CEnvFlag::Spawn( void )
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+};
+
+LINK_ENTITY_TO_CLASS( env_particle, CParticle );
+
+void CParticle::Spawn( void )
 {
-	PRECACHE_MODEL("models/zombie.mdl");
-	SET_MODEL(ENT(pev), "models/zombie.mdl");
-	SetNextThink(1);
+	pev->solid			= SOLID_NOT;
+	pev->movetype		= MOVETYPE_NONE;
+	pev->renderamt		= 128;
+	pev->rendermode		= kRenderTransTexture;
+
+	// 'body' determines whether the effect is active or not
+	pev->body			= (pev->spawnflags & SF_PARTICLE_ON) != 0;
+
+	Precache();
+
+	UTIL_SetOrigin(this, pev->origin);
+	SET_MODEL(edict(), "sprites/null.spr");
 }
 
-void CEnvFlag::Think( void )
-{
-	static float f[3] = {(float)1.0, (float)1.0, (float)1.0};
-	f[0] = RANDOM_FLOAT( -5.0, 5.0 );
-	f[1] = RANDOM_FLOAT( -5.0, 5.0 );
-	f[2] = RANDOM_FLOAT( -5.0, 5.0 );
-	SetBones( &f, 1 );
 
-	SetNextThink(0.2);
+void CParticle::Precache( void )
+{
+	PRECACHE_MODEL("sprites/null.spr");
+}
+
+void CParticle::Activate( void )
+{
+	CPointEntity::Activate();
+	UTIL_DesiredAction(this);
+}
+
+void CParticle::DesiredAction( void )
+{
+	pev->nextthink = gpGlobals->time + 1;
+}
+
+void CParticle::Think( void )
+{
+	MESSAGE_BEGIN( MSG_ALL, gmsgParticle );
+		WRITE_BYTE( entindex() );
+		WRITE_STRING( STRING(pev->message) );
+	MESSAGE_END();
+}
+
+void CParticle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if ( ShouldToggle( useType, pev->body ) )
+	{
+		pev->body = !pev->body;
+		//ALERT(at_console, "Setting body %d\n", pev->body);
+	}
 }

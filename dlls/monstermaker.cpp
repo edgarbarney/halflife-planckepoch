@@ -42,9 +42,10 @@ public:
 	void EXPORT ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT CyclicUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT MakerThink ( void );
+	void EXPORT MakeMonsterThink( void );
 	void DeathNotice ( entvars_t *pevChild );// monster maker children use this to tell the monster maker that they have died.
-	void TryMakeMonster( void ); //LRC- to allow for a spawndelay
-	void EXPORT MakeMonster( void );
+	void TryMakeMonster( void ); //LRC - to allow for a spawndelay
+	CBaseMonster* MakeMonster( void ); //LRC - actually make a monster (and return the new creation)
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
@@ -198,30 +199,44 @@ void CMonsterMaker::TryMakeMonster( void )
 		return;
 	}
 
-	// If I have a target, fire!
-	if ( !FStringNull ( pev->target ) )
-	{
-		// delay already overloaded for this entity, so can't call SUB_UseTargets()
-		FireTargets( STRING(pev->target), this, this, USE_TOGGLE, 0 );
-	}
-
 	if (m_fSpawnDelay)
 	{
+		// If I have a target, fire. (no locus)
+		if ( !FStringNull ( pev->target ) )
+		{
+			// delay already overloaded for this entity, so can't call SUB_UseTargets()
+			FireTargets( STRING(pev->target), this, this, USE_TOGGLE, 0 );
+		}
+
 //		ALERT(at_console,"Making Monster in %f seconds\n",m_fSpawnDelay);
-		SetThink( &CMonsterMaker::MakeMonster );
+		SetThink(&CMonsterMaker:: MakeMonsterThink );
 		SetNextThink( m_fSpawnDelay );
 	}
 	else
 	{
 //		ALERT(at_console,"No delay. Making monster.\n",m_fSpawnDelay);
-		MakeMonster();
+		CBaseMonster* pMonst = MakeMonster();
+
+		// If I have a target, fire! (the new monster is the locus)
+		if ( !FStringNull ( pev->target ) )
+		{
+			FireTargets( STRING(pev->target), pMonst, this, USE_TOGGLE, 0 );
+		}
 	}
+}
+
+//=========================================================
+// MakeMonsterThink- a really trivial think function
+//=========================================================
+void CMonsterMaker::MakeMonsterThink( void )
+{
+	MakeMonster();
 }
 
 //=========================================================
 // MakeMonster-  this is the code that drops the monster
 //=========================================================
-void CMonsterMaker::MakeMonster( void )
+CBaseMonster* CMonsterMaker::MakeMonster( void )
 {
 	edict_t	*pent;
 	entvars_t		*pevCreate;
@@ -233,7 +248,7 @@ void CMonsterMaker::MakeMonster( void )
 	if ( FNullEnt( pent ) )
 	{
 		ALERT ( at_debug, "NULL Ent in MonsterMaker!\n" );
-		return;
+		return NULL;
 	}
 
 	pevCreate = VARS( pent );
@@ -253,7 +268,7 @@ void CMonsterMaker::MakeMonster( void )
 
 	//LRC - custom monster behaviour
 	CBaseEntity *pEntity = CBaseEntity::Instance( pevCreate );
-	CBaseMonster *pMonst;
+	CBaseMonster *pMonst = NULL;
 	if (pEntity && (pMonst = pEntity->MyMonsterPointer()) != NULL)
 	{
 		pMonst->m_iClass = this->m_iClass;
@@ -280,6 +295,8 @@ void CMonsterMaker::MakeMonster( void )
 		SetNextThink( m_flDelay );
 		SetThink( &CMonsterMaker::MakerThink );
 	}
+
+	return pMonst;
 }
 
 //=========================================================

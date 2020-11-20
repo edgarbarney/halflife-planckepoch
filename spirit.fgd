@@ -1,8 +1,8 @@
 //
 // Spirit game definition file (.fgd) 
-// version 1.0
+// version 1.2
 // for Worldcraft 3.3 and above, and Half-Life 1.1.0.8 and above
-// last update: 8th December 2002
+// last update: 18th November 2003
 //
 
 //INFO
@@ -1762,7 +1762,7 @@
 //*   To just light studio models, see @env_elight.
 @PointClass base(Targetname, MoveWith) = env_dlight : "Dynamic light effect"
 [
-	netname(string) : "Position (blank = here) [LP]"
+	message(string) : "Position (blank = here) [LP]"
 	rendercolor(color255) : "Light Color (R G B)" : "255 255 255"
 	renderamt(integer) : "Radius" : 12
 	health(string) : "Duration (0 = until triggered)" : "0.0"
@@ -1791,6 +1791,7 @@
 		4 : "4"
 	]
 	renderamt(integer) : "Radius" : 12
+	rendercolor(color255) : "Color (R G B)" : "255 255 255"
 	health(string) : "Duration (0 = until triggered)" : "0.0"
 	frags(integer) : "Decay (units/sec)" : 0
 	spawnflags(Flags) = 
@@ -2084,7 +2085,7 @@
 	model(studio) : "Model name"
 	skin(integer) : "Skin" : 0
 	body(integer) : "Body" : 0
-	//NEW 1.0
+	// NEW 1.0
 	scale(string) : "Scale (1.0 = normal size)"
 
 	m_iszSequence_On(string) : "Sequence when on"
@@ -2107,6 +2108,7 @@
 	[
 		1: "Initially Off" : 0
 		2: "Drop to Floor" : 0
+		4: "Solid" : 0
 	]
 ]
 
@@ -2141,6 +2143,12 @@
 	[
 		1: "Repeatable" : 0
 	]
+]
+
+//NEW 1.2
+@PointClass sprite() base(Targetname, Angles, MoveWith, RenderFields) size(-4 -4 -4, 4 4 4) = env_particle : "Particle Effect" 
+[
+	message(string) : "Particle file" : "aurora/smoke.aur"
 ]
 
 @PointClass base(Targetname, RenderFields) size(-16 -16 -16, 16 16 16) color(100 100 0) = env_render : "Render Controls"
@@ -2285,6 +2293,11 @@
 	m_iszTouchOther(string) : "Fire on collision (locus = wall)"
 	//NEW 0.7.1
 	m_vecSize(string) : "Shot size (X Y Z)" : "0 0 0"
+]
+
+//NEW 1.1
+@PointClass base(Targetname) = env_sky : "Unreal-Tournament style sky view"
+[
 ]
 
 @PointClass base(Master, MoveWith) iconsprite("sprites/speaker.spr") = env_sound : "DSP Sound" 
@@ -2532,6 +2545,9 @@
 		-17:"Zero-G"
 		-18:"Hover-Field"
 		-19:"Fog effect"
+		-20:"Special 1 (Particles)"
+		-21:"Special 2 (Particles)"
+		-22:"Special 3 (Particles)"
 	]
 	_minlight(string) : "Minimum light level"
 ]
@@ -2739,6 +2755,14 @@
 	_minlight(integer) : "_minlight"
 	spawnorigin(string) : "X Y Z - Move here after lighting" : "0 0 0"
 	dmg(integer) : "Damage inflicted when blocked" : 0
+]
+
+//NEW 1.1
+@SolidClass base(Targetname) = func_shine : "Shiny Surface" 
+[
+	message(sprite) : "Shine sprite" : "sprites/bgspr.spr"
+	scale(integer) : "Shine scale" : 10
+	renderamt(integer) : "Shine brightness (0-255)" : 50
 ]
 
 @SolidClass base(BaseTank, ZHLTLightKeys) = func_tank : "Brush Gun Turret" 

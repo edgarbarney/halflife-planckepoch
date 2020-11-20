@@ -3164,7 +3164,6 @@ void CTriggerCounter::CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller,
 		return;
 	
 	BOOL fTellActivator =
-		(m_hActivator != 0) &&
 		FClassnameIs(m_hActivator->pev, "player") &&
 		!FBitSet(pev->spawnflags, SPAWNFLAG_NOMESSAGE);
 	if (m_cTriggersLeft != 0)
@@ -3770,6 +3769,9 @@ void CTriggerPush :: Spawn( )
 		pev->angles.y = 360;
 	InitTrigger();
 
+	if (pev->speed == 0)
+		pev->speed = 100;
+
 	if ( FBitSet (pev->spawnflags, SF_TRIGGER_PUSH_START_OFF) )// if flagged to Start Turned Off, make trigger nonsolid.
 		pev->solid = SOLID_NOT;
 
@@ -4151,7 +4153,7 @@ void CTriggerTeleport :: TeleportTouch( CBaseEntity *pOther )
 		if ( pOther->IsPlayer() )
 		{
 			pOther->pev->v_angle = pTarget->pev->angles; //LRC
-		    pevToucher->fixangle = TRUE;
+			pOther->pev->fixangle = TRUE;
 		}
 	}
 

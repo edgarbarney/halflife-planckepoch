@@ -31,6 +31,7 @@ int gmsgKeyedDLight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
 int gmsgAddShine = 0;   // LRC
+int gmsgParticle = 0; // LRC
 int gmsgShowGameTitle = 0;
 int gmsgCurWeapon = 0;
 int gmsgHealth = 0;
@@ -92,7 +93,8 @@ void LinkUserMessages(void)
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 7);			//LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
-	gmsgAddShine = REG_USER_MSG("AddShine", -1);      // LRC
+	gmsgAddShine = REG_USER_MSG("AddShine", -1);      //LRC
+	gmsgParticle = REG_USER_MSG("Particle", -1);		//LRC
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
 	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
