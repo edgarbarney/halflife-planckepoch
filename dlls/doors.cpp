@@ -1131,7 +1131,6 @@ class CMomentaryDoor : public CBaseToggle
 public:
 	void	Spawn( void );
 	void Precache( void );
-	void EXPORT MomentaryMoveDone( void );
 
 	void	KeyValue( KeyValueData *pkvd );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
