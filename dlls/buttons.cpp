@@ -733,10 +733,19 @@ void CBaseButton::Spawn( )
 		m_flLip = 4;
 
 	m_toggle_state = TS_AT_BOTTOM;
-	//ALERT(at_console,"Button spawned");
+	m_vecPosition1 = pev->origin;
+	// Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
+	m_vecPosition2	= m_vecPosition1 + (pev->movedir * (fabs( pev->movedir.x * (pev->size.x-2) ) + fabs( pev->movedir.y * (pev->size.y-2) ) + fabs( pev->movedir.z * (pev->size.z-2) ) - m_flLip));
+
+
+	// Is this a non-moving button?
+	if ( ((m_vecPosition2 - m_vecPosition1).Length() < 1) || (pev->spawnflags & SF_BUTTON_DONTMOVE) )
+		m_vecPosition2 = m_vecPosition1;
 
 	m_fStayPushed = (m_flWait == -1 ? TRUE : FALSE);
 	m_fRotating = FALSE;
+
+	// if the button is flagged for USE button activation only, take away it's touch function and add a use function
 
 	if ( FBitSet ( pev->spawnflags, SF_BUTTON_TOUCH_ONLY ) ) // touchable button
 	{
@@ -1311,8 +1320,8 @@ void CMomentaryRotButton::PlaySound( void )
 }
 
 // BUGBUG: This design causes a latentcy.  When the button is retriggered, the first impulse
-// will send the target in the wrong direction because the parameter is calculated based
-// on the current, not future position.
+// will send the target in the wrong direction because the parameter is calculated based on the
+// current, not future position.
 void CMomentaryRotButton::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	if (IsLockedByMaster()) return; //LRC
@@ -1428,8 +1437,7 @@ void CMomentaryRotButton::Return( void )
 {
 	float value = CBaseToggle::AxisDelta( pev->spawnflags, pev->angles, m_start ) / m_flMoveDistance;
 	
-	UpdateAllButtons( value, 0 );	// This will end up calling UpdateSelfReturn() n times, but
-									// it still works right
+	UpdateAllButtons( value, 0 );	// This will end up calling UpdateSelfReturn() n times, but it still works right
 	if ( value > 0 )
 		UpdateTarget( value );
 }
@@ -1621,9 +1629,7 @@ void CButtonTarget::Spawn( void )
 	pev->takedamage = DAMAGE_YES;
 
 	if ( FBitSet( pev->spawnflags, SF_BTARGET_ON ) )
-	{
-		pev->frame = 1;
-	}
+        pev->frame = 1;
 }
 
 void CButtonTarget::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -1632,13 +1638,9 @@ void CButtonTarget::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		return;
 	pev->frame = 1-pev->frame;
 	if ( pev->frame )
-	{
-		SUB_UseTargets( pActivator, USE_ON, 0 );
-	}
-	else
-	{
-		SUB_UseTargets( pActivator, USE_OFF, 0 );
-	}
+        SUB_UseTargets( pActivator, USE_ON, 0 );
+    else
+        SUB_UseTargets( pActivator, USE_OFF, 0 );
 }
 
 
