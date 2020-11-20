@@ -27,6 +27,7 @@ extern int gmsgKeyedDLight; //LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
 extern int gmsgAddShine; // LRC
+extern int gmsgParticle; // LRC
 extern int gmsgShowGameTitle;
 extern int gmsgCurWeapon;
 extern int gmsgHealth;

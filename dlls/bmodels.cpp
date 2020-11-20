@@ -279,7 +279,8 @@ public:
 	void Spawn() override;
 	void Activate() override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-
+	
+	void DesiredAction() override;
 	void EXPORT Think() override;
 };
 
@@ -299,8 +300,14 @@ void CFuncShine :: Spawn()
 
 void CFuncShine :: Activate()
 {
-	//LRC
 //	ALERT(at_console, "Activate shine\n");
+
+	CBaseEntity::Activate();
+	UTIL_DesiredAction(this);
+}
+
+void CFuncShine :: DesiredAction( void )
+{
 	if (pev->message && pev->renderamt)
 	{
 //		ALERT(at_console, "Prepare think\n");
@@ -752,6 +759,8 @@ void CFuncRotating :: Rotate()
 //=========================================================
 void CFuncRotating :: RotatingUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	if (!ShouldToggle(useType)) return;
+
 	// is this a brush that should accelerate and decelerate when turned on/off (fan)?
 	if ( FBitSet ( pev->spawnflags, SF_BRUSH_ACCDCC ) )
 	{
@@ -935,6 +944,8 @@ void CPendulum :: Spawn()
 
 void CPendulum :: PendulumUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	if (!ShouldToggle(useType)) return;
+
 	if ( pev->speed )		// Pendulum is moving, stop it and auto-return if necessary
 	{
 		if ( FBitSet( pev->spawnflags, SF_PENDULUM_AUTO_RETURN ) )
