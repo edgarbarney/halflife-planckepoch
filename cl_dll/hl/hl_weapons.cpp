@@ -223,7 +223,7 @@ BOOL CBasePlayerWeapon :: DefaultDeploy(const char *szViewModel, const char *szW
 
 	gEngfuncs.CL_LoadModel( szViewModel, &m_pPlayer->pev->viewmodel );
 	
-	SendWeaponAnim( iAnim, skiplocal, body );
+//	SendWeaponAnim( iAnim, skiplocal, body );
 
 	g_irunninggausspred = false;
 	m_pPlayer->m_flNextAttack = 0.5;
@@ -417,15 +417,13 @@ void CBasePlayer::SelectItem(const char *pstr)
 		return;
 
 	if (m_pActiveItem)
-		m_pActiveItem->Holster( );
+		m_pActiveItem->Holster();
 	
 	m_pLastItem = m_pActiveItem;
 	m_pActiveItem = pItem;
 
 	if (m_pActiveItem)
-	{
-		m_pActiveItem->Deploy( );
-	}
+        m_pActiveItem->Deploy();
 }
 
 /*
@@ -437,22 +435,18 @@ CBasePlayer::SelectLastItem
 void CBasePlayer::SelectLastItem(void)
 {
 	if (!m_pLastItem)
-	{
-		return;
-	}
+        return;
 
-	if ( m_pActiveItem && !m_pActiveItem->CanHolster() )
-	{
-		return;
-	}
+    if ( m_pActiveItem && !m_pActiveItem->CanHolster() )
+        return;
 
-	if (m_pActiveItem)
-		m_pActiveItem->Holster( );
+    if (m_pActiveItem)
+		m_pActiveItem->Holster();
 	
 	CBasePlayerItem *pTemp = m_pActiveItem;
 	m_pActiveItem = m_pLastItem;
 	m_pLastItem = pTemp;
-	m_pActiveItem->Deploy( );
+	m_pActiveItem->Deploy();
 }
 
 /*
@@ -466,6 +460,8 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	// Holster weapon immediately, to allow it to cleanup
 	if ( m_pActiveItem )
 		 m_pActiveItem->Holster( );
+
+	m_pNextItem = NULL;
 	
 	g_irunninggausspred = false;
 }
@@ -479,8 +475,12 @@ CBasePlayer::Spawn
 void CBasePlayer::Spawn( void )
 {
 	if (m_pActiveItem)
-		m_pActiveItem->Deploy( );
-
+	{
+		m_pActiveItem = m_pNextItem;
+		m_pActiveItem->Deploy();
+		m_pActiveItem->UpdateItemInfo();
+		m_pNextItem = NULL;
+	}
 	g_irunninggausspred = false;
 }
 

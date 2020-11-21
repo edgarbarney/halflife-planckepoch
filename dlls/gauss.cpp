@@ -134,7 +134,7 @@ void CGauss::Holster( int skiplocal /* = 0 */ )
 {
 	PLAYBACK_EVENT_FULL( FEV_RELIABLE | FEV_GLOBAL, m_pPlayer->edict(), m_usGaussFire, 0.01, (float *)&m_pPlayer->pev->origin, (float *)&m_pPlayer->pev->angles, 0.0, 0.0, 0, 0, 0, 1 );
 	
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	
 	SendWeaponAnim( GAUSS_HOLSTER );
 	m_fInAttack = 0;
@@ -344,7 +344,7 @@ void CGauss::StartFire( void )
 			m_pPlayer->pev->velocity = m_pPlayer->pev->velocity - gpGlobals->v_forward * flDamage * 5;
 		}
 
-		if ( !g_pGameRules->IsMultiplayer() )
+		if ( !g_pGameRules->IsMultiplayer() && !g_allowGJump )  //AJH allow SP gauss jumpflag
 
 		{
 			// in deathmatch, gauss can pop you up into the air. Not in single play.

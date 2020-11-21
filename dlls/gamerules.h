@@ -17,7 +17,7 @@
 //=========================================================
 
 //LRC
-#define GAME_NAME "Spirit of Half-Life"
+#define GAME_NAME "Spirit of Half-Life 1.4"
 
 //#include "weapons.h"
 //#include "items.h"

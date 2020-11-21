@@ -471,6 +471,7 @@ LINK_ENTITY_TO_CLASS( worldspawn, CWorld );
 
 extern DLL_GLOBAL BOOL		g_fGameOver;
 float g_flWeaponCheat;
+BOOL g_allowGJump;
 
 BOOL g_startSuit; //LRC
 
@@ -510,6 +511,18 @@ void CWorld :: Precache( void )
 	g_pGameRules = InstallGameRules( );
 
 	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here 
+
+/*	if ( WorldGraph.m_fGraphPresent && !WorldGraph.m_fGraphPointersSet )
+	{
+		if ( !WorldGraph.FSetGraphPointers() )
+		{
+			ALERT ( at_debug, "**Graph pointers were not set!\n");
+		}
+		else
+		{
+			ALERT ( at_debug, "**Graph Pointers Set!\n" );
+		} 
+	}*/
 
 	///!!!LATER - do we want a sound ent in deathmatch? (sjb)
 	//pSoundEnt = CBaseEntity::Create( "soundent", g_vecZero, g_vecZero, edict() );
@@ -729,6 +742,14 @@ void CWorld :: KeyValue( KeyValueData *pkvd )
 		pkvd->fHandled = TRUE;
 	}
 //LRC- ends
+
+	//AJH- Gauss Jump in single play
+	else if ( FStrEq(pkvd->szKeyName, "allow_sp_gjump") )
+	{
+		g_allowGJump = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+
 	else
 		CBaseEntity::KeyValue( pkvd );
 }

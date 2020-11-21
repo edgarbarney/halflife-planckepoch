@@ -582,6 +582,14 @@ public:
 #define SKY_OFF 0
 #define SKY_ON  1
 
+typedef struct cl_mirror_s
+{
+	vec3_t origin;
+	int enabled;
+	float radius;
+	int type;
+} cl_mirror_t;
+
 
 
 class CHud
@@ -621,6 +629,10 @@ public:
 	int DrawHudStringReverse( int xpos, int ypos, int iMinX, char *szString, int r, int g, int b );
 	int DrawHudNumberString( int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b );
 	int GetNumWidth(int iNumber, int iFlags);
+	int viewEntityIndex; // for trigger_viewset
+	int viewFlags;
+	struct cl_mirror_s Mirrors[32]; //Limit - 32 mirrors!
+	int numMirrors;
 
 	int m_iHUDColor; //LRC
 
@@ -682,11 +694,12 @@ public:
 	void _cdecl MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf);
 	int  _cdecl MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf );
-	
+    int  _cdecl MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf );		//KILLAR
 	int _cdecl MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf);		//LRC
 	void _cdecl MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf );		//LRC
 	void _cdecl MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf );	//LRC
 	void _cdecl MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf );		//LRC
+	int  _cdecl MsgFunc_CamData( const char *pszName, int iSize, void *pbuf );
     void _cdecl MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf );     //LRC
 
 	// Screen information

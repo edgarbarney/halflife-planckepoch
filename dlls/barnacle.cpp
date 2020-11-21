@@ -246,7 +246,7 @@ void CBarnacle :: BarnacleThink ( void )
 // barnacle has no prey right now, so just idle and check to see if anything is touching the tongue.
 
 		// If idle and no nearby client, don't think so often
-		if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) )
+         		if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) && !HaveCamerasInPVS( edict() ) )
 			SetNextThink(  RANDOM_FLOAT(1,1.5) );	// Stagger a bit to keep barnacles from thinking on the same frame
 
 		if ( m_fSequenceFinished )

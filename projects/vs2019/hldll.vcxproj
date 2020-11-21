@@ -126,6 +126,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\controller.cpp" />
     <ClCompile Include="..\..\dlls\crossbow.cpp" />
     <ClCompile Include="..\..\dlls\crowbar.cpp" />
+    <ClCompile Include="..\..\dlls\debugger.cpp" />
     <ClCompile Include="..\..\dlls\defaultai.cpp" />
     <ClCompile Include="..\..\dlls\doors.cpp" />
     <ClCompile Include="..\..\dlls\effects.cpp" />

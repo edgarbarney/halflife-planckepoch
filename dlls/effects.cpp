@@ -1322,13 +1322,14 @@ void CLaser::TurnOn( void )
 void CLaser::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	int active = (GetState() == STATE_ON);
-
 	if ( !ShouldToggle( useType, active ) )
 		return;
 	if ( active )
 		TurnOff();
-	else
+	else {
+		m_hActivator = pActivator; //AJH Storage variable to allow *locus start/end positions
 		TurnOn();
+	}
 }
 
 
@@ -1360,19 +1361,19 @@ void CLaser::StrikeThink( void )
 	Vector startpos = pev->origin;
 	if (m_iszStartPosition)
 	{
-		startpos = CalcLocus_Position(this, NULL, STRING(m_iszStartPosition));
+		startpos = CalcLocus_Position(this, m_hActivator, STRING(m_iszStartPosition)); //AJH allow *locus start/end positions
 	}
 
 	if (m_iTowardsMode)
 	{
-		m_firePosition = startpos + CalcLocus_Velocity(this, NULL, STRING(pev->message));
+		m_firePosition = startpos + CalcLocus_Velocity(this, m_hActivator, STRING(pev->message));	//AJH allow *locus start/end positions
 	}
 	else
 	{
 		CBaseEntity *pEnd = RandomTargetname( STRING(pev->message) );
 
 		if ( pEnd )
-			m_firePosition = pEnd->pev->origin;
+			m_firePosition = CalcLocus_Position(this,pEnd,STRING(pev->message)); 
 	}
 	
 	TraceResult tr;
@@ -1747,6 +1748,8 @@ void CEnvModel :: Spawn( void )
 	SET_MODEL( ENT(pev), STRING(pev->model) );
 	UTIL_SetOrigin(this, pev->origin);
 
+//	UTIL_AssignOrigin(this, pev->oldorigin); //AJH - WTF is this here for?
+
 	if (pev->spawnflags & SF_ENVMODEL_SOLID)
 	{
 		pev->solid = SOLID_SLIDEBOX;
@@ -1758,7 +1761,6 @@ void CEnvModel :: Spawn( void )
 		pev->origin.z += 1;
 		DROP_TO_FLOOR ( ENT(pev) );
 	}
-
 	SetBoneController( 0, 0 );
 	SetBoneController( 1, 0 );
 
@@ -2021,10 +2023,10 @@ void CGibShooter::Spawn( void )
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 
-//	if ( m_flDelay == 0 )
-//	{
-//		m_flDelay = 0.1;
-//	}
+	if ( m_flDelay == 0 )
+	{
+		m_flDelay = 0.1;
+	}
 
 	if ( m_flGibLife == 0 )
 	{
@@ -2032,7 +2034,7 @@ void CGibShooter::Spawn( void )
 	}
 
 	SetMovedir ( pev );
-	if (pev->body == 0)
+//	if (pev->body == 0)
 		pev->body = MODEL_FRAMES( m_iGibModelIndex );
 }
 
@@ -2092,15 +2094,15 @@ CBaseEntity *CGibShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 void CGibShooter :: ShootThink ( void )
 {
 	int i;
-	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
+/*	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
 	{
 		i = m_iGibs;
 	}
 	else
 	{
-		i = 1;
+*/		i = 1;
 		SetNextThink( m_flDelay );
-	}
+//	}
 
 	while (i > 0)
 	{
@@ -2303,6 +2305,7 @@ void CEnvShooter :: Precache ( void )
 
 CBaseEntity *CEnvShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 {
+	if (pev->noise) pev->scale = CalcLocus_Ratio(this, STRING(pev->noise),0);  //AJH / MJB - allow locus_ratio for scale
 	if (m_iPhysics <= 1) // normal gib or sticky gib
 	{
 		CGib *pGib = GetClassPtr( (CGib *)NULL );
@@ -2329,7 +2332,8 @@ CBaseEntity *CEnvShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 		pGib->pev->renderamt = pev->renderamt;
 		pGib->pev->rendercolor = pev->rendercolor;
 		pGib->pev->renderfx = pev->renderfx;
-		pGib->pev->scale = pev->scale;
+	    if ( pev->scale >= 100) pGib->pev->scale = 1.0;//G-Cont. for fix with laarge gibs :) (MJB i know, but sometimes people deliberately want large models?)
+	    else 	pGib->pev->scale = pev->scale;
 		pGib->pev->skin = pev->skin;
 
 		float thinkTime = pGib->m_fNextThink - gpGlobals->time;
@@ -2346,9 +2350,10 @@ CBaseEntity *CEnvShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 
 		return pGib;
 	}
-
+          
 	// special shot
 	CShot *pShot = GetClassPtr( (CShot*)NULL );
+          if (FStringNull( m_iPhysics )) pShot->pev->movetype = MOVETYPE_BOUNCE;//G-Cont. fix for blank field m_iPhysics, e. g. - original HL
 	pShot->pev->classname = MAKE_STRING("shot");
 	pShot->pev->solid = SOLID_SLIDEBOX;
 	pShot->pev->origin = vecPos;
@@ -2752,6 +2757,7 @@ LINK_ENTITY_TO_CLASS( env_fade, CFade );
 #define SF_FADE_MODULATE		0x0002		// Modulate, don't blend
 #define SF_FADE_ONLYONE			0x0004
 #define SF_FADE_PERMANENT		0x0008		//LRC - hold permanently
+#define SF_FADE_CAMERA			0x0010	//fading only for camera
 
 void CFade::Spawn( void )
 {
@@ -2785,6 +2791,23 @@ void CFade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType
 {
 	int fadeFlags = 0;
 
+	if ( pev->spawnflags & SF_FADE_CAMERA )
+	{
+	if ( !pActivator || !pActivator->IsPlayer() )
+		{
+			pActivator = CBaseEntity::Instance(g_engfuncs.pfnPEntityOfEntIndex( 1 ));
+		}
+		if ( pActivator && pActivator->IsPlayer() )
+		{
+ 			if(((CBasePlayer *)pActivator)->viewFlags == 0)
+			{
+// 				ALERT(at_console, "player is not curently see in camera\n");			
+				return;
+			}
+
+		}
+	}
+
 	m_iState = STATE_TURN_ON; //LRC
 	SetNextThink( Duration() ); //LRC
 
@@ -2801,32 +2824,11 @@ void CFade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType
 	{
 		if ( pActivator->IsNetClient() )
 		{
-			#ifdef XENWARRIOR
-			if (pActivator->IsPlayer() && ((CBasePlayer*)pActivator)->FlashlightIsOn())
-			{
-				((CBasePlayer*)pActivator)->FlashlightTurnOff();
-				if (pev->spawnflags & SF_FADE_PERMANENT)
-					g_fEnvFadeTime = gpGlobals->time + 1E6;
-				else
-					g_fEnvFadeTime = gpGlobals->time + Duration() + HoldTime();
-			}
-			#endif
-
 			UTIL_ScreenFade( pActivator, pev->rendercolor, Duration(), HoldTime(), pev->renderamt, fadeFlags );
 		}
 	}
 	else
 	{
-		#ifdef XENWARRIOR
-		CBasePlayer *pPlayer = (CBasePlayer*)UTIL_FindEntityByTargetname(NULL, "*player");
-		if (pPlayer)
-			((CBasePlayer*)pPlayer)->FlashlightTurnOff();
-		if (pev->spawnflags & SF_FADE_PERMANENT)
-			g_fEnvFadeTime = gpGlobals->time + 1E6;
-		else
-			g_fEnvFadeTime = gpGlobals->time + Duration() + HoldTime();
-		#endif
-
 		UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), pev->renderamt, fadeFlags );
 	}
 	SUB_UseTargets( this, USE_TOGGLE, 0 );
@@ -3347,6 +3349,7 @@ void CEnvFootsteps::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 #define EXTENT_ARCING 2
 #define EXTENT_OBSTRUCTED_REVERSE 3
 #define EXTENT_ARCING_REVERSE 4
+#define EXTENT_ARCING_THROUGH 5 //AJH
 
 class CEnvRain : public CBaseEntity
 {
@@ -3508,8 +3511,8 @@ void CEnvRain::Spawn( void )
 
 	if (m_pitch)
 		pev->angles.x = m_pitch;
-	else if (pev->angles.x == 0) // don't allow horizontal rain.
-		pev->angles.x = 90;
+//	else if (pev->angles.x == 0) // don't allow horizontal rain.  //AJH -Why not?
+//	pev->angles.x = 90;
 
 	if (m_burstSize == 0) // in case the level designer forgot to set it.
 		m_burstSize = 2;
@@ -3589,6 +3592,10 @@ void CEnvRain::Think( void )
 			UTIL_TraceLine( vecSrc, vecDest, ignore_monsters, NULL, &tr);
 			if (tr.flFraction == 1.0) bDraw = FALSE;
 			vecDest = tr.vecEndPos;
+			break;
+		case EXTENT_ARCING_THROUGH:		//AJH - Arcs full length of brush only when blocked
+			UTIL_TraceLine( vecDest, vecSrc, dont_ignore_monsters, NULL, &tr);
+			if (tr.flFraction == 1.0) bDraw = FALSE;
 			break;
 		case EXTENT_ARCING_REVERSE:
 			UTIL_TraceLine( vecDest, vecSrc, ignore_monsters, NULL, &tr);
@@ -3823,6 +3830,8 @@ void CEnvShockwave::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 
 	if (!(pev->spawnflags & SF_SHOCKWAVE_CENTERED))
 		vecPos.z += m_iHeight;
+	
+	if(pev->target) FireTargets(STRING(pev->target),pActivator,pCaller,useType,value);	//AJH
 
 	// blast circle
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
@@ -4531,18 +4540,19 @@ class CEnvSky : public CBaseEntity
 {
 public:
 	void Activate( void );
-	void Think( void );
+	void DesiredAction( void );
 };
 
 void CEnvSky :: Activate ( void )
 {
+	UTIL_DesiredAction( this );
 	pev->effects |= EF_NODRAW;
 	pev->nextthink = gpGlobals->time + 1.0;
 }
 
 extern int gmsgSetSky;
 
-void CEnvSky :: Think ()
+void CEnvSky :: DesiredAction ()
 {
 	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSetSky, NULL);
 		WRITE_BYTE(1); // mode
@@ -4561,6 +4571,7 @@ LINK_ENTITY_TO_CLASS( env_sky, CEnvSky );
 //=========================================================
 //extern int gmsgParticle = 0;
 #define SF_PARTICLE_ON 1
+#define SF_PARTICLE_SPAWNUSE 2	//AJH for spawnable env_particles
 
 class CParticle : public CPointEntity
 {
@@ -4579,7 +4590,10 @@ LINK_ENTITY_TO_CLASS( env_particle, CParticle );
 void CParticle::Spawn( void )
 {
 	pev->solid			= SOLID_NOT;
-	pev->movetype		= MOVETYPE_NONE;
+
+//	pev->movetype		= MOVETYPE_NONE;	//AJH
+	pev->movetype		= MOVETYPE_NOCLIP;	//AJH
+
 	pev->renderamt		= 128;
 	pev->rendermode		= kRenderTransTexture;
 
@@ -4619,9 +4633,163 @@ void CParticle::Think( void )
 
 void CParticle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if ( ShouldToggle( useType, pev->body ) )
+	if (pev->spawnflags & SF_PARTICLE_SPAWNUSE || useType==USE_SPAWN){		//AJH Spawnable env_particles!!
+
+	// Create a new entity with Cparticle private data
+		CParticle *pParticle = GetClassPtr( (CParticle *)NULL );
+		pParticle->pev->classname = MAKE_STRING("particle");
+
+		if (pev->netname!=NULL){
+			pParticle->pev->targetname=pev->netname;	// set childrens name (targetname) from netname
+		}
+
+		pParticle->pev->message = pev->message;
+		pParticle->pev->origin=pActivator->pev->origin;
+		pParticle->pev->angles=pActivator->pev->angles;
+		pParticle->Spawn();
+		pParticle->pev->body=1;							//turn children on automatically
+		pParticle->Think();
+
+	//	ALERT(at_debug,"Particle %s spawned new particle %s\n",STRING(pev->targetname),STRING(pParticle->pev->targetname));
+
+	}else{	//AJH Standard non spawnuse USE function
+
+		if ( ShouldToggle( useType, pev->body ) )
+		{
+			pev->body = !pev->body;
+			//ALERT(at_console, "Toggling Particle on/off %d\n", pev->body);
+		}
+	}
+}
+
+//=========================================================
+// G-Cont - env_mirror, mirroring only models
+//=========================================================
+
+#define SF_MIRROR_DRAWPLAYER 0x01
+
+class CEnvMirror : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void KeyValue( KeyValueData* pkvd);
+	virtual int ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void EXPORT MirrorThink( void );
+	virtual int Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+	STATE	GetState( void ) { return m_iActive?STATE_ON:STATE_OFF; }//Support this stuff for watcher
+	int m_iActive;
+	float m_flRadius;
+	static TYPEDESCRIPTION m_SaveData[];
+private:
+	int m_iInitialRenderMode;
+	BOOL bSent;
+};
+
+TYPEDESCRIPTION CEnvMirror::m_SaveData[] = 
+{
+	DEFINE_FIELD( CEnvMirror, m_iInitialRenderMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvMirror, m_iActive, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvMirror, m_flRadius, FIELD_FLOAT ),
+};
+IMPLEMENT_SAVERESTORE( CEnvMirror, CBaseEntity );
+
+void CEnvMirror :: KeyValue( KeyValueData *pkvd )
+{
+	
+	if (FStrEq(pkvd->szKeyName, "radius"))
 	{
-		pev->body = !pev->body;
-		//ALERT(at_console, "Setting body %d\n", pev->body);
+		m_flRadius = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+
+}
+
+LINK_ENTITY_TO_CLASS( env_mirror, CEnvMirror );
+
+void CEnvMirror :: Spawn( void )
+{ 
+	pev->angles = g_vecZero; 
+	pev->movetype = MOVETYPE_PUSH; // so it doesn't get pushed by anything
+
+	pev->solid = SOLID_BSP;
+
+	pev->impulse = 1;
+          m_iActive = TRUE;
+          
+	Precache();          
+
+	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER) CBaseEntity::Create( "player_marker", (float *)&Center(), (float *)&g_vecZero, NULL );	
+
+	SET_MODEL( ENT(pev), STRING(pev->model) );
+	SetThink (&CEnvMirror :: MirrorThink);
+	m_iInitialRenderMode = pev->rendermode;
+         	if (!m_flRadius) m_flRadius = 330;
+	if (!pev->frags)//Smart field system. g-cont
+	{
+		if (pev->size.y > pev->size.x && pev->size.z > pev->size.x) pev->frags = 0;
+		if (pev->size.x > pev->size.y && pev->size.z > pev->size.y) pev->frags = 1;	
+		if (pev->size.y > pev->size.z && pev->size.x > pev->size.z) pev->frags = 2;
+	}
+	SetNextThink (0.1);
+}
+
+void CEnvMirror :: Precache( void )
+{
+	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER) UTIL_PrecacheOther( "player_marker" );
+	bSent = FALSE;
+}
+
+void CEnvMirror :: MirrorThink( void )
+{
+	if (bSent)
+	{
+		SetNextThink (0.01);
+		return;
+	}
+
+	if (pev->impulse)
+	{
+		if (pev->rendermode != m_iInitialRenderMode) pev->rendermode = m_iInitialRenderMode;
+
+	      	if (UTIL_PlayerByIndex(1))
+		{
+		         	PLAYBACK_EVENT_FULL (FEV_RELIABLE|FEV_GLOBAL, edict(), m_usMirror, 0.0, (float *)&Center(), (float *)&g_vecZero, 0.0, 0.0, m_flRadius, pev->frags, 1, 0);
+			bSent = TRUE;
+		}
+
+	}
+	else
+	{
+		if (pev->rendermode != kRenderNormal)
+		{
+			pev->rendermode = kRenderNormal;
+			PLAYBACK_EVENT_FULL (FEV_RELIABLE|FEV_GLOBAL, edict(), m_usMirror, 0.0, (float *)&Center(), (float *)&g_vecZero, 0.0, 0.0, m_flRadius, pev->frags, 0, 0);
+		}
+
+		bSent = TRUE;
+	}
+	SetNextThink ( 0.01 );
+}
+
+
+void CEnvMirror :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if ( ShouldToggle( useType, m_iActive ) )
+		m_iActive = !m_iActive;
+
+	if ( m_iActive )
+	{
+		m_iActive = TRUE;
+		pev->impulse = 1;
+		bSent = FALSE;
+	}
+	else
+	{
+		m_iActive = FALSE;
+		pev->impulse = 0;
+		bSent = FALSE;
 	}
 }
