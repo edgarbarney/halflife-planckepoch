@@ -309,7 +309,7 @@ void CCrossbow::Holster( int skiplocal /* = 0 */ )
 		SecondaryAttack( );
 	}
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	if (m_iClip)
 		SendWeaponAnim( CROSSBOW_HOLSTER1 );
 	else

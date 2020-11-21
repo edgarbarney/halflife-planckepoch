@@ -116,6 +116,12 @@ BOOL CShotgun::Deploy( )
 	return DefaultDeploy( "models/v_shotgun.mdl", "models/p_shotgun.mdl", SHOTGUN_DRAW, "shotgun" );
 }
 
+void CShotgun::Holster( int skiplocal )
+{
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	SendWeaponAnim( SHOTGUN_HOLSTER );
+}
+
 void CShotgun::PrimaryAttack()
 {
 	// don't fire underwater
@@ -151,6 +157,21 @@ void CShotgun::PrimaryAttack()
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	#ifndef CLIENT_DLL 
+	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+       WRITE_BYTE( TE_DLIGHT );
+       WRITE_COORD( pev->origin.x ); // origin
+       WRITE_COORD( pev->origin.y );
+       WRITE_COORD( pev->origin.z );
+       WRITE_BYTE( 16 );     // radius
+       WRITE_BYTE( 255 );    // R
+       WRITE_BYTE( 255 );    // G
+       WRITE_BYTE( 160 );    // B
+       WRITE_BYTE( 0 );      // life * 10
+       WRITE_BYTE( 0 );      // decay
+    MESSAGE_END();
+	#endif 
 
 	Vector vecDir;
 
@@ -225,6 +246,21 @@ void CShotgun::SecondaryAttack( void )
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	#ifndef CLIENT_DLL 
+	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+       WRITE_BYTE( TE_DLIGHT );
+       WRITE_COORD( pev->origin.x ); // origin
+       WRITE_COORD( pev->origin.y );
+       WRITE_COORD( pev->origin.z );
+       WRITE_BYTE( 16 );     // radius
+       WRITE_BYTE( 255 );    // R
+       WRITE_BYTE( 255 );    // G
+       WRITE_BYTE( 160 );    // B
+       WRITE_BYTE( 0 );      // life * 10
+       WRITE_BYTE( 0 );      // decay
+    MESSAGE_END();
+	#endif 
 
 	Vector vecDir;
 	

@@ -193,7 +193,7 @@ void CRoach :: Killed( entvars_t *pevAttacker, int iGib )
 //=========================================================
 void CRoach :: MonsterThink( void  )
 {
-	if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) )
+	if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) && !HaveCamerasInPVS( edict() ))
 		SetNextThink( RANDOM_FLOAT(1,1.5) );
 	else
 		SetNextThink( 0.1 );// keep monster thinking
@@ -417,7 +417,7 @@ void CRoach :: Look ( int iDistance )
 
 	// don't let monsters outside of the player's PVS act up, or most of the interesting
 	// things will happen before the player gets there!
-	if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) )
+	if ( FNullEnt( FIND_CLIENT_IN_PVS( edict() ) ) && !HaveCamerasInPVS( edict() ))
 	{
 		return;
 	}

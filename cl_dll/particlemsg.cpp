@@ -18,7 +18,7 @@ DECLARE_MESSAGE(m_Particle, Particle)
 
 int CHudParticle::Init(void)
 {
-	ConsolePrint("Hooking Particle message\n"); // 30/08/02 November235: Just a debug
+	//ConsolePrint("Hooking Particle message\n"); // 30/08/02 November235: Just a debug
 	HOOK_MESSAGE(Particle);
 	gHUD.AddHudElem(this);
 

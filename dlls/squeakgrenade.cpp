@@ -481,8 +481,10 @@ BOOL CSqueak::Deploy( )
 
 void CSqueak::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	SendWeaponAnim( SQUEAK_DOWN );
+	EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "common/null.wav", 1.0, ATTN_NORM);	
+
 	if ( !m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] )
 	{
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_SNARK);
@@ -490,9 +492,6 @@ void CSqueak::Holster( int skiplocal /* = 0 */ )
 		SetNextThink( 0.1 );
 		return;
 	}
-	
-	SendWeaponAnim( SQUEAK_DOWN );
-	EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "common/null.wav", 1.0, ATTN_NORM);
 }
 
 

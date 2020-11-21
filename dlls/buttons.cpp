@@ -105,28 +105,35 @@ void CEnvGlobal::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	GLOBALESTATE oldState = gGlobalState.EntityGetState( m_globalstate );
 	GLOBALESTATE newState;
 
-	switch( m_triggermode )
-	{
-	case 0:
-		newState = GLOBAL_OFF;
-		break;
+	if (useType==USE_ON){		//
+		newState = GLOBAL_ON;	//AJH Allow env_global to use USE_TYPE
+	}else if(useType==USE_OFF){	//
+		newState = GLOBAL_OFF;	//
+	}else{						//
 
-	case 1:
-		newState = GLOBAL_ON;
-		break;
-
-	case 2:
-		newState = GLOBAL_DEAD;
-		break;
-
-	default:
-	case 3:
-		if ( oldState == GLOBAL_ON )
+		switch( m_triggermode )
+		{
+		case 0:
 			newState = GLOBAL_OFF;
-		else if ( oldState == GLOBAL_OFF )
-			newState = GLOBAL_ON;
-		else
-			newState = oldState;
+			break;
+
+		case 1:
+	         		newState = GLOBAL_ON;
+			break;
+
+		case 2:
+			newState = GLOBAL_DEAD;
+			break;
+
+         		default:
+		case 3:
+			if ( oldState == GLOBAL_ON )
+				newState = GLOBAL_OFF;
+			else if ( oldState == GLOBAL_OFF )
+				newState = GLOBAL_ON;
+			else
+				newState = oldState;
+		}
 	}
 
 	if ( gGlobalState.EntityInTable( m_globalstate ) )
@@ -1379,7 +1386,8 @@ void CMomentaryRotButton::UpdateSelf( float value )
 		pev->angles = m_end;
 		return;
 	}
-	else if ( m_direction < 0 && value <= 0 )
+
+	if ( m_direction < 0 && value <= 0 )
 	{
 		pev->avelocity = g_vecZero;
 		pev->angles = m_start;
@@ -1606,27 +1614,59 @@ void EXPORT CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	SetThink(NULL);
 	m_iState = STATE_OFF; //LRC
 }
+//G-Cont. flag 16 is removed - we don't need this
+//AJH - Don't remove stuff just because YOU don't use it.
 
+
+
+//----------------------------------------------------------------
+// Button_target
+//----------------------------------------------------------------
 #define SF_BTARGET_USE		0x0001
 #define SF_BTARGET_ON		0x0002
+#define SF_BTARGET_SOLIDNOT 0x0004	//AJH - Just testing this at the moment
+#define SF_BTARGET_NOSHOT	0x0008	//AJH - So you can't trigger by shooting
 
 class CButtonTarget : public CBaseEntity
 {
 public:
+	virtual void KeyValue(KeyValueData *pkvd);//AJH
 	void Spawn( void );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
 	int	ObjectCaps( void );
+	string_t m_sMaster;	//AJH for lockable button_targets
 };
 
 LINK_ENTITY_TO_CLASS( button_target, CButtonTarget );
 
+void CButtonTarget::KeyValue( KeyValueData *pkvd ) //AJH
+{
+	if (FStrEq(pkvd->szKeyName, "master"))
+	{
+		m_sMaster = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseEntity::KeyValue( pkvd );
+}
+
 void CButtonTarget::Spawn( void )
 {
 	pev->movetype	= MOVETYPE_PUSH;
-	pev->solid		= SOLID_BSP;
+	if (pev->spawnflags&SF_BTARGET_SOLIDNOT){	//AJH - non solid button targets
+		pev->solid=SOLID_NOT;					//note: setting non solid will stop 
+	}else{										//'trigger on shot' as no collision occurs
+		pev->solid		= SOLID_BSP;			//Default behaviour is SOLID
+	}											//
+
 	SET_MODEL(ENT(pev), STRING(pev->model));
-	pev->takedamage = DAMAGE_YES;
+
+	if(pev->spawnflags&SF_BTARGET_NOSHOT){		//AJH - Don't allow triggering when shot
+		pev->takedamage = DAMAGE_NO;			//Default: allow triggering
+	}else{										//
+		pev->takedamage = DAMAGE_YES;			//
+	}											//
 
 	if ( FBitSet( pev->spawnflags, SF_BTARGET_ON ) )
         pev->frame = 1;
@@ -1636,6 +1676,10 @@ void CButtonTarget::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 {
 	if ( !ShouldToggle( useType, (int)pev->frame ) )
 		return;
+
+	if (!UTIL_IsMasterTriggered(m_sMaster, pActivator))		//
+		return;										// AJH allows for locked button_targets 
+
 	pev->frame = 1-pev->frame;
 	if ( pev->frame )
         SUB_UseTargets( pActivator, USE_ON, 0 );

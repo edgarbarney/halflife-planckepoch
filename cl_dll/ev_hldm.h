@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright (c) 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -36,6 +36,20 @@ enum glock_e {
 	GLOCK_ADD_SILENCER
 };
 
+enum generic_e 
+{
+	GENERIC_IDLE1 = 0,
+	GENERIC_IDLE2,
+	GENERIC_IDLE3,
+	GENERIC_SHOOT,
+	GENERIC_SHOOT2,
+	GENERIC_RELOAD,
+	GENERIC_RELOAD2,
+	GENERIC_DRAW,
+	GENERIC_HOLSTER,
+	GENERIC_SPECIAL
+};
+
 enum shotgun_e {
 	SHOTGUN_IDLE = 0,
 	SHOTGUN_FIRE,
@@ -59,6 +73,7 @@ enum mp5_e
 	MP5_FIRE1,
 	MP5_FIRE2,
 	MP5_FIRE3,
+	MP5_HOLSTER
 };
 
 enum python_e {
