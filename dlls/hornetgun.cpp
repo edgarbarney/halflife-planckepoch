@@ -118,7 +118,7 @@ BOOL CHgun::Deploy( )
 
 void CHgun::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 2.0;
 	SendWeaponAnim( HGUN_DOWN );
 
 	//!!!HACKHACK - can't select hornetgun if it's empty! no way to get ammo for it, either.

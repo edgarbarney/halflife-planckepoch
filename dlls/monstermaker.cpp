@@ -22,12 +22,14 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "saverestore.h"
+#include "locus.h"
 
 // Monstermaker spawnflags
 #define	SF_MONSTERMAKER_START_ON	1 // start active ( if has targetname )
 #define	SF_MONSTERMAKER_CYCLIC		4 // drop one monster every time fired.
 #define SF_MONSTERMAKER_MONSTERCLIP	8 // Children are blocked by monsterclip
 #define SF_MONSTERMAKER_LEAVECORPSE 16 // Don't fade corpses.
+#define SF_MONSTERMAKER_FORCESPAWN 32  // AJH Force the monstermaker to spawn regardless of blocking enitites
 #define SF_MONSTERMAKER_NO_WPN_DROP	1024 // Corpses don't drop weapons.
 
 //=========================================================
@@ -65,6 +67,8 @@ public:
 	BOOL m_fActive;
 	BOOL m_fFadeChildren;// should we make the children fadeout?
 	float m_fSpawnDelay;// LRC- delay between triggering targets and making a child (for env_warpball, mainly)
+
+	CBaseEntity* pWhere;
 };
 
 LINK_ENTITY_TO_CLASS( monstermaker, CMonsterMaker );
@@ -79,6 +83,7 @@ TYPEDESCRIPTION	CMonsterMaker::m_SaveData[] =
 	DEFINE_FIELD( CMonsterMaker, m_fActive, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CMonsterMaker, m_fFadeChildren, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CMonsterMaker, m_fSpawnDelay, FIELD_FLOAT ),
+	DEFINE_FIELD( CMonsterMaker, pWhere, FIELD_CLASSPTR),		//AJH
 };
 
 
@@ -115,6 +120,8 @@ void CMonsterMaker :: KeyValue( KeyValueData *pkvd )
 void CMonsterMaker :: Spawn( )
 {
 	pev->solid = SOLID_NOT;
+
+	pWhere = GetClassPtr( (CMonsterMaker *)NULL );
 
 	m_cLiveChildren = 0;
 	Precache();
@@ -176,24 +183,63 @@ void CMonsterMaker::TryMakeMonster( void )
 	{// not allowed to make a new one yet. Too many live ones out right now.
 		return;
 	}
+	
+	
+	
+
+	CBaseEntity* pTemp;
+	if (pev->noise){	// AJH	dynamic origin for monstermakers
+		pTemp = UTIL_FindEntityByTargetname(NULL,STRING(pev->noise),pWhere);
+		if (pTemp){
+			pWhere->pev->origin=pTemp->pev->origin;
+		//	ALERT(at_debug,"DEBUG: Monstermaker setting dynamic position %f %f %f \n", pWhere->pev->origin.x,pWhere->pev->origin.y,pWhere->pev->origin.z);
+		}
+	}else{
+		pWhere->pev->origin=pev->origin;
+	}	
+	
+	if (pev->noise1){	//AJH dynamic offset for monstermaker
+		Vector vTemp =CalcLocus_Position(this, NULL, STRING(pev->noise1));
+		pWhere->pev->origin=pWhere->pev->origin+vTemp;
+	//	ALERT(at_debug,"DEBUG: Monstermaker dynamic offset is %f %f %f\n",vTemp.x,vTemp.y,vTemp.z);
+	//	ALERT(at_debug,"DEBUG: Monstermaker position now %f %f %f \n", pWhere->pev->origin.x,pWhere->pev->origin.y,pWhere->pev->origin.z);
+	}
+
+	if (pev->noise2){	// AJH	dynamic angles for monstermakers
+		pTemp = UTIL_FindEntityByTargetname(NULL,STRING(pev->noise2),pWhere);
+		if (pTemp)	pWhere->pev->angles=pTemp->pev->angles;
+	//	ALERT(at_debug,"DEBUG: Monstermaker setting angles to %f %f %f\n",pWhere->pev->angles.x,pWhere->pev->angles.y,pWhere->pev->angles.z);
+	}else{
+		pWhere->pev->angles=pev->angles;
+	}
+
+	if (pev->noise3){	// AJH	dynamic velocity for monstermakers
+		pTemp = UTIL_FindEntityByTargetname(NULL,STRING(pev->noise3),pWhere);
+		if (pTemp)	pWhere->pev->velocity=pTemp->pev->velocity;
+	//	ALERT(at_debug,"DEBUG: Monstermaker setting velocity to %f %f %f\n",pWhere->pev->velocity.x,pWhere->pev->velocity.y,pWhere->pev->velocity.z);
+	
+	}
+
+//	ALERT(at_debug,"DEBUG: Montermaker spawnpoint set to %f, %f, %f\n", pWhere->pev->origin.x,pWhere->pev->origin.y,pWhere->pev->origin.z);
+	
 
 	if ( !m_flGround )
 	{
 		// set altitude. Now that I'm activated, any breakables, etc should be out from under me. 
 		TraceResult tr;
 
-		UTIL_TraceLine ( pev->origin, pev->origin - Vector ( 0, 0, 2048 ), ignore_monsters, ENT(pev), &tr );
+		UTIL_TraceLine ( pWhere->pev->origin, pWhere->pev->origin - Vector ( 0, 0, 2048 ), ignore_monsters, ENT(pWhere->pev), &tr );
 		m_flGround = tr.vecEndPos.z;
 	}
 
-	Vector mins = pev->origin - Vector( 34, 34, 0 );
-	Vector maxs = pev->origin + Vector( 34, 34, 0 );
-	maxs.z = pev->origin.z;
+	Vector mins = pWhere->pev->origin - Vector( 34, 34, 0 );
+	Vector maxs = pWhere->pev->origin + Vector( 34, 34, 0 );
+	maxs.z = pWhere->pev->origin.z;
 	mins.z = m_flGround;
 
 	CBaseEntity *pList[2];
 	int count = UTIL_EntitiesInBox( pList, 2, mins, maxs, FL_CLIENT|FL_MONSTER );
-	if ( count )
+	if ( !SF_MONSTERMAKER_FORCESPAWN&&count )
 	{
 		// don't build a stack of monsters!
 		return;
@@ -220,6 +266,7 @@ void CMonsterMaker::TryMakeMonster( void )
 		// If I have a target, fire! (the new monster is the locus)
 		if ( !FStringNull ( pev->target ) )
 		{
+			ALERT(at_debug,"DEBUG: Monstermaker fires target %s locus is child\n",STRING(pev->target));
 			FireTargets( STRING(pev->target), pMonst, this, USE_TOGGLE, 0 );
 		}
 	}
@@ -252,8 +299,18 @@ CBaseMonster* CMonsterMaker::MakeMonster( void )
 	}
 
 	pevCreate = VARS( pent );
-	pevCreate->origin = pev->origin;
-	pevCreate->angles = pev->angles;
+	
+	if (pWhere&&pWhere->pev){
+		pevCreate->origin = pWhere->pev->origin;	//AJH dynamic (*locus) position
+		pevCreate->angles = pWhere->pev->angles;
+		pevCreate->velocity = pWhere->pev->velocity;
+	//	ALERT(at_debug,"DEBUG: Monstermaker using Dynamic (locus) position code\n");
+	}else{
+		pevCreate->origin = pev->origin;	//AJH Old Behaviour (shouldn't ever get here)
+		pevCreate->angles = pev->angles;
+		ALERT(at_debug,"DEBUG: ERROR Monstermaker using obsolete position code\n");
+	}
+
 	SetBits( pevCreate->spawnflags, SF_MONSTER_FALL_TO_GROUND );
 
 	if (pev->spawnflags & SF_MONSTERMAKER_NO_WPN_DROP)
@@ -273,6 +330,9 @@ CBaseMonster* CMonsterMaker::MakeMonster( void )
 	{
 		pMonst->m_iClass = this->m_iClass;
 		pMonst->m_iPlayerReact = this->m_iPlayerReact;
+		pMonst->m_iTriggerCondition = this->m_iTriggerCondition;	//AJH
+		pMonst->m_iszTriggerTarget = this->m_iszTriggerTarget;		//AJH	
+
 	}
 
 	if ( !FStringNull( pev->netname ) )
@@ -304,7 +364,24 @@ CBaseMonster* CMonsterMaker::MakeMonster( void )
 // each time we call this.
 //=========================================================
 void CMonsterMaker::CyclicUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-{
+{	
+/*	if (pev->noise!=NULL){
+		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(NULL,STRING(pev->noise),pActivator);
+		
+		if (pTemp&&pTemp->pev&&pWhere&&pWhere->pev){
+			pWhere->pev->origin=pTemp->pev->origin;
+			pWhere->pev->angles=pTemp->pev->angles;
+		
+		//	UTIL_SetOrigin(this,pTemp->pev->origin+pTemp->pev->velocity);
+		//	ALERT(at_debug,"Montermaker origin set to %f, %f, %f\n", pev->origin.x,pev->origin.y,pev->origin.z);
+		}else{
+			ALERT(at_debug,"ERROR Monstermaker given Null pointer\n");
+		}
+	}
+*/
+	pWhere->pev->origin= pActivator->pev->origin; //AJH for *locus position etc
+	pWhere->pev->angles= pActivator->pev->angles;
+	pWhere->pev->velocity= pActivator->pev->velocity;
 	TryMakeMonster();
 //	ALERT(at_console,"CyclicUse complete\n");
 }
@@ -314,6 +391,10 @@ void CMonsterMaker::CyclicUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, U
 //=========================================================
 void CMonsterMaker :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	pWhere->pev->origin= pActivator->pev->origin; //AJH for *locus position etc
+	pWhere->pev->angles= pActivator->pev->angles;
+	pWhere->pev->velocity= pActivator->pev->velocity;
+
 	if ( !ShouldToggle( useType, m_fActive ) )
 		return;
 

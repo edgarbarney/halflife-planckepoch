@@ -94,6 +94,7 @@ typedef enum
 	USE_SET = 2,
 	USE_TOGGLE = 3,
 	USE_KILL = 4,
+	USE_SPAWN = 7,  //AJH
 // special signals, never actually get sent:
 	USE_SAME = 5,
 	USE_NOT = 6,
@@ -158,7 +159,7 @@ public:
 //
 // Base Entity.  All entity types derive from this
 //
-class CBaseEntity 
+class CBaseEntity
 {
 public:
 	// Constructor.  Set engine to use C/C++ callback functions
@@ -167,7 +168,7 @@ public:
 
 	// path corners
 	CBaseEntity			*m_pGoalEnt;// path corner we are heading towards
-	CBaseEntity			*m_pLink;// used for temporary link-list operations. 
+	CBaseEntity			*m_pLink;// used for temporary link-list operations.
 
 	CBaseEntity			*m_pMoveWith; // LRC- the entity I move with.
 	int					m_MoveWith;	//LRC- Name of that entity
@@ -220,7 +221,7 @@ public:
 	//LRC - loci
 	virtual Vector	CalcPosition( CBaseEntity *pLocus )	{ return pev->origin; }
 	virtual Vector	CalcVelocity( CBaseEntity *pLocus )	{ return pev->velocity; }
-	virtual float	CalcRatio( CBaseEntity *pLocus )	{ return 0; }
+	virtual float	CalcRatio( CBaseEntity *pLocus, int mode )	{ return 0; }	//AJH added 'mode' = ratio to return
 
 	//LRC - aliases
 	virtual BOOL IsAlias( void ) { return FALSE; }
@@ -256,7 +257,7 @@ public:
 	void			InitMoveWith( void ); //LRC - called by Activate() to set up moveWith values
 	virtual void	PostSpawn( void ) {} //LRC - called by Activate() to handle entity-specific initialisation.
 										 // (mostly setting positions, for MoveWith support)
-	
+
 	// Setup the object->object collision box (pev->mins / pev->maxs is the object->world collision box)
 	virtual void	SetObjectCollisionBox( void );
 
@@ -313,7 +314,7 @@ public:
 
 //	virtual void	SetActivator( CBaseEntity *pActivator ) {}
 	virtual CBaseEntity *GetNextTarget( void );
-	
+
 	// fundamental callbacks
 	void (CBaseEntity ::*m_pfnThink)(void);
 	void (CBaseEntity ::*m_pfnTouch)( CBaseEntity *pOther );
@@ -322,9 +323,9 @@ public:
 
 	virtual void Think( void ) { if (m_pfnThink) (this->*m_pfnThink)(); };
 	virtual void Touch( CBaseEntity *pOther ) { if (m_pfnTouch) (this->*m_pfnTouch)( pOther ); };
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) 
-	{ 
-		if (m_pfnUse) 
+	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+	{
+		if (m_pfnUse)
 			(this->*m_pfnUse)( pActivator, pCaller, useType, value );
 	}
 	virtual void Blocked( CBaseEntity *pOther ) { if (m_pfnBlocked) (this->*m_pfnBlocked)( pOther ); };
@@ -476,7 +477,7 @@ public:
 inline BOOL FNullEnt( CBaseEntity *ent )	{ return ent == NULL || FNullEnt( ent->edict() ); }
 
 // Ugly technique to override base member functions
-// Normally it's illegal to cast a pointer to a member function of a derived class to a pointer to a 
+// Normally it's illegal to cast a pointer to a member function of a derived class to a pointer to a
 // member function of a base class.  static_cast is a sleezy way around that problem.
 
 #ifdef _DEBUG
@@ -564,7 +565,7 @@ public:
 	virtual void	KeyValue( KeyValueData* pkvd);
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
-	
+
 	static	TYPEDESCRIPTION m_SaveData[];
 	// common member functions
 	void SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, float value );
@@ -618,7 +619,7 @@ public:
 //
 // generic Toggle entity.
 //
-#define	SF_ITEM_USE_ONLY	256 //  ITEM_USE_ONLY = BUTTON_USE_ONLY = DOOR_USE_ONLY!!! 
+#define	SF_ITEM_USE_ONLY	256 //  ITEM_USE_ONLY = BUTTON_USE_ONLY = DOOR_USE_ONLY!!!
 
 class CBaseToggle : public CBaseAnimating
 {
@@ -644,6 +645,14 @@ public:
 	Vector				m_vecFinalDest;
 	float				m_flLinearMoveSpeed;	// LRC- allows a LinearMove to be delayed until a think.
 	float				m_flAngularMoveSpeed;	// LRC
+
+	float				m_flLinearAccel;		//AJH - For acceleration, used in subs.cpp
+	float				m_flLinearDecel;		//AJH
+	float				m_flCurrentTime;		//AJH
+	float				m_flAccelTime;			//AJH
+	float				m_flDecelTime;			//AJH
+	bool				m_bDecelerate;			//AJH
+
 	Vector				m_vecFinalAngle;
 
 	int					m_bitsDamageInflict;	// DMG_ damage type that the door or tigger does
@@ -662,7 +671,7 @@ public:
 
 	// common member functions
 	void LinearMove( Vector	vecInput, float flSpeed );
-	//void LinearMove( Vector	vecInput, float flSpeed, BOOL bNow );
+	void LinearMove(Vector vecInput, float flSpeed, float flAccel, float flDecel); //AJH-Accelerated linear movement
 	void EXPORT LinearMoveNow( void ); //LRC- think function that lets us guarantee a LinearMove gets done as a think.
 	void EXPORT LinearMoveDone( void );
 	void EXPORT LinearMoveDoneNow( void ); //LRC
@@ -678,7 +687,7 @@ public:
 	static float		AxisDelta( int flags, const Vector &angle1, const Vector &angle2 );
 
 	string_t m_sMaster;		// If this button has a master switch, this is the targetname.
-							// A master switch must be of the multisource type. If all 
+							// A master switch must be of the multisource type. If all
 							// of the switches in the multisource have been triggered, then
 							// the button will be allowed to operate. Otherwise, it will be
 							// deactivated.
@@ -728,7 +737,7 @@ public:
 #define DMG_CLUB			(1 << 7)	// crowbar, punch, headbutt
 #define DMG_SHOCK			(1 << 8)	// electric shock
 #define DMG_SONIC			(1 << 9)	// sound pulse shockwave
-#define DMG_ENERGYBEAM		(1 << 10)	// laser or other high energy beam 
+#define DMG_ENERGYBEAM		(1 << 10)	// laser or other high energy beam
 #define DMG_NEVERGIB		(1 << 12)	// with this bit OR'd in, no damage type will be able to gib victims upon death
 #define DMG_ALWAYSGIB		(1 << 13)	// with this bit OR'd in, any damage type can be made to gib victims upon death.
 #define DMG_DROWN			(1 << 14)	// Drowning
@@ -775,7 +784,7 @@ public:
 #define SLOWFREEZE_DAMAGE	1.0
 
 
-#define	itbd_Paralyze		0		
+#define	itbd_Paralyze		0
 #define	itbd_NerveGas		1
 #define	itbd_Poison			2
 #define	itbd_Radiation		3
@@ -785,7 +794,7 @@ public:
 #define	itbd_SlowFreeze		7
 #define CDMG_TIMEBASED		8
 
-// when calling KILLED(), a value that governs gib behavior is expected to be 
+// when calling KILLED(), a value that governs gib behavior is expected to be
 // one of these three values
 #define GIB_NORMAL			0// gib if entity was overkilled
 #define GIB_NEVER			1// never gib, no matter how much death damage is done ( freezing, etc )
@@ -827,10 +836,10 @@ public:
 	virtual int		TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
-	
+
 	enum BUTTON_CODE { BUTTON_NOTHING, BUTTON_ACTIVATE, BUTTON_RETURN };
 	BUTTON_CODE	ButtonResponseToTouch( void );
-	
+
 	static	TYPEDESCRIPTION m_SaveData[];
 	virtual int	ObjectCaps( void );
 
@@ -842,16 +851,16 @@ public:
 							// to the button's ChangeTarget. This allows you to make a func_train switch paths, etc.
 
 	locksound_t m_ls;			// door lock sounds
-	
+
 	BYTE	m_bLockedSound;		// ordinals from entity selection
-	BYTE	m_bLockedSentence;	
-	BYTE	m_bUnlockedSound;	
+	BYTE	m_bLockedSentence;
+	BYTE	m_bUnlockedSound;
 	BYTE	m_bUnlockedSentence;
 	int		m_sounds;
 };
 
 //
-// Weapons 
+// Weapons
 //
 
 #define	BAD_WEAPON 0x00007FFF
@@ -871,9 +880,9 @@ template <class T> T * GetClassPtr( T *a )
 	// get the private data
 	a = (T *)GET_PRIVATE(ENT(pev));
 
-	if (a == NULL) 
+	if (a == NULL)
 	{
-		// allocate private data 
+		// allocate private data
 		a = new(pev) T;
 		a->pev = pev;
 	}
@@ -916,6 +925,8 @@ typedef struct _SelAmmo
 
 //LRC- much as I hate to add new globals, I can't see how to read data from the World entity.
 extern BOOL g_startSuit;
+
+extern BOOL g_allowGJump; //AJH SP Gaussjump
 
 //LRC- moved here from alias.cpp so that util functions can use these defs.
 class CBaseAlias : public CPointEntity

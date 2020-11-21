@@ -57,6 +57,7 @@ static void FixupAngles( Vector &v )
 	v.z = Fix( v.z );
 }
 
+
 class CFuncTrain;
 
 //LRC - scripted_trainsequence
@@ -465,6 +466,8 @@ void CPlatTrigger :: Touch( CBaseEntity *pOther )
 //
 void CFuncPlat :: PlatUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	m_hActivator = pActivator;	//AJH
+	
 	if ( IsTogglePlat() )
 	{
 		// Top is off, bottom is on
@@ -570,8 +573,10 @@ void CFuncPlat :: Blocked( CBaseEntity *pOther )
 {
 	ALERT( at_aiconsole, "%s Blocked by %s\n", STRING(pev->classname), STRING(pOther->pev->classname) );
 	// Hurt the blocker a little
-	pOther->TakeDamage(pev, pev, 1, DMG_CRUSH);
-
+	if (m_hActivator)
+		pOther->TakeDamage( pev, m_hActivator->pev, 1, DMG_CRUSH );	//AJH Attribute damage to he who switched me.
+	else
+		pOther->TakeDamage( pev, pev,1, DMG_CRUSH );
 	if(pev->noiseMovement)
 		STOP_SOUND(ENT(pev), CHAN_STATIC, (char*)STRING(pev->noiseMovement));
 	
@@ -659,7 +664,19 @@ void CFuncPlatRot :: Spawn( void )
 void CFuncPlatRot :: GoDown( void )
 {
 	CFuncPlat :: GoDown();
-	RotMove( m_start, m_fNextThink - pev->ltime );
+//	RotMove( m_start, m_fNextThink - pev->ltime );   //G-Cont/ this fix for func_platrot
+						//Ox, uj mne etot Laury!
+	Vector vecDest;
+	if (m_pMoveWith)
+	{
+	    vecDest = m_vecFinalDest + m_pMoveWith->pev->origin;
+	}
+	else
+	    vecDest = m_vecFinalDest;
+	Vector vecDestDelta = vecDest - pev->origin;
+	float flTravelTime = vecDestDelta.Length() / m_flLinearMoveSpeed;
+
+	RotMove( m_start, flTravelTime );
 }
 
 
@@ -682,7 +699,19 @@ void CFuncPlatRot :: HitBottom( void )
 void CFuncPlatRot :: GoUp( void )
 {
 	CFuncPlat :: GoUp();
-	RotMove( m_end, m_fNextThink - pev->ltime );
+//	RotMove( m_end, m_fNextThink - pev->ltime );
+
+	Vector vecDest;
+	if (m_pMoveWith)
+	{
+	    vecDest = m_vecFinalDest + m_pMoveWith->pev->origin;
+	}
+	else
+	    vecDest = m_vecFinalDest;
+	Vector vecDestDelta = vecDest - pev->origin;
+	float flTravelTime = vecDestDelta.Length() / m_flLinearMoveSpeed;
+
+	RotMove( m_end, flTravelTime );
 }
 
 
@@ -806,7 +835,10 @@ void CFuncTrain :: Blocked( CBaseEntity *pOther )
 	m_flActivateFinished = gpGlobals->time + 0.5;
 
 	if (pev->dmg)
-		pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
+		if (m_hActivator)
+			pOther->TakeDamage( pev, m_hActivator->pev, pev->dmg, DMG_CRUSH );	//AJH Attribute damage to he who switched me.
+		else
+			pOther->TakeDamage( pev, pev, pev->dmg, DMG_CRUSH );
 }
 
 
@@ -814,6 +846,8 @@ void CFuncTrain :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 {
 	if ( ShouldToggle( useType ) )
 	{
+		m_hActivator = pActivator;	//AJH
+			
 		if (pev->spawnflags & SF_TRAIN_WAIT_RETRIGGER)
 		{
 			// Move toward my target
@@ -902,7 +936,6 @@ void CFuncTrain :: Wait( void )
 		Next();// do it right now!
 	}
 }
-
 
 //
 // Train next - path corner needs to change to next target 
@@ -1043,13 +1076,10 @@ void CFuncTrain :: Next( void )
 		// CHANGED this from CHAN_VOICE to CHAN_STATIC around OEM beta time because trains should
 		// use CHAN_STATIC for their movement sounds to prevent sound field problems.
 		// this is not a hack or temporary fix, this is how things should be. (sjb).
-		if (m_iState == STATE_OFF) //LRC - don't restart the sound every time we hit a path_corner, it sounds weird
-		{
-			if ( pev->noiseMovement )
-				STOP_SOUND( edict(), CHAN_STATIC, (char*)STRING(pev->noiseMovement) );
-			if ( pev->noiseMovement )
-				EMIT_SOUND (ENT(pev), CHAN_STATIC, (char*)STRING(pev->noiseMovement), m_volume, ATTN_NORM);
-		}
+		if ( pev->noiseMovement )
+			STOP_SOUND( edict(), CHAN_STATIC, (char*)STRING(pev->noiseMovement) );
+		if ( pev->noiseMovement )
+			EMIT_SOUND (ENT(pev), CHAN_STATIC, (char*)STRING(pev->noiseMovement), m_volume, ATTN_NORM);
 		ClearBits(pev->effects, EF_NOINTERP);
 		SetMoveDone( &CFuncTrain::Wait );
 
@@ -1508,10 +1538,14 @@ void CFuncTrackTrain :: Blocked( CBaseEntity *pOther )
 		pevOther->velocity = (pevOther->origin - pev->origin ).Normalize() * pev->dmg;
 
 	ALERT( at_aiconsole, "TRAIN(%s): Blocked by %s (dmg:%.2f)\n", STRING(pev->targetname), STRING(pOther->pev->classname), pev->dmg );
-	if ( pev->dmg <= 0 )
+	
+	if ( pev->dmg <= 0 )// we can't hurt this thing, so we're not concerned with it
 		return;
-	// we can't hurt this thing, so we're not concerned with it
-	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
+	
+	if (m_hActivator)
+		pOther->TakeDamage( pev, m_hActivator->pev, pev->dmg, DMG_CRUSH );	//AJH Attribute damage to he who switched me.
+	else
+		pOther->TakeDamage( pev, pev, pev->dmg, DMG_CRUSH );
 }
 
 
@@ -1519,6 +1553,7 @@ void CFuncTrackTrain :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 {
 //	ALERT(at_debug, "TRAIN: use\n");
 
+	m_hActivator = pActivator;	//AJH
 	if ( useType != USE_SET )
 	{
 		if ( !ShouldToggle( useType, (pev->speed != 0) ) )
@@ -1564,6 +1599,11 @@ void CFuncTrackTrain :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 			//pev->avelocity = m_vecMasterAvel * delta; //LRC
 		}
 
+	          if(m_ppath == NULL) 
+	          {
+	             delta = 0; //G-Cont. Set speed to 0, and don't controls, if tracktrain on trackchange
+	             return;
+	          }
 		PostponeNext();	
 		ALERT( at_aiconsole, "TRAIN(%s), speed to %.2f\n", STRING(pev->targetname), pev->speed );
 	}
@@ -1650,7 +1690,8 @@ void CFuncTrackTrain :: UpdateSound( void )
 
 void CFuncTrackTrain :: PostponeNext( void )
 {
-	UTIL_DesiredAction(this);
+	//UTIL_DesiredAction(this);
+	DesiredAction();  //this simply fix LAARGE BUG with func_traktrain in spirit ;) g-cont
 }
 
 void CFuncTrackTrain :: DesiredAction( void ) // Next( void )
@@ -2185,7 +2226,83 @@ void CFuncTrainControls :: Spawn( void )
 	SetNextThink( 0 );
 }
 
+// ----------------------------------------------------------------------------
+//
+// Func Vehicle /Don't use this! this is undone.
+//
+//-----------------------------------------------------------------------------
 
+class CFuncVehicle : public CFuncTrackTrain
+{
+public:
+	void CalcHeight( void );
+	float m_fRoof;
+	float m_fFloor;
+	float m_nextcalc[1];
+};
+
+LINK_ENTITY_TO_CLASS( func_vehicle, CFuncVehicle );
+
+void CFuncVehicle::CalcHeight( void )
+{
+	TraceResult tr;
+	Vector		vecTop, vecBot;
+	float		total = 0;
+	int		i, j;
+	float		forward, right, up;
+	Vector		angles;
+
+	angles = pev->angles;
+	angles.y += 180; // Flip it around so front and back are in
+                         // the correct positions.
+
+	FixupAngles( angles ); // Its already in the train coding
+                               // Really basic
+
+	UTIL_MakeVectors( angles );
+
+	m_fRoof = ( pev->origin + gpGlobals->v_up * ( pev->size.z * 0.5 ) ).z;
+	// Find the top of our vehicle.
+
+	m_fFloor = ( pev->origin - gpGlobals->v_up * ( pev->size.z * 0.5 ) ).z;
+	// Find the bottom of our vehicle
+
+	up = pev->size.z * 0.5;
+
+	// This shoots out 100 tracelines, WAY TO MANY!
+	// Only used this many for local testing!
+	for( i = 0; i <= 10; i++ )
+	{
+		for( j = 0; j <= 10; j++ )
+		{
+			forward	= pev->size.x * ( ( i - 5 ) * 0.1 );
+			right	= pev->size.y * ( ( j - 5 ) * 0.1 );
+
+			vecTop = pev->origin + gpGlobals->v_up * up * 1 + gpGlobals->v_forward * forward + gpGlobals->v_right * right;
+			vecBot = pev->origin - gpGlobals->v_up * up * 2 + gpGlobals->v_forward * forward + gpGlobals->v_right * right;
+
+			UTIL_TraceLine( vecTop, vecBot, ignore_monsters, ENT(pev), &tr);
+			total += tr.vecEndPos.z;
+			// So we can average out later
+		}
+	}
+
+	pev->velocity.z = ( total * 0.001 /* I.E. total / 100 , the average */ ) - ( m_fFloor - 2 );
+	// Ok we know where ware the average floor should be
+	// Lets get moving.
+
+	m_nextcalc[0] = gpGlobals->time + 0.5;
+	// Dont worry about this, in fact remove it!
+	// You dont have this variable, this is just there
+	// so it only checks the height every 0.5 seconds
+}
+/*
+Ok all this is doing is shooting lines at the ground, gets the average of where they hit,
+then compares it to where the floor of the vehicle should be, and then moves us toward it.
+Real simple ehh? Now just do that for the sides of the vehicle to keep them from hitting walls.
+Another thing I tried was making for single point lines and just checking to see if they were
+all solid, and then just negated the velocity.
+*/
 
 // ----------------------------------------------------------------------------
 //
@@ -2432,7 +2549,8 @@ void CFuncTrackChange :: UpdateTrain( Vector &dest )
 	m_train->pev->velocity = vel;
 	m_train->pev->avelocity = pev->avelocity;
 	m_train->NextThink( m_train->pev->ltime + time, FALSE );
-
+          
+	
 	// Attempt at getting the train to rotate properly around the origin of the trackchange
 	if ( time <= 0 )
 	{
@@ -2514,8 +2632,8 @@ void CFuncTrackChange :: GoUp( void )
 	UpdateAutoTargets( TS_GOING_UP );
 	if ( FBitSet( pev->spawnflags, SF_TRACK_DONT_MOVE ) )
 	{
-		m_toggle_state = TS_GOING_UP;
 		SetMoveDone( &CFuncTrackChange::CallHitTop );
+		m_toggle_state = TS_GOING_UP;
 		AngularMove( m_end, pev->speed );
 	}
 	else
@@ -2523,7 +2641,19 @@ void CFuncTrackChange :: GoUp( void )
 		// If ROTMOVE, move & rotate
 		CFuncPlat :: GoUp();
 		SetMoveDone( &CFuncTrackChange::CallHitTop );
-		RotMove( m_end, pev->nextthink - pev->ltime );
+
+		Vector vecDest;
+		if (m_pMoveWith)
+		{
+		    vecDest = m_vecFinalDest + m_pMoveWith->pev->origin;
+		}
+		else
+		    vecDest = m_vecFinalDest;
+		Vector vecDestDelta = vecDest - pev->origin;
+		float flTravelTime = vecDestDelta.Length() / m_flLinearMoveSpeed;
+
+		RotMove( m_end, flTravelTime );
+//		RotMove( m_end, pev->nextthink - pev->ltime );
 	}
 	
 	// Otherwise, move first, rotate second
@@ -2544,14 +2674,20 @@ void CFuncTrackChange :: UpdateAutoTargets( int toggleState )
 		return;
 
 	if ( toggleState == TS_AT_TOP )
+		{
 		ClearBits( m_trackTop->pev->spawnflags, SF_PATH_DISABLED );
+		}
 	else
 		SetBits( m_trackTop->pev->spawnflags, SF_PATH_DISABLED );
 
 	if ( toggleState == TS_AT_BOTTOM )
+		{
 		ClearBits( m_trackBottom->pev->spawnflags, SF_PATH_DISABLED );
+		}
 	else
 		SetBits( m_trackBottom->pev->spawnflags, SF_PATH_DISABLED );
+
+	         	UpdateTrain( pev->origin );//fix now is func_trackchange BUG. G-Cont
 }
 
 
@@ -2663,7 +2799,7 @@ void CFuncTrackAuto :: UpdateAutoTargets( int toggleState )
 
 	if ( pNextTarget )
 		SetBits( pNextTarget->pev->spawnflags, SF_PATH_DISABLED );
-
+	
 }
 
 

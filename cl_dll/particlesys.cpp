@@ -697,10 +697,12 @@ bool ParticleSystem::UpdateParticle(particle *part, float frametime)
 
 	part->age += frametime;
 
+	cl_entity_t *source = gEngfuncs.GetEntityByIndex( m_iEntIndex );  //AJH moved here
+
 	// is this particle bound to an entity?
 	if (part->m_iEntIndex)
 	{
-		cl_entity_t *source = gEngfuncs.GetEntityByIndex( m_iEntIndex );
+		//cl_entity_t *source = gEngfuncs.GetEntityByIndex( m_iEntIndex ); //AJH
 		if (source && source->curstate.body)
 		{
 			part->velocity = (source->curstate.origin - part->origin)/frametime;
@@ -760,10 +762,10 @@ bool ParticleSystem::UpdateParticle(particle *part, float frametime)
 				pChild->velocity = part->velocity;
 				if (fSprayForce)
 				{
-					float fSprayPitch = part->pType->m_SprayPitch.GetInstance();
-					float fSprayYaw = part->pType->m_SprayYaw.GetInstance();
-					float fForceCosPitch = fSprayForce*CosLookup(fSprayPitch);
-					vec3_t vecSprayVel;
+					float fSprayPitch = part->pType->m_SprayPitch.GetInstance()/*;*/ - source->curstate.angles.x;	//AJH For rotating paticles.
+					float fSprayYaw = part->pType->m_SprayYaw.GetInstance()/*;*/ - source->curstate.angles.y;		//AJH
+					float fForceCosPitch = fSprayForce*CosLookup(fSprayPitch); //- source->curstate.angles.z;		//AJH
+				//	vec3_t vecSprayVel;
 					pChild->velocity.x += CosLookup(fSprayYaw) * fForceCosPitch;
 					pChild->velocity.y += SinLookup(fSprayYaw) * fForceCosPitch;
 					pChild->velocity.z -= SinLookup(fSprayPitch) * fSprayForce;

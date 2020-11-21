@@ -29,7 +29,7 @@
 #include "hud_servers.h"
 #include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
-
+#include "mp3.h"
 #include "demo.h"
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
@@ -170,6 +170,18 @@ int __MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 	return gHUD.MsgFunc_GameMode( pszName, iSize, pbuf );
 }
 
+int __MsgFunc_PlayMP3(const char *pszName, int iSize, void *pbuf )
+{
+	return gHUD.MsgFunc_PlayMP3( pszName, iSize, pbuf );
+}
+
+
+int __MsgFunc_CamData(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_CamData( pszName, iSize, pbuf );
+	return 1;
+}
+
 // TFFree Command Menu
 void __CmdFunc_OpenCommandMenu(void)
 {
@@ -210,6 +222,11 @@ void __CmdFunc_ToggleServerBrowser( void )
 	{
 		gViewPort->ToggleServerBrowser();
 	}
+}
+
+void __CmdFunc_StopMP3( void )
+{
+	gMP3.StopMP3();
 }
 
 // TFFree Command Menu Message Handlers
@@ -343,6 +360,13 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 	HOOK_MESSAGE( AddShine ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
+	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
+
+	//KILLAR: MP3	
+	if(gMP3.Initialize()){
+		HOOK_MESSAGE( PlayMP3 );
+		HOOK_COMMAND( "stopaudio", StopMP3 );
+	}
 
 	// TFFree CommandMenu
 	HOOK_COMMAND( "+commandmenu", OpenCommandMenu );
@@ -375,9 +399,19 @@ void CHud :: Init( void )
 	CVAR_CREATE( "hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO );		// controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE( "hud_takesshots", "0", FCVAR_ARCHIVE );		// controls whether or not to automatically take screenshots at the end of a round
 
+	//start glow effect --FragBait0
+	CVAR_CREATE("r_glow", "0", FCVAR_ARCHIVE );
+	//CVAR_CREATE("r_glowmode", "0", FCVAR_ARCHIVE ); //AJH this is now redundant
+	CVAR_CREATE("r_glowstrength", "1", FCVAR_ARCHIVE );
+	CVAR_CREATE("r_glowblur", "4", FCVAR_ARCHIVE );
+	CVAR_CREATE("r_glowdark", "2", FCVAR_ARCHIVE );
+	//end glow effect
 
+	viewEntityIndex = 0; // trigger_viewset stuff
+	viewFlags = 0;
 	m_iLogo = 0;
 	m_iFOV = 0;
+	numMirrors = 0;
 	m_iHUDColor = 0x00FFA000; //255,160,0 -- LRC
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
@@ -443,6 +477,13 @@ CHud :: ~CHud()
 	delete [] m_rghSprites;
 	delete [] m_rgrcRects;
 	delete [] m_rgszSpriteNames;
+	gMP3.Shutdown();
+	//LRC - clear all shiny surfaces
+	if (m_pShinySurface)
+	{
+		delete m_pShinySurface;
+		m_pShinySurface = NULL;
+	}
 
 	if ( m_pHudList )
 	{
@@ -490,6 +531,14 @@ void CHud :: VidInit( void )
 	
 	m_hsprLogo = 0;	
 	m_hsprCursor = 0;
+	numMirrors = 0;
+
+	//LRC - clear all shiny surfaces
+	if (m_pShinySurface)
+	{
+		delete m_pShinySurface;
+		m_pShinySurface = NULL;
+	}
 
 	if (ScreenWidth < 640)
 		m_iRes = 320;

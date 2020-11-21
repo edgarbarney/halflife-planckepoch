@@ -30,7 +30,7 @@ LINK_ENTITY_TO_CLASS( weapon_crowbar, CCrowbar );
 
 
 
-enum gauss_e {
+enum crowbar_e {
 	CROWBAR_IDLE = 0,
 	CROWBAR_DRAW,
 	CROWBAR_HOLSTER,
@@ -65,8 +65,6 @@ void CCrowbar::Precache( void )
 	PRECACHE_SOUND("weapons/cbar_hitbod2.wav");
 	PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
 	PRECACHE_SOUND("weapons/cbar_miss1.wav");
-
-	m_usCrowbar = PRECACHE_EVENT ( 1, "events/crowbar.sc" );
 }
 
 int CCrowbar::GetItemInfo(ItemInfo *p)
@@ -93,7 +91,7 @@ BOOL CCrowbar::Deploy( )
 
 void CCrowbar::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	SendWeaponAnim( CROWBAR_HOLSTER );
 }
 
@@ -193,18 +191,20 @@ int CCrowbar::Swing( int fFirst )
 	}
 #endif
 
-	PLAYBACK_EVENT_FULL( FEV_NOTHOST, m_pPlayer->edict(), m_usCrowbar, 
-	0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, 0,
-	0.0, 0, 0.0 );
-
-
 	if ( tr.flFraction >= 1.0 )
 	{
 		if (fFirst)
 		{
 			// miss
-			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-			
+			switch( (m_iSwing++) % 3 )
+			{
+			case 0: SendWeaponAnim( CROWBAR_ATTACK1MISS ); break;
+			case 1: SendWeaponAnim( CROWBAR_ATTACK2MISS ); break;
+			case 2: SendWeaponAnim( CROWBAR_ATTACK3MISS ); break;
+			}
+			m_flNextPrimaryAttack =  m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+			// play wiff or swish sound
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/cbar_miss1.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0,0xF));
 			// player "shoot" animation
 			m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 		}
@@ -213,12 +213,9 @@ int CCrowbar::Swing( int fFirst )
 	{
 		switch( ((m_iSwing++) % 2) + 1 )
 		{
-		case 0:
-			SendWeaponAnim( CROWBAR_ATTACK1HIT ); break;
-		case 1:
-			SendWeaponAnim( CROWBAR_ATTACK2HIT ); break;
-		case 2:
-			SendWeaponAnim( CROWBAR_ATTACK3HIT ); break;
+		case 0: SendWeaponAnim( CROWBAR_ATTACK1HIT ); break;
+		case 1: SendWeaponAnim( CROWBAR_ATTACK2HIT ); break;
+		case 2: SendWeaponAnim( CROWBAR_ATTACK3HIT ); break;
 		}
 
 		// player "shoot" animation
@@ -260,12 +257,9 @@ int CCrowbar::Swing( int fFirst )
 				// play thwack or smack sound
 				switch( RANDOM_LONG(0,2) )
 				{
-				case 0:
-					EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod1.wav", 1, ATTN_NORM); break;
-				case 1:
-					EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod2.wav", 1, ATTN_NORM); break;
-				case 2:
-					EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod3.wav", 1, ATTN_NORM); break;
+				case 0: EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod1.wav", 1, ATTN_NORM); break;
+				case 1: EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod2.wav", 1, ATTN_NORM); break;
+				case 2: EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hitbod3.wav", 1, ATTN_NORM); break;
 				}
 				m_pPlayer->m_iWeaponVolume = CROWBAR_BODYHIT_VOLUME;
 				if ( !pEntity->IsAlive() )
@@ -295,12 +289,8 @@ int CCrowbar::Swing( int fFirst )
 			// also play crowbar strike
 			switch( RANDOM_LONG(0,1) )
 			{
-			case 0:
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0,3)); 
-				break;
-			case 1:
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0,3)); 
-				break;
+			case 0: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0,3)); break;
+			case 1: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0,3)); break;
 			}
 
 			// delay the decal a bit

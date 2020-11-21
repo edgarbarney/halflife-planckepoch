@@ -28,6 +28,7 @@ extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
 extern int gmsgAddShine; // LRC
 extern int gmsgParticle; // LRC
+extern int gmsgPlayMP3; //Killar
 extern int gmsgShowGameTitle;
 extern int gmsgCurWeapon;
 extern int gmsgHealth;
@@ -59,5 +60,6 @@ extern int gmsgTeamNames;
 extern int gmsgStatusIcon; //LRC
 extern int gmsgStatusText;
 extern int gmsgStatusValue;
+extern int gmsgCamData; // for trigger_viewset
 
 void LinkUserMessages(void);

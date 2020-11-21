@@ -112,6 +112,8 @@ public:
 
 	virtual int		Save( CSave &save ); 
 	virtual int		Restore( CRestore &restore );
+
+	virtual STATE GetState( void ) { return (pev->deadflag == DEAD_DEAD)?STATE_OFF:STATE_ON; };
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -345,11 +347,16 @@ public:
 	CBaseEntity* DropItem ( const char *pszItemName, const Vector &vecPos, const Vector &vecAng );// drop an item.
 	
 	//LRC
-	float	CalcRatio( CBaseEntity *pLocus )
-	{
-		/*ALERT(at_console, "monster CR: %f/%f = %f\n", pev->health, pev->max_health, pev->health / pev->max_health);*/
-		return pev->health / pev->max_health;
-	}
+	virtual float	CalcRatio( CBaseEntity *pLocus, int mode  )//AJH added 'mode' = ratio to return
+ 	{
+		//ALERT(at_console, "monster CR: %f/%f = %f\n", pev->health, pev->max_health, pev->health / pev->max_health);
+		switch(mode){	//AJH pretty trivial switch statement! Add more cases later.
+		case 1:{
+			return pev->velocity.Length();
+		}break;
+		}
+ 		return pev->health / pev->max_health;
+ 	}
 };
 
 

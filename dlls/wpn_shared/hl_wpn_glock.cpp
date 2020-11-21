@@ -20,6 +20,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "player.h"
+#include "UserMessages.h"
 
 enum glock_e {
 	GLOCK_IDLE1 = 0,
@@ -48,6 +49,24 @@ void CGlock::Spawn( )
 	m_iDefaultAmmo = GLOCK_DEFAULT_GIVE;
 
 	FallInit();// get ready to fall down.
+}
+
+int CGlock::AddToPlayer( CBasePlayer *pPlayer )//Fix old Half-life bug. G-Cont
+{
+	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
+	{
+		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
+			WRITE_BYTE( m_iId );
+		MESSAGE_END();
+		return TRUE;
+	}
+	return FALSE;
+}
+
+void CGlock::Holster( int skiplocal )
+{
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	SendWeaponAnim( GLOCK_HOLSTER );
 }
 
 
@@ -130,6 +149,21 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+
+	#ifndef CLIENT_DLL 
+	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+       WRITE_BYTE( TE_DLIGHT );
+       WRITE_COORD( pev->origin.x ); // origin
+       WRITE_COORD( pev->origin.y );
+       WRITE_COORD( pev->origin.z );
+       WRITE_BYTE( 16 );     // radius
+       WRITE_BYTE( 255 );    // R
+       WRITE_BYTE( 255 );    // G
+       WRITE_BYTE( 160 );    // B
+       WRITE_BYTE( 0 );      // life * 10
+       WRITE_BYTE( 0 );      // decay
+    MESSAGE_END();
+	#endif 
 
 	// silenced
 	if (pev->body == 1)

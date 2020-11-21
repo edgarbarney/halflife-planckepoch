@@ -2,6 +2,7 @@
 *
 * NEW file for the Mod "Spirit of Half-Life", by Laurie R. Cheers. (LRC)
 * Created 19/11/00
+* Modified by Andrew J Hamilton (AJH) 2/04/04
 *
 ***/
 /*
@@ -23,20 +24,28 @@ TYPEDESCRIPTION	CBaseAlias::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CBaseAlias, CPointEntity );
 
+
 /*********************
 * Worldcraft entity: info_alias
 * 
 * targetname- alias name
 * target-     alias destination while ON
 * netname-    alias destination while OFF
+* mode-		  0= On/Off mode, 1= 'list' mode 
 **********************/
 
 #define SF_ALIAS_OFF 1
 #define SF_ALIAS_DEBUG 2
+#define MAX_ALIAS_TARGETS 16 //AJH
 
-class CInfoAlias : public CBaseAlias
+class CInfoAlias : public CBaseAlias	//AJH Now includes 'listmode' aliasing
 {
 public:
+	int		m_cTargets;	//AJH the total number of targets in this alias's fire list.
+	int		m_iTargetName	[ MAX_ALIAS_TARGETS ];// AJH list of indexes into global string array
+	int		m_iMode; //AJH 0 = On/Off mode, 1 = list mode
+	int		m_iCurrentTarget; //AJH the current target that is being aliased
+
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void Spawn( void );
 	STATE GetState() { return (pev->spawnflags & SF_ALIAS_OFF)?STATE_OFF:STATE_ON; }
@@ -44,40 +53,153 @@ public:
 	CBaseEntity *FollowAlias( CBaseEntity *pFrom );
 	void ChangeValue( int iszValue );
 	void FlushChanges( void );
+	void KeyValue(struct KeyValueData_s *); //AJH
+	
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
 };
 
-LINK_ENTITY_TO_CLASS( info_alias, CInfoAlias );
+LINK_ENTITY_TO_CLASS( info_alias, CInfoAlias ); 
+
+TYPEDESCRIPTION	CInfoAlias::m_SaveData[] = //AJH
+{
+	DEFINE_FIELD( CInfoAlias, m_cTargets, FIELD_INTEGER ),
+	DEFINE_FIELD( CInfoAlias, m_iMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CInfoAlias, m_iCurrentTarget, FIELD_INTEGER ),
+	DEFINE_ARRAY( CInfoAlias, m_iTargetName, FIELD_STRING, MAX_ALIAS_TARGETS ),
+//	DEFINE_FIELD( CInfoAlias, m_pNextAlias, FIELD_CLASSPTR ),
+};
+IMPLEMENT_SAVERESTORE( CInfoAlias, CBaseAlias );
+
+void CInfoAlias :: KeyValue( KeyValueData *pkvd ) //AJH
+{
+
+	if (FStrEq(pkvd->szKeyName, "mode"))
+	{
+		m_iMode = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "targetname"))
+	{
+		pev->targetname = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "target"))
+	{
+		pev->target = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}else if (FStrEq(pkvd->szKeyName, "netname"))
+	{
+		pev->netname = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else // add this field to the target list
+	{
+		// this assumes that additional fields are targetnames, and there values are the order.
+		if ( m_cTargets < MAX_ALIAS_TARGETS )
+		{
+			char tmp[128];
+
+			UTIL_StripToken( pkvd->szKeyName, tmp );
+			int iValue = atoi(pkvd->szValue);
+			if(iValue<=MAX_ALIAS_TARGETS&&iValue>0){
+				if (m_iTargetName[iValue-1]==NULL){
+					m_iTargetName [ iValue-1 ] = ALLOC_STRING( tmp );
+					m_cTargets++;
+				}else{
+					ALERT(at_debug,"ERROR: INFO_ALIAS target \"%s\" has a value \"%i\" that has already been used by target \"%s\"\n",ALLOC_STRING(tmp),iValue,STRING(m_iTargetName[iValue-1]));
+				}
+			}else{
+				ALERT(at_debug,"ERROR: INFO_ALIAS target \"%s\" has an illegal value \"%i\".\nIt must be within the range 1-%i.\n",ALLOC_STRING(tmp),iValue,MAX_ALIAS_TARGETS);
+			}
+			pkvd->fHandled = TRUE;
+		}
+		//We can't actually have this or we will get array out of bounds exceptions when +using the alias at MAX_ALIAS_TARGETS
+		/*else // keep a count of how many targets, for the error message
+		{
+			m_cTargets++;
+		}*/	
+	}
+}
 
 void CInfoAlias::Spawn( void )
 {
-	if (pev->spawnflags & SF_ALIAS_OFF)
-		pev->message = pev->netname;
-	else
-		pev->message = pev->target;
+	if(m_iMode==0){
+		if (pev->spawnflags & SF_ALIAS_OFF)
+			pev->message = pev->netname;
+		else
+			pev->message = pev->target;
+	}
+	else {
+		if (pev->spawnflags & SF_ALIAS_DEBUG) //Don't really need this much debug info
+				ALERT(at_debug,"DEBUG: info_alias %s contains %d targets\n",STRING(pev->targetname), m_cTargets);
+		if (m_cTargets > MAX_ALIAS_TARGETS)
+		{
+			ALERT(at_debug, "WARNING: info_alias \"%s\" has too many targets (limit is %d)\n", STRING(pev->targetname), MAX_ALIAS_TARGETS);
+			m_cTargets = MAX_ALIAS_TARGETS;
+		}
+		else {
+			m_iCurrentTarget=0;
+			pev->message = m_iTargetName[m_iCurrentTarget];
+			pev->noise = m_iTargetName[m_iCurrentTarget];
+		}
+
+	}
 }
 
 void CInfoAlias::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if (pev->spawnflags & SF_ALIAS_OFF)
-	{
-		if (pev->spawnflags & SF_ALIAS_DEBUG)
-			ALERT(at_debug,"DEBUG: info_alias %s turns on\n",STRING(pev->targetname));
-		pev->spawnflags &= ~SF_ALIAS_OFF;
-		pev->noise = pev->target;
-	}
-	else
-	{
+	if(m_iMode==0){ //Old On/Off Code
+
+		if (pev->spawnflags & SF_ALIAS_OFF)
+		{
+			if (pev->spawnflags & SF_ALIAS_DEBUG)
+				ALERT(at_debug,"DEBUG: info_alias %s turns on\n",STRING(pev->targetname));
+			pev->spawnflags &= ~SF_ALIAS_OFF;
+			pev->noise = pev->target;
+		}
+		else
+		{
 		if (pev->spawnflags & SF_ALIAS_DEBUG)
 			ALERT(at_debug,"DEBUG: info_alias %s turns off\n",STRING(pev->targetname));
 		pev->spawnflags |= SF_ALIAS_OFF;
 		pev->noise = pev->netname;
+		}
+		UTIL_AddToAliasList( this );
 	}
-	UTIL_AddToAliasList( this );
+
+	else{  //AJH - new list mode for info_alias
+		pev->noise = m_iTargetName[m_iCurrentTarget];
+	//	pev->message = m_iTargetName[m_iCurrentTarget];
+		if (useType==USE_OFF){
+			m_iCurrentTarget--;
+			if(m_iCurrentTarget <= -1) m_iCurrentTarget=m_cTargets;
+		}else{
+			m_iCurrentTarget++;
+			if(m_iCurrentTarget >= m_cTargets) m_iCurrentTarget=0;
+		}
+		
+
+		if (pev->spawnflags & SF_ALIAS_DEBUG)
+			ALERT(at_debug,"DEBUG: info_alias %s  refers to target entity number %d \n",STRING(pev->targetname),m_iTargetName[m_iCurrentTarget]);
+			ALERT(at_debug,"DEBUG: info_alias %s  steps to target %d \n",STRING(pev->targetname),m_iCurrentTarget);
+		UTIL_AddToAliasList(this);
+	}
 }
 
 CBaseEntity *CInfoAlias::FollowAlias( CBaseEntity *pFrom )
 {
-	return UTIL_FindEntityByTargetname( pFrom, STRING(pev->message) );
+	CBaseEntity *pFound = UTIL_FindEntityByTargetname( pFrom, STRING(pev->message) );
+	
+	if (pev->spawnflags & SF_ALIAS_DEBUG){ // More excessive debug info
+			ALERT(at_debug,"DEBUG: info_alias %s  refers to target %d \n",STRING(pev->targetname),m_iCurrentTarget);
+			ALERT(at_debug,"DEBUG: info_alias %s  refers to target entity %s \n",STRING(pev->targetname),STRING(pev->message));
+		
+			if (pFound)
+				ALERT(at_debug,"DEBUG: info_alias %s  refers to target entity %s \n",STRING(pev->targetname),STRING(pFound->pev->targetname));
+	}
+	return pFound;
 }
 
 void CInfoAlias::ChangeValue( int iszValue )

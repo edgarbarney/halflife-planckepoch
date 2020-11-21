@@ -59,7 +59,6 @@ void EV_FireMP52( struct event_args_s *args  );
 void EV_FirePython( struct event_args_s *args  );
 void EV_FireGauss( struct event_args_s *args  );
 void EV_SpinGauss( struct event_args_s *args  );
-void EV_Crowbar( struct event_args_s *args  );
 void EV_FireCrossbow( struct event_args_s *args  );
 void EV_FireCrossbow2( struct event_args_s *args  );
 void EV_FireRpg( struct event_args_s *args  );
@@ -68,6 +67,10 @@ void EV_EgonStop( struct event_args_s *args  );
 void EV_HornetGunFire( struct event_args_s *args  );
 void EV_TripmineFire( struct event_args_s *args  );
 void EV_SnarkFire( struct event_args_s *args  );
+void EV_Mirror( struct event_args_s *args ); 
+void EV_GenericFire1( struct event_args_s *args );
+void EV_GenericFire2( struct event_args_s *args );
+void EV_GenericFire3( struct event_args_s *args );
 
 
 void EV_TrainPitchAdjust( struct event_args_s *args );
@@ -535,6 +538,29 @@ void EV_FireGlock2( event_args_t *args )
 }
 //======================
 //	   GLOCK END
+//======================
+
+//======================
+//	  GENERIC START
+//======================
+
+void EV_GenericFire1( struct event_args_s *args )
+{
+//NULL EVENT
+}
+
+void EV_GenericFire2( struct event_args_s *args )
+{
+//NULL EVENT
+}
+
+void EV_GenericFire3( struct event_args_s *args ) 
+{
+//NULL EVENT
+}
+
+//======================
+//	   GENERIC END
 //======================
 
 //======================
@@ -1118,51 +1144,7 @@ void EV_FireGauss( event_args_t *args )
 //======================
 //	   CROWBAR START
 //======================
-
-enum crowbar_e {
-	CROWBAR_IDLE = 0,
-	CROWBAR_DRAW,
-	CROWBAR_HOLSTER,
-	CROWBAR_ATTACK1HIT,
-	CROWBAR_ATTACK1MISS,
-	CROWBAR_ATTACK2MISS,
-	CROWBAR_ATTACK2HIT,
-	CROWBAR_ATTACK3MISS,
-	CROWBAR_ATTACK3HIT
-};
-
-int g_iSwing;
-
-//Only predict the miss sounds, hit sounds are still played 
-//server side, so players don't get the wrong idea.
-void EV_Crowbar( event_args_t *args )
-{
-	int idx;
-	vec3_t origin;
-	vec3_t angles;
-	vec3_t velocity;
-
-	idx = args->entindex;
-	VectorCopy( args->origin, origin );
-	
-	//Play Swing sound
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/cbar_miss1.wav", 1, ATTN_NORM, 0, PITCH_NORM); 
-
-	if ( EV_IsLocal( idx ) )
-	{
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( CROWBAR_ATTACK1MISS, 1 );
-
-		switch( (g_iSwing++) % 3 )
-		{
-			case 0:
-				gEngfuncs.pEventAPI->EV_WeaponAnimation ( CROWBAR_ATTACK1MISS, 1 ); break;
-			case 1:
-				gEngfuncs.pEventAPI->EV_WeaponAnimation ( CROWBAR_ATTACK2MISS, 1 ); break;
-			case 2:
-				gEngfuncs.pEventAPI->EV_WeaponAnimation ( CROWBAR_ATTACK3MISS, 1 ); break;
-		}
-	}
-}
+// NULL Event - don't use this. G-Cont.
 //======================
 //	   CROWBAR END 
 //======================
@@ -1601,6 +1583,56 @@ void EV_TripmineFire( event_args_t *args )
 }
 //======================
 //	   TRIPMINE END
+//======================
+
+//======================
+//	   MIRROR START
+//======================
+void EV_Mirror( event_args_t *args ) 
+{
+	vec3_t org;
+	bool bNew = true;
+
+	VectorCopy(args->origin,org);
+	float dist = (float)args->iparam1;
+	int type = args->iparam2;
+	int bEnabled = args->bparam1;
+
+	//we have mirror
+	if (gHUD.numMirrors)
+	{
+		for (int ic=0;ic<32;ic++)
+		{
+			if (gHUD.Mirrors[ic].origin[0] == org[0] && gHUD.Mirrors[ic].origin[1] == org[1] && gHUD.Mirrors[ic].origin[2] == org[2])
+			{
+				if (bEnabled && !gHUD.Mirrors[ic].enabled ) gHUD.numMirrors++;
+
+		         		else if (!bEnabled && gHUD.Mirrors[ic].enabled ) gHUD.numMirrors--;
+
+		         		gHUD.Mirrors[ic].enabled = bEnabled;
+				bNew = false;
+				break;
+			}
+		}	
+	}
+
+	if (bNew)
+	{
+		if (gHUD.numMirrors >= 32) CONPRINT("ERROR: Can't register mirror, maximum 32 allowed!\n");
+
+		else
+         		{
+			VectorCopy(org,gHUD.Mirrors[gHUD.numMirrors].origin);
+	         		gHUD.Mirrors[gHUD.numMirrors].type = type;
+	        		gHUD.Mirrors[gHUD.numMirrors].enabled = bEnabled;
+	        		gHUD.Mirrors[gHUD.numMirrors].radius = dist;
+	        		gHUD.numMirrors++;
+		}
+	}
+}
+
+//======================
+//	   MIRROR END
 //======================
 
 //======================

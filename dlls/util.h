@@ -254,6 +254,7 @@ extern void			UTIL_MakeInvVectors		( const Vector &vec, globalvars_t *pgv );
 
 extern void			UTIL_SetEdictOrigin			( edict_t *pEdict, const Vector &vecOrigin );
 extern void			UTIL_SetOrigin			( CBaseEntity* pEntity, const Vector &vecOrigin );
+
 extern void			UTIL_EmitAmbientSound	( edict_t *entity, const Vector &vecOrigin, const char *samp, float vol, float attenuation, int fFlags, int pitch );
 extern void			UTIL_ParticleEffect		( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount );
 extern void			UTIL_ScreenShake		( const Vector &center, float amplitude, float frequency, float duration, float radius );
@@ -572,3 +573,6 @@ int GetStdLightStyle (int iStyle); //LRC- declared here so it can be used by eve
 									// needs to deal with the standard lightstyles.
 // LRC- for aliases and groups
 CBaseEntity* UTIL_FollowReference( CBaseEntity* pStartEntity, const char* szName );
+
+// for trigger_viewset
+int HaveCamerasInPVS( edict_t* edict );

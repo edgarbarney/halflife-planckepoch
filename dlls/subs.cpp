@@ -14,6 +14,9 @@
 ****/
 /*
 
+  Last Modifed 4 May 2004 By Andrew Hamilton (AJH)
+  :- Added support for acceleration of doors etc
+
 ===== subs.cpp ========================================================
 
   frequently used global functions
@@ -28,6 +31,8 @@
 #include "doors.h"
 #include "movewith.h"
 #include "player.h"
+
+#define ACCELTIMEINCREMENT 0.1 //AJH for acceleration/deceleration time steps
 
 extern CGraph WorldGraph;
 
@@ -278,6 +283,22 @@ void FireTargets( const char *targetName, CBaseEntity *pActivator, CBaseEntity *
 		targetName++;
 		useType = USE_OFF;
 	}
+	else if (targetName[0] == '!')	//G-cont
+	{
+		targetName++;
+		useType = USE_KILL;
+	}
+	else if (targetName[0] == '>')  //G-cont
+	{
+		targetName++;
+		useType = USE_SAME;
+	}
+	
+	else if (targetName[0] == '&')	//AJH Use_Spawn
+	{
+		targetName++;
+		useType = USE_SPAWN;
+	}
 
 	ALERT( at_aiconsole, "Firing: (%s)\n", targetName );
 
@@ -474,6 +495,14 @@ TYPEDESCRIPTION	CBaseToggle::m_SaveData[] =
 	DEFINE_FIELD( CBaseToggle, m_vecFinalAngle, FIELD_VECTOR ),
 	DEFINE_FIELD( CBaseToggle, m_sMaster, FIELD_STRING),
 	DEFINE_FIELD( CBaseToggle, m_bitsDamageInflict, FIELD_INTEGER ),	// damage type inflicted
+
+	DEFINE_FIELD( CBaseToggle, m_flLinearAccel, FIELD_FLOAT),	//
+	DEFINE_FIELD( CBaseToggle, m_flLinearDecel, FIELD_FLOAT),	//
+	DEFINE_FIELD( CBaseToggle, m_flAccelTime,   FIELD_FLOAT),	// AJH Needed for acceleration/deceleration
+	DEFINE_FIELD( CBaseToggle, m_flDecelTime,   FIELD_FLOAT),	//	
+	DEFINE_FIELD( CBaseToggle, m_flCurrentTime, FIELD_FLOAT),	//
+	DEFINE_FIELD( CBaseToggle, m_bDecelerate,   FIELD_BOOLEAN),	//
+
 };
 IMPLEMENT_SAVERESTORE( CBaseToggle, CBaseAnimating );
 
@@ -526,6 +555,48 @@ void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed )//, BOOL bNow )
 
 	m_flLinearMoveSpeed = flSpeed;
 	m_vecFinalDest = vecInput;
+	m_flLinearAccel = -1.0;		// AJH Not using Acceleration
+	m_flLinearDecel = -1.0; 	//
+
+//	if ((m_pMoveWith || m_pChildMoveWith))// && !bNow)
+//	{
+//		ALERT(at_console,"Setting LinearMoveNow to happen after %f\n",gpGlobals->time);
+		SetThink(&CBaseToggle :: LinearMoveNow );
+		UTIL_DesiredThink( this );
+		//pev->nextthink = pev->ltime + 0.01;
+//	}
+//	else
+//	{
+//		LinearMoveNow(); // starring Martin Sheen and Marlon Brando
+//	}
+}
+
+void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed, float flAccel, float flDecel )//, BOOL bNow )  // AJH Call this to use acceleration
+{
+//	ALERT(at_console, "LMove %s: %f %f %f, speed %f, accel %f \n", STRING(pev->targetname), vecInput.x, vecInput.y, vecInput.z, flSpeed, flAccel);
+	ASSERTSZ(flSpeed != 0, "LinearMove:  no speed is defined!");
+//	ASSERTSZ(m_pfnCallWhenMoveDone != NULL, "LinearMove: no post-move function defined");
+
+	m_flLinearMoveSpeed = flSpeed;
+
+	m_flLinearAccel = flAccel;
+	m_flLinearDecel = flDecel;
+	m_flCurrentTime = 0;
+	
+	if(m_flLinearAccel>0){
+		m_flAccelTime = m_flLinearMoveSpeed/m_flLinearAccel;
+	}else{
+		m_flLinearAccel=-1;
+		m_flAccelTime=0;
+	}
+	if(m_flLinearDecel>0){
+	m_flDecelTime = m_flLinearMoveSpeed/m_flLinearDecel;
+	}else{
+		m_flLinearDecel=-1;
+		m_flDecelTime=0;
+	}
+
+	m_vecFinalDest = vecInput;
 
 //	if ((m_pMoveWith || m_pChildMoveWith))// && !bNow)
 //	{
@@ -540,7 +611,7 @@ void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed )//, BOOL bNow )
 //	}
 }
 
-void CBaseToggle :: LinearMoveNow( void )
+void CBaseToggle :: LinearMoveNow( void )   // AJH Now supports acceleration
 {
 //	ALERT(at_console, "LMNow %s\n", STRING(pev->targetname));
 
@@ -555,14 +626,10 @@ void CBaseToggle :: LinearMoveNow( void )
 	else
 	    vecDest = m_vecFinalDest;
 
-//	ALERT(at_console,"LinearMoveNow: Destination is (%f %f %f), finalDest was (%f %f %f)\n",
-//		vecDest.x,vecDest.y,vecDest.z,
-//		m_vecFinalDest.x,m_vecFinalDest.y,m_vecFinalDest.z
-//	);
-
 	// Already there?
 	if (vecDest == pev->origin)
 	{
+		ALERT(at_console, "%s Already There!!\n", STRING(pev->targetname));
 		LinearMoveDone();
 		return;
 	}
@@ -572,18 +639,77 @@ void CBaseToggle :: LinearMoveNow( void )
 	
 	// divide vector length by speed to get time to reach dest
 	float flTravelTime = vecDestDelta.Length() / m_flLinearMoveSpeed;
+	if (m_flLinearAccel >0 || m_flLinearDecel >0){   //AJH Are we using acceleration/deceleration?
+		
+		if(m_bDecelerate==true){	// Are we slowing down?
+			m_flCurrentTime-=ACCELTIMEINCREMENT;
+			if (m_flCurrentTime<=0){  
+			//	ALERT(at_debug, "%s has finished moving\n", STRING(pev->targetname));
+				LinearMoveDone();	//Finished slowing.
 
-	// set nextthink to trigger a call to LinearMoveDone when dest is reached
-	SetNextThink( flTravelTime, TRUE );
-	SetThink( &CBaseToggle::LinearMoveDone );
+				m_flCurrentTime = 0;	// 
+				m_bDecelerate = false;	// reset 
 
-	// scale the destdelta vector by the time spent traveling to get velocity
-//	pev->velocity = vecDestDelta / flTravelTime;
-	UTIL_SetVelocity( this, vecDestDelta / flTravelTime );
+			}else{
 
-//	ALERT(at_console, "LMNow \"%s\": Vel %f %f %f, think %f\n", STRING(pev->targetname), pev->velocity.x, pev->velocity.y, pev->velocity.z, pev->nextthink);
+				
+			UTIL_SetVelocity( this, vecDestDelta.Normalize()*(m_flLinearDecel*m_flCurrentTime));  //Slow down
+			//	ALERT(at_debug, "%s is decelerating, time: %f speed: %f vector: %f %f %f\n", STRING(pev->targetname),m_flCurrentTime,(m_flLinearDecel*m_flCurrentTime),vecDestDelta.Normalize().x,vecDestDelta.Normalize().y,vecDestDelta.Normalize().z);
+			
+			// Continually calls LinearMoveNow every ACCELTIMEINCREMENT (seconds?) till stopped
+			if(m_flCurrentTime<ACCELTIMEINCREMENT){
+				SetNextThink( m_flCurrentTime, TRUE );
+				m_flCurrentTime=0;
+			}else{
+				SetNextThink( ACCELTIMEINCREMENT, TRUE );
+			}
+			SetThink(&CBaseToggle :: LinearMoveNow );
+			}
+			
+		}else{
+
+			if(m_flCurrentTime < m_flAccelTime){	// We are Accelerating.
+
+			//	ALERT(at_console, "%s is accelerating\n", STRING(pev->targetname));
+				UTIL_SetVelocity( this, vecDestDelta.Normalize()*(m_flLinearAccel*m_flCurrentTime));
+				
+				// Continually calls LinearMoveNow every 0.1 (seconds?) till up to speed
+				SetNextThink(ACCELTIMEINCREMENT, TRUE );
+				SetThink(&CBaseToggle :: LinearMoveNow );
+				m_flCurrentTime+=ACCELTIMEINCREMENT;	
+				
+				//BUGBUG this will mean that we will be going faster than maxspeed on the last call to 'accelerate'
+
+			}else {			// We are now at full speed.
+
+			//	m_flAccelTime = m_flCurrentTime;	
+			//	ALERT(at_console, "%s is traveling at constant speed\n", STRING(pev->targetname));
+				
+				UTIL_SetVelocity( this, vecDestDelta.Normalize()*(m_flLinearMoveSpeed)); //we are probably going slightly faster.
+				
+				// set nextthink to trigger a recall to LinearMoveNow when we need to slow down.
+				SetNextThink( (vecDestDelta.Length()-(m_flLinearMoveSpeed*m_flDecelTime/2))/(m_flLinearMoveSpeed), TRUE );
+				SetThink(&CBaseToggle :: LinearMoveNow );
+				//	m_flCurrentTime = (flTravelTime);
+				m_bDecelerate=true;  //Set boolean so next call we know we are decelerating.
+				m_flDecelTime+=(m_flCurrentTime-m_flAccelTime); //Hack to fix time increment bug
+				m_flCurrentTime=m_flDecelTime;
+			}
+		}
+
+	}else{  // We are not using acceleration.
+	
+		// set nextthink to trigger a call to LinearMoveDone when dest is reached
+		SetNextThink( flTravelTime, TRUE );
+		SetThink(&CBaseToggle :: LinearMoveDone );
+
+		// scale the destdelta vector by the time spent traveling to get velocity
+		//	pev->velocity = vecDestDelta / flTravelTime;
+		UTIL_SetVelocity( this, vecDestDelta / flTravelTime );
+
+	//		ALERT(at_console, "LMNow \"%s\": Vel %f %f %f, think %f\n", STRING(pev->targetname), pev->velocity.x, pev->velocity.y, pev->velocity.z, pev->nextthink);
+	}
 }
-
 
 /*
 ============
