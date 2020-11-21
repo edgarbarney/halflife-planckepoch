@@ -32,6 +32,7 @@ int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
 int gmsgAddShine = 0;   // LRC
 int gmsgParticle = 0; // LRC
+int gmsgPlayMP3 = 0; //Killar
 int gmsgShowGameTitle = 0;
 int gmsgCurWeapon = 0;
 int gmsgHealth = 0;
@@ -63,6 +64,7 @@ int gmsgTeamNames = 0;
 int gmsgStatusIcon = 0; //LRC
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0;
+int gmsgCamData = 0; // for trigger_viewset
 
 void LinkUserMessages()
 {
@@ -118,4 +120,6 @@ void LinkUserMessages()
 
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
+	gmsgCamData = REG_USER_MSG("CamData", -1);
+	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1);	//Killar
 }

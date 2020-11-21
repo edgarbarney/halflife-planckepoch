@@ -19,18 +19,6 @@
 #include "pm_materials.h"
 
 
-//LRC - code for Werner Spahl's mod.
-//#define XENWARRIOR
-
-#ifdef XENWARRIOR
-#define SOUND_FLASHLIGHT_IDLE   "ambience/alien_clicker1.wav"
-#define LF_FLASH_RESUME (1<<13)
-#define LF_FLASH_RESUME2 (1<<14)
-
-extern float g_fEnvFadeTime;
-#endif
-
-
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
 #define PLAYER_MAX_SAFE_FALL_SPEED	580// approx 20 feet
 #define DAMAGE_FOR_FALL_SPEED		(float) 100 / ( PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED )// damage per unit per second.
@@ -197,6 +185,7 @@ public:
 	CBasePlayerItem *m_pActiveItem;
 	CBasePlayerItem *m_pClientActiveItem;  // client version of the active item
 	CBasePlayerItem *m_pLastItem;
+	CBasePlayerItem *m_pNextItem;
 	// shared ammo slots
 	int	m_rgAmmo[MAX_AMMO_SLOTS];
 	int	m_rgAmmoLast[MAX_AMMO_SLOTS];
@@ -212,6 +201,30 @@ public:
 	float	m_flNextDecalTime;// next time this player can spray a decal
 
 	char m_szTeamName[TEAM_NAME_LENGTH];
+
+    float	CalcRatio( CBaseEntity *pLocus, int mode  ) override
+    //AJH added 'mode' = ratio to return
+	{
+		//ALERT(at_debug,"CBasePlayer CalcRatio called, mode is %i\n",mode);
+		switch(mode){
+		case 0:{
+			return pev->health/pev->max_health;
+		}break;
+		case 1:{
+			//pev->speed=pev->velocity.Length();
+			//ALERT(at_debug,"Ratio is %f over %f, result %f.\n",pev->speed,pev->maxspeed,pev->speed/pev->maxspeed);
+			//return pev->speed/pev->maxspeed;
+			return pev->velocity.Length();
+		}break;
+		case 2:{
+			return (int)IsSneaking();
+		}break;
+		case 3:{
+			return (int)HasWeapons();
+		}break;
+		}
+		return 0;
+	}
 
     void Spawn() override;
 	void Pain();
@@ -287,6 +300,7 @@ public:
 	void SelectNextItem( int iItem );
 	void SelectLastItem();
 	void SelectItem(const char *pstr);
+	void QueueItem(CBasePlayerItem *pItem);
 	void ItemPreFrame();
 	void ItemPostFrame();
 	void GiveNamedItem( const char *szName );
@@ -337,7 +351,10 @@ public:
 	float m_flStatusBarDisappearDelay;
 	char m_SbarString0[ SBAR_STRING_SIZE ];
 	char m_SbarString1[ SBAR_STRING_SIZE ];
-	
+	// for trigger_viewset
+	int		viewEntity; // string
+	int		viewFlags;	// 1-active, 2-draw hud
+	int		viewNeedsUpdate; // precache sets to 1, UpdateClientData() sets to 0	
 	float m_flNextChatTime;
 	
 	void SetPrefsFromUserinfo(char* infobuffer);

@@ -23,6 +23,7 @@
 #include "player.h"
 #include "talkmonster.h"
 #include "gamerules.h"
+#include "locus.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -722,6 +723,9 @@ void CAmbientGeneric :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCalle
 
 		InitModulationParms();
 
+		// AJH / MJB - [LR] volume field:
+		if (pev->noise) m_dpv.vol = CalcLocus_Ratio(this, STRING(pev->noise), 0);
+				
 		if (m_pPlayFrom)
 		{
 			EMIT_SOUND_DYN( m_pPlayFrom, m_iChannel, szSoundFile, //LRC

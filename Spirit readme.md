@@ -37,3 +37,7 @@ with SOHL, comment out the line containing `kRenderFxLightMultiplier`
 in `const.h` to get it working again. However, this may have unexpected
 side effects due to the engine thinking that this is the "light multiplier"
 effect (though I'm not sure what this effect does or if it works).
+
+## 1.4
+
+Similar to above, `kRenderFxEntInPVS` is render fx 23 instead of 22.

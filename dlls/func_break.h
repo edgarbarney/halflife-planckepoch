@@ -19,6 +19,7 @@ typedef enum { expRandom, expDirected} Explosions;
 typedef enum { matGlass = 0, matWood, matMetal, matFlesh, matCinderBlock, matCeilingTile, matComputer, matUnbreakableGlass, matRocks, matNone, matLastMaterial } Materials;
 
 #define	NUM_SHARDS 6 // this many shards spawned when breakable objects break;
+#define SF_BREAKABLE_INVERT 16
 
 class CBreakable : public CBaseDelay
 {
@@ -27,12 +28,14 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void KeyValue( KeyValueData* pkvd) override;
+    float CalcRatio(CBaseEntity *pLocus,int mode) override;//AJH added 'mode' = ratio to return);
 	void EXPORT BreakTouch( CBaseEntity *pOther );
 	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnThink();
 	void EXPORT RespawnFadeThink();
 	void DamageSound();
+	virtual void DoRespawn(); //AJH Fix for respawnable breakable pushables
     int Classify () override { return m_iClass; }
 
 	// breakables use an overridden takedamage

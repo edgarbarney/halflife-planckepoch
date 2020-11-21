@@ -717,6 +717,7 @@ enum
 	kRenderFxClampMinScale,		// Keep this sprite from getting very small (SPRITES only!)
 	kRenderFxLightMultiplier,   //CTM !!!CZERO added to tell the studiorender that the value in iuser2 is a lightmultiplier
 	kRenderFxReflection,		//LRC - draw a reflection under my feet
+	kRenderFxEntInPVS,			//G-Cont - this style for entity, which draw always
 };
 
 #define _DEF_BYTE_

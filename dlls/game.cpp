@@ -38,6 +38,8 @@ cvar_t	teamlist = {"mp_teamlist","hgrunt;scientist", FCVAR_SERVER };
 cvar_t	teamoverride = {"mp_teamoverride","1" };
 cvar_t	defaultteam = {"mp_defaultteam","0" };
 cvar_t	allowmonsters={"mp_allowmonsters","0", FCVAR_SERVER };
+cvar_t	mp3player = { "mp3player", "1", FCVAR_SERVER };
+cvar_t	mp3volume = { "mp3volume", "1", FCVAR_SERVER };
 
 cvar_t  allow_spectators = { "allow_spectators", "0.0", FCVAR_SERVER };		// 0 prevents players from being spectators
 
@@ -488,7 +490,9 @@ void GameDLLInit()
 	CVAR_REGISTER (&allowmonsters);
 	CVAR_REGISTER (&impulsetarget); //LRC
 	CVAR_REGISTER (&mw_debug); //LRC
-
+	//CVAR_REGISTER (&mp3player); //G-Cont. Stuff for Mp3 player	//AJH - Too late, I've already added mp3/ogg
+    //CVAR_REGISTER (&mp3volume); //G-Cont. Stuff for Mp3 player	//AJH
+	
 	CVAR_REGISTER (&mp_chattime);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF

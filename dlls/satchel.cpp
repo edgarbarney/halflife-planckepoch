@@ -130,6 +130,7 @@ void CSatchelCharge :: SatchelThink()
 	{
 		pev->velocity.z -= 8;
 	}	
+
 }
 
 void CSatchelCharge :: Precache()
@@ -295,7 +296,7 @@ BOOL CSatchel::Deploy( )
 
 void CSatchel::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	
 	if ( m_chargeReady )
 	{

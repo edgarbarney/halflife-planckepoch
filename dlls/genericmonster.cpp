@@ -21,21 +21,32 @@
 #include	"monsters.h"
 #include	"schedule.h"
 #include	"animation.h"
+#include	"talkmonster.h"
+#include	"effects.h"
+#include "customentity.h"
 #include "soundent.h"
 
 // For holograms, make them not solid so the player can walk through them
 //LRC- this seems to interfere with SF_MONSTER_CLIP
-#define	SF_GENERICMONSTER_NOTSOLID					 4 
-#define SF_GENERICMONSTER_PLAYERMODEL				 8
+#define	SF_GENERICMONSTER_NOTSOLID				4 
+#define	SF_HEAD_CONTROLLER					8 
 #define SF_GENERICMONSTER_INVULNERABLE				32
-//Not implemented:
-#define SF_GENERICMONSTER_CORPSE					64
+#define SF_GENERICMONSTER_PLAYERMODEL				64
 
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
+//G-Cont. This code - support for htorch model from Op4 ;)
+#define HTORCH_AE_SHOWGUN ( 17)
+#define HTORCH_AE_SHOWTORCH ( 18)
+#define HTORCH_AE_HIDETORCH ( 19)
+#define HTORCH_AE_ONGAS ( 20)
+#define HTORCH_AE_OFFGAS ( 21)
+#define GUN_DEAGLE			0
+#define GUN_TORCH			1
+#define GUN_NONE			2
 
-class CGenericMonster : public CBaseMonster
+class CGenericMonster : public CTalkMonster
 {
 public:
 	void Spawn() override;
@@ -45,6 +56,10 @@ public:
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 	int ISoundMask () override;
 	void KeyValue( KeyValueData *pkvd ) override;
+	void Torch ();
+	void MakeGas();
+	void UpdateGas();
+	void KillGas();
 
     int		Save( CSave &save ) override;
     int		Restore( CRestore &restore ) override;
@@ -52,6 +67,7 @@ public:
 
     int HasCustomGibs() override { return m_iszGibModel; }
 
+    CBeam *m_pBeam;
 	int m_iszGibModel;
 };
 LINK_ENTITY_TO_CLASS( monster_generic, CGenericMonster );
@@ -112,12 +128,43 @@ void CGenericMonster :: SetYawSpeed ()
 //=========================================================
 void CGenericMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 {
+	Vector vecShootDir;
+	Vector vecShootOrigin;
+
 	switch( pEvent->event )
 	{
-	case 0:
-	default:
-		CBaseMonster::HandleAnimEvent( pEvent );
+		case HTORCH_AE_SHOWTORCH:
+		pev->body = GUN_NONE;
+		pev->body = GUN_TORCH;
 		break;
+
+		case HTORCH_AE_SHOWGUN:
+		pev->body = GUN_NONE;
+		pev->body = GUN_DEAGLE;
+		break;
+
+		case HTORCH_AE_HIDETORCH:
+		pev->body = GUN_NONE;
+		break;
+
+		case HTORCH_AE_ONGAS:
+		{
+			int gas = 1;
+			MakeGas();
+			UpdateGas();
+		};
+		break;
+
+		case HTORCH_AE_OFFGAS:
+		{
+			int gas = 0;
+			KillGas();
+		};
+		break;
+
+		default:
+ 			CBaseMonster::HandleAnimEvent( pEvent );
+		    break;
 	}
 }
 
@@ -180,6 +227,12 @@ void CGenericMonster :: Spawn()
 
 	MonsterInit();
 
+	if ( pev->spawnflags & SF_HEAD_CONTROLLER )
+	{
+		m_afCapability = bits_CAP_TURN_HEAD;
+
+	}
+
 	if ( pev->spawnflags & SF_GENERICMONSTER_NOTSOLID )
 	{
 		pev->solid = SOLID_NOT;
@@ -196,6 +249,8 @@ void CGenericMonster :: Spawn()
 //=========================================================
 void CGenericMonster :: Precache()
 {
+	CTalkMonster::Precache();
+	TalkInit();
 	PRECACHE_MODEL( (char *)STRING(pev->model) );
 	if (m_iszGibModel)
 		PRECACHE_MODEL( (char*)STRING(m_iszGibModel) ); //LRC
@@ -205,6 +260,80 @@ void CGenericMonster :: Precache()
 // AI Schedules Specific to this monster
 //=========================================================
 
+//=========================================================
+// monster-specific schedule types
+//=========================================================
+enum
+{
+	TASK_TORCH_CHECK_FIRE = LAST_COMMON_SCHEDULE + 1,
+	TASK_GAS,
+};
+
+// =========================================================
+// TORCH SUPPORT
+// =========================================================
+void CGenericMonster :: Torch ( void )
+{
+	Vector vecGunPos;
+	Vector vecGunAngles;
+	Vector vecShootDir;
+
+	GetAttachment( 4, vecGunPos, vecGunAngles );
+		pev->effects |= EF_MUZZLEFLASH;
+
+	Vector angDir = UTIL_VecToAngles( vecShootDir );
+		SetBlending( 0, angDir.x );
+}
+
+void CGenericMonster::UpdateGas( void ) { }
+
+void CGenericMonster::MakeGas( void )
+{
+	Vector posGun, angleGun;
+	TraceResult tr;
+	UTIL_MakeVectors( pev->angles );
+	{
+	KillGas();
+		m_pBeam = CBeam::BeamCreate( "sprites/laserbeam.spr", 7 );
+		if ( m_pBeam )
+		{
+			GetAttachment( 4, posGun, angleGun );
+			GetAttachment( 3, posGun, angleGun );
+
+			Vector vecEnd = (gpGlobals->v_forward * 5) + posGun;
+			UTIL_TraceLine( posGun, vecEnd, dont_ignore_monsters, edict(), &tr );
+
+			m_pBeam->EntsInit( entindex(), entindex() );
+			m_pBeam->SetColor( 24, 121, 239 );
+			m_pBeam->SetBrightness( 190 );
+		         	m_pBeam->SetScrollRate( 20 );
+			m_pBeam->SetStartAttachment( 4 );
+			m_pBeam->SetEndAttachment( 3 );
+			m_pBeam->DamageDecal( 28 );
+			m_pBeam->DoSparks( tr.vecEndPos, posGun );
+			m_pBeam->SetFlags( BEAM_FSHADEIN );
+			m_pBeam->pev->spawnflags |= pev->spawnflags &  SF_BEAM_SPARKSTART; //| SF_BEAM_DECALS | SF_BEAM_TOGGLE);
+			m_pBeam->RelinkBeam();
+
+			UTIL_Sparks( tr.vecEndPos );
+			UTIL_DecalTrace(&tr, 28 + RANDOM_LONG(0,4));
+		}
+	}
+	// m_flNextAttack = gpGlobals->time + RANDOM_FLOAT( 0.5, 4.0 );
+	if ( int gas = 1 )
+	{
+		pev->nextthink = gpGlobals->time;
+	}
+}
+
+void CGenericMonster :: KillGas( void )
+{
+	if ( m_pBeam )
+	{
+		UTIL_Remove( m_pBeam );
+		m_pBeam = NULL;
+	}
+}
 
 //=========================================================
 // GENERIC DEAD MONSTER, PROP

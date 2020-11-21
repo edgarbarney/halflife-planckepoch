@@ -167,16 +167,16 @@ IMPLEMENT_SAVERESTORE( CBreakable, CBaseEntity );
 
 void CBreakable::Spawn()
 {
-    Precache( );    
+    Precache( );
 
 	if ( FBitSet( pev->spawnflags, SF_BREAK_TRIGGER_ONLY ) )
 		pev->takedamage	= DAMAGE_NO;
 	else
 		pev->takedamage	= DAMAGE_YES;
-  
+
 	if (m_iClass) //LRC - might these additions cause problems?
 	{
-		pev->flags |= FL_MONSTER; 
+		pev->flags |= FL_MONSTER;
 		pev->view_ofs = (pev->maxs + pev->mins) / 2;
 	}
 
@@ -229,14 +229,14 @@ STATE CBreakable::GetState()
 	else return STATE_OFF;
 }
 
-const char *CBreakable::pSoundsWood[] = 
+const char *CBreakable::pSoundsWood[] =
 {
 	"debris/wood1.wav",
 	"debris/wood2.wav",
 	"debris/wood3.wav",
 };
 
-const char *CBreakable::pSoundsFlesh[] = 
+const char *CBreakable::pSoundsFlesh[] =
 {
 	"debris/flesh1.wav",
 	"debris/flesh2.wav",
@@ -246,14 +246,14 @@ const char *CBreakable::pSoundsFlesh[] =
 	"debris/flesh7.wav",
 };
 
-const char *CBreakable::pSoundsMetal[] = 
+const char *CBreakable::pSoundsMetal[] =
 {
 	"debris/metal1.wav",
 	"debris/metal2.wav",
 	"debris/metal3.wav",
 };
 
-const char *CBreakable::pSoundsConcrete[] = 
+const char *CBreakable::pSoundsConcrete[] =
 {
 	"debris/concrete1.wav",
 	"debris/concrete2.wav",
@@ -261,7 +261,7 @@ const char *CBreakable::pSoundsConcrete[] =
 };
 
 
-const char *CBreakable::pSoundsGlass[] = 
+const char *CBreakable::pSoundsGlass[] =
 {
 	"debris/glass1.wav",
 	"debris/glass2.wav",
@@ -272,7 +272,7 @@ const char **CBreakable::MaterialSoundList( Materials precacheMaterial, int &sou
 {
 	const char	**pSoundList = NULL;
 
-    switch ( precacheMaterial ) 
+    switch ( precacheMaterial )
 	{
 	case matWood:
 		pSoundList = pSoundsWood;
@@ -299,8 +299,8 @@ const char **CBreakable::MaterialSoundList( Materials precacheMaterial, int &sou
 		pSoundList = pSoundsConcrete;
 		soundCount = ARRAYSIZE(pSoundsConcrete);
 		break;
-	
-	
+
+
 	case matCeilingTile:
 	case matNone:
 	default:
@@ -340,17 +340,17 @@ void CBreakable::Precache()
 {
 	const char *pGibName;
 
-    switch (m_Material) 
+    switch (m_Material)
 	{
 	case matWood:
 		pGibName = "models/woodgibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustcrate1.wav");
 		PRECACHE_SOUND("debris/bustcrate2.wav");
 		break;
 	case matFlesh:
 		pGibName = "models/fleshgibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustflesh1.wav");
 		PRECACHE_SOUND("debris/bustflesh2.wav");
 		break;
@@ -358,7 +358,7 @@ void CBreakable::Precache()
 		PRECACHE_SOUND("buttons/spark5.wav");
 		PRECACHE_SOUND("buttons/spark6.wav");
 		pGibName = "models/computergibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustmetal1.wav");
 		PRECACHE_SOUND("debris/bustmetal2.wav");
 		break;
@@ -366,32 +366,32 @@ void CBreakable::Precache()
 	case matUnbreakableGlass:
 	case matGlass:
 		pGibName = "models/glassgibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustglass1.wav");
 		PRECACHE_SOUND("debris/bustglass2.wav");
 		break;
 	case matMetal:
 		pGibName = "models/metalplategibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustmetal1.wav");
 		PRECACHE_SOUND("debris/bustmetal2.wav");
 		break;
 	case matCinderBlock:
 		pGibName = "models/cindergibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustconcrete1.wav");
 		PRECACHE_SOUND("debris/bustconcrete2.wav");
 		break;
 	case matRocks:
 		pGibName = "models/rockgibs.mdl";
-		
+
 		PRECACHE_SOUND("debris/bustconcrete1.wav");
 		PRECACHE_SOUND("debris/bustconcrete2.wav");
 		break;
 	case matCeilingTile:
 		pGibName = "models/ceilinggibs.mdl";
-		
-		PRECACHE_SOUND ("debris/bustceiling.wav");  
+
+		PRECACHE_SOUND ("debris/bustceiling.wav");
 		break;
 	}
 	MaterialSoundPrecache( m_Material );
@@ -408,6 +408,10 @@ void CBreakable::Precache()
 
 // play shard sound when func_breakable takes damage.
 // the more damage, the louder the shard sound.
+
+ float CBreakable::CalcRatio(CBaseEntity* plocus, int mode ){//AJH added 'mode' = ratio to return
+	return pev->health/m_iInitialHealth;
+}
 
 
 void CBreakable::DamageSound()
@@ -488,7 +492,7 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 {
 	float flDamage;
 	entvars_t*	pevToucher = pOther->pev;
-	
+
 	// only players can break these right now
 	if ( !pOther->IsPlayer() || !IsBreakable() )
 	{
@@ -496,7 +500,7 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 	}
 
 	if ( FBitSet ( pev->spawnflags, SF_BREAK_TOUCH ) )
-	{// can be broken when run into 
+	{// can be broken when run into
 		flDamage = pevToucher->velocity.Length() * 0.01;
 
 		if (flDamage >= pev->health)
@@ -597,10 +601,19 @@ void CBreakable::RespawnThink()
 			}
 		}
 //		ALERT(at_debug,"Respawn OK\n");
-		pev->solid = SOLID_BSP;
+	/*	if (FStrEq("func_pushable",STRING(pev->classname))){	//AJH Fix for respawnable breakable pushables
+			pev->solid = SOLID_BBOX;							//For some reason this code must be executed outside of 
+			pev->origin.z+=1;									//the RespawnThink function. Uses DoRespawn()
+			UTIL_SetOrigin(this,pev->origin);
+		}else{
+			pev->solid = SOLID_BSP;	
+		}
+		*/
+		DoRespawn();	//AJH Fix for respawnable breakable pushables (BY HAWK777)
+		SetUse(&CBreakable:: BreakUse );
 		pev->effects &= ~EF_NODRAW;
 		pev->health = m_iInitialHealth;
-		SetUse( &CBreakable::BreakUse );
+		
 		if ( !FBitSet( pev->spawnflags, SF_BREAK_TRIGGER_ONLY ) )
 			pev->takedamage	= DAMAGE_YES;
 
@@ -608,6 +621,11 @@ void CBreakable::RespawnThink()
 		FireTargets( STRING(pev->netname), this, this, USE_TOGGLE, 0);
 	}
 }
+
+void CBreakable::DoRespawn( void )	//AJH Fix for respawnable breakable pushables (BY HAWK777)
+{
+pev->solid = SOLID_BSP;
+} 
 
 void CBreakable::RespawnFadeThink ()
 {
@@ -643,7 +661,7 @@ void CBreakable::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vec
 				}
 			}
 			break;
-			
+
 			case matUnbreakableGlass:
 				UTIL_Ricochet( ptr->vecEndPos, RANDOM_FLOAT(0.5,1.5) );
 			break;
@@ -653,8 +671,21 @@ void CBreakable::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vec
 	//LRC
 	if (m_iszWhenHit)
 	{
+		if(m_pHitProxy==NULL){		//AJH may need to reset this as it's null after save/load
+			m_pHitProxy = GetClassPtr( (CPointEntity*)NULL );
+		}
+
 		m_pHitProxy->pev->origin = ptr->vecEndPos;
-		m_pHitProxy->pev->velocity = vecDir;
+		if (pev->spawnflags&SF_BREAKABLE_INVERT){	//AJH 
+			vecDir.y=-vecDir.y;
+			//vecDir.z=-vecDir.z;
+			vecDir.x=-vecDir.x;
+			//ALERT(at_debug,"INVERTING Breakables 'hit' vector (x&y components only) \n");
+		}
+		m_pHitProxy->pev->velocity = vecDir;		
+		m_pHitProxy->pev->angles = UTIL_VecToAngles(vecDir);	//AJH
+	
+	  //ALERT(at_debug,"Func_breakable fires %s \n",STRING(m_iszWhenHit));
 		FireTargets( STRING(m_iszWhenHit), m_pHitProxy, this, USE_TOGGLE, 0 );
 	}
 
@@ -671,11 +702,11 @@ int CBreakable :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 	Vector	vecTemp;
 
 	// if Attacker == Inflictor, the attack was a melee or other instant-hit attack.
-	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin). 
-	if ( pevAttacker == pevInflictor )	
+	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin).
+	if ( pevAttacker == pevInflictor )
 	{
 		vecTemp = pevInflictor->origin - ( pev->absmin + ( pev->size * 0.5 ) );
-		
+
 		// if a client hit the breakable with a crowbar, and breakable is crowbar-sensitive, break it now.
 		if ( FBitSet ( pevAttacker->flags, FL_CLIENT ) &&
 				 FBitSet ( pev->spawnflags, SF_BREAK_CROWBAR ) && (bitsDamageType & DMG_CLUB))
@@ -686,7 +717,7 @@ int CBreakable :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 	{
 		vecTemp = pevInflictor->origin - ( pev->absmin + ( pev->size * 0.5 ) );
 	}
-	
+
 	if (!IsBreakable())
 		return 0;
 
@@ -700,7 +731,7 @@ int CBreakable :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 
 // this global is still used for glass and other non-monster killables, along with decals.
 	g_vecAttackDir = vecTemp.Normalize();
-		
+
 // do the damage
 	pev->health -= flDamage;
 	if (pev->health <= 0)
@@ -731,7 +762,7 @@ void CBreakable::Die()
 	char cFlag = 0;
 	int pitch;
 	float fvol;
-	
+
 	pitch = 95 + RANDOM_LONG(0,29);
 
 	if (pitch > 97 && pitch < 103)
@@ -751,9 +782,9 @@ void CBreakable::Die()
 	case matGlass:
 		switch ( RANDOM_LONG(0,1) )
 		{
-		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass1.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass1.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
-		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass2.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass2.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
 		}
 		cFlag = BREAK_GLASS;
@@ -762,9 +793,9 @@ void CBreakable::Die()
 	case matWood:
 		switch ( RANDOM_LONG(0,1) )
 		{
-		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate1.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate1.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
-		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate2.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate2.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
 		}
 		cFlag = BREAK_WOOD;
@@ -774,9 +805,9 @@ void CBreakable::Die()
 	case matMetal:
 		switch ( RANDOM_LONG(0,1) )
 		{
-		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustmetal1.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustmetal1.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
-		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustmetal2.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustmetal2.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
 		}
 		cFlag = BREAK_METAL;
@@ -785,9 +816,9 @@ void CBreakable::Die()
 	case matFlesh:
 		switch ( RANDOM_LONG(0,1) )
 		{
-		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustflesh1.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustflesh1.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
-		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustflesh2.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustflesh2.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
 		}
 		cFlag = BREAK_FLESH;
@@ -797,9 +828,9 @@ void CBreakable::Die()
 	case matCinderBlock:
 		switch ( RANDOM_LONG(0,1) )
 		{
-		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustconcrete1.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustconcrete1.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
-		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustconcrete2.wav", fvol, ATTN_NORM, 0, pitch);	
+		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustconcrete2.wav", fvol, ATTN_NORM, 0, pitch);
 			break;
 		}
 		cFlag = BREAK_CONCRETE;
@@ -809,8 +840,8 @@ void CBreakable::Die()
 		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustceiling.wav", fvol, ATTN_NORM, 0, pitch);
 		break;
 	}
-    
-		
+
+
 	if (m_Explosion == expDirected)
 		vecVelocity = g_vecAttackDir * 200;
 	else
@@ -835,12 +866,12 @@ void CBreakable::Die()
 		WRITE_COORD( pev->size.z);
 
 		// velocity
-		WRITE_COORD( vecVelocity.x ); 
+		WRITE_COORD( vecVelocity.x );
 		WRITE_COORD( vecVelocity.y );
 		WRITE_COORD( vecVelocity.z );
 
 		// randomization
-		WRITE_BYTE( 10 ); 
+		WRITE_BYTE( 10 );
 
 		// Model
 		WRITE_SHORT( m_idShard );	//model id#
@@ -935,8 +966,8 @@ void CBreakable::Die()
 
 
 
-BOOL CBreakable :: IsBreakable() 
-{ 
+BOOL CBreakable :: IsBreakable()
+{
 	return m_Material != matUnbreakableGlass;
 }
 
@@ -962,8 +993,9 @@ public:
 	void	Move( CBaseEntity *pMover, int push );
 	void	KeyValue( KeyValueData *pkvd ) override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void	DoRespawn() override;	//AJH Fix for respawnable breakable pushables (BY HAWK777)
 	void	EXPORT StopSound();
-//	virtual void	SetActivator( CBaseEntity *pActivator ) { m_pPusher = pActivator; }
+	//	virtual void	SetActivator( CBaseEntity *pActivator ) { m_pPusher = pActivator; }
 
     int	ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE; }
     int		Save( CSave &save ) override;
@@ -1017,7 +1049,7 @@ void CPushable :: Spawn()
 	m_maxSpeed = 400 - pev->friction;
 	SetBits( pev->flags, FL_FLOAT );
 	pev->friction = 0;
-	
+
 	pev->origin.z += 1;	// Pick up off of the floor
 	UTIL_SetOrigin( this, pev->origin );
 
@@ -1132,13 +1164,13 @@ void CPushable :: Move( CBaseEntity *pOther, int push )
 		{
 			if ( pev->waterlevel < 1 || pev->watertype <= CONTENT_FLYFIELD)
 				return;
-			else 
+			else
 				factor = 0.1;
 		}
 		else
 			factor = 1;
 	}
-	else 
+	else
 		factor = 0.25;
 
 	if (!push)
@@ -1190,3 +1222,8 @@ int CPushable::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 	return 1;
 }
 
+void CPushable::DoRespawn(void){	//AJH Fix for respawnable breakable pushables (BY HAWK777)
+	pev->solid = SOLID_BBOX;
+	pev->origin.z += 1;
+	UTIL_SetOrigin( this, pev->origin ); 
+}

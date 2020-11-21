@@ -209,6 +209,8 @@ public:
     int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
+	EHANDLE m_hActivator;	//AJH allow *locus start/end positions
+
 	CSprite	*m_pStartSprite;
 	CSprite	*m_pEndSprite;
 	int		m_iszStartSpriteName;

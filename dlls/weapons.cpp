@@ -32,21 +32,22 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
-extern CGraph	WorldGraph;
+//extern CGraph	WorldGraph;
 extern int gEvilImpulse101;
 
 
 #define NOT_USED 255
 
-DLL_GLOBAL	short	g_sModelIndexLaser;// holds the index for the laser beam
-DLL_GLOBAL  const char *g_pModelNameLaser = "sprites/laserbeam.spr";
-DLL_GLOBAL	short	g_sModelIndexLaserDot;// holds the index for the laser beam dot
-DLL_GLOBAL	short	g_sModelIndexFireball;// holds the index for the fireball
-DLL_GLOBAL	short	g_sModelIndexSmoke;// holds the index for the smoke cloud
-DLL_GLOBAL	short	g_sModelIndexWExplosion;// holds the index for the underwater explosion
-DLL_GLOBAL	short	g_sModelIndexBubbles;// holds the index for the bubbles model
-DLL_GLOBAL	short	g_sModelIndexBloodDrop;// holds the sprite index for the initial blood
-DLL_GLOBAL	short	g_sModelIndexBloodSpray;// holds the sprite index for splattered blood
+DLL_GLOBAL	short		g_sModelIndexLaser;// holds the index for the laser beam
+DLL_GLOBAL  	const char 	*g_pModelNameLaser = "sprites/laserbeam.spr";
+DLL_GLOBAL	short    		g_sModelIndexLaserDot;// holds the index for the laser beam dot
+DLL_GLOBAL	short    		g_sModelIndexFireball;// holds the index for the fireball
+DLL_GLOBAL	short    		g_sModelIndexSmoke;// holds the index for the smoke cloud
+DLL_GLOBAL	short    		g_sModelIndexWExplosion;// holds the index for the underwater explosion
+DLL_GLOBAL	short		g_sModelIndexBubbles;// holds the index for the bubbles model
+DLL_GLOBAL	short		g_sModelIndexBloodDrop;// holds the sprite index for the initial blood
+DLL_GLOBAL	short		g_sModelIndexBloodSpray;// holds the sprite index for splattered blood
+DLL_GLOBAL 	unsigned short 	m_usMirror;
 
 ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
 AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
@@ -281,6 +282,7 @@ void W_Precache()
 	memset( CBasePlayerItem::AmmoInfoArray, 0, sizeof(CBasePlayerItem::AmmoInfoArray) );
 	giAmmoIndex = 0;
 
+	m_usMirror = PRECACHE_EVENT(1,"events/mirror.sc");
 	// custom items...
 
 	// common world objects
@@ -289,6 +291,7 @@ void W_Precache()
 	UTIL_PrecacheOther( "item_antidote" );
 	UTIL_PrecacheOther( "item_security" );
 	UTIL_PrecacheOther( "item_longjump" );
+	UTIL_PrecacheOtherWeapon( "weapon_debug" );
 
 	// shotgun
 	UTIL_PrecacheOtherWeapon( "weapon_shotgun" );
@@ -395,7 +398,16 @@ void W_Precache()
 
 }
 
-
+void CBasePlayerItem::KeyValue( KeyValueData *pkvd ) //AJH
+{
+	if (FStrEq(pkvd->szKeyName, "master"))
+	{
+		m_sMaster = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseDelay::KeyValue( pkvd );
+}
  
 
 TYPEDESCRIPTION	CBasePlayerItem::m_SaveData[] = 
@@ -406,6 +418,8 @@ TYPEDESCRIPTION	CBasePlayerItem::m_SaveData[] =
 	DEFINE_FIELD( CBasePlayerItem, m_iId, FIELD_INTEGER ),
 	// DEFINE_FIELD( CBasePlayerItem, m_iIdPrimary, FIELD_INTEGER ),
 	// DEFINE_FIELD( CBasePlayerItem, m_iIdSecondary, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayerWeapon, m_sMaster, FIELD_STRING ), //	AJH master entity for Lockable weapons
+
 };
 IMPLEMENT_SAVERESTORE( CBasePlayerItem, CBaseAnimating );
 
@@ -592,6 +606,22 @@ void CBasePlayerItem::DefaultTouch( CBaseEntity *pOther )
 	{
 		AttachToPlayer( pPlayer );
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+
+		if(!gEvilImpulse101)
+		{
+			int i;
+			char sample[32];
+			char weapon_name[32];
+			strcpy(weapon_name, STRING(pev->classname));
+
+			if(strncmp(weapon_name, "weapon_", 7) == 0)
+				i = 7;
+			else if (strncmp(weapon_name, "item_", 5) == 0)
+				i = 5;
+
+			sprintf(sample, "!%s", weapon_name + i);
+			pPlayer->SetSuitUpdate(sample, FALSE, SUIT_NEXT_IN_30SEC);
+		}
 	}
 
 	SUB_UseTargets( pOther, USE_TOGGLE, 0 ); // UNDONE: when should this happen?
@@ -606,6 +636,12 @@ void CBasePlayerItem::DestroyItem()
 	}
 
 	Kill( );
+}
+
+void CBasePlayerItem::Spawn()
+{
+	pev->animtime = gpGlobals->time + 0.1;
+	CBaseAnimating::Spawn();
 }
 
 int CBasePlayerItem::AddToPlayer( CBasePlayer *pPlayer )
@@ -655,10 +691,12 @@ void CBasePlayerWeapon :: SetNextThink( float delay )
 	pev->nextthink = m_fNextThink;
 }
 
-
-// CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
+/// CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
 int CBasePlayerWeapon::AddDuplicate( CBasePlayerItem *pOriginal )
 {
+	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer))		//
+		return FALSE;										// AJH allows for locked weapons 
+
 	if ( m_iDefaultAmmo )
 	{
 		return ExtractAmmo( (CBasePlayerWeapon *)pOriginal );
@@ -673,6 +711,9 @@ int CBasePlayerWeapon::AddDuplicate( CBasePlayerItem *pOriginal )
 
 int CBasePlayerWeapon::AddToPlayer( CBasePlayer *pPlayer )
 {
+	if (!UTIL_IsMasterTriggered(m_sMaster, pPlayer))		//
+		return FALSE;										// AJH allows for locked weapons
+
 	int bResult = CBasePlayerItem::AddToPlayer( pPlayer );
 
 	pPlayer->pev->weapons |= (1<<m_iId);
@@ -685,7 +726,9 @@ int CBasePlayerWeapon::AddToPlayer( CBasePlayer *pPlayer )
 
 
 	if (bResult)
+	{
 		return AddWeapon( );
+	}
 	return FALSE;
 }
 
@@ -827,38 +870,7 @@ BOOL CBasePlayerWeapon :: AddSecondaryAmmo( int iCount, char *szName, int iMax )
 //=========================================================
 BOOL CBasePlayerWeapon :: IsUseable()
 {
-	if (m_iClip > 0)
-	{
-		return TRUE;
-	}
-
-	//Player has unlimited ammo for this weapon or does not use magazines
-	if (iMaxAmmo1() == WEAPON_NOCLIP)
-	{
-		return TRUE;
-	}
-
-	if (m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] > 0)
-	{
-		return TRUE;
-	}
-
-	if (pszAmmo2())
-	{
-		//Player has unlimited ammo for this weapon or does not use magazines
-		if (iMaxAmmo2() == WEAPON_NOCLIP)
-		{
-			return TRUE;
-		}
-
-		if (m_pPlayer->m_rgAmmo[SecondaryAmmoIndex()] > 0)
-		{
-			return TRUE;
-		}
-	}
-
-	// clip is empty (or nonexistant) and the player has no more ammo of this type. 
-	return FALSE;
+	return CanDeploy();
 }
 
 BOOL CBasePlayerWeapon :: DefaultDeploy( const char *szViewModel, const char *szWeaponModel, int iAnim, const char *szAnimExt, int skiplocal /* = 0 */, int body )
@@ -954,6 +966,9 @@ void CBasePlayerAmmo :: DefaultTouch( CBaseEntity *pOther )
 		return;
 	}
 
+	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer))	//
+		return ;										// AJH allows for locked weapons
+
 	if (AddAmmo( pOther ))
 	{
 		if ( g_pGameRules->AmmoShouldRespawn( this ) == GR_AMMO_RESPAWN_YES )
@@ -966,6 +981,7 @@ void CBasePlayerAmmo :: DefaultTouch( CBaseEntity *pOther )
 			SetThink(&CBasePlayerAmmo::SUB_Remove);
 			SetNextThink( 0.1 );
 		}
+		SUB_UseTargets( pOther, USE_TOGGLE, 0 );	//AJH now ammo can trigger stuff too
 	}
 	else if (gEvilImpulse101)
 	{
@@ -1028,6 +1044,7 @@ int CBasePlayerWeapon::ExtractClipAmmo( CBasePlayerWeapon *pWeapon )
 //=========================================================
 void CBasePlayerWeapon::RetireWeapon()
 {
+	Holster();
 	// first, no viewmodel at all.
 	m_pPlayer->pev->viewmodel = iStringNull;
 	m_pPlayer->pev->weaponmodel = iStringNull;

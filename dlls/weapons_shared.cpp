@@ -219,9 +219,26 @@ void CBasePlayer::SelectLastItem()
 	if (m_pActiveItem)
 		m_pActiveItem->Holster();
 
-	CBasePlayerItem* pTemp = m_pActiveItem;
-	m_pActiveItem = m_pLastItem;
-	m_pLastItem = pTemp;
-	m_pActiveItem->Deploy();
-	m_pActiveItem->UpdateItemInfo();
+	QueueItem(m_pLastItem);
+
+	if (m_pActiveItem)
+	{
+		m_pActiveItem->Deploy( );
+		m_pActiveItem->UpdateItemInfo( );
+	}
+}
+
+void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
+{
+	if(!m_pActiveItem)// no active weapon
+	{
+		m_pActiveItem = pItem;
+		return;// just set this item as active
+	}
+    else
+	{
+		m_pLastItem = m_pActiveItem;
+		m_pActiveItem = NULL;// clear current
+	}
+	m_pNextItem = pItem;// add item to queue
 }

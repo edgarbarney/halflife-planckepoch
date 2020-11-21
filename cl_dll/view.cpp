@@ -516,6 +516,28 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		pparams->vieworg[1] = v_origin.y;
 		pparams->vieworg[2] = v_origin.z;
 		pparams->nextView = 0;
+	
+		if (gHUD.viewFlags & 1 ) // custom view active (trigger_viewset) //AJH (copied function from below)
+	    {
+		    cl_entity_t *viewentity;
+		    viewentity = gEngfuncs.GetEntityByIndex( gHUD.viewEntityIndex );
+		    if (viewentity)
+		    {
+			    pparams->vieworg[0] = viewentity->origin[0];
+			    pparams->vieworg[1] = viewentity->origin[1];
+			    pparams->vieworg[2] = viewentity->origin[2];
+			    pparams->vieworg[2] = viewentity->origin[2];
+			    pparams->viewangles[0] = viewentity->angles[0];
+			    pparams->viewangles[1] = viewentity->angles[1];
+			    pparams->viewangles[2] = viewentity->angles[2];
+			    pparams->crosshairangle[PITCH] = 100; // test // ugly method to remove crosshair from screen
+		    }
+	    //	else
+	    //		gEngfuncs.Con_Printf( "Warning : invalid view ent index: %i\n", gHUD.viewEntityIndex );
+	    }
+	    else
+		    pparams->crosshairangle[PITCH] = 0; // test
+
 		return;
 	}
 
@@ -533,6 +555,10 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	
 	// view is the weapon model (only visible from inside body )
 	view = gEngfuncs.GetViewModel();
+
+	// trigger_viewset - dont show weapon model when custom view is enabled
+	if (gHUD.viewFlags & 1)
+		view->model = NULL;
 
 	//LRC - don't show weapon models when we're drawing the sky.
 	if (gHUD.m_iSkyMode == SKY_ON)
@@ -869,12 +895,46 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	//LRC
 	RenderFog();
 
+	if (gHUD.viewFlags & 1 && gHUD.m_iSkyMode == SKY_OFF) // custom view active (trigger_viewset) //AJH (added skymode check and copied function to above)
+	{
+		cl_entity_t *viewentity;
+		viewentity = gEngfuncs.GetEntityByIndex( gHUD.viewEntityIndex );
+		if (viewentity)
+		{
+			pparams->vieworg[0] = viewentity->origin[0];
+			pparams->vieworg[1] = viewentity->origin[1];
+			pparams->vieworg[2] = viewentity->origin[2];
+			pparams->vieworg[2] = viewentity->origin[2];
+			pparams->viewangles[0] = viewentity->angles[0];
+			pparams->viewangles[1] = viewentity->angles[1];
+			pparams->viewangles[2] = viewentity->angles[2];
+			pparams->crosshairangle[PITCH] = 100; // test // ugly method to remove crosshair from screen
+		}
+	//	else
+	//		gEngfuncs.Con_Printf( "Warning : invalid view ent index: %i\n", gHUD.viewEntityIndex );
+	}
+	else
+		pparams->crosshairangle[PITCH] = 0; // test
+
 	// LRC - override the view position if we're drawing a sky, rather than the player's view
-	if (gHUD.m_iSkyMode == SKY_ON && pparams->nextView == 0)
+	if (gHUD.m_iSkyMode == SKY_ON && pparams->nextView == 0)//AJH BUGBUG!! Figure out why the camera is overwriting the sky view
 	{
 		pparams->vieworg[0] = gHUD.m_vecSkyPos.x;
 		pparams->vieworg[1] = gHUD.m_vecSkyPos.y;
 		pparams->vieworg[2] = gHUD.m_vecSkyPos.z;
+		
+		if (gHUD.viewFlags & 1)//AJH (to allow skys and cameras to coexist)
+		{
+			cl_entity_t *viewentity;
+			viewentity = gEngfuncs.GetEntityByIndex( gHUD.viewEntityIndex );
+			if (viewentity)
+			{
+				pparams->viewangles[0] = viewentity->angles[0];
+				pparams->viewangles[1] = viewentity->angles[1];
+				pparams->viewangles[2] = viewentity->angles[2];
+			}
+		}
+		
 		pparams->nextView = 1;
 	}
 }

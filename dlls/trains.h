@@ -155,6 +155,8 @@ public:
 	Vector		m_vecMasterAvel; //LRC - masterAvel is to avelocity as m_speed is to speed.
 	Vector		m_vecBaseAvel; // LRC - the underlying avelocity, superceded by normal turning behaviour where applicable
 
+	EHANDLE m_hActivator;	//AJH (give frags to this entity)
+
 private:
 	unsigned short m_usAdjustPitch;
 };
