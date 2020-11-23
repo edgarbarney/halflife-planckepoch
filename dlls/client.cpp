@@ -41,6 +41,7 @@
 #include "pm_shared.h"
 #include "UserMessages.h"
 #include "movewith.h"
+#include "items.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -594,6 +595,70 @@ void ClientCommand( edict_t *pEntity )
 		MESSAGE_BEGIN( MSG_ONE, gmsgPlayMP3, NULL, ENT(pev) );
 			WRITE_STRING( (char *)CMD_ARGV(1) );
 		MESSAGE_END();
+	}
+	else if ( FStrEq(pcmd, "inventory" ) )  //AJH - Inventory system
+	{
+		CBasePlayer *pPlayer = (CBasePlayer*)CBaseEntity::Instance(pEntity);
+		if (CMD_ARGC() > 1)
+		{
+			if(FStrEq(CMD_ARGV(1),"1")){
+			//	ALERT(at_debug,"DEBUG: calling medkit::use()\n");
+				GetClassPtr((CItemMedicalKit *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+			}
+			else if(FStrEq(CMD_ARGV(1),"2")){
+			//	ALERT(at_debug,"DEBUG: calling antitox::use()\n");
+				GetClassPtr((CItemAntidote *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+			}
+			else if(FStrEq(CMD_ARGV(1),"3")){
+			//	ALERT(at_debug,"DEBUG: calling antirad::use()\n");
+				GetClassPtr((CItemAntiRad *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+			}
+			else if(FStrEq(CMD_ARGV(1),"6")){
+				//	ALERT(at_debug,"DEBUG: calling flare::use()\n");
+				GetClassPtr((CItemFlare *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+			}
+			else if(FStrEq(CMD_ARGV(1),"7")){
+				if(pPlayer->m_pItemCamera!= NULL){
+
+					if (CMD_ARGC() > 2) // If we have a specific usetype command
+					{	// (possibly consider letting the player jump between active cameras using a third parameter)
+						if(FStrEq(CMD_ARGV(2),"2"))		//View from Camera
+						{
+							pPlayer->m_pItemCamera->Use(pPlayer,pPlayer,USE_SET,2);
+						}
+						else if (FStrEq(CMD_ARGV(2),"3")) //Back to normal view (don't delete camera)
+						{
+							pPlayer->m_pItemCamera->Use(pPlayer,pPlayer,USE_SET,3);
+						}
+						else if (FStrEq(CMD_ARGV(2),"0")) //Back to normal view (delete camera)
+						{
+							pPlayer->m_pItemCamera->Use(pPlayer,pPlayer,USE_SET,0);
+						}
+					//	else if (FStrEq(CMD_ARGV(2),"1")) //Move camera to current position (uncomment if you want to use this)
+					//	{
+					//		pPlayer->m_pItemCamera->Use(pPlayer,pPlayer,USE_SET,1);
+					//	}
+					}
+					else pPlayer->m_pItemCamera->Use(pPlayer,pPlayer,USE_TOGGLE,0);
+
+				}else
+					ALERT(at_console,"You must have a camera in your inventory before you can use one!\n");
+			}
+			else if(FStrEq(CMD_ARGV(1),"8")){
+				ALERT(at_console,"Note: This item (adrenaline syringe) is still to be implemented \n");
+			}
+			else if(FStrEq(CMD_ARGV(1),"9")){
+				ALERT(at_console,"Note: This item (site to site transporter) is still to be implemented \n");
+			}
+			else if(FStrEq(CMD_ARGV(1),"10")){
+				ALERT(at_console,"Note: This item (Lazarus stealth shield) is still to be implemented \n");
+			}
+			else{
+				ALERT(at_debug,"DEBUG: Inventory item %s cannot be manually used.\n",CMD_ARGV(1));
+			}
+		}
+		else
+			ALERT(at_console,"Usage: inventory <itemnumber>\nItems are:\n\t1: Portable Medkit (Manual)\n2: AntiTox syringe (Automatic)\n3: AntiRad syringe (Automatic)\n7: Remote camera\n");
 	}
 	else if ( FStrEq(pcmd, "give" ) )
 	{
@@ -1799,33 +1864,6 @@ void UpdateClientData ( const edict_t *ent, int sendweapons, struct clientdata_s
 	cd->weaponanim		= pev->weaponanim;
 
 	cd->pushmsec		= pev->pushmsec;
-
-	// Custom data (trigger_viewset)
-	CBasePlayer * pPlayer = (CBasePlayer *)CBaseEntity::Instance((struct edict_s *)ent);
-	if (pPlayer && pPlayer->m_fGameHUDInitialized && pPlayer->viewNeedsUpdate != 0)
-	{
-		CBaseEntity *pViewEnt = UTIL_FindEntityByTargetname(NULL,STRING(pPlayer->viewEntity));
-		int indexToSend;
-		if (!FNullEnt(pViewEnt))
-		{
-			indexToSend = pViewEnt->entindex();
-			ALERT(at_aiconsole, "View data : activated with index %i and flags %i\n", indexToSend, pPlayer->viewFlags);
-		}
-		else
-		{
-			indexToSend = 0;
-			pPlayer->viewFlags = 0; // clear possibly ACTIVE flag
-			ALERT(at_aiconsole, "View data : deactivated\n");
-		}
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgCamData, NULL, (struct edict_s *)ent);
-			WRITE_SHORT( indexToSend );
-			WRITE_SHORT( pPlayer->viewFlags );
-		MESSAGE_END();
-
-		pPlayer->viewNeedsUpdate = 0;
-	}
-	// end custom data
 
 	//Spectator mode
 	if ( pevOrg != NULL )

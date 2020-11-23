@@ -576,10 +576,13 @@ Vector CCalcAngleTransform::CalcVelocity( CBaseEntity *pLocus ) {
  //=======================================================
 #define SF_CALCVELOCITY_NORMALIZE 1
 #define SF_CALCVELOCITY_SWAPZ 2 // MJB this should more correctly be called 'invertZ', but never mind.
-#define SF_CALCVELOCITY_SWAPXY 4 // MJB axis swapping (pitch and yaw)
+#define SF_CALCVELOCITY_DISCARDX 4 // MJB Set to 0 / ignore X-value (good for 'planar-normalised' vectors)
+#define SF_CALCVELOCITY_DISCARDY 8 // MJB You see, the line will never change pitch - its (MATHEMATICAL) locus is a plane (look up locus in 3-unit maths context ;).
+#define SF_CALCVELOCITY_DISCARDZ 16 // MJB Set Z value to 0 / ignore.
+/*#define SF_CALCVELOCITY_SWAPXY 4 // MJB axis swapping (pitch and yaw)
 #define SF_CALCVELOCITY_SWAPYZ 8 // MJB axis swapping (yaw and roll)
 #define SF_CALCVELOCITY_SWAPXZ 16 // MJB axis swapping (pitch and roll)
-#define SF_CALCVELOCITY_DEBUGSWAP 32 // So what the hell is the swapping DOING?
+#define SF_CALCVELOCITY_DEBUGSWAP 32 // So what the hell is the swapping DOING?*/
 
 
 class CCalcSubVelocity : public CPointEntity
@@ -633,6 +636,13 @@ Vector CCalcSubVelocity::Convert( CBaseEntity *pLocus, Vector vecDir )
 	Vector vecOffset = CalcLocus_Velocity( this, pLocus, STRING(pev->message));
 
 	Vector vecResult = vecOffset + (vecDir*fRatio);
+
+	if (pev->spawnflags & SF_CALCVELOCITY_DISCARDX) // MJB - the discard-axis declarations - used to
+		vecResult.x = 0;							// obtain the equivalent of the 'vertical component'
+	if (pev->spawnflags & SF_CALCVELOCITY_DISCARDY) // or 'horizontal component' of a vector, say you
+		vecResult.y = 0;							// only want the vector to exist in one plane, so
+	if (pev->spawnflags & SF_CALCVELOCITY_DISCARDZ) // the [mathematical] locus might be all real X, all
+		vecResult.z = 0;							// real Y, z=0. Capeesh?
 
 	if (pev->spawnflags & SF_CALCVELOCITY_SWAPZ)
 		vecResult.z = -vecResult.z;

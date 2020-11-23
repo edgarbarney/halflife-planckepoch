@@ -29,6 +29,7 @@
 #ifdef _TFC
 #include "../tfc/tf_defs.h"
 #else
+#define PC_RANDOM 10 
 #define PC_LASTCLASS 10
 #define PC_UNDEFINED 0
 #define MENU_DEFAULT				1
@@ -40,6 +41,7 @@
 #define MENU_CLASSHELP2 			7
 #define MENU_REPEATHELP 			8
 #define MENU_SPECHELP				9
+#define MENU_CUSTOM					10	//AJH New Customizable menu HUD system
 #endif
 using namespace vgui;
 
@@ -56,14 +58,17 @@ class DragNDropPanel;
 class CTransparentPanel;
 class CClassMenuPanel;
 class CTeamMenuPanel;
+class CCustomMenu;	//AJH new customizable menu system
 class TeamFortressViewport;
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
 void ScaleColors( int &r, int &g, int &b, int a );
 extern const char *sTFClassSelection[];
+extern char *sInventorySelection[];		//AJH Inventory selection system
 extern int sTFValidClassInts[];
 extern const char *sLocalisedClasses[];
+extern char *sLocalisedInventory[];		//AJH Inventory selection system
 extern int iTeamColors[5][3];
 extern int iNumberOfTeamColors;
 extern TeamFortressViewport *gViewPort;
@@ -512,6 +517,8 @@ private:
 	void		 CreateClassMenu( void );
 	CMenuPanel*	 ShowClassMenu( void );
 	void		 CreateSpectatorMenu( void );
+	CMenuPanel*	 ShowCustomMenu( void );		//AJH new customizable menu system
+	void		 CreateCustomMenu( void );		//AJH new customizable menu system
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -627,13 +634,14 @@ public:
 	// VGUI Menus
 	CMenuPanel		*m_pCurrentMenu;
 	CTeamMenuPanel	*m_pTeamMenu;
-	int						m_StandardMenu;	// indexs in m_pCommandMenus
-	int						m_SpectatorOptionsMenu;
-	int						m_SpectatorCameraMenu;
+	CCustomMenu		*m_pCustomMenu;		//AJH new customizable menu system
+	int				m_StandardMenu;		// indexs in m_pCommandMenus
+	int				m_SpectatorOptionsMenu;
+	int				m_SpectatorCameraMenu;
 	int						m_PlayerMenu; // a list of current player
 	CClassMenuPanel	*m_pClassMenu;
 	ScorePanel		*m_pScoreBoard;
-	SpectatorPanel *		m_pSpectatorPanel;
+	SpectatorPanel	*m_pSpectatorPanel;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
 
@@ -1087,6 +1095,29 @@ public:
 		if ( m_iValidTeamsBits & iTmp )
 			return false;
 		return true;
+	}
+};
+
+class InventoryButton : public CommandButton //AJH inventory system
+{
+private:
+	int m_iItem;
+public:
+	InventoryButton(int item, const char* text, int x, int y, int wide, int tall, bool bFlat) : CommandButton( text,x,y,wide,tall,bFlat)
+	{
+		m_iItem = item;
+	}
+
+	virtual int IsNotValid()
+	{
+		// Always show the main 'Inventory' button (if it is specified in commandmenu.txt
+		if (m_iItem < 0 || m_iItem>=MAX_ITEMS) // m_iItem >= MAX_ITEMS shouldn't ever be true
+			return false;
+		//Only visible if the item is in the players inventory
+		if(g_iInventory[m_iItem]>0)
+			return false;
+		else
+			return true;
 	}
 };
 
@@ -1688,6 +1719,38 @@ private:
 
 public:
 	CClassMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
+
+	virtual bool SlotInput( int iSlot );
+	virtual void Open( void );
+	virtual void Update( void );
+	virtual void SetActiveInfo( int iInput );
+	virtual void Initialize( void );
+
+	virtual void Reset( void )
+	{
+		CMenuPanel::Reset();
+		m_iCurrentInfo = 0;
+	}
+};
+
+class CCustomMenu : public CMenuPanel	//AJH Custom Menu HUD
+{
+private:
+	CTransparentPanel	*m_pClassInfoPanel[PC_LASTCLASS];
+	Label				*m_pPlayers[PC_LASTCLASS];
+	ClassButton			*m_pButtons[PC_LASTCLASS];
+	CommandButton		*m_pCancelButton;
+	ScrollPanel			*m_pScrollPanel;
+
+	CImageLabel			*m_pClassImages[MAX_TEAMS][PC_LASTCLASS];
+
+	int					m_iCurrentInfo;
+
+	enum { STRLENMAX_PLAYERSONTEAM = 128 };
+	char m_sPlayersOnTeamString[STRLENMAX_PLAYERSONTEAM];
+
+public:
+	CCustomMenu(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
 
 	virtual bool SlotInput( int iSlot );
 	virtual void Open( void );

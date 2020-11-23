@@ -218,8 +218,14 @@ void CBasePlayer::SelectLastItem()
 	// FIX, this needs to queue them up and delay
 	if (m_pActiveItem)
 		m_pActiveItem->Holster();
-
+	
+#ifdef USE_QUEUEITEM
 	QueueItem(m_pLastItem);
+#else
+	CBasePlayerItem *pTemp = m_pActiveItem;
+	m_pActiveItem = m_pLastItem;
+	m_pLastItem = pTemp;
+#endif
 
 	if (m_pActiveItem)
 	{
@@ -230,6 +236,7 @@ void CBasePlayer::SelectLastItem()
 
 void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 {
+#ifdef USE_QUEUEITEM
 	if(!m_pActiveItem)// no active weapon
 	{
 		m_pActiveItem = pItem;
@@ -241,4 +248,5 @@ void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 		m_pActiveItem = NULL;// clear current
 	}
 	m_pNextItem = pItem;// add item to queue
+#endif
 }

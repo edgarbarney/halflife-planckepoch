@@ -190,6 +190,12 @@ public:
 	BOOL				m_activated;	// LRC- moved here from func_train. Signifies that an entity has already been
 										// activated. (and hence doesn't need reactivating.)
 
+	//AJH Entities can now have custom names and kill techniques for deathnotices
+	//E.g instead of "Player1 killed Player2 with train" you can have "Player1 decapitated Player2 with a large table saw!)
+	string_t			killname;	//AJH custom 'deathnotice' name
+	string_t			killmethod;	//AJH custom kill techniques
+
+
 	//LRC - decent mechanisms for setting think times!
 	// this should have been done a long time ago, but MoveWith finally forced me.
 	virtual void		SetNextThink( float delay ) { SetNextThink(delay, FALSE); }
@@ -243,6 +249,15 @@ public:
 		else if (FStrEq(pkvd->szKeyName, "skill"))
 		{
 			m_iLFlags = atoi(pkvd->szValue);
+			pkvd->fHandled = TRUE;
+		}
+		else if (FStrEq(pkvd->szKeyName, "killname"))//AJH Custom 'kill' names for entities
+		{
+			killname = ALLOC_STRING(pkvd->szValue);
+			pkvd->fHandled = TRUE;
+		}else if (FStrEq(pkvd->szKeyName, "killmethod"))//AJH Custom 'kill' techniques for entities
+		{
+			killmethod = ALLOC_STRING(pkvd->szValue);
 			pkvd->fHandled = TRUE;
 		}
 		else if (FStrEq(pkvd->szKeyName, "style"))

@@ -61,5 +61,7 @@ extern int gmsgStatusIcon; //LRC
 extern int gmsgStatusText;
 extern int gmsgStatusValue;
 extern int gmsgCamData; // for trigger_viewset
+extern int gmsgRainData;
+extern int gmsgInventory; //AJH Inventory system
 
 void LinkUserMessages();

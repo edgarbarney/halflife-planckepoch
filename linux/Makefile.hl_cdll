@@ -48,6 +48,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/battery.o \
 	$(HL1_OBJ_DIR)/cdll_int.o \
 	$(HL1_OBJ_DIR)/com_weapons.o \
+	$(HL1_OBJ_DIR)/CustomMenu.o \
 	$(HL1_OBJ_DIR)/death.o \
 	$(HL1_OBJ_DIR)/demo.o \
 	$(HL1_OBJ_DIR)/entity.o \
@@ -72,6 +73,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/particlemgr.o \
 	$(HL1_OBJ_DIR)/particlemsg.o \
 	$(HL1_OBJ_DIR)/particlesys.o \
+	$(HL1_OBJ_DIR)/rain.o \
 	$(HL1_OBJ_DIR)/saytext.o \
 	$(HL1_OBJ_DIR)/status_icons.o \
 	$(HL1_OBJ_DIR)/statusbar.o \

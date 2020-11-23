@@ -38,9 +38,6 @@
 using namespace vgui;
 
 
-extern int cam_thirdperson;
-
-
 #define VOICE_MODEL_INTERVAL		0.3
 #define SCOREBOARD_BLINK_FREQUENCY	0.3	// How often to blink the scoreboard icons.
 #define SQUELCHOSCILLATE_PER_SECOND	2.0f
@@ -357,10 +354,12 @@ void CVoiceStatus::CreateEntities()
 		// Don't show an icon for dead or spectating players (ie: invisible entities).
 		if(pClient->curstate.effects & EF_NODRAW)
 			continue;
-
-		// Don't show an icon for the local player unless we're in thirdperson mode.
-		if(pClient == localPlayer && !cam_thirdperson)
-			continue;
+ 
+		//G-Cont. IMHO - are stupid
+ 		// Don't show an icon for the local player unless we're in thirdperson mode.
+		//if(pClient == localPlayer && !cam_thirdperson)
+		//if(pClient == localPlayer && !gHUD.m_iCameraMode)
+		//	continue;
 
 		cl_entity_s *pEnt = &m_VoiceHeadModels[iOutModel];
 		++iOutModel;
