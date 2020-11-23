@@ -683,9 +683,15 @@ int CBaseEntity :: TakeHealth( float flHealth, int bitsDamageType )
 {
 	if (!pev->takedamage)
 		return 0;
-
 // heal
-	if ( pev->health >= pev->max_health )
+
+	//AJH replaces all of below. This now returns the amount of health given. Should have exactly the same behaviour otherwise.
+	flHealth=(pev->max_health>=pev->health+flHealth)?flHealth:(pev->max_health-pev->health); 
+	pev->health+=flHealth;
+	return int(flHealth);
+
+
+/*	if ( pev->health >= pev->max_health )
 		return 0;
 
 	pev->health += flHealth;
@@ -694,6 +700,8 @@ int CBaseEntity :: TakeHealth( float flHealth, int bitsDamageType )
 		pev->health = pev->max_health;
 
 	return 1;
+*/
+	
 }
 
 // inflict damage on this entity.  bitsDamageType indicates type of damage inflicted, ie: DMG_CRUSH

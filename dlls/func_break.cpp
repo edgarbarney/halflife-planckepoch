@@ -409,7 +409,8 @@ void CBreakable::Precache( void )
 // play shard sound when func_breakable takes damage.
 // the more damage, the louder the shard sound.
 
- float CBreakable::CalcRatio(CBaseEntity* plocus, int mode ){//AJH added 'mode' = ratio to return
+float CBreakable::CalcRatio(CBaseEntity* plocus, int mode )//AJH added 'mode' = ratio to return
+{
 	return pev->health/m_iInitialHealth;
 }
 

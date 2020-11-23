@@ -91,7 +91,7 @@ BOOL CCrowbar::Deploy( )
 
 void CCrowbar::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim( CROWBAR_HOLSTER );
 }
 

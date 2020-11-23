@@ -1652,13 +1652,13 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 				m_vecControllerUsePos = m_pController->pev->origin - m_pMoveWith->pev->origin;
 			else
 				m_vecControllerUsePos = m_pController->pev->origin;
-			ALERT( at_console, "TANK controls activated\n");
+			//ALERT( at_console, "TANK controls activated\n");
 		}
 	}
 	else if (m_pController && useType != USE_ON)
 	{
 	// player stepped away or died, most likely.
-		ALERT(at_console, "TANK controls deactivated\n");
+		//ALERT(at_console, "TANK controls deactivated\n");
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.
 		while (tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target)))

@@ -20,6 +20,10 @@
 
 */
 
+//Compile Options
+//#define USE_QUEUEITEM
+//End Compile Options
+
 #include "extdll.h"
 #include "util.h"
 
@@ -36,6 +40,7 @@
 #include "game.h"
 #include "effects.h" //LRC
 #include "movewith.h" //LRC
+#include "items.h" //AJH Inventory system
 #include "pm_shared.h"
 #include "hltv.h"
 #include "UserMessages.h"
@@ -133,13 +138,33 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, viewFlags, FIELD_INTEGER),
 	DEFINE_FIELD( CBasePlayer, viewNeedsUpdate, FIELD_INTEGER),
 
+	//AJH
+	DEFINE_FIELD( CBasePlayer, m_pItemCamera, FIELD_CLASSPTR),			// Pointer to the first item_camera a player has
+	DEFINE_ARRAY( CBasePlayer, m_rgItems, FIELD_INTEGER, MAX_ITEMS ),	// The inventory status array
+	
+	//G-Cont
+	DEFINE_FIELD( CBasePlayer, Rain_dripsPerSecond, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, Rain_windX, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_windY, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_randX, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_randY, FIELD_FLOAT ),
+
+	DEFINE_FIELD( CBasePlayer, Rain_ideal_dripsPerSecond, FIELD_INTEGER ),
+	DEFINE_FIELD( CBasePlayer, Rain_ideal_windX, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_ideal_windY, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_ideal_randX, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayer, Rain_ideal_randY, FIELD_FLOAT ),
+
+	DEFINE_FIELD( CBasePlayer, Rain_endFade, FIELD_TIME ),
+	DEFINE_FIELD( CBasePlayer, Rain_nextFadeUpdate, FIELD_TIME ),
+
 	//LRC
 	//DEFINE_FIELD( CBasePlayer, m_iFogStartDist, FIELD_INTEGER ),
 	//DEFINE_FIELD( CBasePlayer, m_iFogEndDist, FIELD_INTEGER ),
 	//DEFINE_FIELD( CBasePlayer, m_vecFogColor, FIELD_VECTOR ),
 
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
-	//DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games
+	DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games //AJH Not true anymore, used in g-conts modified camera code as it can draw the hud.
 	//DEFINE_FIELD( CBasePlayer, m_flStopExtraSoundTime, FIELD_TIME ),
 	//DEFINE_FIELD( CBasePlayer, m_fKnownItem, FIELD_INTEGER ), // reset to zero on load
 	//DEFINE_FIELD( CBasePlayer, m_iPlayerSound, FIELD_INTEGER ),	// Don't restore, set in Precache()
@@ -482,6 +507,11 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 
 	while (fTookDamage && (!ftrivial || (bitsDamage & DMG_TIMEBASED)) && ffound && bitsDamage)
 	{
+		if (bitsDamage & DMG_TIMEBASED){//AJH give timebased damage frags to activator
+			m_hActivator = pAttacker; 
+			m_pevInflictor = pevInflictor;
+		}
+
 		ffound = FALSE;
 
 		if (bitsDamage & DMG_CLUB)
@@ -789,6 +819,7 @@ void CBasePlayer::RemoveAllItems( BOOL removeSuit )
 		WRITE_BYTE(0);
 		WRITE_BYTE(0);
 	MESSAGE_END();
+
 }
 
 //LRC
@@ -938,8 +969,9 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	// Holster weapon immediately, to allow it to cleanup
 	if ( m_pActiveItem )
 		m_pActiveItem->Holster( );
-
+#ifdef USE_QUEUEITEM
 	m_pNextItem = NULL;
+#endif
 
 	g_pGameRules->PlayerKilled( this, pevAttacker, g_pevLastInflictor );
 
@@ -2192,15 +2224,20 @@ void CBasePlayer::CheckTimeBasedDamage()
 				bDuration = PARALYZE_DURATION;
 				break;
 			case itbd_NerveGas:
-//				TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);
-				bDuration = NERVEGAS_DURATION;
+				if (CVAR_GET_FLOAT ("timed_damage") != 0) //AJH re enable time based Nervegas/radiation
+					TakeDamage(m_pevInflictor, m_hActivator->pev, NERVEGAS_DAMAGE, DMG_GENERIC);
+					//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
+					bDuration = NERVEGAS_DURATION;
 				break;
 			case itbd_Poison:
-				TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
+					TakeDamage(m_pevInflictor, m_hActivator->pev, POISON_DAMAGE, DMG_GENERIC); 
+					//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
 				bDuration = POISON_DURATION;
 				break;
 			case itbd_Radiation:
-//				TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
+					if (CVAR_GET_FLOAT ("timed_damage") != 0) //AJH re enable time based Nervegas/radiation
+					TakeDamage(m_pevInflictor, m_hActivator->pev, RADIATION_DAMAGE, DMG_GENERIC);
+				//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
 				bDuration = RADIATION_DURATION;
 				break;
 			case itbd_DrownRecover:
@@ -2241,10 +2278,30 @@ void CBasePlayer::CheckTimeBasedDamage()
 					{
 						m_rgbTimeBasedDamage[i] = 0;
 						m_rgItems[ITEM_ANTIDOTE]--;
+
+						MESSAGE_BEGIN( MSG_ONE, gmsgInventory, NULL, pev );//AJH msg change inventory
+							WRITE_SHORT( (ITEM_ANTIDOTE) );						//which item to change
+							WRITE_SHORT( m_rgItems[ITEM_ANTIDOTE] );		//set counter to this ammount
+						MESSAGE_END();
+
 						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
 					}
 				}
+				else if ((i == itbd_Radiation) && (m_rgbTimeBasedDamage[i] < RADIATION_DURATION)) //AJH added anti radiation syringe
+				{
+					if (m_rgItems[ITEM_ANTIRAD])
+					{
+						m_rgbTimeBasedDamage[i] = 0;
+						m_rgItems[ITEM_ANTIRAD]--;
 
+						MESSAGE_BEGIN( MSG_ONE, gmsgInventory, NULL, pev );//AJH msg change inventory
+							WRITE_SHORT( (ITEM_ANTIRAD) );						//which item to change
+							WRITE_SHORT( m_rgItems[ITEM_ANTIRAD] );		//set counter to this ammount
+						MESSAGE_END();
+
+						SetSuitUpdate("!HEV_HEAL5", FALSE, SUIT_REPEAT_OK);
+					}
+				}
 
 				// decrement damage duration, detect when done.
 				if (!m_rgbTimeBasedDamage[i] || --m_rgbTimeBasedDamage[i] == 0)
@@ -2983,7 +3040,19 @@ void CBasePlayer::Spawn( void )
 	m_bitsDamageType	= 0;
 	m_afPhysicsFlags	= 0;
 	m_fLongJump			= FALSE;// no longjump module.
-
+/*	Rain_dripsPerSecond = 0;
+	Rain_windX = 0;
+	Rain_windY = 0;
+	Rain_randX = 0;
+	Rain_randY = 0;
+	Rain_ideal_dripsPerSecond = 0;
+	Rain_ideal_windX = 0;
+	Rain_ideal_windY = 0;
+	Rain_ideal_randX = 0;
+	Rain_ideal_randY = 0;
+	Rain_endFade = 0;
+	Rain_nextFadeUpdate = 0;
+*/
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "hl", "1" );
 
@@ -3021,7 +3090,7 @@ void CBasePlayer::Spawn( void )
 	else
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 
-    	pev->view_ofs = VEC_VIEW;
+    pev->view_ofs = VEC_VIEW;
 	viewEntity = 0;
 	viewFlags = 0;
 	Precache();
@@ -3051,6 +3120,19 @@ void CBasePlayer::Spawn( void )
 	m_lastx = m_lasty = 0;
 
 	m_flNextChatTime = gpGlobals->time;
+
+	for (int j=0;j<MAX_ITEMS;j++){	//AJH remove all inventory items
+		m_rgItems[j]=0;
+	}
+
+	MESSAGE_BEGIN(MSG_ONE,gmsgInventory,NULL,pev); //AJH let client know he's lost items
+		WRITE_SHORT(0); //delete all items			//For some reason this doesn't work after a map change??!
+	MESSAGE_END();
+
+	if (m_pItemCamera){	//AJH If we have any cameras in our inventory, reset them all.
+		m_pItemCamera->StripFromPlayer();
+		m_pItemCamera = NULL;
+	}
 
 	g_pGameRules->PlayerSpawn( this );
 }
@@ -3098,6 +3180,7 @@ void CBasePlayer :: Precache( void )
 
 	if ( gInitHUD )
 		m_fInitHUD = TRUE;
+	Rain_needsUpdate = 1;
 }
 
 
@@ -3224,8 +3307,11 @@ void CBasePlayer::SelectNextItem( int iItem )
 	{
 		m_pActiveItem->Holster( );
 	}
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pItem);
+#else
+	m_pActiveItem = pItem;
+#endif
 
 	if (m_pActiveItem)
 	{
@@ -3236,6 +3322,7 @@ void CBasePlayer::SelectNextItem( int iItem )
 
 void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 {
+#ifdef USE_QUEUEITEM
 	if(!m_pActiveItem)// no active weapon
 	{
 		m_pActiveItem = pItem;
@@ -3247,6 +3334,7 @@ void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 		m_pActiveItem = NULL;// clear current
 	}
 	m_pNextItem = pItem;// add item to queue
+#endif
 }
 
 void CBasePlayer::SelectItem(const char *pstr)
@@ -3286,8 +3374,12 @@ void CBasePlayer::SelectItem(const char *pstr)
 	// FIX, this needs to queue them up and delay
 	if (m_pActiveItem)
 		m_pActiveItem->Holster( );
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pItem);
+#else
+	m_pLastItem=m_pActiveItem;
+	m_pActiveItem=pItem;
+#endif
 
 	if (m_pActiveItem)
 	{
@@ -3315,8 +3407,13 @@ void CBasePlayer::SelectLastItem(void)
 	if (m_pActiveItem)
 		m_pActiveItem->Holster( );
 
+#ifdef USE_QUEUEITEM
 	QueueItem(m_pLastItem);
-
+#else
+	CBasePlayerItem *pTemp = m_pActiveItem;
+	m_pActiveItem = m_pLastItem;
+	m_pLastItem = pTemp;
+#endif
 	if (m_pActiveItem)
 	{
 		m_pActiveItem->Deploy( );
@@ -3846,7 +3943,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		break;
 	case	196:// show shortest paths for entire level to nearest node
 		{
-			Create("node_viewer_fly", pev->origin, pev->angles);
+			Create("node_viewer_large", pev->origin, pev->angles);
 		}
 		break;
 	case	197:// show shortest paths for entire level to nearest node
@@ -4045,7 +4142,7 @@ void CBasePlayer::ItemPreFrame()
 	{
 		return;
 	}
-
+#ifdef USE_QUEUEITEM
 	if (!m_pActiveItem)// XWider
 	{
 		if(m_pNextItem)
@@ -4056,7 +4153,7 @@ void CBasePlayer::ItemPreFrame()
 			m_pNextItem = NULL;
 		}
 	}
-
+#endif
 	if (!m_pActiveItem)
 		return;
 
@@ -4160,10 +4257,24 @@ reflecting all of the HUD state info.
 */
 void CBasePlayer :: UpdateClientData( void )
 {
-	if (m_fInitHUD)
+	if (m_fInitHUD) //AJH The HUD needs (re)initialising
 	{
 		m_fInitHUD = FALSE;
-		gInitHUD = FALSE;
+
+		if(gInitHUD) //AJH This is the first initialisation this level.
+		{
+		    gInitHUD = FALSE;
+ 
+			//AJH Reset the FOG
+			MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, pev );
+				WRITE_BYTE ( 0.0 );
+				WRITE_BYTE ( 0.0 );
+				WRITE_BYTE ( 0.0 );
+				WRITE_SHORT ( 0 );
+				WRITE_SHORT ( 0 );
+				WRITE_SHORT ( 0 );
+			MESSAGE_END();
+		}
 		
 		MESSAGE_BEGIN( MSG_ONE, gmsgResetHUD, NULL, pev );
 			WRITE_BYTE( 0 );
@@ -4183,6 +4294,14 @@ void CBasePlayer :: UpdateClientData( void )
 			{
 				FireTargets( "game_playerjoin", this, this, USE_TOGGLE, 0 );
 			}
+		}
+
+		for (int i=0;i<MAX_ITEMS;i++) //AJH 
+		{
+			MESSAGE_BEGIN(MSG_ONE,gmsgInventory,NULL,pev); // let client know which items he has
+				WRITE_SHORT(i); //which item we have
+				WRITE_SHORT(m_rgItems[i]);
+			MESSAGE_END();
 		}
 
 		FireTargets( "game_playerspawn", this, this, USE_TOGGLE, 0 );
@@ -4206,6 +4325,30 @@ void CBasePlayer :: UpdateClientData( void )
 		MESSAGE_END();
 
 		// cache FOV change at end of function, so weapon updates can see that FOV has changed
+	}
+
+	if (viewNeedsUpdate != 0 && m_fGameHUDInitialized)
+	{
+		CBaseEntity *pViewEnt = UTIL_FindEntityByTargetname(NULL,STRING(viewEntity));
+		int indexToSend;
+		if (!FNullEnt(pViewEnt))
+		{
+			indexToSend = pViewEnt->entindex();
+			ALERT(at_aiconsole, "View data : activated with index %i and flags %i\n", indexToSend, viewFlags);
+		}
+		else
+		{
+			indexToSend = 0;
+			viewFlags = 0; // clear possibly ACTIVE flag
+			ALERT(at_aiconsole, "View data : deactivated\n");
+		}				
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgCamData, NULL, pev);
+			WRITE_SHORT( indexToSend );
+			WRITE_SHORT( viewFlags );
+		MESSAGE_END();
+
+		viewNeedsUpdate = 0;
 	}
 
 	// HACKHACK -- send the message to display the game title
@@ -4276,6 +4419,118 @@ void CBasePlayer :: UpdateClientData( void )
 
 		// Clear off non-time-based damage indicators
 		m_bitsDamageType &= DMG_TIMEBASED;
+	}
+
+	// calculate and update rain fading
+	if (Rain_endFade > 0)
+	{
+		if (gpGlobals->time < Rain_endFade)
+		{ // we're in fading process
+			if (Rain_nextFadeUpdate <= gpGlobals->time)
+			{
+				int secondsLeft = Rain_endFade - gpGlobals->time + 1;
+
+				Rain_dripsPerSecond += (Rain_ideal_dripsPerSecond - Rain_dripsPerSecond) / secondsLeft;
+				Rain_windX += (Rain_ideal_windX - Rain_windX) / (float)secondsLeft;
+				Rain_windY += (Rain_ideal_windY - Rain_windY) / (float)secondsLeft;
+				Rain_randX += (Rain_ideal_randX - Rain_randX) / (float)secondsLeft;
+				Rain_randY += (Rain_ideal_randY - Rain_randY) / (float)secondsLeft;
+
+				Rain_nextFadeUpdate = gpGlobals->time + 1; // update once per second
+				Rain_needsUpdate = 1;
+
+				ALERT(at_aiconsole, "Rain fading: curdrips: %i, idealdrips %i\n", Rain_dripsPerSecond, Rain_ideal_dripsPerSecond);
+			}
+		}
+		else
+		{ // finish fading process
+			Rain_nextFadeUpdate = 0;
+			Rain_endFade = 0;
+
+			Rain_dripsPerSecond = Rain_ideal_dripsPerSecond;
+			Rain_windX = Rain_ideal_windX;
+			Rain_windY = Rain_ideal_windY;
+			Rain_randX = Rain_ideal_randX;
+			Rain_randY = Rain_ideal_randY;
+			Rain_needsUpdate = 1;
+
+			ALERT(at_aiconsole, "Rain fading finished at %i drips\n", Rain_dripsPerSecond);
+		}		
+	}
+
+	// send rain message
+	if (Rain_needsUpdate)
+	{
+	//search for rain_settings entity
+		edict_t *pFind; 
+		pFind = FIND_ENTITY_BY_CLASSNAME( NULL, "rain_settings" );
+		if (!FNullEnt( pFind ))
+		{
+		// rain allowed on this map
+			CBaseEntity *pEnt = CBaseEntity::Instance( pFind );
+			CRainSettings *pRainSettings = (CRainSettings *)pEnt;
+
+			float raindistance = pRainSettings->Rain_Distance;
+			float rainheight = pRainSettings->pev->origin[2];
+			int rainmode = pRainSettings->Rain_Mode;
+
+			// search for constant rain_modifies
+			pFind = FIND_ENTITY_BY_CLASSNAME( NULL, "rain_modify" );
+			while ( !FNullEnt( pFind ) )
+			{
+				if (pFind->v.spawnflags & 1)
+				{
+					// copy settings to player's data and clear fading
+					CBaseEntity *pEnt = CBaseEntity::Instance( pFind );
+					CRainModify *pRainModify = (CRainModify *)pEnt;
+
+					Rain_dripsPerSecond = pRainModify->Rain_Drips;
+					Rain_windX = pRainModify->Rain_windX;
+					Rain_windY = pRainModify->Rain_windY;
+					Rain_randX = pRainModify->Rain_randX;
+					Rain_randY = pRainModify->Rain_randY;
+
+					Rain_endFade = 0;
+					break;
+				}
+				pFind = FIND_ENTITY_BY_CLASSNAME( pFind, "rain_modify" );
+			}
+
+			MESSAGE_BEGIN(MSG_ONE, gmsgRainData, NULL, pev);
+				WRITE_SHORT(Rain_dripsPerSecond);
+				WRITE_COORD(raindistance);
+				WRITE_COORD(Rain_windX);
+				WRITE_COORD(Rain_windY);
+				WRITE_COORD(Rain_randX);
+				WRITE_COORD(Rain_randY);
+				WRITE_SHORT(rainmode);
+				WRITE_COORD(rainheight);
+			MESSAGE_END();
+
+			if (Rain_dripsPerSecond)
+				ALERT(at_aiconsole, "Sending enabling rain message\n");
+			else
+				ALERT(at_aiconsole, "Sending disabling rain message\n");
+		}
+		else
+		{ // no rain on this map
+			Rain_dripsPerSecond = 0;
+			Rain_windX = 0;
+			Rain_windY = 0;
+			Rain_randX = 0;
+			Rain_randY = 0;
+			Rain_ideal_dripsPerSecond = 0;
+			Rain_ideal_windX = 0;
+			Rain_ideal_windY = 0;
+			Rain_ideal_randX = 0;
+			Rain_ideal_randY = 0;
+			Rain_endFade = 0;
+			Rain_nextFadeUpdate = 0;
+
+			ALERT(at_aiconsole, "Clearing rain data\n");
+		}
+
+		Rain_needsUpdate = 0;
 	}
 
 	// Update Flashlight
@@ -4877,7 +5132,7 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 	{
 		m_pActiveItem->Holster( );
 	}
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pWeapon);
 
 	if (m_pActiveItem)// XWider: QueueItem sets it if we have no current weapopn
@@ -4885,7 +5140,10 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 		m_pActiveItem->Deploy( );
 		m_pActiveItem->UpdateItemInfo( );
 	}
-
+#else
+	m_pActiveItem = pWeapon;
+	pWeapon->Deploy( );
+#endif
 	return TRUE;
 }
 
@@ -5250,18 +5508,22 @@ class CPlayerMarker : public CBaseEntity
 {
 public:
 	void Spawn( void );
+	void Precache ( void );
 };
 
 LINK_ENTITY_TO_CLASS( player_marker, CPlayerMarker );
 
 void CPlayerMarker :: Spawn( void )
 {
-//	PRECACHE_MODEL( "models/null.mdl" );
-//	SET_MODEL( ENT(pev), "models/null.mdl" );
-	ALERT(at_debug,"Sorry, player mirroring isn't avilable yet.\n");
-	ALERT(at_debug, "DEBUG: Player_marker coordinates is %f %f %f\n", pev->origin.x, pev->origin.y, pev->origin.z);
+	Precache();
+	SET_MODEL( ENT(pev), "models/null.mdl" );
+	ALERT(at_aiconsole, "DEBUG: Player_marker coordinates is %f %f %f \n", pev->origin.x, pev->origin.y, pev->origin.z);
 }
 
+void CPlayerMarker :: Precache( void )
+{
+	PRECACHE_MODEL( "models/null.mdl" );
+}
 
 //=========================================================
 // Multiplayer intermission spots.

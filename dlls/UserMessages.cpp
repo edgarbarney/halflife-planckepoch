@@ -65,6 +65,8 @@ int gmsgStatusIcon = 0; //LRC
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0;
 int gmsgCamData = 0; // for trigger_viewset
+int gmsgRainData = 0;
+int gmsgInventory = 0; //AJH Inventory system
 
 void LinkUserMessages(void)
 {
@@ -93,7 +95,7 @@ void LinkUserMessages(void)
 
 	gmsgSetFog = REG_USER_MSG("SetFog", 9); //LRC
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
-	gmsgSetSky = REG_USER_MSG("SetSky", 7);			//LRC
+	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
 	gmsgAddShine = REG_USER_MSG("AddShine", -1);      //LRC
 	gmsgParticle = REG_USER_MSG("Particle", -1);		//LRC
@@ -122,4 +124,6 @@ void LinkUserMessages(void)
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 	gmsgCamData = REG_USER_MSG("CamData", -1);
 	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1);	//Killar
+	gmsgRainData = REG_USER_MSG("RainData", 16);
+	gmsgInventory = REG_USER_MSG("Inventory", -1);	//AJH Inventory system
 }

@@ -49,7 +49,6 @@ DLL_GLOBAL	short    		g_sModelIndexWExplosion;// holds the index for the underwa
 DLL_GLOBAL	short		g_sModelIndexBubbles;// holds the index for the bubbles model
 DLL_GLOBAL	short		g_sModelIndexBloodDrop;// holds the sprite index for the initial blood
 DLL_GLOBAL	short		g_sModelIndexBloodSpray;// holds the sprite index for splattered blood
-DLL_GLOBAL 	unsigned short 	m_usMirror;
 
 ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
 AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
@@ -311,15 +310,6 @@ void W_Precache(void)
 	memset( CBasePlayerItem::AmmoInfoArray, 0, sizeof(CBasePlayerItem::AmmoInfoArray) );
 	giAmmoIndex = 0;
 
-	m_usMirror = PRECACHE_EVENT(1,"events/mirror.sc");
-	// custom items...
-
-	// common world objects
-	UTIL_PrecacheOther( "item_suit" );
-	UTIL_PrecacheOther( "item_battery" );
-	UTIL_PrecacheOther( "item_antidote" );
-	UTIL_PrecacheOther( "item_security" );
-	UTIL_PrecacheOther( "item_longjump" );
 	UTIL_PrecacheOtherWeapon( "weapon_debug" );
 
 	// shotgun
@@ -819,7 +809,8 @@ void CBasePlayerWeapon :: SetNextThink( float delay )
 	pev->nextthink = m_fNextThink;
 }
 
-/// CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
+
+// CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
 int CBasePlayerWeapon::AddDuplicate( CBasePlayerItem *pOriginal )
 {
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_pPlayer))		//
