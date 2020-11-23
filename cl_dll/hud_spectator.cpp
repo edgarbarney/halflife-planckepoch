@@ -36,7 +36,7 @@ extern float	vJumpAngles[3];
 
 extern void V_GetInEyePos(int entity, float * origin, float * angles );
 extern void V_ResetChaseCam();
-extern void V_GetChasePos(int target, float * cl_angles, float * origin, float * angles);
+extern void V_GetChasePos(cl_entity_t *ent, float *cl_angles, float *origin, float *angles);
 extern float * GetClientColor( int clientIndex );
 
 extern vec3_t v_origin;		// last view origin
@@ -1184,7 +1184,7 @@ void CHudSpectator::SetModes(int iNewMainMode, int iNewInsetMode)
 									g_iUser1 = OBS_ROAMING;
 									if ( g_iUser2 )
 									{
-										V_GetChasePos( g_iUser2, v_cl_angles, vJumpOrigin, vJumpAngles );
+										V_GetChasePos( gEngfuncs.GetEntityByIndex( g_iUser2 ), v_cl_angles, vJumpOrigin, vJumpAngles );
 										gEngfuncs.SetViewAngles( vJumpAngles );
 										iJumpSpectator = 1;
 									}
@@ -1690,7 +1690,7 @@ void CHudSpectator::DrawOverviewEntities()
 	}
 	else if ( m_pip->value == INSET_CHASE_FREE  || g_iUser1 == OBS_CHASE_FREE )
 	{
-		V_GetChasePos( g_iUser2, v_cl_angles, origin, angles );
+		V_GetChasePos( gEngfuncs.GetEntityByIndex( g_iUser2 ), v_cl_angles, origin, angles );
 	}
 	else if ( g_iUser1 == OBS_ROAMING )
 	{
@@ -1698,7 +1698,7 @@ void CHudSpectator::DrawOverviewEntities()
 		VectorCopy( v_cl_angles, angles );
 	}
 	else
-		V_GetChasePos( g_iUser2, NULL, origin, angles );
+		V_GetChasePos( gEngfuncs.GetEntityByIndex( g_iUser2 ), NULL, origin, angles );
 
 	
 	// draw camera sprite

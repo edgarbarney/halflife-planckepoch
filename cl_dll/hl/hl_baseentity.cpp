@@ -332,7 +332,6 @@ void CBasePlayerItem::Drop( void ) { }
 void CBasePlayerItem::Kill( void ) { }
 void CBasePlayerItem::Holster( int skiplocal ) { }
 void CBasePlayerItem::AttachToPlayer ( CBasePlayer *pPlayer ) { }
-void CBasePlayerItem::Spawn() { }
 int CBasePlayerWeapon::AddDuplicate( CBasePlayerItem *pOriginal ) { return 0; }
 int CBasePlayerWeapon::AddToPlayer( CBasePlayer *pPlayer ) { return FALSE; }
 int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer ) { return 0; }

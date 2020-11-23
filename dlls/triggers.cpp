@@ -285,6 +285,7 @@ void CTriggerRelay::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		if (m_iszAltTarget)
 				{
 					//FIXME: the alternate target should really use m_flDelay.
+			//if (pev->spawnflags & SF_RELAY_USESAME)
 					if (m_triggerType == USE_SAME)
 						FireTargets( STRING(m_iszAltTarget), pActivator, this, useType, 0 );
 					else
@@ -2323,6 +2324,7 @@ void CBaseTrigger :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	if (pev->solid == SOLID_NOT)
 	{// if the trigger is off, turn it on
 		pev->solid = SOLID_TRIGGER;
+		m_hActivator = pActivator; //AJH players can get frags for world kills
 
 		// Force retouch
 		gpGlobals->force_retouch++;
@@ -2330,6 +2332,8 @@ void CBaseTrigger :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	else
 	{// turn the trigger off
 		pev->solid = SOLID_NOT;
+		m_hActivator = NULL; //AJH players can get frags for world kills
+
 	}
 	UTIL_SetOrigin( this, pev->origin );
 }
@@ -2514,7 +2518,7 @@ void CTriggerHurt :: HurtTouch ( CBaseEntity *pOther )
 	if ( fldmg < 0 )
 		pOther->TakeHealth( -fldmg, m_bitsDamageInflict );
 	else
-		pOther->TakeDamage( pev, pev, fldmg, m_bitsDamageInflict );
+		pOther->TakeDamage( pev, (m_hActivator)?m_hActivator->pev:pev, fldmg, m_bitsDamageInflict ); //AJH give frags to activator
 
 	// Store pain time so we can get all of the other entities on this frame
 	pev->pain_finished = gpGlobals->time;
@@ -2779,14 +2783,21 @@ class CTargetFMODAudio : public CPointEntity
 public:
      void Spawn( void );
 
-     void Use( CBaseEntity *pActivator, CBaseEntity *pCaller,
-          USE_TYPE useType, float value );
-
+     void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
      BOOL m_bPlaying;
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
 };
 
 LINK_ENTITY_TO_CLASS( ambient_fmodstream, CTargetFMODAudio );
 LINK_ENTITY_TO_CLASS( trigger_mp3audio, CTargetFMODAudio );
+
+TYPEDESCRIPTION	CTargetFMODAudio::m_SaveData[] = 
+{
+	DEFINE_FIELD( CTargetFMODAudio, m_bPlaying, FIELD_BOOLEAN ),
+};
+IMPLEMENT_SAVERESTORE( CTargetFMODAudio, CPointEntity );
 
 void CTargetFMODAudio :: Spawn( void )
 {
@@ -2862,7 +2873,7 @@ void CTriggerCDAudio::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	PlayTrack();
 }
 
-void PlayCDTrack( int iTrack )
+void PlayCDTrack( int iTrack, int iSong)
 {
 	edict_t *pClient;
 
@@ -2881,13 +2892,15 @@ void PlayCDTrack( int iTrack )
 
 	if ( iTrack == -1 )
 	{
+		CLIENT_COMMAND ( pClient, "stopaudio\n");
 		CLIENT_COMMAND ( pClient, "cd stop\n");
 	}
 	else
 	{
 		char string [ 64 ];
-
-		sprintf( string, "cd play %3d\n", iTrack );
+		
+		if(iSong) sprintf( string, "playaudio %s\n", STRING(iSong) );
+		else	  sprintf( string, "cd play %3d\n", iTrack );
 		CLIENT_COMMAND ( pClient, string);
 	}
 }
@@ -2896,7 +2909,7 @@ void PlayCDTrack( int iTrack )
 // only plays for ONE client, so only use in single play!
 void CTriggerCDAudio :: PlayTrack( void )
 {
-	PlayCDTrack( (int)pev->health );
+	PlayCDTrack( (int)pev->health, (int)pev->message );
 
 	SetTouch( NULL );
 	UTIL_Remove( this );
@@ -2963,7 +2976,7 @@ void CTargetCDAudio::Think( void )
 
 void CTargetCDAudio::Play( void )
 {
-	PlayCDTrack( (int)pev->health );
+	PlayCDTrack( (int)pev->health, (int) pev->message );
 	UTIL_Remove(this);
 }
 
@@ -4870,6 +4883,7 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 class CMotionThread : public CPointEntity
 {
 public:
+	void Spawn( void ); //AJH
 	void Think( void );
 
 	virtual int		Save( CSave &save );
@@ -4902,8 +4916,14 @@ TYPEDESCRIPTION	CMotionThread::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CMotionThread,CPointEntity);
 
+void CMotionThread::Spawn( void ) //AJH
+{
+	pev->classname = MAKE_STRING("motionthread"); //We need this for save/restore to work
+}
+
 void CMotionThread::Think( void )
 {
+	//SetBits(pev->spawnflags, SF_MOTION_DEBUG);
 	if (m_hLocus == NULL || m_hTarget == NULL)
 	{
 		if (pev->spawnflags & SF_MOTION_DEBUG)
@@ -5264,6 +5284,9 @@ TYPEDESCRIPTION	CMotionManager::m_SaveData[] =
 	DEFINE_FIELD( CMotionManager, m_iPosMode, FIELD_INTEGER ),
 	DEFINE_FIELD( CMotionManager, m_iszFacing, FIELD_STRING ),
 	DEFINE_FIELD( CMotionManager, m_iFaceMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CMotionManager, m_iPosAxis, FIELD_INTEGER ),//AJH
+	DEFINE_FIELD( CMotionManager, m_iFaceAxis, FIELD_INTEGER ),//AJH
+	DEFINE_FIELD( CMotionManager, pThread, FIELD_CLASSPTR ),//AJH
 };
 
 IMPLEMENT_SAVERESTORE(CMotionManager,CPointEntity);
@@ -5314,10 +5337,17 @@ void CMotionManager::PostSpawn( void )
 
 void CMotionManager::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	
 	if(useType==USE_OFF){		//AJH to allow motion_managers to turn off
 		if (pThread!=NULL)		//
 		pThread->m_hLocus=NULL;	//
 	}else{
+
+		if (pThread==NULL) //AJH we shouldn't need this but for some reason the pointer is ALWAYS NULL after save/restore.
+		{
+			pThread= GetClassPtr( (CMotionThread*)NULL );
+			//ALERT(at_debug,"Motion_manager motion thread pointer is NULL, Creating new motionthread.\n");
+		}
 		CBaseEntity *pTarget = pActivator;
 		if (pev->target){
 			pTarget = UTIL_FindEntityByTargetname(NULL, STRING(pev->target), pActivator);
@@ -5338,8 +5368,11 @@ void CMotionManager::Affect( CBaseEntity *pTarget, CBaseEntity *pActivator )
 	if (pev->spawnflags & SF_MOTION_DEBUG)
 		ALERT(at_debug, "DEBUG: Creating MotionThread for %s \"%s\"\n", STRING(pTarget->pev->classname), STRING(pTarget->pev->targetname));
 
-//AJH	CMotionThread *pThread = GetClassPtr( (CMotionThread*)NULL );
-	if (pThread == NULL) return; //error?
+	if (pThread == NULL)
+	{
+		ALERT(at_debug,"Motion_manager motion thread pointer is NULL!!\n");
+		return; //error?
+	}
 	pThread->m_hLocus = pActivator;
 	pThread->m_hTarget = pTarget;
 	pThread->m_iszPosition = m_iszPosition;

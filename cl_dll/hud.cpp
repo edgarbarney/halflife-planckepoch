@@ -33,6 +33,7 @@
 #include "demo.h"
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
+#include "rain.h"
 
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
@@ -129,6 +130,12 @@ int __MsgFunc_SetSky(const char *pszName, int iSize, void *pbuf)
 	return 1;
 }
 
+// G-Cont. rain message
+int __MsgFunc_RainData(const char *pszName, int iSize, void *pbuf)
+{
+	return gHUD.MsgFunc_RainData( pszName, iSize, pbuf );
+}
+
 int __MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf)
 {
 #ifdef ENGINE_DEBUG
@@ -176,6 +183,12 @@ int __MsgFunc_PlayMP3(const char *pszName, int iSize, void *pbuf )
 int __MsgFunc_CamData(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_CamData( pszName, iSize, pbuf );
+	return 1;
+}
+
+int __MsgFunc_Inventory(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_Inventory( pszName, iSize, pbuf );
 	return 1;
 }
 
@@ -358,9 +371,12 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( AddShine ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
 	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
+	HOOK_MESSAGE( RainData );//G-Cont. for rain control 
+	HOOK_MESSAGE( Inventory ); //AJH Inventory system
 
 	//KILLAR: MP3	
-	if(gMP3.Initialize()){
+	if(gMP3.Initialize())
+	{
 		HOOK_MESSAGE( PlayMP3 );
 		HOOK_COMMAND( "stopaudio", StopMP3 );
 	}
@@ -416,7 +432,7 @@ void CHud :: Init( void )
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
 	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
 	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
-
+	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
 	m_pSpriteList = NULL;
 	m_pShinySurface = NULL; //LRC
 
@@ -454,7 +470,7 @@ void CHud :: Init( void )
 	m_Particle.Init(); // (LRC) -- 30/08/02 November235: Particles to Order
 
 	m_Menu.Init();
-	
+	InitRain();	
 	ServersInit();
 
 	MsgFunc_ResetHUD(0, 0, NULL );
@@ -471,6 +487,7 @@ CHud :: ~CHud()
 	delete [] m_rgrcRects;
 	delete [] m_rgszSpriteNames;
 	gMP3.Shutdown();
+	ResetRain();
 	//LRC - clear all shiny surfaces
 	if (m_pShinySurface)
 	{
@@ -525,6 +542,7 @@ void CHud :: VidInit( void )
 	m_hsprLogo = 0;	
 	m_hsprCursor = 0;
 	numMirrors = 0;
+	ResetRain();
 
 	//LRC - clear all shiny surfaces
 	if (m_pShinySurface)

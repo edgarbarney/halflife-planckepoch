@@ -1111,6 +1111,8 @@ float already_chosen_map;
 
 #define MENU_SPECHELP				9
 
+#define MENU_CUSTOM					10	//AJH New Customizable menu HUD system
+
 
 #define MENU_SPY					12
 #define MENU_SPY_SKIN				13

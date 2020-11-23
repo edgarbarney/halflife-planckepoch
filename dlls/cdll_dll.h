@@ -25,7 +25,7 @@
 #define MAX_WEAPON_SLOTS		5	// hud item selection slots
 #define MAX_ITEM_TYPES			6	// hud item selection slots
 
-#define MAX_ITEMS				5	// hard coded item types
+#define MAX_ITEMS				10	//AJH (increased from 5 for expanded inventory system) hard coded item types
 
 #define	HIDEHUD_WEAPONS		( 1<<0 )
 #define	HIDEHUD_FLASHLIGHT	( 1<<1 )

@@ -115,6 +115,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\battery.cpp" />
     <ClCompile Include="..\..\cl_dll\cdll_int.cpp" />
     <ClCompile Include="..\..\cl_dll\com_weapons.cpp" />
+    <ClCompile Include="..\..\cl_dll\CustomMenu.cpp" />
     <ClCompile Include="..\..\cl_dll\death.cpp" />
     <ClCompile Include="..\..\cl_dll\demo.cpp" />
     <ClCompile Include="..\..\cl_dll\entity.cpp" />
@@ -148,6 +149,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\particlemgr.cpp" />
     <ClCompile Include="..\..\cl_dll\particlemsg.cpp" />
     <ClCompile Include="..\..\cl_dll\particlesys.cpp" />
+    <ClCompile Include="..\..\cl_dll\rain.cpp" />
     <ClCompile Include="..\..\cl_dll\saytext.cpp" />
     <ClCompile Include="..\..\cl_dll\statusbar.cpp" />
     <ClCompile Include="..\..\cl_dll\status_icons.cpp" />
@@ -222,6 +224,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\mp3.h" />
     <ClInclude Include="..\..\cl_dll\particlemgr.h" />
     <ClInclude Include="..\..\cl_dll\particlesys.h" />
+    <ClInclude Include="..\..\cl_dll\rain.h" />
     <ClInclude Include="..\..\cl_dll\StudioModelRenderer.h" />
     <ClInclude Include="..\..\cl_dll\tri.h" />
     <ClInclude Include="..\..\cl_dll\util_vector.h" />
