@@ -223,7 +223,7 @@ BOOL CBasePlayerWeapon :: DefaultDeploy(const char *szViewModel, const char *szW
 
 	gEngfuncs.CL_LoadModel( szViewModel, &m_pPlayer->pev->viewmodel );
 	
-//	SendWeaponAnim( iAnim, skiplocal, body );
+	SendWeaponAnim( iAnim, skiplocal, body );
 
 	g_irunninggausspred = false;
 	m_pPlayer->m_flNextAttack = 0.5;
@@ -474,7 +474,7 @@ CBasePlayer::Spawn
 */
 void CBasePlayer::Spawn( void )
 {
-	if (m_pActiveItem)
+	if (m_pActiveItem&&m_pNextItem)
 	{
 		m_pActiveItem = m_pNextItem;
 		m_pActiveItem->Deploy();
