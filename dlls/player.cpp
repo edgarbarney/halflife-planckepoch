@@ -1879,6 +1879,7 @@ void CBasePlayer::Jump()
 		pev->velocity.Length() > 50 )
 	{
 		SetAnimation( PLAYER_SUPERJUMP );
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/longjump1.wav", 1, ATTN_NORM);
 	}
 	
 	// If you're standing on a conveyor, add its velocity to yours (for momentum)
