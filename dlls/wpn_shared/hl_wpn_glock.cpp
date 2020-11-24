@@ -84,6 +84,8 @@ void CGlock::Precache( void )
 	PRECACHE_SOUND ("weapons/pl_gun2.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun3.wav");//handgun
 
+	PRECACHE_SOUND("weapons/semifullswitch.wav");//autoswitch sound
+
 	m_usFireGlock1 = PRECACHE_EVENT( 1, "events/glock1.sc" );
 	m_usFireGlock2 = PRECACHE_EVENT( 1, "events/glock2.sc" );
 }
@@ -113,15 +115,17 @@ BOOL CGlock::Deploy( )
 
 void CGlock::SecondaryAttack( void )
 {
-	if (m_isFullAuto)
-	GlockFire( 0.12, 0.07, FALSE ); //Full auto modification!
-	else
-	GlockFire(0.1, 0.2, FALSE);
+	m_isFullAuto = !m_isFullAuto;
+	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
+	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 
 void CGlock::PrimaryAttack( void )
 {
-	GlockFire( 0.01, 0.3, TRUE );
+	if (m_isFullAuto)
+		GlockFire(0.05, 0.07, FALSE); //Full auto modification!
+	else
+		GlockFire( 0.01, 0.2, TRUE );
 }
 
 void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
@@ -204,6 +208,7 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	ALERT(at_console, "GUNSHOT\n");
 }
 
 

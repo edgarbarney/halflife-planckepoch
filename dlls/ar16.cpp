@@ -21,7 +21,8 @@ enum ar16_e
 	AR16_FIRE1,
 	AR16_FIRE2,
 	AR16_FIRE3,
-	AR16_HOLSTER
+	AR16_HOLSTER,
+	AR16_DEPLOY_NORELOAD,
 };
 
 
@@ -77,6 +78,7 @@ void CAR16::Precache(void)
 
 	m_usAR16 = PRECACHE_EVENT(1, "events/ar16.sc");
 	m_usAR162 = PRECACHE_EVENT(1, "events/ar162.sc");
+	m_usAR163 = PRECACHE_EVENT(1, "events/ar163.sc");
 }
 
 int CAR16::GetItemInfo(ItemInfo* p)
@@ -246,10 +248,16 @@ void CAR16::SecondaryAttack(void)
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usAR162);
-
-	m_flNextPrimaryAttack = GetNextAttackDelay(2.2); // Modified M203 delay
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.2;
+	if (m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType] == 0)
+	{
+		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usAR163);
+	}
+	else 
+	{
+		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usAR162);
+	}
+	m_flNextPrimaryAttack = GetNextAttackDelay(2); // Modified M203 delay
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2;
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5;// idle pretty soon after shooting.
 
 	if (!m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType])

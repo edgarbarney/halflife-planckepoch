@@ -662,6 +662,7 @@ public:
 private:
 	unsigned short m_usAR16;
 	unsigned short m_usAR162;
+	unsigned short m_usAR163;
 };
 
 class CCrossbow : public CBasePlayerWeapon

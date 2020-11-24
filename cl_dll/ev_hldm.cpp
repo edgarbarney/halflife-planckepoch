@@ -58,6 +58,7 @@ void EV_FireMP5( struct event_args_s *args  );
 //void EV_FireMP52( struct event_args_s *args  ); replaced by AR16
 void EV_FireAR16(struct event_args_s* args);
 void EV_FireAR162( struct event_args_s *args  );
+void EV_FireAR163(struct event_args_s* args);
 void EV_FirePython( struct event_args_s *args  );
 void EV_FireGauss( struct event_args_s *args  );
 void EV_SpinGauss( struct event_args_s *args  );
@@ -858,7 +859,33 @@ void EV_FireAR162(event_args_t* args)
 
 	if (EV_IsLocal(idx))
 	{
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(MP5_LAUNCH, 2);
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(AR16_LAUNCH, 2);
+		V_PunchAxis(0, -10);
+	}
+
+	switch (gEngfuncs.pfnRandomLong(0, 1))
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/glauncher.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/glauncher2.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		break;
+	}
+}
+
+//Grenade launch with no reload
+void EV_FireAR163(event_args_t* args)
+{
+	int idx;
+	vec3_t origin;
+
+	idx = args->entindex;
+	VectorCopy(args->origin, origin);
+
+	if (EV_IsLocal(idx))
+	{
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(AR16_DEPLOY_NORELOAD, 2);
 		V_PunchAxis(0, -10);
 	}
 

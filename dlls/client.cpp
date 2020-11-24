@@ -951,6 +951,7 @@ void ClientPrecache( void )
 
 	//EDMD Sounds
 	PRECACHE_SOUND("player/longjump1.wav");
+	PRECACHE_SOUND("fvox/flatlineeaster.wav");
 
 	// PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound
 

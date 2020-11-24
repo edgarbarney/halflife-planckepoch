@@ -439,7 +439,16 @@ void CBasePlayer :: DeathSound( void )
 	//LRC- if no suit, then no flatline sound. (unless it's a deathmatch.)
 	if ( !(pev->weapons & (1<<WEAPON_SUIT)) && !g_pGameRules->IsDeathmatch() )
 		return;
-	EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+
+	switch (RANDOM_LONG(0, 25))
+	{
+	case 25:
+		EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+		break;
+	default:
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fvox/flatlineeaster.wav", 1, ATTN_NORM);
+		break;
+	}
 }
 
 // override takehealth
