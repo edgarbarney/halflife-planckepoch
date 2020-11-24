@@ -176,9 +176,9 @@ int DLLEXPORT HUD_VidInit( void )
 	gHUD.VidInit();
 
 	VGui_Startup();
-
-	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
-		InitScreenGlow(); // glow effect --FragBait0
+	
+//LRCTEMP 1.8	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
+//LRCTEMP 1.8		InitScreenGlow(); // glow effect --FragBait0
 
 	return 1;
 }
@@ -214,9 +214,9 @@ redraw the HUD.
 int DLLEXPORT HUD_Redraw( float time, int intermission )
 {
 //	RecClHudRedraw(time, intermission);
-
-	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
-		RenderScreenGlow(); // glow effect --FragBait0
+	
+//LRCTEMP 1.8	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
+//LRCTEMP 1.8		RenderScreenGlow(); // glow effect --FragBait0
 
 	gHUD.Redraw( time, intermission );
 

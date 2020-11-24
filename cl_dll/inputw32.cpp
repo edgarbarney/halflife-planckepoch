@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright (c) 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -157,6 +157,77 @@ HANDLE	s_hMouseThread = 0;
 HANDLE	s_hMouseQuitEvent = 0;
 HANDLE	s_hMouseDoneQuitEvent = 0;
 #endif
+
+float g_clampMinYaw = 0;
+float g_clampMaxYaw = 360;
+float g_clampMinPitch = -90;
+float g_clampMaxPitch = 90;
+float g_clampTurnSpeed = 1E6;
+
+//LRC 1.8
+float V_ClampYaw(float oldYaw, float proposedYaw)
+{
+	float wrapYaw = 0;
+
+	// are we actually doing any clamping?
+	if ( g_clampMaxYaw - g_clampMinYaw >= 360 )
+		return proposedYaw;
+
+	// awkwardly, yaw wraps; find the correct frame of reference
+	while ( oldYaw+wrapYaw > g_clampMaxYaw )
+		wrapYaw -= 360;
+
+	while ( oldYaw+wrapYaw < g_clampMinYaw )
+		wrapYaw += 360;
+
+	if ( proposedYaw+wrapYaw >= g_clampMinYaw && proposedYaw+wrapYaw <= g_clampMaxYaw )
+		return proposedYaw+wrapYaw; // ok, that's in range
+
+	// proposedYaw is out of range, we need to return one of the endpoints.
+	// return the endpoint that's closest to the _old_ yaw.
+	// so that you can't jump over to the other side of the clamped zone with a big mouse move)
+	if ( fabs(oldYaw+wrapYaw - g_clampMinYaw) > fabs(oldYaw+wrapYaw - g_clampMaxYaw) )
+	{
+		return g_clampMaxYaw-0.01; // this gets quantized; offset to prevent rounding errors
+	}
+	else
+	{
+		return g_clampMinYaw+0.01;
+	}
+}
+
+//LRC 1.8
+float V_ClampPitch(float oldPitch, float proposedPitch)
+{
+	// are we actually doing any clamping?
+	if ( g_clampMaxPitch - g_clampMinPitch >= 180 )
+		return proposedPitch;
+
+	if ( proposedPitch < g_clampMinPitch )
+		return g_clampMinPitch;
+	else if ( proposedPitch > g_clampMaxPitch )
+		return g_clampMaxPitch;
+	else
+		return proposedPitch;
+}
+
+//LRC 1.8
+Vector V_LimitClampSpeed(Vector& prev, Vector& next, float frametime)
+{
+	Vector offset(next[PITCH] - prev[PITCH], next[YAW] - prev[YAW], 0.0f);
+
+	while ( offset[YAW] > 180 )
+		offset[YAW] -= 360;
+	while ( offset[YAW] < -180 )
+		offset[YAW] += 360;
+
+	if ( offset.Length() > g_clampTurnSpeed*frametime )
+	{
+		offset = offset.Normalize() * (g_clampTurnSpeed*frametime);
+	}
+
+	return prev + offset;
+}
 
 /*
 ===========
@@ -460,8 +531,10 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 {
 	int		mx, my;
 	vec3_t viewangles;
+	vec3_t oldviewangles;
 
 	gEngfuncs.GetViewAngles( (float *)viewangles );
+	oldviewangles = viewangles; //LRC 1.8
 
 	if ( in_mlook.state & 1)
 	{
@@ -569,6 +642,10 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 			IN_ResetMouse();
 		}
 	}
+
+	viewangles[YAW] = V_ClampYaw(oldviewangles[YAW], viewangles[YAW]); //LRC 1.8
+	viewangles[PITCH] = V_ClampPitch(oldviewangles[PITCH], viewangles[PITCH]); //LRC 1.8
+	viewangles = V_LimitClampSpeed(oldviewangles, viewangles, frametime);
 
 	gEngfuncs.SetViewAngles( (float *)viewangles );
 
@@ -863,9 +940,10 @@ void IN_JoyMove ( float frametime, usercmd_t *cmd )
 	float	fAxisValue, fTemp;
 	int		i;
 	vec3_t viewangles;
+	vec3_t oldviewangles;
 
 	gEngfuncs.GetViewAngles( (float *)viewangles );
-
+	oldviewangles = viewangles; //LRC 1.8
 
 	// complete initialization if first time in
 	// this is needed as cvars are not available at initialization time
@@ -1035,6 +1113,8 @@ void IN_JoyMove ( float frametime, usercmd_t *cmd )
 		viewangles[PITCH] = cl_pitchdown->value;
 	if (viewangles[PITCH] < -cl_pitchup->value)
 		viewangles[PITCH] = -cl_pitchup->value;
+
+	viewangles[YAW] = V_ClampYaw(oldviewangles[YAW], viewangles[YAW]); //LRC 1.8
 
 	gEngfuncs.SetViewAngles( (float *)viewangles );
 }

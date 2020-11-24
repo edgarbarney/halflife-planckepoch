@@ -213,6 +213,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\fmod.h" />
     <ClInclude Include="..\..\cl_dll\fmod_errors.h" />
     <ClInclude Include="..\..\cl_dll\GameStudioModelRenderer.h" />
+    <ClInclude Include="..\..\cl_dll\glInclude.h" />
     <ClInclude Include="..\..\cl_dll\health.h" />
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_servers.h" />
