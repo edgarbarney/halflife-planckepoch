@@ -113,7 +113,10 @@ BOOL CGlock::Deploy( )
 
 void CGlock::SecondaryAttack( void )
 {
-	GlockFire( 0.1, 0.2, FALSE );
+	if (m_isFullAuto)
+	GlockFire( 0.12, 0.07, FALSE ); //Full auto modification!
+	else
+	GlockFire(0.1, 0.2, FALSE);
 }
 
 void CGlock::PrimaryAttack( void )

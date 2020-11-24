@@ -63,8 +63,8 @@ void CAR16::Precache(void)
 	PRECACHE_MODEL("models/w_ar16clip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("items/ar16_magin.wav");
-	PRECACHE_SOUND("items/ar16_magrel.wav");
+	PRECACHE_SOUND("weapons/ar16_magin.wav");
+	PRECACHE_SOUND("weapons/ar16_magrel.wav");
 
 	PRECACHE_SOUND("weapons/ar16_fire1.wav");
 	PRECACHE_SOUND("weapons/ar16_fire2.wav");
@@ -248,8 +248,8 @@ void CAR16::SecondaryAttack(void)
 
 	PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usAR162);
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(1);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1;
+	m_flNextPrimaryAttack = GetNextAttackDelay(2.2); // Modified M203 delay
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.2;
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5;// idle pretty soon after shooting.
 
 	if (!m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType])

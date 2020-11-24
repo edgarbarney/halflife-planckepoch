@@ -88,7 +88,7 @@ void CMP5::Precache( void )
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 
 	m_usMP5 = PRECACHE_EVENT( 1, "events/mp5.sc" );
-	m_usMP52 = PRECACHE_EVENT( 1, "events/mp52.sc" );
+	//m_usMP52 = PRECACHE_EVENT( 1, "events/mp52.sc" );
 }
 
 int CMP5::GetItemInfo(ItemInfo *p)
