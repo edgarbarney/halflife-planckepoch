@@ -112,6 +112,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\animating.cpp" />
     <ClCompile Include="..\..\dlls\animation.cpp" />
     <ClCompile Include="..\..\dlls\apache.cpp" />
+    <ClCompile Include="..\..\dlls\ar16.cpp" />
     <ClCompile Include="..\..\dlls\barnacle.cpp" />
     <ClCompile Include="..\..\dlls\barney.cpp" />
     <ClCompile Include="..\..\dlls\bigmomma.cpp" />

@@ -242,8 +242,11 @@ void CGameRules::RefreshSkillData ( void )
 	// MP5 Round
 	gSkillData.plrDmgMP5 = GetSkillCvar( "sk_plr_9mmAR_bullet");
 
+	// AR16 Round
+	gSkillData.plrDmgAR16 = GetSkillCvar("sk_plr_556_bullet");
+
 	// M203 grenade
-	gSkillData.plrDmgM203Grenade = GetSkillCvar( "sk_plr_9mmAR_grenade");
+	gSkillData.plrDmgM203Grenade = GetSkillCvar( "sk_plr_m203_grenade");
 
 	// Shotgun buckshot
 	gSkillData.plrDmgBuckshot = GetSkillCvar( "sk_plr_buckshot");

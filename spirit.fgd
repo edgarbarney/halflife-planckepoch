@@ -742,6 +742,8 @@
 		19: "Satchel Charge"
 		20: "Snark"
 		21: "Hornet Gun"
+		22: "AR16"
+		23: "5.56 Mag(AR16)"
 	]
 	explodemagnitude(integer) : "Explode Magnitude (0=none)" : 0
 	//NEW 0.4
@@ -5994,6 +5996,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_357.mdl")= weapon_357 : "357 Handgun" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmar.mdl")= weapon_9mmAR : "9mm Assault Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmhandgun.mdl")= weapon_9mmhandgun : "9mm Handgun" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_ar16.mdl")= weapon_9mmAR : "9mm Assault Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_crossbow.mdl")= weapon_crossbow : "Crossbow" 
 [
 	sequence(choices) : "Placement" : 0 =

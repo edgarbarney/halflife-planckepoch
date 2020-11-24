@@ -70,7 +70,7 @@ void CMP5::Precache( void )
 
 	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shellTE_MODEL
 
-	PRECACHE_MODEL("models/grenade.mdl");	// grenade
+	//PRECACHE_MODEL("models/grenade.mdl");	We dont need you anymore.
 
 	PRECACHE_MODEL("models/w_9mmARclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");              
@@ -96,8 +96,8 @@ int CMP5::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "9mm";
 	p->iMaxAmmo1 = _9MM_MAX_CARRY;
-	p->pszAmmo2 = "ARgrenades";
-	p->iMaxAmmo2 = M203_GRENADE_MAX_CARRY;
+	//p->pszAmmo2 = "ARgrenades";
+	//p->iMaxAmmo2 = M203_GRENADE_MAX_CARRY; Bye bye MP5's m203
 	p->iMaxClip = MP5_MAX_CLIP;
 	p->iSlot = 2;
 	p->iPosition = 0;
@@ -215,8 +215,8 @@ void CMP5::PrimaryAttack()
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
-
-
+// M203 attack. Disabled.
+/*
 void CMP5::SecondaryAttack( void )
 {
 	// don't fire underwater
@@ -270,6 +270,7 @@ void CMP5::SecondaryAttack( void )
 
 	m_pPlayer->pev->punchangle.x -= 10;
 }
+*/
 
 void CMP5::Reload( void )
 {
@@ -362,7 +363,8 @@ class CMP5Chainammo : public CBasePlayerAmmo
 };
 LINK_ENTITY_TO_CLASS( ammo_9mmbox, CMP5Chainammo );
 
-
+// MP5 Grenade class. Replaced with AR16's
+/*
 class CMP5AmmoGrenade : public CBasePlayerAmmo
 {
 	void Spawn( void )
@@ -389,6 +391,7 @@ class CMP5AmmoGrenade : public CBasePlayerAmmo
 };
 LINK_ENTITY_TO_CLASS( ammo_mp5grenades, CMP5AmmoGrenade );
 LINK_ENTITY_TO_CLASS( ammo_ARgrenades, CMP5AmmoGrenade );
+*/
 
 
 

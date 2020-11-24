@@ -89,6 +89,7 @@ public:
 #define WEAPON_TRIPMINE			14
 #define WEAPON_SATCHEL			15
 #define WEAPON_SNARK			16
+#define WEAPON_AR16				17
 
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
@@ -106,6 +107,7 @@ public:
 #define GLOCK_WEIGHT		10
 #define PYTHON_WEIGHT		15
 #define MP5_WEIGHT			15
+#define AR16_WEIGHT			15
 #define SHOTGUN_WEIGHT		15
 #define CROSSBOW_WEIGHT		10
 #define RPG_WEIGHT			20
@@ -119,8 +121,9 @@ public:
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
-#define	_9MM_MAX_CARRY			250
+#define	_9MM_MAX_CARRY			120
 #define _357_MAX_CARRY			36
+#define _556_MAX_CARRY			90
 #define BUCKSHOT_MAX_CARRY		125
 #define BOLT_MAX_CARRY			50
 #define ROCKET_MAX_CARRY		5
@@ -137,8 +140,9 @@ public:
 //#define CROWBAR_MAX_CLIP		WEAPON_NOCLIP
 #define GLOCK_MAX_CLIP			17
 #define PYTHON_MAX_CLIP			6
-#define MP5_MAX_CLIP			50
-#define MP5_DEFAULT_AMMO		25
+#define MP5_MAX_CLIP			30
+//#define MP5_DEFAULT_AMMO		30	Removed cus already defined down there
+#define AR16_MAX_CLIP			30
 #define SHOTGUN_MAX_CLIP		8
 #define CROSSBOW_MAX_CLIP		5
 #define RPG_MAX_CLIP			1
@@ -153,9 +157,10 @@ public:
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
 #define PYTHON_DEFAULT_GIVE			6
-#define MP5_DEFAULT_GIVE			25
-#define MP5_DEFAULT_AMMO			25
-#define MP5_M203_DEFAULT_GIVE		0
+#define MP5_DEFAULT_GIVE			30
+#define AR16_DEFAULT_GIVE			30
+#define AR16_M203_DEFAULT_GIVE		0
+#define MP5_DEFAULT_AMMO			30
 #define SHOTGUN_DEFAULT_GIVE		12
 #define CROSSBOW_DEFAULT_GIVE		5
 #define RPG_DEFAULT_GIVE			1
@@ -172,6 +177,7 @@ public:
 #define AMMO_GLOCKCLIP_GIVE		GLOCK_MAX_CLIP
 #define AMMO_357BOX_GIVE		PYTHON_MAX_CLIP
 #define AMMO_MP5CLIP_GIVE		MP5_MAX_CLIP
+#define AMMO_AR16CLIP_GIVE		AR16_MAX_CLIP //ITS A MAG DAMMIT NOT A CLIP
 #define AMMO_CHAINBOX_GIVE		200
 #define AMMO_M203BOX_GIVE		2
 #define AMMO_BUCKSHOTBOX_GIVE	12
@@ -189,10 +195,12 @@ typedef	enum
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
+	BULLET_PLAYER_556, // 5.56 NATO of new AR
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
 	BULLET_MONSTER_12MM,
+	BULLET_MONSTER_556, // 5.56 NATO of new AR on Monsters
 } Bullet;
 
 
@@ -600,7 +608,7 @@ public:
 	int AddToPlayer( CBasePlayer *pPlayer );
 
 	void PrimaryAttack( void );
-	void SecondaryAttack( void );
+	//void SecondaryAttack( void );
 	int SecondaryAmmoIndex( void );
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
@@ -621,6 +629,39 @@ public:
 private:
 	unsigned short m_usMP5;
 	unsigned short m_usMP52;
+};
+
+//AR16
+class CAR16 : public CBasePlayerWeapon
+{
+public:
+	void Spawn(void);
+	void Precache(void);
+	int GetItemInfo(ItemInfo* p);
+	int AddToPlayer(CBasePlayer* pPlayer);
+
+	void PrimaryAttack(void);
+	void SecondaryAttack(void);
+	int SecondaryAmmoIndex(void);
+	BOOL Deploy(void);
+	void Holster(int skiplocal = 0);
+	void Reload(void);
+	void WeaponIdle(void);
+	float m_flNextAnimTime;
+	int m_iShell;
+
+	virtual BOOL UseDecrement(void)
+	{
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usAR16;
+	unsigned short m_usAR162;
 };
 
 class CCrossbow : public CBasePlayerWeapon

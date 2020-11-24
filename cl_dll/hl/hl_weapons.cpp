@@ -57,6 +57,7 @@ CGlock g_Glock;
 CCrowbar g_Crowbar;
 CPython g_Python;
 CMP5 g_Mp5;
+CAR16 g_Ar16;
 CCrossbow g_Crossbow;
 CShotgun g_Shotgun;
 CRpg g_Rpg;
@@ -706,6 +707,10 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 			
 		case WEAPON_MP5:
 			pWeapon = &g_Mp5;
+			break;
+
+		case WEAPON_AR16:
+			pWeapon = &g_Ar16;
 			break;
 
 		case WEAPON_CROSSBOW:

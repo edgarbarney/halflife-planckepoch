@@ -321,11 +321,15 @@ cvar_t	sk_plr_9mmAR_bullet1 = {"sk_plr_9mmAR_bullet1","0"};
 cvar_t	sk_plr_9mmAR_bullet2 = {"sk_plr_9mmAR_bullet2","0"};
 cvar_t	sk_plr_9mmAR_bullet3 = {"sk_plr_9mmAR_bullet3","0"};
 
+// AR16 Round
+cvar_t	sk_plr_556_bullet1 = { "sk_plr_556_bullet1","0" };
+cvar_t	sk_plr_556_bullet2 = { "sk_plr_556_bullet2","0" };
+cvar_t	sk_plr_556_bullet3 = { "sk_plr_556_bullet3","0" };
 
 // M203 grenade
-cvar_t	sk_plr_9mmAR_grenade1 = {"sk_plr_9mmAR_grenade1","0"};
-cvar_t	sk_plr_9mmAR_grenade2 = {"sk_plr_9mmAR_grenade2","0"};
-cvar_t	sk_plr_9mmAR_grenade3 = {"sk_plr_9mmAR_grenade3","0"};
+cvar_t	sk_plr_m203_grenade1 = {"sk_plr_m203_grenade1","0"};
+cvar_t	sk_plr_m203_grenade2 = {"sk_plr_m203_grenade2","0"};
+cvar_t	sk_plr_m203_grenade3 = {"sk_plr_m203_grenade3","0"};
 
 
 // Shotgun buckshot
@@ -773,11 +777,15 @@ void GameDLLInit( void )
 	CVAR_REGISTER ( &sk_plr_9mmAR_bullet2 );// {"sk_plr_9mmAR_bullet2","0"};
 	CVAR_REGISTER ( &sk_plr_9mmAR_bullet3 );// {"sk_plr_9mmAR_bullet3","0"};
 
+	// AR16 Round
+	CVAR_REGISTER(&sk_plr_556_bullet1);// {"sk_plr_9mm_bullet1","0"};
+	CVAR_REGISTER(&sk_plr_556_bullet2);// {"sk_plr_9mm_bullet2","0"};
+	CVAR_REGISTER(&sk_plr_556_bullet3);// {"sk_plr_9mm_bullet3","0"};
 
 	// M203 grenade
-	CVAR_REGISTER ( &sk_plr_9mmAR_grenade1 );// {"sk_plr_9mmAR_grenade1","0"};
-	CVAR_REGISTER ( &sk_plr_9mmAR_grenade2 );// {"sk_plr_9mmAR_grenade2","0"};
-	CVAR_REGISTER ( &sk_plr_9mmAR_grenade3 );// {"sk_plr_9mmAR_grenade3","0"};
+	CVAR_REGISTER ( &sk_plr_m203_grenade1 );// {"sk_plr_9mmAR_grenade1","0"};
+	CVAR_REGISTER ( &sk_plr_m203_grenade2 );// {"sk_plr_9mmAR_grenade2","0"};
+	CVAR_REGISTER ( &sk_plr_m203_grenade3 );// {"sk_plr_9mmAR_grenade3","0"};
 
 
 	// Shotgun buckshot

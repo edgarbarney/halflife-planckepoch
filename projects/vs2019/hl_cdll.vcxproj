@@ -172,6 +172,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\view.cpp" />
     <ClCompile Include="..\..\cl_dll\voice_status.cpp" />
     <ClCompile Include="..\..\common\parsemsg.cpp" />
+    <ClCompile Include="..\..\dlls\ar16.cpp" />
     <ClCompile Include="..\..\dlls\crossbow.cpp" />
     <ClCompile Include="..\..\dlls\crowbar.cpp" />
     <ClCompile Include="..\..\dlls\egon.cpp" />
