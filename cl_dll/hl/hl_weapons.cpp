@@ -618,6 +618,7 @@ void HUD_InitClientWeapons( void )
 	HUD_PrepEntity( &g_Crowbar	, &player );
 	HUD_PrepEntity( &g_Python	, &player );
 	HUD_PrepEntity( &g_Mp5	, &player );
+	HUD_PrepEntity(&g_Ar16, &player);
 	HUD_PrepEntity( &g_Crossbow	, &player );
 	HUD_PrepEntity( &g_Shotgun	, &player );
 	HUD_PrepEntity( &g_Rpg	, &player );

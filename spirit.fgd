@@ -1234,6 +1234,8 @@
 @PointClass base(Ammo, Targetx) studio("models/w_357ammobox.mdl") = ammo_357 : "357 Ammo" []
 @PointClass base(Ammo, Targetx) studio("models/w_9mmarclip.mdl") = ammo_9mmAR : "9mm Assault Rifle Ammo" []
 @PointClass base(Ammo, Targetx) studio("models/w_chainammo.mdl") = ammo_9mmbox : "box of 200 9mm shells" []
+@PointClass base(Ammo, Targetx) studio("models/w_9mmarclip.mdl") = ammo_556mag : "556 Assault Rifle Ammo" []
+@PointClass base(Ammo, Targetx) studio("models/w_chainammo.mdl") = ammo_556box : "box of 90 556 Cartridges" []
 @PointClass base(Ammo, Targetx) studio("models/w_9mmclip.mdl") = ammo_9mmclip : "9mm Pistol Ammo" []
 @PointClass base(Ammo, Targetx) studio("models/w_argrenade.mdl") = ammo_ARgrenades : "Assault Grenades" []
 @PointClass base(Ammo, Targetx) studio("models/w_shotshell.mdl") = ammo_buckshot : "Shotgun Ammo" []
@@ -5996,7 +5998,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_357.mdl")= weapon_357 : "357 Handgun" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmar.mdl")= weapon_9mmAR : "9mm Assault Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmhandgun.mdl")= weapon_9mmhandgun : "9mm Handgun" []
-@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_ar16.mdl")= weapon_9mmAR : "9mm Assault Rifle" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_ar16.mdl")= weapon_556AR : "AR16 Assault Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_crossbow.mdl")= weapon_crossbow : "Crossbow" 
 [
 	sequence(choices) : "Placement" : 0 =
@@ -6012,6 +6014,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_grenade.mdl") = weapon_handgrenade : "Handgrenade Ammo" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_hgun.mdl") = weapon_hornetgun : "Hornet Gun" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmar.mdl") = weapon_mp5 : "9mm Assault Rifle" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_ar16.mdl")= weapon_ar16 : "AR16 Assault Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_rpg.mdl") = weapon_rpg : "RPG" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_satchel.mdl") = weapon_satchel : "Satchel Charge Ammo" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_shotgun.mdl") = weapon_shotgun : "Shotgun" []
