@@ -473,6 +473,7 @@ public:
 
 	//We use this variables to store each ammo count.
 	int ammo_9mm;
+	int ammo_556;
 	int ammo_357;
 	int ammo_bolts;
 	int ammo_buckshot;
@@ -485,6 +486,8 @@ public:
 	float m_flReleaseThrow;
 	int m_chargeReady;
 	int m_fInAttack;
+	//Glocks auto
+	bool m_isGlockAuto;
 
 	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };
 	int m_fireState;

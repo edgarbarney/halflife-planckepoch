@@ -207,10 +207,12 @@ char* GetVGUITGAName(const char *pszName)
 	static char gd[256]; 
 	const char *gamedir;
 
-	if (ScreenWidth < 640)
-		i = 320;
-	else
-		i = 640;
+	//Removed 320 Hud
+
+	//if (ScreenWidth < 640)
+	//	i = 320;
+	//else
+	i = 640;
 	sprintf(sz, pszName, i);
 
 	gamedir = gEngfuncs.pfnGetGameDirectory();

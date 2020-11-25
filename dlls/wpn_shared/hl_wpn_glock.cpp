@@ -115,14 +115,14 @@ BOOL CGlock::Deploy( )
 
 void CGlock::SecondaryAttack( void )
 {
-	m_isFullAuto = !m_isFullAuto;
+	m_pPlayer->m_isGlockAuto = !m_pPlayer->m_isGlockAuto;
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 
 void CGlock::PrimaryAttack( void )
 {
-	if (m_isFullAuto)
+	if (m_pPlayer->m_isGlockAuto)
 		GlockFire(0.05, 0.07, FALSE); //Full auto modification!
 	else
 		GlockFire( 0.01, 0.2, TRUE );

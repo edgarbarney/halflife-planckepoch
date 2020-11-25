@@ -564,10 +564,12 @@ void CHud :: VidInit( void )
 		m_pShinySurface = NULL;
 	}
 
-	if (ScreenWidth < 640)
-		m_iRes = 320;
-	else
-		m_iRes = 640;
+	//Removed 320 Hud
+
+	//if (ScreenWidth < 640)
+	//	m_iRes = 320;
+	//else
+	m_iRes = 640;
 
 	// Only load this once
 	if ( !m_pSpriteList )

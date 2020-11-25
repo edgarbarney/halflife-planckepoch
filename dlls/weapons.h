@@ -531,7 +531,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
-	bool m_isFullAuto = false;
+	//bool m_isFullAuto = false; replaced with a base variable
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )

@@ -59,8 +59,9 @@ void CAR16::Precache(void)
 
 	m_iShell = PRECACHE_MODEL("models/shell.mdl");// brass shellTE_MODEL
 
-	PRECACHE_MODEL("models/ar16_grenade.mdl");	// grenade
+	PRECACHE_MODEL("models/grenade.mdl");	// grenade
 
+	PRECACHE_MODEL("models/w_ar16_magpale.mdl");
 	PRECACHE_MODEL("models/w_ar16clip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
@@ -85,7 +86,7 @@ int CAR16::GetItemInfo(ItemInfo* p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "556";
-	p->iMaxAmmo1 = _9MM_MAX_CARRY;
+	p->iMaxAmmo1 = _556_MAX_CARRY;
 	p->pszAmmo2 = "ARgrenades";
 	p->iMaxAmmo2 = M203_GRENADE_MAX_CARRY;
 	p->iMaxClip = AR16_MAX_CLIP;
@@ -269,7 +270,7 @@ void CAR16::SecondaryAttack(void)
 
 void CAR16::Reload(void)
 {
-	if (m_pPlayer->ammo_9mm <= 0)
+	if (m_pPlayer->ammo_556 <= 0)
 		return;
 
 	DefaultReload(AR16_MAX_CLIP, AR16_RELOAD, 1.5);
@@ -338,12 +339,12 @@ class CAR16Chainammo : public CBasePlayerAmmo
 	void Spawn(void)
 	{
 		Precache();
-		SET_MODEL(ENT(pev), "models/w_ar16_chainammo.mdl");
+		SET_MODEL(ENT(pev), "models/w_ar16_magpale.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache(void)
 	{
-		PRECACHE_MODEL("models/w_ar16_chainammo.mdl");
+		PRECACHE_MODEL("models/w_ar16_magpale.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
 	BOOL AddAmmo(CBaseEntity* pOther)
