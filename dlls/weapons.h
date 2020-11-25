@@ -90,6 +90,7 @@ public:
 #define WEAPON_SATCHEL			15
 #define WEAPON_SNARK			16
 #define WEAPON_AR16				17
+#define WEAPON_HEALTHSHOT		18
 
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
@@ -118,6 +119,7 @@ public:
 #define SNARK_WEIGHT		5
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
+#define HEALTHSHOT_WEIGHT	-10
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
@@ -130,6 +132,7 @@ public:
 #define HANDGRENADE_MAX_CARRY	10
 #define SATCHEL_MAX_CARRY		5
 #define TRIPMINE_MAX_CARRY		5
+#define HEALTHSHOT_MAX_CARRY	1
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
@@ -153,6 +156,7 @@ public:
 #define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
+#define HEALTHSHOT_MAX_CLIP		WEAPON_NOCLIP
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
@@ -169,6 +173,7 @@ public:
 #define HANDGRENADE_DEFAULT_GIVE	5
 #define SATCHEL_DEFAULT_GIVE		1
 #define TRIPMINE_DEFAULT_GIVE		1
+#define HEALTHSHOT_DEFAULT_GIVE		1
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
 
@@ -526,7 +531,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
-	bool m_isFullAuto = true;
+	bool m_isFullAuto = false;
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )

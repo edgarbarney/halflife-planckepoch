@@ -372,7 +372,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->SetNextThink( 0 );
 	
 	// Tumble in air
-	pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
+	//pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
 	
 	// Explode on contact
 	pGrenade->SetTouch( &CGrenade::ExplodeTouch );
