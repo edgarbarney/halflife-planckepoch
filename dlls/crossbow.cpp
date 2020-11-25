@@ -25,7 +25,7 @@
 
 #ifndef CLIENT_DLL
 #define BOLT_AIR_VELOCITY	2000
-#define BOLT_WATER_VELOCITY	1000
+#define BOLT_WATER_VELOCITY	50
 
 // UNDONE: Save/restore this?  Don't forget to set classname and LINK_ENTITY_TO_CLASS()
 // 
@@ -79,7 +79,8 @@ void CCrossbowBolt::Spawn( )
 
 void CCrossbowBolt::Precache( )
 {
-	PRECACHE_MODEL ("models/crossbow_bolt.mdl");
+	PRECACHE_MODEL("models/338shell.mdl");
+	PRECACHE_MODEL("models/crossbow_bolt.mdl");
 	PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
 	PRECACHE_SOUND("weapons/xbow_hitbod2.wav");
 	PRECACHE_SOUND("weapons/xbow_fly1.wav");
@@ -309,7 +310,7 @@ void CCrossbow::Holster( int skiplocal /* = 0 */ )
 		SecondaryAttack( );
 	}
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.08;
 	if (m_iClip)
 		SendWeaponAnim( CROSSBOW_HOLSTER1 );
 	else
@@ -379,17 +380,44 @@ void CCrossbow::FireSniperBolt()
 
 void CCrossbow::FireBolt()
 {
-	TraceResult tr;
-
-	if (m_iClip == 0)
+	if (m_iClip <= 0)
 	{
-		PlayEmptySound( );
+		PlayEmptySound();
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.15;
 		return;
 	}
 
-	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
+	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
+
+
+	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
+
+	// player "shoot" animation
+	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+#ifndef CLIENT_DLL 
+	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(pev->origin.x); // origin
+	WRITE_COORD(pev->origin.y);
+	WRITE_COORD(pev->origin.z);
+	WRITE_BYTE(16);     // radius
+	WRITE_BYTE(255);    // R
+	WRITE_BYTE(255);    // G
+	WRITE_BYTE(160);    // B
+	WRITE_BYTE(0);      // life * 10
+	WRITE_BYTE(0);      // decay
+	MESSAGE_END();
+#endif 
+
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecAiming = m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
+	Vector vecDir;
+
+	vecDir = m_pPlayer->FireBulletsPlayer(1, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, 8192, BULLET_PLAYER_556, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
 	int flags;
 #if defined( CLIENT_WEAPONS )
@@ -398,49 +426,18 @@ void CCrossbow::FireBolt()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usCrossbow, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0 );
-
-	// player "shoot" animation
-	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
-
-	Vector anglesAim = m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle;
-	UTIL_MakeVectors( anglesAim );
-	
-	anglesAim.x		= -anglesAim.x;
-	Vector vecSrc	 = m_pPlayer->GetGunPosition( ) - gpGlobals->v_up * 2;
-	Vector vecDir	 = gpGlobals->v_forward;
-
-#ifndef CLIENT_DLL
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate();
-	pBolt->pev->origin = vecSrc;
-	pBolt->pev->angles = anglesAim;
-	pBolt->pev->owner = m_pPlayer->edict();
-
-	if (m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD)
-	{
-		pBolt->pev->velocity = vecDir * BOLT_WATER_VELOCITY;
-		pBolt->pev->speed = BOLT_WATER_VELOCITY;
-	}
-	else
-	{
-		pBolt->pev->velocity = vecDir * BOLT_AIR_VELOCITY;
-		pBolt->pev->speed = BOLT_AIR_VELOCITY;
-	}
-	pBolt->pev->avelocity.z = 10;
-#endif
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usCrossbow, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0);
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(0.75);
+	m_flNextPrimaryAttack = GetNextAttackDelay(1.08);
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.75;
+	if (m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.08;
 
-	if (m_iClip != 0)
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
-	else
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 }
 
 
@@ -472,9 +469,10 @@ void CCrossbow::Reload( void )
 		SecondaryAttack();
 	}
 
-	if ( DefaultReload( 5, CROSSBOW_RELOAD, 4.5 ) )
+	if ( DefaultReload( 10, CROSSBOW_RELOAD, 2.8 ) )
 	{
-		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0,0xF));
+		//It doesnt play but I dont want to completely remove cus maybe I'll implement it in somewhere the future
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", 0, ATTN_NORM, 0, 93 + RANDOM_LONG(0,0xF));
 	}
 }
 

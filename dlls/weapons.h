@@ -127,7 +127,7 @@ public:
 #define _357_MAX_CARRY			36
 #define _556_MAX_CARRY			90
 #define BUCKSHOT_MAX_CARRY		125
-#define BOLT_MAX_CARRY			50
+#define BOLT_MAX_CARRY			30
 #define ROCKET_MAX_CARRY		5
 #define HANDGRENADE_MAX_CARRY	10
 #define SATCHEL_MAX_CARRY		5
@@ -147,7 +147,7 @@ public:
 //#define MP5_DEFAULT_AMMO		30	Removed cus already defined down there
 #define AR16_MAX_CLIP			30
 #define SHOTGUN_MAX_CLIP		8
-#define CROSSBOW_MAX_CLIP		5
+#define CROSSBOW_MAX_CLIP		10
 #define RPG_MAX_CLIP			1
 #define GAUSS_MAX_CLIP			WEAPON_NOCLIP
 #define EGON_MAX_CLIP			WEAPON_NOCLIP
@@ -166,7 +166,7 @@ public:
 #define AR16_M203_DEFAULT_GIVE		0
 #define MP5_DEFAULT_AMMO			30
 #define SHOTGUN_DEFAULT_GIVE		12
-#define CROSSBOW_DEFAULT_GIVE		5
+#define CROSSBOW_DEFAULT_GIVE		10
 #define RPG_DEFAULT_GIVE			1
 #define GAUSS_DEFAULT_GIVE			20
 #define EGON_DEFAULT_GIVE			20

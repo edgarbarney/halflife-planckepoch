@@ -57,7 +57,7 @@ void CAR16::Precache(void)
 	PRECACHE_MODEL("models/w_ar16.mdl");
 	PRECACHE_MODEL("models/p_ar16.mdl");// not needed actually since this mod is not multiplayer
 
-	m_iShell = PRECACHE_MODEL("models/shell.mdl");// brass shellTE_MODEL
+	m_iShell = PRECACHE_MODEL("models/556shell.mdl");// brass shellTE_MODEL
 
 	PRECACHE_MODEL("models/grenade.mdl");	// grenade
 
