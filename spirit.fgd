@@ -1226,6 +1226,21 @@
 	]
 ]
 
+//EDMD env_soundscape
+
+@PointClass iconsprite("sprites/speaker.spr") base(Targetname, MoveWith) = env_soundscape : "Soundscape"
+[
+	message(sound) : "WAV Name (e.g. vox/c.wav)"
+	health(integer) : "Volume (10 = loudest)" : 10
+	pitch(integer) : "Pitch (> 100 = higher)" : 100
+	spawnflags(flags) =
+	[
+		//1: "Play Everywhere"	: 0
+		16:"Start Silent"		: 0
+		32:"Is NOT Looped"	: 0
+	]
+]
+
 //
 // ammo
 //
