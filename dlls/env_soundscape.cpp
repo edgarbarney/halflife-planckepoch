@@ -33,7 +33,7 @@ public:
 
 	float m_flAttenuation;		// attenuation value
 
-	float m_fValue = 10;
+	float m_fVolValue = 10;
 	float m_pPitch = 0;
 
 	CBasePlayer* m_pPlayer;
@@ -53,7 +53,7 @@ TYPEDESCRIPTION	CSoundScape::m_SaveData[] =
 	DEFINE_FIELD(CSoundScape, m_fLooping, FIELD_BOOLEAN),
 	DEFINE_FIELD(CSoundScape, m_iChannel, FIELD_INTEGER),
 	DEFINE_FIELD(CSoundScape, m_pPlayFrom, FIELD_EDICT),
-	DEFINE_FIELD(CSoundScape, m_fValue, FIELD_FLOAT),
+	DEFINE_FIELD(CSoundScape, m_fVolValue, FIELD_FLOAT),
 	DEFINE_FIELD(CSoundScape, m_pPitch, FIELD_FLOAT),
 };
 
@@ -141,7 +141,7 @@ void CSoundScape::Precache(void)
 		else
 		{
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
-				m_fValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
+				m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 		}
 		SetNextThink(0.1);
 	}
@@ -154,7 +154,7 @@ void CSoundScape::StartPlayFrom(void)
 	char* szSoundFile = (char*)STRING(pev->message);
 
 	EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
-		m_fValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
+		m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 
 	SetNextThink(0.1);
 }
@@ -248,12 +248,12 @@ void CSoundScape::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 
 		// AJH / MJB - [LN] volume field:
 		//if (!FStringNull(pev->noise))
-		//	m_fValue = CalcLocus_Number(this, STRING(pev->noise), 0);
+		//	m_fVolValue = CalcLocus_Number(this, STRING(pev->noise), 0);
 
 		if (m_pPlayFrom)
 		{
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
-				m_fValue, m_flAttenuation, 0, m_pPitch);
+				m_fVolValue, m_flAttenuation, 0, m_pPitch);
 		}
 		else
 		{
@@ -285,12 +285,12 @@ void CSoundScape::KeyValue(KeyValueData* pkvd)
 	// volstart
 	else if (FStrEq(pkvd->szKeyName, "health"))
 	{
-		m_fValue = atoi(pkvd->szValue);
+		m_fVolValue = atoi(pkvd->szValue);
 
-		if (m_fValue > 10) m_fValue = 10;
-		if (m_fValue < 0) m_fValue = 0;
+		if (m_fVolValue > 10) m_fVolValue = 10;
+		if (m_fVolValue < 0) m_fVolValue = 0;
 
-		m_fValue *= 10;	// 0 - 100
+		m_fVolValue *= 10;	// 0 - 100
 
 		pkvd->fHandled = TRUE;
 	}
