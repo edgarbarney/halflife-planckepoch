@@ -183,10 +183,8 @@ void CSoundScape::StartPlayFrom(void)
 
 void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
-	char* szSoundFile = (char*)STRING(pev->message);
 	edict_t* ent = NULL;
 	ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
-	int count = 1;
 	//Thanks to Admer
 	while (!FNullEnt(ent))
 	{
@@ -197,7 +195,6 @@ void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 			pSoundScape->ForceStopSound();
 		}
 		ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
-		count++;
 	}
 	StartPlayFrom();
 }
