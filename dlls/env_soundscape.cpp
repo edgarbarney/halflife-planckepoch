@@ -5,16 +5,7 @@
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
-#include "weapons.h"
 #include "player.h"
-#include "talkmonster.h"
-#include "gamerules.h"
-#include "locus.h"
-#include "weapons.h" // Too lazy to implement a get player system
-
-//#if !defined ( _WIN32 )
-//#include <ctype.h>
-//#endif
 
 class CSoundScape : public CBaseEntity
 {
@@ -88,10 +79,6 @@ void CSoundScape::Spawn(void)
 	}
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
-
-	// Set up think function for dynamic modification 
-	// of ambient sound's pitch or volume. Don't
-	// start thinking yet.
 
 	DontThink();
 
@@ -264,14 +251,11 @@ void CSoundScape::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 	}
 }
 
-// KeyValue - load keyvalue pairs into member data of the
-// ambient generic. NOTE: called BEFORE spawn!
+// KeyValue - Load keyvalues from the entity data thingy
+// NOTE: called BEFORE spawn!
 
 void CSoundScape::KeyValue(KeyValueData* pkvd)
 {
-	// NOTE: changing any of the modifiers in this code
-	// NOTE: also requires changing InitModulationParms code.
-
 	// pitchrun
 	if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
