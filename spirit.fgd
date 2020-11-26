@@ -1228,7 +1228,7 @@
 
 //EDMD env_soundscape
 
-@PointClass iconsprite("sprites/speaker.spr") base(Targetname, MoveWith) = env_soundscape : "Soundscape"
+@PointClass iconsprite("sprites/speaker.spr") base(Targetname) = env_soundscape : "Soundscape"
 [
 	message(sound) : "WAV Name (e.g. vox/c.wav)"
 	health(integer) : "Volume (10 = loudest)" : 10
@@ -5690,6 +5690,12 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 @SolidClass base(trigger_once) = trigger_multiple : "Trigger: Activate multiple" 
 [
 	wait(integer) : "Delay before reset" : 10
+]
+
+@SolidClass base(Targetname, Master, Delay, Killtarget) = trigger_soundscape : "Trigger: Soundscape"
+[
+	target(target_destination) : "Target Soundscape"
+	wait(integer) : "Delay before reset (1 is recommended)" : 1
 ]
 
 //NEW 0.6

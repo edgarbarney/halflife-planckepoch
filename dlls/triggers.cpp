@@ -3567,6 +3567,106 @@ CBaseEntity *CTriggerInOut::FollowAlias( CBaseEntity *pStartEntity )
 	return m_pRegister->GetFirstEntityFrom( pStartEntity );
 }
 
+//=====================================
+//EDMD trigger_soundscape
+
+class CTriggerSoundscape : public CBaseTrigger
+{
+public:
+	void Spawn(void);
+	void Precache(void)
+	{
+		if (!FStringNull(pev->noise))
+			PRECACHE_SOUND((char*)STRING(pev->noise));
+	}
+	void EXPORT MultiTouch(CBaseEntity* pOther);
+	void EXPORT MultiWaitOver(void);
+	void ActivateMultiTrigger(CBaseEntity* pActivator);
+};
+
+LINK_ENTITY_TO_CLASS(trigger_soundscape, CTriggerSoundscape);
+
+
+void CTriggerSoundscape::Spawn(void)
+{
+	if (m_flWait == 0)
+		m_flWait = 0.2;
+
+	InitTrigger();
+
+	SetTouch(&CTriggerSoundscape::MultiTouch);
+	Precache();
+}
+
+void CTriggerSoundscape::MultiTouch(CBaseEntity* pOther)
+{
+	entvars_t* pevToucher;
+
+	pevToucher = pOther->pev;
+
+	if (!CanTouch(pevToucher)) return;
+
+	ActivateMultiTrigger(pOther);
+}
+
+
+//
+// the trigger was just touched/killed/used
+// m_hActivator gets set to the activator so it can be held through a delay
+// so wait for the delay time before firing
+//
+void CTriggerSoundscape::ActivateMultiTrigger(CBaseEntity* pActivator)
+{
+	if (pActivator->IsPlayer()) {
+		if (m_fNextThink > gpGlobals->time)
+			return;         // still waiting for reset time
+
+		if (!UTIL_IsMasterTriggered(m_sMaster, pActivator))
+			return;
+
+		// Probably a leftover from quake. Maybe delete later.
+		if (FClassnameIs(pev, "trigger_secret"))
+		{
+			if (pev->enemy == NULL || !FClassnameIs(pev->enemy, "player"))
+				return;
+			gpGlobals->found_secrets++;
+		}
+
+		//if (!FStringNull(pev->noise))
+		//EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
+
+		// don't trigger again until reset
+
+		m_hActivator = pActivator;
+		SUB_UseTargets(m_hActivator, USE_ON, 0);
+
+		if (m_flWait > 0)
+		{
+			SetThink(&CTriggerSoundscape::MultiWaitOver);
+			SetNextThink(m_flWait);
+		}
+		else
+		{
+			// we can't just remove (self) here, because this is a touch function
+			// called while C code is looping through area links...
+			SetTouch(NULL);
+			SetNextThink(0.1);
+			SetThink(&CTriggerSoundscape::SUB_Remove);
+		}
+	}
+}
+
+// the wait time has passed, so set back up for another activation
+void CTriggerSoundscape::MultiWaitOver(void)
+{
+	//	if (pev->max_health)
+	//		{
+	//		pev->health		= pev->max_health;
+	//		pev->takedamage	= DAMAGE_YES;
+	//		pev->solid		= SOLID_BBOX;
+	//		}
+	SetThink(NULL);
+}
 
 // ==============================
 // trigger_counter

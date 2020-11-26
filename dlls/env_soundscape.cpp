@@ -14,18 +14,20 @@ public:
 	void Spawn(void);
 	//	void PostSpawn( void );
 	void Precache(void);
-	void EXPORT ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	//void EXPORT ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void EXPORT StartPlayFrom(void);
+	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	void ForceStopSound(void);
 
 	virtual int		Save(CSave& save);
 	virtual int		Restore(CRestore& restore);
 	static	TYPEDESCRIPTION m_SaveData[];
-	virtual int	ObjectCaps(void) { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	float m_flAttenuation;		// attenuation value
 
-	float m_fVolValue = 10;
-	float m_pPitch = 0;
+	float m_fVolBase = 10;		// Base volume.
+	float m_fVolValue = 10;		// Volume to play. Changes with fade effects.
+	float m_pPitch = 0;			// 
 
 	CBasePlayer* m_pPlayer;
 
@@ -45,6 +47,7 @@ TYPEDESCRIPTION	CSoundScape::m_SaveData[] =
 	DEFINE_FIELD(CSoundScape, m_iChannel, FIELD_INTEGER),
 	DEFINE_FIELD(CSoundScape, m_pPlayFrom, FIELD_EDICT),
 	DEFINE_FIELD(CSoundScape, m_fVolValue, FIELD_FLOAT),
+	DEFINE_FIELD(CSoundScape, m_fVolBase, FIELD_FLOAT),
 	DEFINE_FIELD(CSoundScape, m_pPitch, FIELD_FLOAT),
 };
 
@@ -82,9 +85,9 @@ void CSoundScape::Spawn(void)
 
 	DontThink();
 
-	// allow on/off switching via 'use' function.
+	// "Use" function to change ambient
 
-	SetUse(&CSoundScape::ToggleUse);
+	SetUse(&CSoundScape::Use);
 
 	m_fActive = FALSE;
 
@@ -134,22 +137,75 @@ void CSoundScape::Precache(void)
 	}
 }
 
+void CSoundScape::ForceStopSound(void)
+{
+	char* szSoundFile = (char*)STRING(pev->message);
+	if (m_fActive)
+	{
+		// turn sound off
+		m_fActive = FALSE;
+
+		// HACKHACK - this makes the code in Precache() work properly after a save/restore
+		pev->spawnflags |= AMBIENT_SOUND_START_SILENT;
+
+		if (m_pPlayFrom)
+		{
+			STOP_SOUND(m_pPlayFrom, m_iChannel, szSoundFile);
+		}
+		else
+		{
+			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
+				0, 0, SND_STOP, m_pPitch);
+		}
+	}
+}
+
 //LRC - for some reason, I can't get other entities to start playing sounds during Activate;
 // this function is used to delay the effect until the first Think, which seems to fix the problem.
 void CSoundScape::StartPlayFrom(void)
 {
 	char* szSoundFile = (char*)STRING(pev->message);
+	if (!m_pPlayFrom) {
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+			if (!pPlayer) // Failed to retrieve a player at this index, skip and move on to the next one
+				continue;
 
+			m_pPlayFrom = ENT(pPlayer->pev);
+		}
+	}
 	EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 		m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 
 	SetNextThink(0.1);
 }
 
+void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	char* szSoundFile = (char*)STRING(pev->message);
+	edict_t* ent = NULL;
+	ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
+	bool ranAlready = true;
+	int count = 1;
+	//Thanks to Admer
+	while (!FNullEnt(ent))
+	{
+		CBaseEntity* pEnt = CBaseEntity::Instance(ent);
+		CSoundScape* pSoundScape = (CSoundScape*)pEnt;
+		if (pSoundScape)
+		{
+			pSoundScape->ForceStopSound();
+		}
+		ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
+		count++;
+	}
+	StartPlayFrom();
+}
 
-// Init all ramp params in preparation to 
-// play a new sound
+//Removed due to new use system
 
+/*
 void CSoundScape::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	char* szSoundFile = (char*)STRING(pev->message);
@@ -233,10 +289,6 @@ void CSoundScape::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 				0, 0, SND_STOP, 0);
 		}
 
-		// AJH / MJB - [LN] volume field:
-		//if (!FStringNull(pev->noise))
-		//	m_fVolValue = CalcLocus_Number(this, STRING(pev->noise), 0);
-
 		if (m_pPlayFrom)
 		{
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
@@ -250,6 +302,7 @@ void CSoundScape::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 		SetNextThink(0.1);
 	}
 }
+*/
 
 // KeyValue - Load keyvalues from the entity data thingy
 // NOTE: called BEFORE spawn!
