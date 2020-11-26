@@ -186,7 +186,6 @@ void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	char* szSoundFile = (char*)STRING(pev->message);
 	edict_t* ent = NULL;
 	ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
-	bool ranAlready = true;
 	int count = 1;
 	//Thanks to Admer
 	while (!FNullEnt(ent))
