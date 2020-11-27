@@ -181,20 +181,14 @@ void CSoundScape::StartPlayFrom(void)
 	SetNextThink(0.1);
 }
 
+//Thanks to Admer and Solokiller
 void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
-	edict_t* ent = NULL;
-	ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
-	//Thanks to Admer
-	while (!FNullEnt(ent))
+	CSoundScape* soundScape = nullptr;
+
+	while (((soundScape = static_cast<CSoundScape*>(UTIL_FindEntityByClassname(soundScape, "env_soundscape")))) != nullptr && !FNullEnt(soundScape->pev))
 	{
-		CBaseEntity* pEnt = CBaseEntity::Instance(ent);
-		CSoundScape* pSoundScape = (CSoundScape*)pEnt;
-		if (pSoundScape)
-		{
-			pSoundScape->ForceStopSound();
-		}
-		ent = FIND_ENTITY_BY_CLASSNAME(ent, "env_soundscape");
+		soundScape->ForceStopSound();
 	}
 	StartPlayFrom();
 }
