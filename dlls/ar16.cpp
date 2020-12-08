@@ -321,7 +321,7 @@ class CAR16AmmoClip : public CBasePlayerAmmo
 	}
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
-		int bResult = (pOther->GiveAmmo(AMMO_AR16CLIP_GIVE, "556", _9MM_MAX_CARRY) != -1);
+		int bResult = (pOther->GiveAmmo(AMMO_AR16CLIP_GIVE, "556", _556_MAX_CARRY) != -1);
 		if (bResult)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
@@ -349,7 +349,7 @@ class CAR16Chainammo : public CBasePlayerAmmo
 	}
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
-		int bResult = (pOther->GiveAmmo(AMMO_CHAINBOX_GIVE, "556", _9MM_MAX_CARRY) != -1);
+		int bResult = (pOther->GiveAmmo(AMMO_CHAINBOX_GIVE, "556", _556_MAX_CARRY) != -1);
 		if (bResult)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);

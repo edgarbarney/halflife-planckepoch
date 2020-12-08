@@ -297,6 +297,7 @@ void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType )
 		case BULLET_PLAYER_MP5:
 		case BULLET_MONSTER_MP5:
 		case BULLET_PLAYER_556:
+		case BULLET_PLAYER_338:
 		case BULLET_MONSTER_556:
 		case BULLET_PLAYER_BUCKSHOT:
 		case BULLET_PLAYER_357:
@@ -341,6 +342,7 @@ int EV_HLDM_CheckTracer( int idx, float *vecSrc, float *end, float *forward, flo
 		case BULLET_PLAYER_MP5:
 		case BULLET_PLAYER_556:
 		case BULLET_MONSTER_556:
+		case BULLET_PLAYER_338:
 		case BULLET_MONSTER_MP5:
 		case BULLET_MONSTER_9MM:
 		case BULLET_MONSTER_12MM:
@@ -432,6 +434,14 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 				}
 				break;
 			case BULLET_PLAYER_556:
+
+				if (!tracer)
+				{
+					EV_HLDM_PlayTextureSound(idx, &tr, vecSrc, vecEnd, iBulletType);
+					EV_HLDM_DecalGunshot(&tr, iBulletType);
+				}
+				break;
+			case BULLET_PLAYER_338:
 
 				if (!tracer)
 				{
@@ -1450,7 +1460,7 @@ void EV_FireCrossbow( event_args_t *args )
 	VectorCopy(forward, vecAiming);
 
 	
-	EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_556, 2, &tracerCount[idx - 1], args->fparam1, args->fparam2);
+	EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_338, 2, &tracerCount[idx - 1], args->fparam1, args->fparam2);
 
 	//Only play the weapon anims if I shot it. 
 	

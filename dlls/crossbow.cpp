@@ -417,7 +417,7 @@ void CCrossbow::FireBolt()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
 	Vector vecDir;
 
-	vecDir = m_pPlayer->FireBulletsPlayer(1, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, 8192, BULLET_PLAYER_556, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
+	vecDir = m_pPlayer->FireBulletsPlayer(1, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, 8192, BULLET_PLAYER_338, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
 	int flags;
 #if defined( CLIENT_WEAPONS )
@@ -432,10 +432,10 @@ void CCrossbow::FireBolt()
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(1.08);
+	m_flNextPrimaryAttack = GetNextAttackDelay(2.13);
 
 	if (m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.08;
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 2.13;
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 }
@@ -469,7 +469,7 @@ void CCrossbow::Reload( void )
 		SecondaryAttack();
 	}
 
-	if ( DefaultReload( 10, CROSSBOW_RELOAD, 2.8 ) )
+	if ( DefaultReload( 10, CROSSBOW_RELOAD, 6.97 ) )
 	{
 		//It doesnt play but I dont want to completely remove cus maybe I'll implement it in somewhere the future
 		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", 0, ATTN_NORM, 0, 93 + RANDOM_LONG(0,0xF));
