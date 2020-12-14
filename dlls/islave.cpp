@@ -766,7 +766,7 @@ void CISlave :: ArmBeam( int side )
 	m_pBeam[m_iBeams]->PointEntInit( tr.vecEndPos, entindex( ) );
 	m_pBeam[m_iBeams]->SetEndAttachment( side < 0 ? 2 : 1 );
 	// m_pBeam[m_iBeams]->SetColor( 180, 255, 96 );
-	m_pBeam[m_iBeams]->SetColor( 96, 128, 16 );
+	m_pBeam[m_iBeams]->SetColor( 0, 255, 0 );
 	m_pBeam[m_iBeams]->SetBrightness( 64 );
 	m_pBeam[m_iBeams]->SetNoise( 80 );
 	m_iBeams++;
@@ -842,8 +842,8 @@ void CISlave :: ZapBeam( int side )
 
 	m_pBeam[m_iBeams]->PointEntInit( tr.vecEndPos, entindex( ) );
 	m_pBeam[m_iBeams]->SetEndAttachment( side < 0 ? 2 : 1 );
-	m_pBeam[m_iBeams]->SetColor( 180, 255, 96 );
-	m_pBeam[m_iBeams]->SetBrightness( 255 );
+	m_pBeam[m_iBeams]->SetColor( 0, 255, 0 );
+	m_pBeam[m_iBeams]->SetBrightness( 800 );
 	m_pBeam[m_iBeams]->SetNoise( 20 );
 	m_iBeams++;
 
