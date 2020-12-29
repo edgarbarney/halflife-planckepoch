@@ -34,6 +34,17 @@ enum glock_e {
 	GLOCK_ADD_SILENCER
 };
 
+#ifndef CLIENT_DLL
+
+TYPEDESCRIPTION CGlock::m_SaveData[] =
+{
+	DEFINE_FIELD(CGlock, m_isGlockAuto, FIELD_BOOLEAN),
+};
+
+IMPLEMENT_SAVERESTORE(CGlock, CBasePlayerWeapon);
+
+#endif
+
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
 LINK_ENTITY_TO_CLASS( weapon_9mmhandgun, CGlock );
 
@@ -208,7 +219,6 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	ALERT(at_console, "GUNSHOT\n");
 }
 
 

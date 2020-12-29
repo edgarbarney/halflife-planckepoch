@@ -46,8 +46,8 @@ class CTripmineGrenade : public CGrenade
 	void Spawn( void );
 	void Precache( void );
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	virtual int	Save( CSave &save );
+	virtual int	Restore( CRestore &restore );
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
