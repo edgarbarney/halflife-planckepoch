@@ -138,7 +138,6 @@ void CSoundScape::Precache(void)
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 				m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 		}
-		SetThink(&CSoundScape::SUB_Remove);
 		SetNextThink(0.1);
 	}
 }
@@ -184,13 +183,14 @@ void CSoundScape::StartPlayFrom(void)
 	EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 		m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 
-	SetThink(&CSoundScape::SUB_Remove);
 	SetNextThink(0.1);
 }
 
 //Thanks to Admer and Solokiller
 void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
+	m_fCanPlay = TRUE;
+
 	CSoundScape* soundScape = nullptr;
 
 	while (((soundScape = static_cast<CSoundScape*>(UTIL_FindEntityByClassname(soundScape, "env_soundscape")))) != nullptr && !FNullEnt(soundScape->pev))
@@ -205,26 +205,30 @@ void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 void CSoundScape::SoundFadeOut(void)
 {
 	char* szSoundFile = (char*)STRING(pev->message);
-
+	//bool fadingIn;
+	//if (!fadingIn && m_fVolValue >= 1)
 	if (m_fVolValue >= 1)
 	{
 		SetNextThink(0.1);
-		m_fVolValue -= (timevars.flTimeDelta * m_fVolBase * 20);
+		//m_fVolValue -= (timevars.flTimeDelta * m_fVolBase * 20);
+		m_fVolValue -= (gpGlobals->frametime * m_fVolBase * 20);
 		EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 			m_fVolValue, m_flAttenuation, SND_CHANGE_VOL, m_pPitch);
-		//ALERT(at_console, "%f", m_fVolValue);
+		ALERT(at_console, "%f", m_fVolValue);
 	}
 	else
 	{
 		if (m_fCanPlay)
 		{
+			DontThink();
 			m_fVolValue = m_fVolBase;
 			StartPlayFrom();
 		}
 		else
 		{
+			DontThink();
 			m_fVolValue = m_fVolBase;
-			//ALERT(at_console, "CantMF");
+			ForceStopSound();
 		}
 	}
 }
