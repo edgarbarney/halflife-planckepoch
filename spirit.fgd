@@ -1,13 +1,5 @@
-// Spirit of Half-Life v1.8 FGD
-// For WorldCraft 3.5+ and Half-Life 1.1.0.8+
-// Last update: 9th March 2008
-// Created by Laurie Cheers	 	- http://www.bearkey.com/?laurie
-// Additions by Shambler Team 		- http://shamteam.cbi.ru/
-// Additions by Killar			- http://www.bearkey.com/?killar
-// Additions by Confused		- http://www.bearkey.com/?confused
-// Additions by Mike			- http://www.bearkey.com/?mike2k
-// Additions by ytiAdmin		- http://www.bearkey.com/?ytiadmin
-// Additions by DeathWish		- http://www.bearkey.com/?deathwish
+// Half-Life: Planck Epoch FGD
+// Based on Spirit of Half-Life v1.8 FGD
 
 // In textpad use regular expression ^[\t ]*//.*\n to remove ALL comments
 
@@ -4482,7 +4474,16 @@
 ]
 @PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/zombie.mdl") = monster_zombie : "Scientist Zombie" [
 
-sequence(Choices) : "Animation Sequence (editor)" : 10 =
+	body(Choices) : "Zombie Type" : -1 =
+	[
+		-1: "Random"
+		0 : "Scientist"
+		1 : "Barney"
+		2 : "Human Grunt"
+		3 : "Black Ops"
+	]
+
+	sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	[
 		0 : "idle1"
 		1 : "turn left"
