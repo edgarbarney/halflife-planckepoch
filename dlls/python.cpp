@@ -24,14 +24,16 @@
 
 
 enum python_e {
-	PYTHON_IDLE1 = 0,
-	PYTHON_FIDGET,
+	PYTHON_IDLE0 = 0,
+	PYTHON_IDLE1,
+	PYTHON_FIRE0,
 	PYTHON_FIRE1,
-	PYTHON_RELOAD,
-	PYTHON_HOLSTER,
-	PYTHON_DRAW,
-	PYTHON_IDLE2,
-	PYTHON_IDLE3
+	PYTHON_RELOAD0,
+	PYTHON_RELOAD1,
+	PYTHON_HOLSTER0,
+	PYTHON_HOLSTER1,
+	PYTHON_DRAW0,
+	PYTHON_DRAW1,
 };
 
 LINK_ENTITY_TO_CLASS( weapon_python, CPython );
@@ -94,6 +96,7 @@ void CPython::Precache( void )
 	PRECACHE_SOUND ("weapons/357_shot2.wav");
 
 	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
+	m_usFirePythonSecnd = PRECACHE_EVENT(1, "events/python2.sc");
 }
 
 BOOL CPython::Deploy( )
@@ -112,7 +115,16 @@ BOOL CPython::Deploy( )
 		pev->body = 0;
 	}
 
-	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python", UseDecrement(), pev->body );
+	if (m_iClip % 2 == 0)
+	{
+		//if even, use the first anim
+		return DefaultDeploy("models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW0, "python", UseDecrement(), pev->body);
+	}
+	else
+	{
+		//if odd, use the second anim
+		return DefaultDeploy("models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW1, "python", UseDecrement(), pev->body);
+	}
 }
 
 
@@ -127,7 +139,16 @@ void CPython::Holster( int skiplocal /* = 0 */ )
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	SendWeaponAnim( PYTHON_HOLSTER );
+	if (m_iClip % 2 == 0)
+	{
+		//if even, use first anim
+		SendWeaponAnim( PYTHON_HOLSTER0 );
+	}
+	else
+	{
+		//if odd, use the second anim
+		SendWeaponAnim( PYTHON_HOLSTER1 );
+	}
 }
 
 void CPython::SecondaryAttack( void )
@@ -219,7 +240,16 @@ void CPython::PrimaryAttack()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFirePython, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	if (m_iClip % 2 == 0)
+	{
+		//if even, use first event
+		PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFirePythonSecnd, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
+	}
+	else
+	{
+		//if odd, use the second event
+		PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFirePython, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
+	}
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
@@ -247,8 +277,16 @@ void CPython::Reload( void )
 #else
 	bUseScope = g_pGameRules->IsMultiplayer();
 #endif
-
-	DefaultReload( 6, PYTHON_RELOAD, 2.0, bUseScope );
+	if (m_iClip % 2 == 0)
+	{
+		//if even, use first anim
+		DefaultReload(PYTHON_MAX_CLIP, PYTHON_RELOAD0, 2.0, bUseScope);
+	}
+	else
+	{
+		//if odd, use the second anim
+		DefaultReload(PYTHON_MAX_CLIP, PYTHON_RELOAD1, 2.0, bUseScope);
+	}
 }
 
 
@@ -263,25 +301,17 @@ void CPython::WeaponIdle( void )
 
 	int iAnim;
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
-	if (flRand <= 0.5)
+	if (m_iClip % 2 == 0)
 	{
-		iAnim = PYTHON_IDLE1;
+		//if even, use first anim
+		iAnim = PYTHON_IDLE0;
 		m_flTimeWeaponIdle = (70.0/30.0);
-	}
-	else if (flRand <= 0.7)
-	{
-		iAnim = PYTHON_IDLE2;
-		m_flTimeWeaponIdle = (60.0/30.0);
-	}
-	else if (flRand <= 0.9)
-	{
-		iAnim = PYTHON_IDLE3;
-		m_flTimeWeaponIdle = (88.0/30.0);
 	}
 	else
 	{
-		iAnim = PYTHON_FIDGET;
-		m_flTimeWeaponIdle = (170.0/30.0);
+		//if odd, use the second anim
+		iAnim = PYTHON_IDLE1;
+		m_flTimeWeaponIdle = (70.0 / 30.0);
 	}
 	
 	int bUseScope = FALSE;

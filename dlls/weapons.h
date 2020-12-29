@@ -124,7 +124,7 @@ public:
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
 #define	_9MM_MAX_CARRY			120
-#define _357_MAX_CARRY			36
+#define _357_MAX_CARRY			32
 #define _556_MAX_CARRY			90
 #define BUCKSHOT_MAX_CARRY		125
 #define BOLT_MAX_CARRY			30
@@ -142,7 +142,7 @@ public:
 
 //#define CROWBAR_MAX_CLIP		WEAPON_NOCLIP
 #define GLOCK_MAX_CLIP			17
-#define PYTHON_MAX_CLIP			6
+#define PYTHON_MAX_CLIP			8
 #define MP5_MAX_CLIP			30
 //#define MP5_DEFAULT_AMMO		30	Removed cus already defined down there
 #define AR16_MAX_CLIP			30
@@ -160,7 +160,7 @@ public:
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
-#define PYTHON_DEFAULT_GIVE			6
+#define PYTHON_DEFAULT_GIVE			8
 #define MP5_DEFAULT_GIVE			30
 #define AR16_DEFAULT_GIVE			30
 #define AR16_M203_DEFAULT_GIVE		0
@@ -525,6 +525,12 @@ public:
 	int GetItemInfo(ItemInfo *p);
 	int AddToPlayer( CBasePlayer *pPlayer );
 
+#ifndef CLIENT_DLL
+	virtual int Save(CSave& save);
+	virtual int Restore(CRestore& restore);
+	static    TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
 	void GlockFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
@@ -532,6 +538,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
+	
 	//bool m_isFullAuto = false; replaced with a base variable
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -603,6 +610,7 @@ public:
 
 private:
 	unsigned short m_usFirePython;
+	unsigned short m_usFirePythonSecnd;
 };
 
 class CMP5 : public CBasePlayerWeapon

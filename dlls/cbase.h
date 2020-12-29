@@ -155,6 +155,13 @@ public:
 	CBaseEntity * operator ->();
 };
 
+typedef struct timevars_s {
+	double flOldTime;
+	double flTime;
+	double flTimeDelta;
+} timevars_t;
+
+extern timevars_t timevars;
 
 //
 // Base Entity.  All entity types derive from this
@@ -487,7 +494,7 @@ public:
 	int m_chargeReady;
 	int m_fInAttack;
 	//Glocks auto
-	bool m_isGlockAuto;
+	BOOL m_isGlockAuto;
 
 	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };
 	int m_fireState;

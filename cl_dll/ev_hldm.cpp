@@ -60,6 +60,7 @@ void EV_FireAR16(struct event_args_s* args);
 void EV_FireAR162( struct event_args_s *args  );
 void EV_FireAR163(struct event_args_s* args);
 void EV_FirePython( struct event_args_s *args  );
+void EV_FirePythonSecnd(struct event_args_s* args);
 void EV_FireGauss( struct event_args_s *args  );
 void EV_SpinGauss( struct event_args_s *args  );
 void EV_FireCrossbow( struct event_args_s *args  );
@@ -942,7 +943,7 @@ void EV_FirePython( event_args_t *args )
 
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( PYTHON_FIRE1, multiplayer ? 1 : 0 );
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( PYTHON_FIRE0, multiplayer ? 1 : 0 );
 
 		V_PunchAxis( 0, -10.0 );
 	}
@@ -962,6 +963,53 @@ void EV_FirePython( event_args_t *args )
 	VectorCopy( forward, vecAiming );
 
 	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2 );
+}
+
+void EV_FirePythonSecnd(event_args_t* args)
+{
+	int idx;
+	vec3_t origin;
+	vec3_t angles;
+	vec3_t velocity;
+
+	vec3_t vecSrc, vecAiming;
+	vec3_t up, right, forward;
+	float flSpread = 0.01;
+
+	idx = args->entindex;
+	VectorCopy(args->origin, origin);
+	VectorCopy(args->angles, angles);
+	VectorCopy(args->velocity, velocity);
+
+	AngleVectors(angles, forward, right, up);
+
+	if (EV_IsLocal(idx))
+	{
+		// Python uses different body in multiplayer versus single player
+		int multiplayer = gEngfuncs.GetMaxClients() == 1 ? 0 : 1;
+
+		// Add muzzle flash to current weapon model
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(PYTHON_FIRE1, multiplayer ? 1 : 0);
+
+		V_PunchAxis(0, -10.0);
+	}
+
+	switch (gEngfuncs.pfnRandomLong(0, 1))
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/357_shot1.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM);
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/357_shot2.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM);
+		break;
+	}
+
+	EV_GetGunPosition(args, vecSrc, origin);
+
+	VectorCopy(forward, vecAiming);
+
+	EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2);
 }
 //======================
 //	    PHYTON END 
