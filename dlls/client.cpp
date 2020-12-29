@@ -829,8 +829,13 @@ void ServerDeactivate( void )
 	//
 }
 
+timevars_t timevars;
+
 void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )
 {
+	timevars.flOldTime = 0;
+	timevars.flTime = 0;
+	timevars.flTimeDelta = 0;
 	int				i;
 	CBaseEntity		*pClass;
 
@@ -930,6 +935,10 @@ void ParmsChangeLevel( void )
 //
 void StartFrame( void )
 {
+	timevars.flOldTime = timevars.flTime;
+	timevars.flTime += gpGlobals->frametime;
+	timevars.flTimeDelta = timevars.flTime - timevars.flOldTime;
+
 	if ( g_pGameRules )
 		g_pGameRules->Think();
 

@@ -18,6 +18,8 @@ public:
 	void EXPORT StartPlayFrom(void);
 	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void ForceStopSound(void);
+	
+	void SoundFadeOut(void);
 
 	virtual int		Save(CSave& save);
 	virtual int		Restore(CRestore& restore);
@@ -29,8 +31,10 @@ public:
 	float m_fVolValue = 10;		// Volume to play. Changes with fade effects.
 	float m_pPitch = 0;			// 
 
+
 	CBasePlayer* m_pPlayer;
 
+	BOOL	m_fCanPlay; // Make this entity playable when others cant
 	BOOL	m_fActive;	// only TRUE when the entity is playing a looping sound
 	BOOL	m_fLooping;	// TRUE when the sound played will loop
 	edict_t* m_pPlayFrom; //LRC - the entity to play from
@@ -43,6 +47,7 @@ TYPEDESCRIPTION	CSoundScape::m_SaveData[] =
 {
 	DEFINE_FIELD(CSoundScape, m_flAttenuation, FIELD_FLOAT),
 	DEFINE_FIELD(CSoundScape, m_fActive, FIELD_BOOLEAN),
+	DEFINE_FIELD(CSoundScape, m_fCanPlay, FIELD_BOOLEAN),
 	DEFINE_FIELD(CSoundScape, m_fLooping, FIELD_BOOLEAN),
 	DEFINE_FIELD(CSoundScape, m_iChannel, FIELD_INTEGER),
 	DEFINE_FIELD(CSoundScape, m_pPlayFrom, FIELD_EDICT),
@@ -133,6 +138,7 @@ void CSoundScape::Precache(void)
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 				m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 		}
+		SetThink(&CSoundScape::SUB_Remove);
 		SetNextThink(0.1);
 	}
 }
@@ -155,7 +161,7 @@ void CSoundScape::ForceStopSound(void)
 		else
 		{
 			EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
-				0, 0, SND_STOP, m_pPitch);
+				m_fVolValue, 0, SND_STOP, m_pPitch);
 		}
 	}
 }
@@ -178,6 +184,7 @@ void CSoundScape::StartPlayFrom(void)
 	EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
 		m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 
+	SetThink(&CSoundScape::SUB_Remove);
 	SetNextThink(0.1);
 }
 
@@ -188,9 +195,38 @@ void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 
 	while (((soundScape = static_cast<CSoundScape*>(UTIL_FindEntityByClassname(soundScape, "env_soundscape")))) != nullptr && !FNullEnt(soundScape->pev))
 	{
-		soundScape->ForceStopSound();
+		soundScape->SetThink(&CSoundScape::SoundFadeOut);
+		soundScape->SetNextThink(0.1);
+		soundScape->m_fCanPlay = FALSE;
 	}
-	StartPlayFrom();
+	m_fCanPlay = TRUE;
+}
+
+void CSoundScape::SoundFadeOut(void)
+{
+	char* szSoundFile = (char*)STRING(pev->message);
+
+	if (m_fVolValue >= 1)
+	{
+		SetNextThink(0.1);
+		m_fVolValue -= (timevars.flTimeDelta * m_fVolBase * 20);
+		EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
+			m_fVolValue, m_flAttenuation, SND_CHANGE_VOL, m_pPitch);
+		//ALERT(at_console, "%f", m_fVolValue);
+	}
+	else
+	{
+		if (m_fCanPlay)
+		{
+			m_fVolValue = m_fVolBase;
+			StartPlayFrom();
+		}
+		else
+		{
+			m_fVolValue = m_fVolBase;
+			//ALERT(at_console, "CantMF");
+		}
+	}
 }
 
 // KeyValue - Load keyvalues from the entity data thingy
