@@ -127,7 +127,8 @@ BOOL CGlock::Deploy( )
 void CGlock::SecondaryAttack( void )
 {
 	m_pPlayer->m_isGlockAuto = !m_pPlayer->m_isGlockAuto;
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
+	//EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
+	PlayEmptySound();
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 

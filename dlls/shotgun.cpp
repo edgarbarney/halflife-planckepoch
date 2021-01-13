@@ -208,9 +208,10 @@ void CShotgun::PrimaryAttack()
 	m_fInSpecialReload = 0;
 }
 
-
+//Disabled Secondary Attack
 void CShotgun::SecondaryAttack( void )
 {
+	/*
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD)
 	{
@@ -296,7 +297,8 @@ void CShotgun::SecondaryAttack( void )
 		m_flTimeWeaponIdle = 1.5;
 
 	m_fInSpecialReload = 0;
-
+	*/
+	return;
 }
 
 
