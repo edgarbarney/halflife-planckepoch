@@ -81,6 +81,8 @@ public:
 	void BarneyFireMP5(void);
 	void BarneyFireAR16(void);
 
+	void KeyValue(KeyValueData* pkvd);
+
 	void RunTask( Task_t *pTask );
 	void StartTask( Task_t *pTask );
 	virtual int	ObjectCaps( void ) { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
@@ -723,13 +725,14 @@ void CBarney::SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock)
 {
 	int glokstatus = BRNWPS_HOLSTER;
 
-	if (glokstatus)
+	if (forceglock)
 	{
 		glokstatus = BRNWPS_DROP;
 	}
 
 	switch (weaponToWork)
 	{
+	default:
 	case BRNWPN_GLOCK:
 		SetBodygroup(BRNWPN_GLOCK, gunstatus);
 		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
@@ -766,6 +769,7 @@ void CBarney::SwitchWeapon(int weaponToWork, bool forcehand)
 
 	switch (weaponToWork)
 	{
+	default:
 	case BRNWPN_GLOCK:
 		SetBodygroup(BRNWPN_GLOCK, gunstatus);
 		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
@@ -817,7 +821,7 @@ void CBarney :: Spawn()
 	//m_fGunDrawn			= FALSE;	
 
 	m_fireRate = 0.01;
-	m_curWeapon = BRNWPN_MP5;
+	//m_curWeapon = BRNWPN_GLOCK;
 
 	SwitchWeapon(m_curWeapon, false);
 	//SetWeaponBG(m_curWeapon, BRNWPS_HOLSTER, false);
@@ -828,6 +832,20 @@ void CBarney :: Spawn()
 
 	MonsterInit();
 	SetUse( &CBarney::FollowerUse );
+}
+
+void CBarney::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "wpnkey"))
+	{
+		if (atoi(pkvd->szValue) == BRNWPN_AR16 || atoi(pkvd->szValue) == BRNWPN_MP5 || atoi(pkvd->szValue) == BRNWPN_GLOCK)
+			m_curWeapon = atoi(pkvd->szValue);
+		else
+			m_curWeapon = BRNWPN_GLOCK;
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseMonster::KeyValue(pkvd);
 }
 
 //=========================================================
@@ -1133,7 +1151,6 @@ void CBarney::SetActivity(Activity NewActivity)
 	switch (NewActivity)
 	{
 	case ACT_RANGE_ATTACK1:
-
 		switch (m_curWeapon)
 		{
 		case BRNWPN_MP5:
@@ -1172,7 +1189,7 @@ void CBarney::SetActivity(Activity NewActivity)
 			break;
 		case BRNWPN_GLOCK:
 		default:
-			iSequence = LookupSequence("reload");
+			iSequence = LookupSequence("draw");
 			break;
 		}
 		break;
