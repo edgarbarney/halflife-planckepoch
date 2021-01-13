@@ -1637,7 +1637,7 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 				break;
 
 			case BULLET_PLAYER_556:
-				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgMP5, vecDir, &tr, DMG_BULLET);
+				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgAR16, vecDir, &tr, DMG_BULLET);
 				break;
 
 			case BULLET_PLAYER_338:
@@ -1645,7 +1645,7 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 				break;
 
 			case BULLET_MONSTER_556:
-				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgAR16, vecDir, &tr, DMG_BULLET);
+				pEntity->TraceAttack(pevAttacker, gSkillData.monDmg556, vecDir, &tr, DMG_BULLET);
 				break;
 
 			case BULLET_PLAYER_BUCKSHOT:	

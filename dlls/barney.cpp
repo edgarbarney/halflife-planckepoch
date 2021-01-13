@@ -27,6 +27,7 @@
 #include	"scripted.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include <animation.h>
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -35,6 +36,26 @@
 #define		BARNEY_AE_DRAW		( 2 )
 #define		BARNEY_AE_SHOOT		( 3 )
 #define		BARNEY_AE_HOLSTER	( 4 )
+#define		BARNEY_AE_RELOAD	( 31 )
+
+enum
+{
+	SCHED_BARNEY_COVER_AND_RELOAD,
+};
+
+enum
+{
+	BRNWPN_GLOCK = 2,
+	BRNWPN_MP5 = 3,
+	BRNWPN_AR16 = 4,
+};
+
+enum
+{
+	BRNWPS_HOLSTER = 0,
+	BRNWPS_EQUIP = 1,
+	BRNWPS_DROP = 2,
+};
 
 #define	BARNEY_BODY_GUNHOLSTERED	0
 #define	BARNEY_BODY_GUNDRAWN		1
@@ -51,7 +72,15 @@ public:
 	void AlertSound( void );
 	int  Classify ( void );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
-	
+	void CheckAmmo(void); // For Reload
+
+	//For Multiple Weapons
+	void SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock);
+	void SwitchWeapon(int weaponToWork, bool forcehand);
+	void SetActivity(Activity NewActivity);
+	void BarneyFireMP5(void);
+	void BarneyFireAR16(void);
+
 	void RunTask( Task_t *pTask );
 	void StartTask( Task_t *pTask );
 	virtual int	ObjectCaps( void ) { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
@@ -82,6 +111,9 @@ public:
 	float	m_painTime;
 	float	m_checkAttackTime;
 	BOOL	m_lastAttackCheck;
+	int		m_cClipSize;
+	int		m_curWeapon;
+	float	m_fireRate;
 
 	// UNDONE: What is this for?  It isn't used?
 	float	m_flPlayerDamage;// how much pain has the player inflicted on me?
@@ -99,6 +131,8 @@ TYPEDESCRIPTION	CBarney::m_SaveData[] =
 	DEFINE_FIELD( CBarney, m_checkAttackTime, FIELD_TIME ),
 	DEFINE_FIELD( CBarney, m_lastAttackCheck, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CBarney, m_flPlayerDamage, FIELD_FLOAT ),
+	DEFINE_FIELD( CBarney, m_cClipSize, FIELD_INTEGER),
+	DEFINE_FIELD( CBarney, m_curWeapon, FIELD_INTEGER),
 };
 
 IMPLEMENT_SAVERESTORE( CBarney, CTalkMonster );
@@ -146,6 +180,24 @@ Schedule_t slBarneyEnemyDraw[] =
 		0,
 		0,
 		"Barney Enemy Draw"
+	}
+};
+
+Task_t	tlBarneyEnemyDrawRifle[] =
+{
+	{ TASK_STOP_MOVING,					0				},
+	{ TASK_FACE_ENEMY,					0				},
+	{ TASK_PLAY_SEQUENCE_FACE_ENEMY,	(float)ACT_ARM },
+};
+
+Schedule_t slBarneyEnemyDrawRifle[] =
+{
+	{
+		tlBarneyEnemyDrawRifle,
+		ARRAYSIZE(tlBarneyEnemyDrawRifle),
+		0,
+		0,
+		"Barney Enemy Draw Rifle"
 	}
 };
 
@@ -206,12 +258,88 @@ Schedule_t	slIdleBaStand[] =
 	},
 };
 
+Task_t	tlBarneyHideReload[] =
+{
+	{ TASK_STOP_MOVING,				(float)0					},
+	{ TASK_SET_FAIL_SCHEDULE,		(float)SCHED_RELOAD			},
+	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0					},
+	{ TASK_RUN_PATH,				(float)0					},
+	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
+	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER	},
+	{ TASK_FACE_ENEMY,				(float)0					},
+	{ TASK_PLAY_SEQUENCE,			(float)ACT_RELOAD			},
+};
+
+Schedule_t slBarneyHideReload[] =
+{
+	{
+		tlBarneyHideReload,
+		ARRAYSIZE(tlBarneyHideReload),
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND,
+		bits_SOUND_DANGER,
+		"BarneyHideReload"
+	}
+};
+
+Task_t	tlBarneyHideReloadMP5[] =
+{
+	{ TASK_STOP_MOVING,				(float)0					},
+	{ TASK_SET_FAIL_SCHEDULE,		(float)SCHED_RELOAD			},
+	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0					},
+	{ TASK_RUN_PATH,				(float)0					},
+	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
+	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER	},
+	{ TASK_FACE_ENEMY,				(float)0					},
+	{ TASK_PLAY_SEQUENCE,			(float)ACT_RELOAD			},
+};
+
+Schedule_t slBarneyHideReloadMP5[] =
+{
+	{
+		tlBarneyHideReloadMP5,
+		ARRAYSIZE(tlBarneyHideReloadMP5),
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND,
+		bits_SOUND_DANGER,
+		"BarneyHideReloadMP5"
+	}
+};
+
+Task_t	tlBarneyHideReloadAR16[] =
+{
+	{ TASK_STOP_MOVING,				(float)0					},
+	{ TASK_SET_FAIL_SCHEDULE,		(float)SCHED_RELOAD			},
+	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0					},
+	{ TASK_RUN_PATH,				(float)0					},
+	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
+	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER	},
+	{ TASK_FACE_ENEMY,				(float)0					},
+	{ TASK_PLAY_SEQUENCE,			(float)ACT_RELOAD			},
+};
+
+Schedule_t slBarneyHideReloadAR16[] =
+{
+	{
+		tlBarneyHideReloadAR16,
+		ARRAYSIZE(tlBarneyHideReloadAR16),
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND,
+		bits_SOUND_DANGER,
+		"BarneyHideReloadAR16"
+	}
+};
+
 DEFINE_CUSTOM_SCHEDULES( CBarney )
 {
 	slBaFollow,
 	slBarneyEnemyDraw,
 	slBaFaceTarget,
 	slIdleBaStand,
+	slBarneyHideReload,
+	slBarneyHideReloadMP5,
+	slBarneyHideReloadAR16,
+	slBarneyEnemyDrawRifle,
 };
 
 
@@ -219,7 +347,15 @@ IMPLEMENT_CUSTOM_SCHEDULES( CBarney, CTalkMonster );
 
 void CBarney :: StartTask( Task_t *pTask )
 {
-	CTalkMonster::StartTask( pTask );	
+	switch (pTask->iTask)
+	{
+	case TASK_RELOAD:
+		m_IdealActivity = ACT_RELOAD;
+		break;
+	default:
+		CTalkMonster::StartTask(pTask);
+		break;
+	}
 }
 
 void CBarney :: RunTask( Task_t *pTask )
@@ -229,7 +365,7 @@ void CBarney :: RunTask( Task_t *pTask )
 	case TASK_RANGE_ATTACK1:
 		if (m_hEnemy != NULL && (m_hEnemy->IsPlayer()))
 		{
-			pev->framerate = 1.5;
+			pev->framerate = 8;
 		}
 		CTalkMonster::RunTask( pTask );
 		break;
@@ -303,16 +439,16 @@ void CBarney :: SetYawSpeed ( void )
 	switch ( m_Activity )
 	{
 	case ACT_IDLE:		
-		ys = 70;
+		ys = 300;
 		break;
 	case ACT_WALK:
-		ys = 70;
+		ys = 300;
 		break;
 	case ACT_RUN:
-		ys = 90;
+		ys = 300;
 		break;
 	default:
-		ys = 70;
+		ys = 300;
 		break;
 	}
 
@@ -335,18 +471,132 @@ BOOL CBarney :: CheckRangeAttack1 ( float flDot, float flDist )
 			CBaseEntity *pEnemy = m_hEnemy;
 			Vector shootTarget = ( (pEnemy->BodyTarget( shootOrigin ) - pEnemy->pev->origin) + m_vecEnemyLKP );
 			UTIL_TraceLine( shootOrigin, shootTarget, dont_ignore_monsters, ENT(pev), &tr );
+			//m_checkAttackTime = gpGlobals->time + m_fireRate;
 			m_checkAttackTime = gpGlobals->time + 1;
 			if ( tr.flFraction == 1.0 || (tr.pHit != NULL && CBaseEntity::Instance(tr.pHit) == pEnemy) )
 				m_lastAttackCheck = TRUE;
 			else
 				m_lastAttackCheck = FALSE;
-			m_checkAttackTime = gpGlobals->time + 1.5;
+			m_checkAttackTime = gpGlobals->time + m_fireRate;
 		}
 		return m_lastAttackCheck;
 	}
 	return FALSE;
 }
 
+#pragma region FiringFunctions
+
+//=========================================================
+// BarneyFireAR16 - shoots one round from the AR16 at
+// the enemy barney is facing.
+//=========================================================
+
+void CBarney::BarneyFireAR16(void)
+{
+	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	{
+		return;
+	}
+
+	Vector vecShootOrigin;
+
+	UTIL_MakeVectors(pev->angles);
+	vecShootOrigin = pev->origin + Vector(0, 0, 55);
+	Vector vecShootDir = ShootAtEnemy(vecShootOrigin);
+
+	Vector angDir = UTIL_VecToAngles(vecShootDir);
+	SetBlending(0, angDir.x);
+	pev->effects = EF_MUZZLEFLASH;
+
+	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_556);
+
+	int pitchShift = RANDOM_LONG(0, 20);
+
+	// Only shift about half the time
+	if (pitchShift > 10)
+		pitchShift = 0;
+	else
+		pitchShift -= 5;
+
+	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "weapons/ar16_fire1.wav", 1, ATTN_NORM, 0, 100 + pitchShift);
+
+	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
+
+	// UNDONE: Reload?
+	m_cAmmoLoaded--;// take away a bullet!
+
+	// Teh_Freak: World Lighting!
+	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecShootOrigin.x); // origin
+	WRITE_COORD(vecShootOrigin.y);
+	WRITE_COORD(vecShootOrigin.z);
+	WRITE_BYTE(16);     // radius
+	WRITE_BYTE(255);     // R
+	WRITE_BYTE(255);     // G
+	WRITE_BYTE(128);     // B
+	WRITE_BYTE(0);     // life * 10
+	WRITE_BYTE(0); // decay
+	MESSAGE_END();
+	// Teh_Freak: World Lighting!
+
+}
+
+//=========================================================
+// BarneyFireMP5 - shoots one round from the MP5 at
+// the enemy barney is facing.
+//=========================================================
+
+void CBarney::BarneyFireMP5(void)
+{
+	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	{
+		return;
+	}
+
+	Vector vecShootOrigin;
+
+	UTIL_MakeVectors(pev->angles);
+	vecShootOrigin = pev->origin + Vector(0, 0, 55);
+	Vector vecShootDir = ShootAtEnemy(vecShootOrigin);
+
+	Vector angDir = UTIL_VecToAngles(vecShootDir);
+	SetBlending(0, angDir.x);
+	pev->effects = EF_MUZZLEFLASH;
+
+	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM);
+
+	int pitchShift = RANDOM_LONG(0, 20);
+
+	// Only shift about half the time
+	if (pitchShift > 10)
+		pitchShift = 0;
+	else
+		pitchShift -= 5;
+	//weapons/ar16_fire1
+	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM, 0, 100 + pitchShift);
+
+	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
+
+	// UNDONE: Reload?
+	m_cAmmoLoaded--;// take away a bullet!
+
+	// Teh_Freak: World Lighting!
+	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecShootOrigin.x); // origin
+	WRITE_COORD(vecShootOrigin.y);
+	WRITE_COORD(vecShootOrigin.z);
+	WRITE_BYTE(16);     // radius
+	WRITE_BYTE(255);     // R
+	WRITE_BYTE(255);     // G
+	WRITE_BYTE(128);     // B
+	WRITE_BYTE(0);     // life * 10
+	WRITE_BYTE(0); // decay
+	MESSAGE_END();
+	// Teh_Freak: World Lighting!
+
+}
 
 //=========================================================
 // BarneyFirePistol - shoots one round from the pistol at
@@ -354,6 +604,11 @@ BOOL CBarney :: CheckRangeAttack1 ( float flDot, float flDist )
 //=========================================================
 void CBarney :: BarneyFirePistol ( void )
 {
+	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	{
+		return;
+	}
+
 	Vector vecShootOrigin;
 
 	UTIL_MakeVectors(pev->angles);
@@ -364,28 +619,17 @@ void CBarney :: BarneyFirePistol ( void )
 	SetBlending( 0, angDir.x );
 	pev->effects = EF_MUZZLEFLASH;
 
-	if (pev->frags)
-	{
-		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_PLAYER_357);
-		if (RANDOM_LONG(0, 1))
-			EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "weapons/357_shot1.wav", 1, ATTN_NORM, 0, 100 );
-		else
-			EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "weapons/357_shot2.wav", 1, ATTN_NORM, 0, 100 );
-	}
-	else
-	{
-		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM );
+	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM );
 
-		int pitchShift = RANDOM_LONG( 0, 20 );
+	int pitchShift = RANDOM_LONG( 0, 20 );
 	
-		// Only shift about half the time
-		if ( pitchShift > 10 )
-			pitchShift = 0;
-		else
-			pitchShift -= 5;
+	// Only shift about half the time
+	if ( pitchShift > 10 )
+		pitchShift = 0;
+	else
+		pitchShift -= 5;
 
-		EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "barney/ba_attack2.wav", 1, ATTN_NORM, 0, 100 + pitchShift );
-	}
+	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "weapons/pl_gun3.wav", 1, ATTN_NORM, 0, 100 + pitchShift );
 
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, 384, 0.3 );
 
@@ -408,7 +652,21 @@ void CBarney :: BarneyFirePistol ( void )
 	// Teh_Freak: World Lighting!
 
 }
-		
+
+#pragma endregion
+
+//=========================================================
+// CheckAmmo - overridden for the barney because like
+// hgrunt, he actually uses ammo! (base class doesn't)
+//=========================================================
+void CBarney::CheckAmmo(void)
+{
+	if (m_cAmmoLoaded <= 0)
+	{
+		SetConditions(bits_COND_NO_AMMO_LOADED);
+	}
+}
+
 //=========================================================
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
@@ -420,25 +678,119 @@ void CBarney :: HandleAnimEvent( MonsterEvent_t *pEvent )
 	switch( pEvent->event )
 	{
 	case BARNEY_AE_SHOOT:
-		BarneyFirePistol();
+		switch(m_curWeapon)
+		{
+			case BRNWPN_MP5:
+				BarneyFireMP5();
+				break;
+			case BRNWPN_AR16:
+				BarneyFireAR16();
+				break;
+			case BRNWPN_GLOCK:
+			default:
+				BarneyFirePistol();
+				break;
+		}
+		break;
+
+	case BARNEY_AE_RELOAD:
+		m_cAmmoLoaded = m_cClipSize;
+		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
 
 	case BARNEY_AE_DRAW:
 		// barney's bodygroup switches here so he can pull gun from holster
-		pev->body = m_iBaseBody + BARNEY_BODY_GUNDRAWN;
+		SetBodygroup(m_curWeapon, BRNWPS_EQUIP);
 		m_fGunDrawn = TRUE;
 		break;
 
 	case BARNEY_AE_HOLSTER:
 		// change bodygroup to replace gun in holster
-		pev->body = m_iBaseBody + BARNEY_BODY_GUNHOLSTERED;
+		SetBodygroup(m_curWeapon, BRNWPS_HOLSTER);
 		m_fGunDrawn = FALSE;
 		break;
-
 	default:
 		CTalkMonster::HandleAnimEvent( pEvent );
 	}
 }
+
+#pragma region MultipleWeapons
+
+//=========================================================
+// Set Weapon Bodygroup
+//=========================================================
+void CBarney::SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock)
+{
+	int glokstatus = BRNWPS_HOLSTER;
+
+	if (glokstatus)
+	{
+		glokstatus = BRNWPS_DROP;
+	}
+
+	switch (weaponToWork)
+	{
+	case BRNWPN_GLOCK:
+		SetBodygroup(BRNWPN_GLOCK, gunstatus);
+		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
+		SetBodygroup(BRNWPN_AR16, BRNWPS_DROP);
+		break;
+	case BRNWPN_MP5:
+		SetBodygroup(BRNWPN_GLOCK, glokstatus);
+		SetBodygroup(BRNWPN_MP5, gunstatus);
+		SetBodygroup(BRNWPN_AR16, BRNWPS_DROP);
+		break;
+	case BRNWPN_AR16:
+		SetBodygroup(BRNWPN_GLOCK, glokstatus);
+		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
+		SetBodygroup(BRNWPN_AR16, gunstatus);
+		break;
+	}
+}
+
+//=========================================================
+// Switch Weapon
+//=========================================================
+void CBarney::SwitchWeapon(int weaponToWork, bool forcehand)
+{
+	int gunstatus = BRNWPS_HOLSTER;
+
+	if (forcehand)
+	{
+		gunstatus = BRNWPS_EQUIP;
+	}
+	else
+	{
+		m_fGunDrawn = false;
+	}
+
+	switch (weaponToWork)
+	{
+	case BRNWPN_GLOCK:
+		SetBodygroup(BRNWPN_GLOCK, gunstatus);
+		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
+		SetBodygroup(BRNWPN_AR16, BRNWPS_DROP);
+		m_curWeapon = BRNWPN_GLOCK;
+		m_cClipSize = GLOCK_MAX_CLIP;
+		break;
+	case BRNWPN_MP5:
+		SetBodygroup(BRNWPN_GLOCK, BRNWPS_HOLSTER);
+		SetBodygroup(BRNWPN_MP5, gunstatus);
+		SetBodygroup(BRNWPN_AR16, BRNWPS_DROP);
+		m_curWeapon = BRNWPN_MP5;
+		m_cClipSize = MP5_MAX_CLIP;
+		break;
+	case BRNWPN_AR16:
+		SetBodygroup(BRNWPN_GLOCK, BRNWPS_HOLSTER);
+		SetBodygroup(BRNWPN_MP5, BRNWPS_DROP);
+		SetBodygroup(BRNWPN_AR16, gunstatus);
+		m_curWeapon = BRNWPN_AR16;
+		m_cClipSize = AR16_MAX_CLIP;
+		break;
+	}
+}
+
+#pragma endregion
 
 //=========================================================
 // Spawn
@@ -462,11 +814,17 @@ void CBarney :: Spawn()
 	m_flFieldOfView		= VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so npc will notice player and say hello
 	m_MonsterState		= MONSTERSTATE_NONE;
 	
-	m_iBaseBody = pev->body; //LRC
-	pev->body			= m_iBaseBody + BARNEY_BODY_GUNHOLSTERED; // gun in holster
-	m_fGunDrawn			= FALSE;
+	//m_fGunDrawn			= FALSE;	
+
+	m_fireRate = 0.01;
+	m_curWeapon = BRNWPN_MP5;
+
+	SwitchWeapon(m_curWeapon, false);
+	//SetWeaponBG(m_curWeapon, BRNWPS_HOLSTER, false);
 
 	m_afCapability		= bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
+
+	m_cAmmoLoaded = m_cClipSize;
 
 	MonsterInit();
 	SetUse( &CBarney::FollowerUse );
@@ -483,7 +841,9 @@ void CBarney :: Precache()
 		PRECACHE_MODEL("models/barney.mdl");
 
 	PRECACHE_SOUND("barney/ba_attack1.wav" );
-	PRECACHE_SOUND("barney/ba_attack2.wav" );
+	PRECACHE_SOUND("weapons/hks1.wav" );
+	PRECACHE_SOUND("weapons/ar16_fire1.wav");
+	PRECACHE_SOUND("weapons/pl_gun3.wav");
 
 	PRECACHE_SOUND("barney/ba_pain1.wav");
 	PRECACHE_SOUND("barney/ba_pain2.wav");
@@ -492,6 +852,7 @@ void CBarney :: Precache()
 	PRECACHE_SOUND("barney/ba_die1.wav");
 	PRECACHE_SOUND("barney/ba_die2.wav");
 	PRECACHE_SOUND("barney/ba_die3.wav");
+
 	
 	// every new barney must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
@@ -677,25 +1038,49 @@ void CBarney::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir
 {
 	switch( ptr->iHitgroup)
 	{
-	case HITGROUP_CHEST:
-	case HITGROUP_STOMACH:
-		if (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST))
-		{
-			flDamage = flDamage / 2;
-		}
-		break;
+	//case HITGROUP_CHEST:
+	//case HITGROUP_STOMACH:
+	//	if (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST))
+	//	{
+	//		flDamage = flDamage / 2;
+	//	}
+	//	break;
 	case 10:
 		if (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_CLUB))
 		{
 			flDamage -= 20;
 			if (flDamage <= 0)
 			{
-				UTIL_Ricochet( ptr->vecEndPos, 1.0 );
+				UTIL_Ricochet(ptr->vecEndPos, 1.0);
 				flDamage = 0.01;
 			}
 		}
 		// always a head shot
 		ptr->iHitgroup = HITGROUP_HEAD;
+		break;
+	case 11:
+		if (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_CLUB))
+		{
+			flDamage -= 20;
+			if (flDamage <= 0)
+			{
+				UTIL_Ricochet(ptr->vecEndPos, 1.0);
+				flDamage = 0.01;
+			}
+		}
+		ptr->iHitgroup = HITGROUP_CHEST;
+		break;
+	case 12:
+		if (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_CLUB))
+		{
+			flDamage -= 20;
+			if (flDamage <= 0)
+			{
+				UTIL_Ricochet(ptr->vecEndPos, 1.0);
+				flDamage = 0.01;
+			}
+		}
+		ptr->iHitgroup = HITGROUP_STOMACH;
 		break;
 	}
 
@@ -705,24 +1090,114 @@ void CBarney::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir
 
 void CBarney::Killed( entvars_t *pevAttacker, int iGib )
 {
-	if ( pev->body < m_iBaseBody + BARNEY_BODY_GUNGONE && !(pev->spawnflags & SF_MONSTER_NO_WPN_DROP))
+	if (GetBodygroup(2) <  BARNEY_BODY_GUNGONE && !(pev->spawnflags & SF_MONSTER_NO_WPN_DROP))
 	{// drop the gun!
 		Vector vecGunPos;
 		Vector vecGunAngles;
 		
-		pev->body = m_iBaseBody + BARNEY_BODY_GUNGONE;
-
+		SetWeaponBG(m_curWeapon, BRNWPS_DROP, true);
 		GetAttachment( 0, vecGunPos, vecGunAngles );
-		
-		CBaseEntity *pGun;
-		if (pev->frags)
-			pGun = DropItem( "weapon_357", vecGunPos, vecGunAngles );
-		else
-			pGun = DropItem( "weapon_9mmhandgun", vecGunPos, vecGunAngles );
+
+		CBaseEntity* pGun;
+		CBaseEntity* pGun2;
+
+		switch (m_curWeapon)
+		{
+		case BRNWPN_MP5:
+			pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			pGun2 = DropItem("weapon_9mmAR", Vector(vecGunPos.x, vecGunPos.y + 10, vecGunPos.z + 1), vecGunAngles);
+			break;
+		case BRNWPN_AR16:
+			pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			pGun2 = DropItem("weapon_556AR", Vector(vecGunPos.x, vecGunPos.y + 10, vecGunPos.z + 1), vecGunAngles);
+			break;
+		case BRNWPN_GLOCK:
+		default:
+			pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			break;
+		}
 	}
 
 	SetUse( NULL );	
 	CTalkMonster::Killed( pevAttacker, iGib );
+}
+
+//==========================================================
+// SetActivity 
+//=========================================================
+void CBarney::SetActivity(Activity NewActivity)
+{
+	int	iSequence = ACTIVITY_NOT_AVAILABLE;
+	void* pmodel = GET_MODEL_PTR(ENT(pev));
+
+	switch (NewActivity)
+	{
+	case ACT_RANGE_ATTACK1:
+
+		switch (m_curWeapon)
+		{
+		case BRNWPN_MP5:
+			iSequence = LookupSequence("shootmp5");
+			break;
+		case BRNWPN_AR16:
+			iSequence = LookupSequence("shootar16");
+			break;
+		case BRNWPN_GLOCK:
+		default:
+			iSequence = LookupSequence("shootgun2");
+			break;
+		}
+		break;
+	case ACT_RELOAD:
+		switch (m_curWeapon)
+		{
+		case BRNWPN_MP5:
+			iSequence = LookupSequence("reloadmp5");
+			break;
+		case BRNWPN_AR16:
+			iSequence = LookupSequence("reloadar16");
+			break;
+		case BRNWPN_GLOCK:
+		default:
+			iSequence = LookupSequence("reload");
+			break;
+		}
+		break;
+	case ACT_ARM:
+		switch (m_curWeapon)
+		{
+		case BRNWPN_MP5:
+		case BRNWPN_AR16:
+			iSequence = LookupSequence("drawrifle");
+			break;
+		case BRNWPN_GLOCK:
+		default:
+			iSequence = LookupSequence("reload");
+			break;
+		}
+		break;
+	default:
+		iSequence = LookupActivity(NewActivity);
+		break;
+	}
+
+	m_Activity = NewActivity;
+
+	if (iSequence > ACTIVITY_NOT_AVAILABLE)
+	{
+		if (pev->sequence != iSequence || !m_fSequenceLoops)
+		{
+			pev->frame = 0;
+		}
+
+		pev->sequence = iSequence;
+		ResetSequenceInfo();
+		SetYawSpeed();
+	}
+	else
+	{
+		pev->sequence = 0;
+	}
 }
 
 //=========================================================
@@ -742,7 +1217,22 @@ Schedule_t* CBarney :: GetScheduleOfType ( int Type )
 			return slBarneyEnemyDraw;
 		}
 		break;
-
+	case SCHED_BARNEY_COVER_AND_RELOAD:
+	{
+		switch (m_curWeapon)
+		{
+		case BRNWPN_MP5:
+			return &slBarneyHideReloadMP5[0];
+			break;
+		case BRNWPN_AR16:
+			return &slBarneyHideReloadAR16[0];
+			break;
+		case BRNWPN_GLOCK:
+		default:
+			return &slBarneyHideReload[0];
+			break;
+		}
+	}
 	// Hook these to make a looping schedule
 	case SCHED_TARGET_FACE:
 		// call base class default so that barney will talk
@@ -782,6 +1272,14 @@ Schedule_t* CBarney :: GetScheduleOfType ( int Type )
 //=========================================================
 Schedule_t *CBarney :: GetSchedule ( void )
 {
+	if (HasConditions(bits_COND_NO_AMMO_LOADED))
+	{
+			//!!!KELLY - this individual just realized he's out of bullet ammo. 
+			// He's going to try to find cover to run to and reload, but rarely, if 
+			// none is available, he'll drop and reload in the open here. 
+	return GetScheduleOfType(SCHED_BARNEY_COVER_AND_RELOAD);
+	}
+
 	if ( HasConditions( bits_COND_HEAR_SOUND ) )
 	{
 		CSound *pSound;
@@ -935,6 +1433,7 @@ void CDeadBarney :: Spawn( )
 	pev->yaw_speed		= 8;
 	pev->sequence		= 0;
 	m_bloodColor		= BLOOD_COLOR_RED;
+
 
 	pev->sequence = LookupSequence( m_szPoses[m_iPose] );
 	if (pev->sequence == -1)

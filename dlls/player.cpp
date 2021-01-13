@@ -443,10 +443,10 @@ void CBasePlayer :: DeathSound( void )
 	switch (RANDOM_LONG(0, 25))
 	{
 	case 25:
-		EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fvox/flatlineeaster.wav", 1, ATTN_NORM);
 		break;
 	default:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fvox/flatlineeaster.wav", 1, ATTN_NORM);
+		EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
 		break;
 	}
 }

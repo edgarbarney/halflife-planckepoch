@@ -32,10 +32,17 @@
 #define	ZOMBIE_AE_ATTACK_LEFT		0x02
 #define	ZOMBIE_AE_ATTACK_BOTH		0x03
 
+// Headcrab jumps from zombie
+#define     ZOMBIE_AE_CRAB1          0x04
+#define     ZOMBIE_AE_CRAB2          0x05
+#define     ZOMBIE_AE_CRAB3          0x06
+
 #define ZOMBIE_FLINCH_DELAY			2		// at most one flinch every n secs
 
 #define	TOTALZOMBIETYPES			4
 enum class zombieTypeEnum { scientist, barney, hgrunt, blops };
+
+#define ZOMBIE_CRAB          "monster_headcrab"
 
 class CZombie : public CBaseMonster
 {
@@ -46,6 +53,9 @@ public:
 	int  Classify(void);
 	void HandleAnimEvent(MonsterEvent_t* pEvent);
 	int IgnoreConditions(void);
+	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
+	void SpawnCrab(void);
+	void RemoveKrabby(void);
 	zombieTypeEnum m_zombieType;
 
 	float m_flNextFlinch;
@@ -333,10 +343,59 @@ void CZombie::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
+	// Krusty Krabs
+	case ZOMBIE_AE_CRAB1 :
+	{
+		RemoveKrabby();
+		SpawnCrab(); // Spawn a Krabby
+	}
+	break;
+
+	case ZOMBIE_AE_CRAB2:
+	{
+		RemoveKrabby();
+		SpawnCrab(); // Spawn a Krabby
+	}
+	break;
+
+	case ZOMBIE_AE_CRAB3:
+	{
+		RemoveKrabby();
+		SpawnCrab(); // Spawn a Krabby
+	}
+	break;
+
 	default:
 		CBaseMonster::HandleAnimEvent(pEvent);
 		break;
 	}
+}
+
+//=========================================================
+// Crab Removal
+//=========================================================
+void CZombie::RemoveKrabby(void)
+{
+	m_zombieType = static_cast<zombieTypeEnum>(GetBodygroup(0));
+	switch (m_zombieType)
+		{
+		case zombieTypeEnum::barney:
+			SetBodygroup(1, 4); // Remove Krabby
+			SetBodygroup(2, 1); // Attach Headdy
+			break;
+		case zombieTypeEnum::hgrunt:
+			SetBodygroup(1, 4); // Remove Krabby
+			SetBodygroup(2, 2); // Attach Headdy
+			break;
+		case zombieTypeEnum::blops:
+			SetBodygroup(1, 4); // Remove Krabby
+			SetBodygroup(2, 3); // Attach Headdy
+			break;
+		default:
+			SetBodygroup(1, 4); // Remove Krabby
+			SetBodygroup(2, 0); // Attach Headdy
+			break;
+		}
 }
 
 //=========================================================
@@ -370,15 +429,23 @@ void CZombie::Spawn()
 		{
 		case zombieTypeEnum::barney:
 			pev->health = gSkillData.zombieHealth * 1.2;
+			SetBodygroup(2, 4); // Detach Headdy
+			SetBodygroup(1, 1); // Attach Krabby
 			break;
 		case zombieTypeEnum::hgrunt:
 			pev->health = gSkillData.zombieHealth * 1.5;
+			SetBodygroup(2, 4); // Detach Headdy
+			SetBodygroup(1, 2); // Attach Krabby
 			break;
 		case zombieTypeEnum::blops:
 			pev->health = gSkillData.zombieHealth * 1.5;
+			SetBodygroup(2, 4); // Detach Headdy
+			SetBodygroup(1, 3); // Attach Krabby
 			break;
 		default:
 			pev->health = gSkillData.zombieHealth;
+			SetBodygroup(2, 4); // Detach Headdy
+			SetBodygroup(1, 0); // Attach Krabby
 			break;
 		}
 	pev->view_ofs = VEC_VIEW;// position of the eyes relative to monster's origin.
@@ -397,6 +464,8 @@ void CZombie::Spawn()
 void CZombie::Precache()
 {
 	int i;
+
+	UTIL_PrecacheOther(ZOMBIE_CRAB);
 
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
@@ -458,3 +527,31 @@ int CZombie::IgnoreConditions(void)
 	return iIgnore;
 
 	}
+
+//=========================================================
+// TraceAttack - checks to see if the zombie was shot in the head
+//=========================================================
+void CZombie::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
+{
+	// Check to see if shot in the head
+	if (ptr->iHitgroup == HITGROUP_HEAD)
+	{
+		m_bloodColor = BLOOD_COLOR_YELLOW; // If shot in the head, emit yellow blood
+	}
+	else
+	{
+		m_bloodColor = BLOOD_COLOR_RED; // If not, emit red blood
+	}
+
+	CBaseMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
+}
+
+//=========================================================
+// Spawn Headcrab - headcrab jumps from zombie
+//=========================================================
+void CZombie::SpawnCrab(void)
+{
+	CBaseEntity* pCrab = CBaseEntity::Create(ZOMBIE_CRAB, pev->origin, pev->angles, edict()); // Spawn the crab
+
+	pCrab->pev->spawnflags |= SF_MONSTER_FALL_TO_GROUND; // Let the crab fall, when body collapses 
+}
