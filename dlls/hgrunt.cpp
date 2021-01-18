@@ -42,8 +42,9 @@
 #include	"effects.h"
 #include	"customentity.h"
 #include	"scripted.h" //LRC
+#include	"grunts.h"
 
-int g_fGruntQuestion;				// true if an idle grunt asked a question. Cleared when someone answers.
+int g_fGruntQuestion; 				// true if an idle grunt asked a question. Cleared when someone answers.
 
 extern DLL_GLOBAL int		g_iSkillLevel;
 
@@ -88,106 +89,6 @@ extern DLL_GLOBAL int		g_iSkillLevel;
 #define		HGRUNT_AE_GREN_DROP		( 9 )
 #define		HGRUNT_AE_CAUGHT_ENEMY	( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
 #define		HGRUNT_AE_DROP_GUN		( 11) // grunt (probably dead) is dropping his mp5.
-
-//=========================================================
-// monster-specific schedule types
-//=========================================================
-enum
-{
-	SCHED_GRUNT_SUPPRESS = LAST_COMMON_SCHEDULE + 1,
-	SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE,// move to a location to set up an attack against the enemy. (usually when a friendly is in the way).
-	SCHED_GRUNT_COVER_AND_RELOAD,
-	SCHED_GRUNT_SWEEP,
-	SCHED_GRUNT_FOUND_ENEMY,
-	SCHED_GRUNT_REPEL,
-	SCHED_GRUNT_REPEL_ATTACK,
-	SCHED_GRUNT_REPEL_LAND,
-	SCHED_GRUNT_WAIT_FACE_ENEMY,
-	SCHED_GRUNT_TAKECOVER_FAILED,// special schedule type that forces analysis of conditions and picks the best possible schedule to recover from this type of failure.
-	SCHED_GRUNT_ELOF_FAIL,
-};
-
-//=========================================================
-// monster-specific tasks
-//=========================================================
-enum 
-{
-	TASK_GRUNT_FACE_TOSS_DIR = LAST_COMMON_TASK + 1,
-	TASK_GRUNT_SPEAK_SENTENCE,
-	TASK_GRUNT_CHECK_FIRE,
-};
-
-//=========================================================
-// monster-specific conditions
-//=========================================================
-#define bits_COND_GRUNT_NOFIRE	( bits_COND_SPECIAL1 )
-
-class CHGrunt : public CSquadMonster
-{
-public:
-	void Spawn( void );
-	void Precache( void );
-	void SetYawSpeed ( void );
-	int  Classify ( void );
-	int ISoundMask ( void );
-	void HandleAnimEvent( MonsterEvent_t *pEvent );
-	BOOL FCanCheckAttacks ( void );
-	BOOL CheckMeleeAttack1 ( float flDot, float flDist );
-	BOOL CheckRangeAttack1 ( float flDot, float flDist );
-	BOOL CheckRangeAttack2 ( float flDot, float flDist );
-	void CheckAmmo ( void );
-	void SetActivity ( Activity NewActivity );
-	void StartTask ( Task_t *pTask );
-	void RunTask ( Task_t *pTask );
-	void DeathSound( void );
-	void PainSound( void );
-	void IdleSound ( void );
-	Vector GetGunPosition( void );
-	void Shoot ( void );
-	void Shotgun ( void );
-	void PrescheduleThink ( void );
-	void GibMonster( void );
-	void SpeakSentence( void );
-
-	int	Save( CSave &save ); 
-	int Restore( CRestore &restore );
-	
-	CBaseEntity	*Kick( void );
-	Schedule_t	*GetSchedule( void );
-	Schedule_t  *GetScheduleOfType ( int Type );
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
-
-	int IRelationship ( CBaseEntity *pTarget );
-
-	BOOL FOkToSpeak( void );
-	void JustSpoke( void );
-
-	CUSTOM_SCHEDULES;
-	static TYPEDESCRIPTION m_SaveData[];
-
-	// checking the feasibility of a grenade toss is kind of costly, so we do it every couple of seconds,
-	// not every server frame.
-	float m_flNextGrenadeCheck;
-	float m_flNextPainTime;
-	float m_flLastEnemySightTime;
-
-	Vector	m_vecTossVelocity;
-
-	BOOL	m_fThrowGrenade;
-	BOOL	m_fStanding;
-	BOOL	m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
-	int		m_cClipSize;
-
-	int m_voicePitch;
-
-	int		m_iBrassShell;
-	int		m_iShotgunShell;
-
-	int		m_iSentence;
-
-	static const char *pGruntSentences[];
-};
 
 LINK_ENTITY_TO_CLASS( monster_human_grunt, CHGrunt );
 
@@ -1304,6 +1205,7 @@ void CHGrunt :: DeathSound ( void )
 	}
 }
 
+#pragma region TasksNSchedules
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
@@ -1323,7 +1225,7 @@ Schedule_t	slGruntFail[] =
 {
 	{
 		tlGruntFail,
-		ARRAYSIZE ( tlGruntFail ),
+		ARRAYSIZE(tlGruntFail),
 		bits_COND_CAN_RANGE_ATTACK1 |
 		bits_COND_CAN_RANGE_ATTACK2 |
 		bits_COND_CAN_MELEE_ATTACK1 |
@@ -1348,8 +1250,8 @@ Schedule_t	slGruntCombatFail[] =
 {
 	{
 		tlGruntCombatFail,
-		ARRAYSIZE ( tlGruntCombatFail ),
-		bits_COND_CAN_RANGE_ATTACK1	|
+		ARRAYSIZE(tlGruntCombatFail),
+		bits_COND_CAN_RANGE_ATTACK1 |
 		bits_COND_CAN_RANGE_ATTACK2,
 		0,
 		"Grunt Combat Fail"
@@ -1373,11 +1275,11 @@ Task_t	tlGruntVictoryDance[] =
 
 Schedule_t	slGruntVictoryDance[] =
 {
-	{ 
+	{
 		tlGruntVictoryDance,
-		ARRAYSIZE ( tlGruntVictoryDance ), 
-		bits_COND_NEW_ENEMY		|
-		bits_COND_LIGHT_DAMAGE	|
+		ARRAYSIZE(tlGruntVictoryDance),
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
 		bits_COND_HEAVY_DAMAGE,
 		0,
 		"GruntVictoryDance"
@@ -1388,7 +1290,7 @@ Schedule_t	slGruntVictoryDance[] =
 // Establish line of fire - move to a position that allows
 // the grunt to attack.
 //=========================================================
-Task_t tlGruntEstablishLineOfFire[] = 
+Task_t tlGruntEstablishLineOfFire[] =
 {
 	{ TASK_SET_FAIL_SCHEDULE,	(float)SCHED_GRUNT_ELOF_FAIL	},
 	{ TASK_GET_PATH_TO_ENEMY,	(float)0						},
@@ -1399,17 +1301,17 @@ Task_t tlGruntEstablishLineOfFire[] =
 
 Schedule_t slGruntEstablishLineOfFire[] =
 {
-	{ 
+	{
 		tlGruntEstablishLineOfFire,
-		ARRAYSIZE ( tlGruntEstablishLineOfFire ),
-		bits_COND_NEW_ENEMY			|
-		bits_COND_ENEMY_DEAD		|
-		bits_COND_CAN_RANGE_ATTACK1	|
-		bits_COND_CAN_MELEE_ATTACK1	|
-		bits_COND_CAN_RANGE_ATTACK2	|
-		bits_COND_CAN_MELEE_ATTACK2	|
+		ARRAYSIZE(tlGruntEstablishLineOfFire),
+		bits_COND_NEW_ENEMY |
+		bits_COND_ENEMY_DEAD |
+		bits_COND_CAN_RANGE_ATTACK1 |
+		bits_COND_CAN_MELEE_ATTACK1 |
+		bits_COND_CAN_RANGE_ATTACK2 |
+		bits_COND_CAN_MELEE_ATTACK2 |
 		bits_COND_HEAR_SOUND,
-		
+
 		bits_SOUND_DANGER,
 		"GruntEstablishLineOfFire"
 	},
@@ -1428,11 +1330,11 @@ Task_t	tlGruntFoundEnemy[] =
 
 Schedule_t	slGruntFoundEnemy[] =
 {
-	{ 
+	{
 		tlGruntFoundEnemy,
-		ARRAYSIZE ( tlGruntFoundEnemy ), 
+		ARRAYSIZE(tlGruntFoundEnemy),
 		bits_COND_HEAR_SOUND,
-		
+
 		bits_SOUND_DANGER,
 		"GruntFoundEnemy"
 	},
@@ -1452,12 +1354,12 @@ Task_t	tlGruntCombatFace1[] =
 
 Schedule_t	slGruntCombatFace[] =
 {
-	{ 
+	{
 		tlGruntCombatFace1,
-		ARRAYSIZE ( tlGruntCombatFace1 ), 
-		bits_COND_NEW_ENEMY				|
-		bits_COND_ENEMY_DEAD			|
-		bits_COND_CAN_RANGE_ATTACK1		|
+		ARRAYSIZE(tlGruntCombatFace1),
+		bits_COND_NEW_ENEMY |
+		bits_COND_ENEMY_DEAD |
+		bits_COND_CAN_RANGE_ATTACK1 |
 		bits_COND_CAN_RANGE_ATTACK2,
 		0,
 		"Combat Face"
@@ -1492,14 +1394,14 @@ Task_t	tlGruntSignalSuppress[] =
 
 Schedule_t	slGruntSignalSuppress[] =
 {
-	{ 
+	{
 		tlGruntSignalSuppress,
-		ARRAYSIZE ( tlGruntSignalSuppress ), 
-		bits_COND_ENEMY_DEAD		|
-		bits_COND_LIGHT_DAMAGE		|
-		bits_COND_HEAVY_DAMAGE		|
-		bits_COND_HEAR_SOUND		|
-		bits_COND_GRUNT_NOFIRE		|
+		ARRAYSIZE(tlGruntSignalSuppress),
+		bits_COND_ENEMY_DEAD |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND |
+		bits_COND_GRUNT_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
 
 		bits_SOUND_DANGER,
@@ -1529,14 +1431,14 @@ Task_t	tlGruntSuppress[] =
 
 Schedule_t	slGruntSuppress[] =
 {
-	{ 
+	{
 		tlGruntSuppress,
-		ARRAYSIZE ( tlGruntSuppress ), 
-		bits_COND_ENEMY_DEAD		|
-		bits_COND_LIGHT_DAMAGE		|
-		bits_COND_HEAVY_DAMAGE		|
-		bits_COND_HEAR_SOUND		|
-		bits_COND_GRUNT_NOFIRE		|
+		ARRAYSIZE(tlGruntSuppress),
+		bits_COND_ENEMY_DEAD |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND |
+		bits_COND_GRUNT_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
 
 		bits_SOUND_DANGER,
@@ -1559,14 +1461,14 @@ Task_t	tlGruntWaitInCover[] =
 
 Schedule_t	slGruntWaitInCover[] =
 {
-	{ 
+	{
 		tlGruntWaitInCover,
-		ARRAYSIZE ( tlGruntWaitInCover ), 
-		bits_COND_NEW_ENEMY			|
-		bits_COND_HEAR_SOUND		|
-		bits_COND_CAN_RANGE_ATTACK1	|
-		bits_COND_CAN_RANGE_ATTACK2	|
-		bits_COND_CAN_MELEE_ATTACK1	|
+		ARRAYSIZE(tlGruntWaitInCover),
+		bits_COND_NEW_ENEMY |
+		bits_COND_HEAR_SOUND |
+		bits_COND_CAN_RANGE_ATTACK1 |
+		bits_COND_CAN_RANGE_ATTACK2 |
+		bits_COND_CAN_MELEE_ATTACK1 |
 		bits_COND_CAN_MELEE_ATTACK2,
 
 		bits_SOUND_DANGER,
@@ -1593,9 +1495,9 @@ Task_t	tlGruntTakeCover1[] =
 
 Schedule_t	slGruntTakeCover[] =
 {
-	{ 
+	{
 		tlGruntTakeCover1,
-		ARRAYSIZE ( tlGruntTakeCover1 ), 
+		ARRAYSIZE(tlGruntTakeCover1),
 		0,
 		0,
 		"TakeCover"
@@ -1619,9 +1521,9 @@ Task_t	tlGruntGrenadeCover1[] =
 
 Schedule_t	slGruntGrenadeCover[] =
 {
-	{ 
+	{
 		tlGruntGrenadeCover1,
-		ARRAYSIZE ( tlGruntGrenadeCover1 ), 
+		ARRAYSIZE(tlGruntGrenadeCover1),
 		0,
 		0,
 		"GrenadeCover"
@@ -1641,9 +1543,9 @@ Task_t	tlGruntTossGrenadeCover1[] =
 
 Schedule_t	slGruntTossGrenadeCover[] =
 {
-	{ 
+	{
 		tlGruntTossGrenadeCover1,
-		ARRAYSIZE ( tlGruntTossGrenadeCover1 ), 
+		ARRAYSIZE(tlGruntTossGrenadeCover1),
 		0,
 		0,
 		"TossGrenadeCover"
@@ -1666,9 +1568,9 @@ Task_t	tlGruntTakeCoverFromBestSound[] =
 
 Schedule_t	slGruntTakeCoverFromBestSound[] =
 {
-	{ 
+	{
 		tlGruntTakeCoverFromBestSound,
-		ARRAYSIZE ( tlGruntTakeCoverFromBestSound ), 
+		ARRAYSIZE(tlGruntTakeCoverFromBestSound),
 		0,
 		0,
 		"GruntTakeCoverFromBestSound"
@@ -1690,12 +1592,12 @@ Task_t	tlGruntHideReload[] =
 	{ TASK_PLAY_SEQUENCE,			(float)ACT_RELOAD			},
 };
 
-Schedule_t slGruntHideReload[] = 
+Schedule_t slGruntHideReload[] =
 {
 	{
 		tlGruntHideReload,
-		ARRAYSIZE ( tlGruntHideReload ),
-		bits_COND_HEAVY_DAMAGE	|
+		ARRAYSIZE(tlGruntHideReload),
+		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND,
 
 		bits_SOUND_DANGER,
@@ -1716,19 +1618,19 @@ Task_t	tlGruntSweep[] =
 
 Schedule_t	slGruntSweep[] =
 {
-	{ 
+	{
 		tlGruntSweep,
-		ARRAYSIZE ( tlGruntSweep ), 
-		
-		bits_COND_NEW_ENEMY		|
-		bits_COND_LIGHT_DAMAGE	|
-		bits_COND_HEAVY_DAMAGE	|
-		bits_COND_CAN_RANGE_ATTACK1	|
-		bits_COND_CAN_RANGE_ATTACK2	|
+		ARRAYSIZE(tlGruntSweep),
+
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_CAN_RANGE_ATTACK1 |
+		bits_COND_CAN_RANGE_ATTACK2 |
 		bits_COND_HEAR_SOUND,
 
-		bits_SOUND_WORLD		|// sound flags
-		bits_SOUND_DANGER		|
+		bits_SOUND_WORLD |// sound flags
+		bits_SOUND_DANGER |
 		bits_SOUND_PLAYER,
 
 		"Grunt Sweep"
@@ -1758,17 +1660,17 @@ Task_t	tlGruntRangeAttack1A[] =
 
 Schedule_t	slGruntRangeAttack1A[] =
 {
-	{ 
+	{
 		tlGruntRangeAttack1A,
-		ARRAYSIZE ( tlGruntRangeAttack1A ), 
-		bits_COND_NEW_ENEMY			|
-		bits_COND_ENEMY_DEAD		|
-		bits_COND_HEAVY_DAMAGE		|
-		bits_COND_ENEMY_OCCLUDED	|
-		bits_COND_HEAR_SOUND		|
-		bits_COND_GRUNT_NOFIRE		|
+		ARRAYSIZE(tlGruntRangeAttack1A),
+		bits_COND_NEW_ENEMY |
+		bits_COND_ENEMY_DEAD |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_ENEMY_OCCLUDED |
+		bits_COND_HEAR_SOUND |
+		bits_COND_GRUNT_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
-		
+
 		bits_SOUND_DANGER,
 		"Range Attack1A"
 	},
@@ -1798,17 +1700,17 @@ Task_t	tlGruntRangeAttack1B[] =
 
 Schedule_t	slGruntRangeAttack1B[] =
 {
-	{ 
+	{
 		tlGruntRangeAttack1B,
-		ARRAYSIZE ( tlGruntRangeAttack1B ), 
-		bits_COND_NEW_ENEMY			|
-		bits_COND_ENEMY_DEAD		|
-		bits_COND_HEAVY_DAMAGE		|
-		bits_COND_ENEMY_OCCLUDED	|
-		bits_COND_NO_AMMO_LOADED	|
-		bits_COND_GRUNT_NOFIRE		|
+		ARRAYSIZE(tlGruntRangeAttack1B),
+		bits_COND_NEW_ENEMY |
+		bits_COND_ENEMY_DEAD |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_ENEMY_OCCLUDED |
+		bits_COND_NO_AMMO_LOADED |
+		bits_COND_GRUNT_NOFIRE |
 		bits_COND_HEAR_SOUND,
-		
+
 		bits_SOUND_DANGER,
 		"Range Attack1B"
 	},
@@ -1828,9 +1730,9 @@ Task_t	tlGruntRangeAttack2[] =
 
 Schedule_t	slGruntRangeAttack2[] =
 {
-	{ 
+	{
 		tlGruntRangeAttack2,
-		ARRAYSIZE ( tlGruntRangeAttack2 ), 
+		ARRAYSIZE(tlGruntRangeAttack2),
 		0,
 		0,
 		"RangeAttack2"
@@ -1850,18 +1752,18 @@ Task_t	tlGruntRepel[] =
 
 Schedule_t	slGruntRepel[] =
 {
-	{ 
+	{
 		tlGruntRepel,
-		ARRAYSIZE ( tlGruntRepel ), 
-		bits_COND_SEE_ENEMY			|
-		bits_COND_NEW_ENEMY			|
-		bits_COND_LIGHT_DAMAGE		|
-		bits_COND_HEAVY_DAMAGE		|
+		ARRAYSIZE(tlGruntRepel),
+		bits_COND_SEE_ENEMY |
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND,
-		
-		bits_SOUND_DANGER			|
-		bits_SOUND_COMBAT			|
-		bits_SOUND_PLAYER, 
+
+		bits_SOUND_DANGER |
+		bits_SOUND_COMBAT |
+		bits_SOUND_PLAYER,
 		"Repel"
 	},
 };
@@ -1879,9 +1781,9 @@ Task_t	tlGruntRepelAttack[] =
 
 Schedule_t	slGruntRepelAttack[] =
 {
-	{ 
+	{
 		tlGruntRepelAttack,
-		ARRAYSIZE ( tlGruntRepelAttack ), 
+		ARRAYSIZE(tlGruntRepelAttack),
 		bits_COND_ENEMY_OCCLUDED,
 		0,
 		"Repel Attack"
@@ -1903,49 +1805,51 @@ Task_t	tlGruntRepelLand[] =
 
 Schedule_t	slGruntRepelLand[] =
 {
-	{ 
+	{
 		tlGruntRepelLand,
-		ARRAYSIZE ( tlGruntRepelLand ), 
-		bits_COND_SEE_ENEMY			|
-		bits_COND_NEW_ENEMY			|
-		bits_COND_LIGHT_DAMAGE		|
-		bits_COND_HEAVY_DAMAGE		|
+		ARRAYSIZE(tlGruntRepelLand),
+		bits_COND_SEE_ENEMY |
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND,
-		
-		bits_SOUND_DANGER			|
-		bits_SOUND_COMBAT			|
-		bits_SOUND_PLAYER, 
+
+		bits_SOUND_DANGER |
+		bits_SOUND_COMBAT |
+		bits_SOUND_PLAYER,
 		"Repel Land"
 	},
 };
+#pragma endregion
 
 
-DEFINE_CUSTOM_SCHEDULES( CHGrunt )
+DEFINE_CUSTOM_SCHEDULES(CHGrunt)
 {
 	slGruntFail,
-	slGruntCombatFail,
-	slGruntVictoryDance,
-	slGruntEstablishLineOfFire,
-	slGruntFoundEnemy,
-	slGruntCombatFace,
-	slGruntSignalSuppress,
-	slGruntSuppress,
-	slGruntWaitInCover,
-	slGruntTakeCover,
-	slGruntGrenadeCover,
-	slGruntTossGrenadeCover,
-	slGruntTakeCoverFromBestSound,
-	slGruntHideReload,
-	slGruntSweep,
-	slGruntRangeAttack1A,
-	slGruntRangeAttack1B,
-	slGruntRangeAttack2,
-	slGruntRepel,
-	slGruntRepelAttack,
-	slGruntRepelLand,
+		slGruntCombatFail,
+		slGruntVictoryDance,
+		slGruntEstablishLineOfFire,
+		slGruntFoundEnemy,
+		slGruntCombatFace,
+		slGruntSignalSuppress,
+		slGruntSuppress,
+		slGruntWaitInCover,
+		slGruntTakeCover,
+		slGruntGrenadeCover,
+		slGruntTossGrenadeCover,
+		slGruntTakeCoverFromBestSound,
+		slGruntHideReload,
+		slGruntSweep,
+		slGruntRangeAttack1A,
+		slGruntRangeAttack1B,
+		slGruntRangeAttack2,
+		slGruntRepel,
+		slGruntRepelAttack,
+		slGruntRepelLand,
 };
 
 IMPLEMENT_CUSTOM_SCHEDULES( CHGrunt, CSquadMonster );
+
 
 //=========================================================
 // SetActivity 
