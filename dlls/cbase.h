@@ -133,6 +133,7 @@ class CBaseMonster;
 class CBasePlayerItem;
 class CSquadMonster;
 class CThinker;
+class COFSquadTalkMonster;
 
 
 #define	SF_NORESPAWN	( 1 << 30 )// !!!set this bit on guns and stuff that should never respawn.
@@ -153,6 +154,12 @@ public:
 
 	CBaseEntity * operator = (CBaseEntity *pEntity);
 	CBaseEntity * operator ->();
+
+	template<typename T>
+	T* Entity()
+	{
+		return static_cast<T*>(operator CBaseEntity * ());
+	}
 };
 
 typedef struct timevars_s {
@@ -306,10 +313,13 @@ public:
 	virtual void	Killed( entvars_t *pevAttacker, int iGib );
 	virtual int		BloodColor( void ) { return DONT_BLEED; }
 	virtual void	TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
-//LRC- superceded by GetState ( pActivator ).
-//	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return TRUE;}
+
+	//LRC- superceded by GetState ( pActivator ).
+	//	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return TRUE;}
 	virtual CBaseMonster *MyMonsterPointer( void ) { return NULL;}
 	virtual CSquadMonster *MySquadMonsterPointer( void ) { return NULL;}
+	//Solokiller's OP4
+	virtual COFSquadTalkMonster* MySquadTalkMonsterPointer(void) { return nullptr; }
 	virtual	int		GetToggleState( void ) { return TS_AT_TOP; }
 	virtual void	AddPoints( int score, BOOL bAllowNegativeScore ) {}
 	virtual void	AddPointsToTeam( int score, BOOL bAllowNegativeScore ) {}

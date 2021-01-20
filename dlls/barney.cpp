@@ -27,7 +27,7 @@
 #include	"scripted.h"
 #include	"weapons.h"
 #include	"soundent.h"
-#include <animation.h>
+#include	<animation.h>
 
 //=========================================================
 // Monster's Anim Events Go Here

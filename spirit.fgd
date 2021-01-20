@@ -4164,6 +4164,30 @@
 	]
 
 ]
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/sas.mdl") = monster_sas : "Sas" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		//* Only needed if you use the Squad Name value. If you define a Squad using the Squad Name
+		//* value, but none of them are flagged as a Squad Leader, then the squad won't get linked
+		//* together properly.
+		32 : "SquadLeader" : 0
+		//NEW 0.3
+		//* Ensure the player can't take this monster's ammo or weapons.
+		1024: "Don't Drop Gun" : 0
+	]
+	weapons(Choices) : "Weapons" : 1 =
+	[
+		1 : "9mmAR"
+		3 : "9mmAR + HG"
+		5 : "9mmAR + GL"
+		8 : "Shotgun"
+		10: "Shotgun + HG"
+	]
+]
+
 @PointClass base(Monster) size(-32 -32 0, 32 32 64) studio("models/icky.mdl") = monster_ichthyosaur : "Ichthyosaur" []
 @PointClass base(Monster) size(-6 -6 0, 6 6 6) studio("models/leech.mdl") = monster_leech : "Leech" []
 @PointClass base(Monster) size(-16 -16 -32, 16 16 32) studio("models/miniturret.mdl") = monster_miniturret : "Mini Auto Turret"

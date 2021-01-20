@@ -177,6 +177,12 @@ void CGameRules::RefreshSkillData ( void )
 	gSkillData.hgruntShotgunPellets = GetSkillCvar( "sk_hgrunt_pellets");
 	gSkillData.hgruntGrenadeSpeed = GetSkillCvar( "sk_hgrunt_gspeed");
 
+	// SAS
+	gSkillData.SASHealth = GetSkillCvar("sk_sas_health");
+	gSkillData.SASDmgKick = GetSkillCvar("sk_sas_kick");
+	gSkillData.SASShotgunPellets = GetSkillCvar("sk_sas_pellets");
+	gSkillData.SASGrenadeSpeed = GetSkillCvar("sk_sas_gspeed");
+
 	// Houndeye
 	gSkillData.houndeyeHealth = GetSkillCvar( "sk_houndeye_health");
 	gSkillData.houndeyeDmgBlast = GetSkillCvar( "sk_houndeye_dmg_blast");
