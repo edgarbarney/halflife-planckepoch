@@ -184,10 +184,10 @@ void CGameRules::RefreshSkillData ( void )
 	gSkillData.SASGrenadeSpeed = GetSkillCvar("sk_sas_gspeed");
 
 	// Massn
-	gSkillData.massnHealth = GetSkillCvar("sk_massassin_health");
-	gSkillData.massnDmgKick = GetSkillCvar("sk_massassin_kick");
-	gSkillData.massnShotgunPellets = GetSkillCvar("sk_massassin_pellets");
-	gSkillData.massnGrenadeSpeed = GetSkillCvar("sk_massassin_gspeed");
+	gSkillData.massnHealth = GetSkillCvar("sk_massn_health");
+	gSkillData.massnDmgKick = GetSkillCvar("sk_massn_kick");
+	gSkillData.massnShotgunPellets = GetSkillCvar("sk_massn_pellets");
+	gSkillData.massnGrenadeSpeed = GetSkillCvar("sk_massn_gspeed");
 
 	// Houndeye
 	gSkillData.houndeyeHealth = GetSkillCvar( "sk_houndeye_health");
