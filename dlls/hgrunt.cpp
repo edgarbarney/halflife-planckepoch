@@ -122,6 +122,8 @@ enum
 //=========================================================
 #define bits_COND_GRUNT_NOFIRE	( bits_COND_SPECIAL1 )
 
+#pragma region HGRUNT
+
 class CHGrunt : public CSquadMonster
 {
 public:
@@ -178,6 +180,8 @@ public:
 	BOOL	m_fStanding;
 	BOOL	m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
 	int		m_cClipSize;
+
+	BOOL	m_canTalk; // For MAssn. They are mute. Mostly.
 
 	int m_voicePitch;
 
@@ -1082,6 +1086,8 @@ void CHGrunt :: Spawn()
 	m_fFirstEncounter	= TRUE;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
 	m_HackedGunPos = Vector ( 0, 0, 55 );
+
+	m_canTalk = TRUE; // Normal Grunts can speak, obviously.
 
 	if (pev->weapons == 0)
 	{
@@ -2622,3 +2628,138 @@ void CDeadHGrunt :: Spawn( void )
 
 	MonsterInitDead();
 }
+
+#pragma endregion
+
+#pragma region MASSN
+
+class CMassn : public CHGrunt
+{
+
+public:
+	void Spawn(void);
+	void Precache(void);
+	int Classify(void);
+	int IRelationship(CBaseEntity* pTarget);
+};
+LINK_ENTITY_TO_CLASS(monster_massn, CMassn);
+int CMassn::IRelationship(CBaseEntity* pTarget)
+{
+	if (!m_iClass && FClassnameIs(pTarget->pev, "monster_alien_grunt") || (FClassnameIs(pTarget->pev, "monster_gargantua")))
+	{
+		return R_NM;
+	}
+
+	return CSquadMonster::IRelationship(pTarget);
+}
+
+void CMassn::Spawn()
+{
+	bool nig = false;
+	Precache();
+
+	SET_MODEL(ENT(pev), "models/massn.mdl");
+	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
+
+	pev->solid = SOLID_SLIDEBOX;
+	pev->movetype = MOVETYPE_STEP;
+	m_bloodColor = BLOOD_COLOR_RED;
+	pev->effects = 0;
+	pev->health = gSkillData.hgruntHealth;
+	m_flFieldOfView = 0.2;// indicates the width of this monster's forward view cone ( as a dotproduct result )
+	m_MonsterState = MONSTERSTATE_NONE;
+	m_flNextGrenadeCheck = gpGlobals->time + 1;
+	m_flNextPainTime = gpGlobals->time;
+	m_iSentence = HGRUNT_SENT_NONE;
+
+	m_afCapability = bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
+
+	m_fEnemyEluded = FALSE;
+	m_fFirstEncounter = TRUE;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
+
+	m_canTalk = TRUE; // MAssn Grunts are mute. Mostly.
+
+	m_HackedGunPos = Vector(0, 0, 55);
+
+	if (pev->weapons == 0)
+	{
+		// initialize to original values
+		pev->weapons = HGRUNT_9MMAR | HGRUNT_HANDGRENADE;
+		// pev->weapons = HGRUNT_SHOTGUN;
+		// pev->weapons = HGRUNT_9MMAR | HGRUNT_GRENADELAUNCHER;
+	}
+
+	if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
+	{
+		SetBodygroup(GUN_GROUP, GUN_SHOTGUN);
+		m_cClipSize = 8;
+	}
+	else
+	{
+		m_cClipSize = GRUNT_CLIP_SIZE;
+	}
+	m_cAmmoLoaded = m_cClipSize;
+
+	if (RANDOM_LONG(0, 99) < 80)
+		pev->skin = 0;	// light skin
+	else
+		pev->skin = 1;	// dark skin
+
+	if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
+	{
+		SetBodygroup(HEAD_GROUP, HEAD_SHOTGUN);
+	}
+	else if (FBitSet(pev->weapons, HGRUNT_GRENADELAUNCHER))
+	{
+		SetBodygroup(HEAD_GROUP, HEAD_M203);
+		pev->skin = 1; // alway dark skin
+	}
+
+	CTalkMonster::g_talkWaitTime = 0;
+
+	MonsterInit();
+}
+
+//=========================================================
+// Precache - precaches all resources this monster needs
+//=========================================================
+void CMassn::Precache()
+{
+	PRECACHE_MODEL("models/massn.mdl");
+
+	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
+	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
+
+	PRECACHE_SOUND("hgrunt/gr_die1.wav");
+	PRECACHE_SOUND("hgrunt/gr_die2.wav");
+	PRECACHE_SOUND("hgrunt/gr_die3.wav");
+
+	PRECACHE_SOUND("hgrunt/gr_pain1.wav");
+	PRECACHE_SOUND("hgrunt/gr_pain2.wav");
+	PRECACHE_SOUND("hgrunt/gr_pain3.wav");
+	PRECACHE_SOUND("hgrunt/gr_pain4.wav");
+	PRECACHE_SOUND("hgrunt/gr_pain5.wav");
+
+	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
+
+	PRECACHE_SOUND("weapons/glauncher.wav");
+
+	PRECACHE_SOUND("weapons/sbarrel1.wav");
+
+	PRECACHE_SOUND("zombie/claw_miss2.wav");// because we use the basemonster SWIPE animation event
+
+	// get voice pitch
+	if (RANDOM_LONG(0, 1))
+		m_voicePitch = 109 + RANDOM_LONG(0, 7);
+	else
+		m_voicePitch = 100;
+
+	m_iBrassShell = PRECACHE_MODEL("models/shell.mdl");// brass shell
+	m_iShotgunShell = PRECACHE_MODEL("models/shotgunshell.mdl");
+}
+int CMassn::Classify(void)
+{
+	return CLASS_HUMAN_ASSASSIN;
+}
+
+#pragma endregion

@@ -18,7 +18,7 @@
 #include	"monsters.h"
 #include	"schedule.h"
 #include	"talkmonster.h"
-#include "COFAllyMonster.h"
+#include	"COFAllyMonster.h"
 #include	"defaultai.h"
 #include	"scripted.h"
 #include	"soundent.h"
@@ -53,7 +53,7 @@ IMPLEMENT_SAVERESTORE( COFAllyMonster, CBaseMonster );
 // array of friend names
 char *COFAllyMonster::m_szFriends[ TLK_CFRIENDS ] =
 {
-	"monster_human_grunt_ally",
+	"monster_sas",
 	"monster_human_medic_ally",
 	"monster_human_torch_ally",
 };

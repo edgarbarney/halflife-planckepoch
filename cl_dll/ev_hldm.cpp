@@ -50,6 +50,7 @@ extern "C"
 {
 
 // HLDM
+void EV_CbarSwing(struct event_args_s* args);
 void EV_FireGlock1( struct event_args_s *args  );
 void EV_FireGlock2( struct event_args_s *args  );
 void EV_FireShotGunSingle( struct event_args_s *args  );
@@ -466,6 +467,25 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 		}
 
 		gEngfuncs.pEventAPI->EV_PopPMStates();
+	}
+}
+
+//======================
+//	  CROWBAR START
+//======================
+
+void EV_CbarSwing(event_args_t* args)
+{
+	int idx;
+	idx = args->entindex;
+
+	float shakeX = args->fparam1;
+	float shakeY = args->fparam2;
+
+	if (EV_IsLocal(idx))
+	{
+		V_PunchAxis(0, shakeX);
+		V_PunchAxis(1, shakeY);
 	}
 }
 
