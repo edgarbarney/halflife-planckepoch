@@ -559,6 +559,9 @@ private:
 
 class CCrowbar : public CBasePlayerWeapon
 {
+private:
+	unsigned short m_usCbarSwing;
+
 public:
 	void Spawn( void );
 	void Precache( void );

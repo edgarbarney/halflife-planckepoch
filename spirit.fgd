@@ -4055,7 +4055,6 @@
 		32 : "SquadLeader" : 0
 	]
 ]
-@PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/hassassin.mdl") = monster_human_assassin : "Human Assassin" []
 @PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/hgrunt.mdl") = monster_human_grunt : "Human Grunt (camo)" 
 [
 	netname(string) : "Squad Name"
@@ -4178,6 +4177,31 @@
 		//* Ensure the player can't take this monster's ammo or weapons.
 		1024: "Don't Drop Gun" : 0
 	]
+	weapons(Choices) : "Weapons" : 3 =
+    [
+        0 : "None"
+        1 : "9mmAR"
+        3 : "9mmAR + HG"
+        5 : "9mmAR + GL"
+        8 : "Shotgun"
+        10 : "Shotgun + HG"
+        16 : "AR16"
+    ]
+]
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/massn.mdl") = monster_massn : "Human Male Assassin" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		//* Only needed if you use the Squad Name value. If you define a Squad using the Squad Name
+		//* value, but none of them are flagged as a Squad Leader, then the squad won't get linked
+		//* together properly.
+		32 : "SquadLeader" : 0
+		//NEW 0.3
+		//* Ensure the player can't take this monster's ammo or weapons.
+		1024: "Don't Drop Gun" : 0
+	]
 	weapons(Choices) : "Weapons" : 1 =
 	[
 		1 : "9mmAR"
@@ -4186,7 +4210,94 @@
 		8 : "Shotgun"
 		10: "Shotgun + HG"
 	]
+	sequence(Choices) : "Animation Sequence (editor)" : 11 =
+	[
+		0 : "walk1"
+		1 : "run"
+		2 : "victorydance"
+		3 : "cower"
+		4 : "smflinch"
+		5 : "leftlegsmflinch"
+		6 : "rightlegsmflinch"
+		7 : "rightarmflinch"
+		8 : "leftarmflinch"
+		9 : "launchgrenade"
+		10 : "throwgrenade"
+		11 : "idle1"
+		12 : "idle2"
+		13 : "combatidle"
+		14 : "frontkick"
+		15 : "crouching_idle"
+		16 : "crouching_wait"
+		17 : "crouching_mp5"
+		18 : "standing_mp5"
+		19 : "reload_mp5"
+		20 : "crouching_shotgun"
+		21 : "standing_shotgun"
+		22 : "reload_shotgun"
+		23 : "advance_signal"
+		24 : "flank_signal"
+		25 : "retreat_signal"
+		26 : "drop_grenade"
+		27 : "limpingwalk"
+		28 : "limpingrun"
+		29 : "180L"
+		30 : "180R"
+		31 : "strafeleft"
+		32 : "straferight"
+		33 : "dieback1"
+		34 : "dieforward"
+		35 : "diesimple"
+		36 : "diebackwards"
+		37 : "dieheadshot"
+		38 : "diegutshot"
+		39 : "barnacled1"
+		40 : "barnacled2"
+		41 : "barnacled3"
+		42 : "barnacled4"
+		43 : "dead_on_stomach"
+		44 : "deadstomach"
+		45 : "deadside"
+		46 : "deadsitting"
+		47 : "repel_jump"
+		48 : "repel_repel"
+		49 : "repel_shoot"
+		50 : "repel_land"
+		51 : "repel_die"
+		52 : "dragholeidle"
+		53 : "draghole"
+		54 : "bustwall"
+		55 : "hoprail"
+		56 : "converse1"
+		57 : "converse2"
+		58 : "startleleft"
+		59 : "startleright"
+		60 : "divecover"
+		61 : "defuse"
+		62 : "corner1"
+		63 : "corner2"
+		64 : "stonetoss"
+		65 : "cliffdie"
+		66 : "diveaside_idle"
+		67 : "diveaside"
+		68 : "kneeldive_idle"
+		69 : "kneeldive"
+		70 : "WM_button"
+		71 : "WM_moatjump"
+		72 : "bustwindow"
+		73 : "dragleft"
+		74 : "dragright"
+		75 : "trackwave"
+		76 : "trackdive"
+		77 : "flyback"
+		78 : "impaled"
+		79 : "jumptracks"
+		80 : "pipetoss"
+		81 : "plunger"
+	]
+
 ]
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/hassassin.mdl") = monster_human_assassin : "Human Female Assassin" []
 
 @PointClass base(Monster) size(-32 -32 0, 32 32 64) studio("models/icky.mdl") = monster_ichthyosaur : "Ichthyosaur" []
 @PointClass base(Monster) size(-6 -6 0, 6 6 6) studio("models/leech.mdl") = monster_leech : "Leech" []

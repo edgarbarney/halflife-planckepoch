@@ -65,6 +65,8 @@ void CCrowbar::Precache( void )
 	PRECACHE_SOUND("weapons/cbar_hitbod2.wav");
 	PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
 	PRECACHE_SOUND("weapons/cbar_miss1.wav");
+
+	m_usCbarSwing = PRECACHE_EVENT(1, "events/cbar.sc");
 }
 
 int CCrowbar::GetItemInfo(ItemInfo *p)
@@ -203,6 +205,13 @@ int CCrowbar::Swing( int fFirst )
 			case 2: SendWeaponAnim( CROWBAR_ATTACK3MISS ); break;
 			}
 			m_flNextPrimaryAttack =  m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+
+			//Shake
+			//float f = static_cast<float>(0.0);
+			//float* fp = &f;
+
+			//PLAYBACK_EVENT_FULL(0, m_pPlayer->edict(), m_usCbarSwing, 0.0, fp, fp, 1.0, 0.0, 0, 0, 0, 0);
+
 			// play wiff or swish sound
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/cbar_miss1.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0,0xF));
 			// player "shoot" animation
@@ -240,6 +249,12 @@ int CCrowbar::Swing( int fFirst )
 			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar / 2, gpGlobals->v_forward, &tr, DMG_CLUB ); 
 		}	
 		ApplyMultiDamage( m_pPlayer->pev, m_pPlayer->pev );
+
+		//Shake
+		float f = static_cast<float>(0.0);
+		float* fp = &f;
+
+		PLAYBACK_EVENT_FULL(0, m_pPlayer->edict(), m_usCbarSwing, 0.0, fp, fp, 3.0, RANDOM_FLOAT(-3.0,3.0), 0, 0, 0, 0);
 
 		// play thwack, smack, or dong sound
 		float flVol = 1.0;

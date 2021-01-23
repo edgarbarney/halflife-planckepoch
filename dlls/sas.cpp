@@ -248,7 +248,7 @@ public:
 	static const char* pGruntSentences[];
 };
 
-LINK_ENTITY_TO_CLASS(monster_human_grunt_ally, CSAS);
+LINK_ENTITY_TO_CLASS(monster_sas, CSAS);
 
 TYPEDESCRIPTION	CSAS::m_SaveData[] =
 {
@@ -256,18 +256,18 @@ TYPEDESCRIPTION	CSAS::m_SaveData[] =
 	DEFINE_FIELD(CSAS, m_flNextGrenadeCheck, FIELD_TIME),
 	DEFINE_FIELD(CSAS, m_flNextPainTime, FIELD_TIME),
 	//	DEFINE_FIELD( CSAS, m_flLastEnemySightTime, FIELD_TIME ), // don't save, go to zero
-		DEFINE_FIELD(CSAS, m_vecTossVelocity, FIELD_VECTOR),
-		DEFINE_FIELD(CSAS, m_fThrowGrenade, FIELD_BOOLEAN),
-		DEFINE_FIELD(CSAS, m_fStanding, FIELD_BOOLEAN),
-		DEFINE_FIELD(CSAS, m_fFirstEncounter, FIELD_BOOLEAN),
-		DEFINE_FIELD(CSAS, m_cClipSize, FIELD_INTEGER),
-		//	DEFINE_FIELD( CSAS, m_voicePitch, FIELD_INTEGER ),
-		//  DEFINE_FIELD( CShotgun, m_iBrassShell, FIELD_INTEGER ),
-		//  DEFINE_FIELD( CShotgun, m_iShotgunShell, FIELD_INTEGER ),
-			DEFINE_FIELD(CSAS, m_iSentence, FIELD_INTEGER),
-			DEFINE_FIELD(CSAS, m_iWeaponIdx, FIELD_INTEGER),
-			DEFINE_FIELD(CSAS, m_iGruntHead, FIELD_INTEGER),
-			DEFINE_FIELD(CSAS, m_iGruntTorso, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_vecTossVelocity, FIELD_VECTOR),
+	DEFINE_FIELD(CSAS, m_fThrowGrenade, FIELD_BOOLEAN),
+	DEFINE_FIELD(CSAS, m_fStanding, FIELD_BOOLEAN),
+	DEFINE_FIELD(CSAS, m_fFirstEncounter, FIELD_BOOLEAN),
+	DEFINE_FIELD(CSAS, m_cClipSize, FIELD_INTEGER),
+	//	DEFINE_FIELD( CSAS, m_voicePitch, FIELD_INTEGER ),
+	//  DEFINE_FIELD( CShotgun, m_iBrassShell, FIELD_INTEGER ),
+	//  DEFINE_FIELD( CShotgun, m_iShotgunShell, FIELD_INTEGER ),
+	DEFINE_FIELD(CSAS, m_iSentence, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_iWeaponIdx, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_iGruntHead, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_iGruntTorso, FIELD_INTEGER),
 };
 
 IMPLEMENT_SAVERESTORE(CSAS, COFSquadTalkMonster);
@@ -351,7 +351,7 @@ void CSAS::GibMonster(void)
 		}
 		else if (FBitSet(pev->weapons, SASWeaponFlag::AR16))
 		{
-			pGun = DropItem("weapon_m249", vecGunPos, vecGunAngles);
+			pGun = DropItem("weapon_ar16", vecGunPos, vecGunAngles);
 		}
 		else
 		{
@@ -2978,7 +2978,7 @@ void CSAS::Killed(entvars_t* pevAttacker, int iGib)
 }
 
 //=========================================================
-// CSASRepel - when triggered, spawns a monster_human_grunt_ally
+// CSASRepel - when triggered, spawns a monster_sas
 // repelling down a line.
 //=========================================================
 
@@ -2998,7 +2998,7 @@ public:
 	int m_iszUnUse;
 };
 
-LINK_ENTITY_TO_CLASS(monster_grunt_ally_repel, CSASRepel);
+LINK_ENTITY_TO_CLASS(monster_sas_repel, CSASRepel);
 
 void CSASRepel::KeyValue(KeyValueData* pkvd)
 {
@@ -3031,7 +3031,7 @@ void CSASRepel::Spawn(void)
 
 void CSASRepel::Precache(void)
 {
-	UTIL_PrecacheOther("monster_human_grunt_ally");
+	UTIL_PrecacheOther("monster_sas");
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/rope.spr");
 }
 
@@ -3044,7 +3044,7 @@ void CSASRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 		return NULL;
 	*/
 
-	CBaseEntity* pEntity = Create("monster_human_grunt_ally", pev->origin, pev->angles);
+	CBaseEntity* pEntity = Create("monster_sas", pev->origin, pev->angles);
 	auto pGrunt = static_cast<CSAS*>(pEntity->MySquadTalkMonsterPointer());
 
 	if (pGrunt)
@@ -3121,7 +3121,7 @@ void CDeadSAS::KeyValue(KeyValueData* pkvd)
 		CBaseMonster::KeyValue(pkvd);
 }
 
-LINK_ENTITY_TO_CLASS(monster_human_grunt_ally_dead, CDeadSAS);
+LINK_ENTITY_TO_CLASS(monster_sas_dead, CDeadSAS);
 
 //=========================================================
 // ********** DeadHGrunt SPAWN **********
