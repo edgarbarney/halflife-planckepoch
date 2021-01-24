@@ -748,7 +748,8 @@ void CHGrunt :: CheckAmmo ( void )
 //=========================================================
 int	CHGrunt :: Classify ( void )
 {
-	return m_iClass?m_iClass:CLASS_HUMAN_MILITARY;
+	//return m_iClass?m_iClass:CLASS_HUMAN_MILITARY;
+	return CLASS_HUMAN_MILITARY;
 }
 
 //=========================================================

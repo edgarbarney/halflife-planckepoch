@@ -179,7 +179,7 @@ public:
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
 
-	int IRelationship ( CBaseEntity *pTarget );
+	//int IRelationship ( CBaseEntity *pTarget );
 
 	BOOL FOkToSpeak( void );
 	void JustSpoke( void );
@@ -293,9 +293,10 @@ void CMOFAssassin :: SpeakSentence( void )
 }
 
 //=========================================================
-// IRelationship - overridden because Alien Grunts are 
+// IRelationship - was overridden because Alien Grunts were 
 // Human Grunt's nemesis.
 //=========================================================
+/*
 int CMOFAssassin::IRelationship ( CBaseEntity *pTarget )
 {
 	if ( FClassnameIs( pTarget->pev, "monster_alien_grunt" ) || ( FClassnameIs( pTarget->pev,  "monster_gargantua" ) ) )
@@ -305,6 +306,7 @@ int CMOFAssassin::IRelationship ( CBaseEntity *pTarget )
 
 	return CSquadMonster::IRelationship( pTarget );
 }
+*/
 
 //=========================================================
 // GibMonster - make gun fly through the air.
@@ -738,7 +740,7 @@ void CMOFAssassin :: CheckAmmo ( void )
 //=========================================================
 int	CMOFAssassin :: Classify ( void )
 {
-	return	CLASS_HUMAN_ASSASSIN;
+	return CLASS_HUMAN_ASSASSIN;
 }
 
 //=========================================================
@@ -899,7 +901,6 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 			if ( FBitSet( pev->weapons, MAssassinWeaponFlag::MP5 ))
 			{
-				// the first round of the three round burst plays the sound and puts a sound in the world sound list.
 				if ( RANDOM_LONG(0,1) )
 				{
 					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16_fire1.wav", 1, ATTN_NORM );
@@ -920,7 +921,19 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 		case MASSASSIN_AE_BURST2:
 		case MASSASSIN_AE_BURST3:
-			Shoot();
+			if (FBitSet(pev->weapons, MAssassinWeaponFlag::MP5))
+			{
+				Shoot();
+				if (RANDOM_LONG(0, 1))
+				{
+					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16_fire1.wav", 1, ATTN_NORM);
+				}
+				else
+				{
+					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16_fire2.wav", 1, ATTN_NORM);
+				}
+				CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
+			}	
 			break;
 
 		case MASSASSIN_AE_KICK:
