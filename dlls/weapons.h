@@ -647,6 +647,7 @@ public:
 	BOOL Deploy( );
 	void Reload( void );
 	void WeaponIdle( void );
+	void ItemPostFrame() override;
 	int m_fInReload;
 	float m_flNextReload;
 	int m_iShell;
@@ -740,7 +741,7 @@ public:
 
 	int m_iTrail;
 	float m_flIgniteTime;
-	CRpg *m_pLauncher;// pointer back to the launcher that fired me. 
+	EHANDLE m_pLauncher;// handle back to the launcher that fired me. 
 };
 
 class CGauss : public CBasePlayerWeapon
