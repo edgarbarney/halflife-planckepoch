@@ -725,36 +725,27 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 {
 	Forget(bits_MEMORY_INCOVER);
 
+	
 	// make sure friends talk about it if player hurts talkmonsters...
 	int ret = COFSquadTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-
-	if (pev->deadflag != DEAD_NO)
-		return ret;
+	
+	//if (pev->deadflag != DEAD_NO)
+		//return ret;
+	
 
 	if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT))
 	{
-		Forget(bits_MEMORY_INCOVER);
-
-		m_flPlayerDamage += flDamage;
-
-		// This is a heurstic to determine if the player intended to harm me
-		// If I have an enemy, we can't establish intent (may just be crossfire)
-		if (m_hEnemy == NULL)
+		if (pev->deadflag == DEAD_NO)
+		//if(pev->health - flDamage >= 0)
 		{
-			// If the player was facing directly at me, or I'm already suspicious, get mad
-			if (gpGlobals->time - m_flLastHitByPlayer < 4.0 && m_iPlayerHits > 2
-				&& ((m_afMemory & bits_MEMORY_SUSPICIOUS) || IsFacing(pevAttacker, pev->origin)))
-			{
-				// Alright, now I'm pissed!
-				PlaySentence("SAS_FKIL", 4, VOL_NORM, ATTN_NORM);
+			Forget(bits_MEMORY_INCOVER);
 
-				Remember(bits_MEMORY_PROVOKED);
-				StopFollowing(TRUE);
-				ALERT(at_console, "HGrunt Ally is now MAD!\n");
-			}
-			else
+			m_flPlayerDamage += flDamage;
+
+			// This is a heurstic to determine if the player intended to harm me
+			// If I have an enemy, we can't establish intent (may just be crossfire)
+			if (m_hEnemy == NULL)
 			{
-				// Hey, be careful with that
 				PlaySentence("SAS_FSHOT", 4, VOL_NORM, ATTN_NORM);
 				Remember(bits_MEMORY_SUSPICIOUS);
 
@@ -766,11 +757,38 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 				m_flLastHitByPlayer = gpGlobals->time;
 
 				ALERT(at_console, "HGrunt Ally is now SUSPICIOUS!\n");
+				ALERT(at_console, "tester %f",pev->health);
+				//}
+			}
+			else if (!m_hEnemy->IsPlayer())
+			{
+				PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
 			}
 		}
-		else if (!m_hEnemy->IsPlayer())
+		else 
 		{
-			PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
+			// This is a heurstic to determine if the player intended to harm me
+			// If I have an enemy, we can't establish intent (may just be crossfire)
+			if (m_hEnemy == NULL)
+			{
+				MySquadLeader()->PlaySentence("SAS_FKIL", 4, VOL_NORM, ATTN_NORM);
+				for (int i = 0; i < MAX_SQUAD_MEMBERS; i++)
+				{
+					if (MySquadLeader()->MySquadMember(i) != NULL)
+					{
+						ALERT(at_console, "HGrunt Allie no %d is now MAD!\n", i);
+						MySquadLeader()->MySquadMember(i)->Forget(bits_MEMORY_INCOVER);
+						MySquadLeader()->MySquadMember(i)->Remember(bits_MEMORY_PROVOKED);
+						MySquadLeader()->MySquadMember(i)->StopFollowing(TRUE);
+					}
+				}
+			}
+			/*
+			else if (!m_hEnemy->IsPlayer())
+			{
+				PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
+			}
+			*/
 		}
 	}
 
@@ -1021,7 +1039,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 		else if (FBitSet(pev->weapons, SASWeaponFlag::AR16))
 		{
-			DropItem("weapon_m249", vecGunPos, vecGunAngles);
+			DropItem("weapon_AR16", vecGunPos, vecGunAngles);
 		}
 		else
 		{
@@ -1190,18 +1208,21 @@ void CSAS::Spawn()
 	{
 		m_iWeaponIdx = SASWeapon::MP5;
 		m_cClipSize = GRUNT_MP5_CLIP_SIZE;
+		pev->controller[1] = 255;
 	}
 	else if (pev->weapons & SASWeaponFlag::Shotgun)
 	{
 		m_cClipSize = GRUNT_SHOTGUN_CLIP_SIZE;
 		m_iWeaponIdx = SASWeapon::Shotgun;
 		m_iGruntTorso = SASTorso::Shotgun;
+		pev->controller[1] = 0;
 	}
 	else if (pev->weapons & SASWeaponFlag::AR16)
 	{
 		m_iWeaponIdx = SASWeapon::AR16;
 		m_cClipSize = GRUNT_AR16_CLIP_SIZE;
 		m_iGruntTorso = SASTorso::AR16;
+		pev->controller[1] = 0;
 	}
 	else
 	{
@@ -2217,12 +2238,14 @@ void CSAS::SetActivity(Activity NewActivity)
 			if (m_fStanding)
 			{
 				// get aimable sequence
-				iSequence = LookupSequence("standing_AR16");
+				//iSequence = LookupSequence("standing_AR16");
+				iSequence = LookupSequence("standing_mp5");
 			}
 			else
 			{
 				// get crouching shoot
-				iSequence = LookupSequence("crouching_AR16");
+				//iSequence = LookupSequence("crouching_AR16");
+				iSequence = LookupSequence("crouching_mp5");
 			}
 		}
 		else

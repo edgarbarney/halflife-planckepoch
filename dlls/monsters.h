@@ -100,7 +100,7 @@ BOOL FBoxVisible ( entvars_t *pevLooker, entvars_t *pevTarget, Vector &vecTarget
 
 // these bits represent the monster's memory
 #define MEMORY_CLEAR					0
-#define bits_MEMORY_PROVOKED			( 1 << 0 )// right now only used for houndeyes.
+#define bits_MEMORY_PROVOKED			( 1 << 0 )// houndeyes and allies
 #define bits_MEMORY_INCOVER				( 1 << 1 )// monster knows it is in a covered position.
 #define bits_MEMORY_SUSPICIOUS			( 1 << 2 )// Ally is suspicious of the player, and will move to provoked more easily
 #define bits_MEMORY_PATH_FINISHED		( 1 << 3 )// Finished monster path (just used by big momma for now)
