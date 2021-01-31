@@ -23,6 +23,7 @@
 #include "util.h"
 #include "cbase.h"
 #include "monsters.h"
+#include "player.h"
 
 #ifndef ANIMATION_H
 #include "animation.h"
@@ -35,6 +36,7 @@
 #include "schedule.h"
 #include "scripted.h"
 #include "defaultai.h"
+#include "movewith.h"
 
 
 
@@ -72,24 +74,65 @@ void CCineMonster :: KeyValue( KeyValueData *pkvd )
 		m_iszEntity = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if (FStrEq(pkvd->szKeyName, "m_iszAttack"))
+	{
+		m_iszAttack = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_iszMoveTarget"))
+	{
+		m_iszMoveTarget = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_iszFireOnBegin"))
+	{
+		m_iszFireOnBegin = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
 	else if (FStrEq(pkvd->szKeyName, "m_fMoveTo"))
 	{
 		m_fMoveTo = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "m_flRepeat"))
+	else if (FStrEq(pkvd->szKeyName, "m_fTurnType"))
 	{
-		m_flRepeat = atof( pkvd->szValue );
+		m_fTurnType = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if (FStrEq(pkvd->szKeyName, "m_fAction"))
+	{
+		m_fAction = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+// LRC	else if (FStrEq(pkvd->szKeyName, "m_flRepeat"))
+//	{
+//		m_flRepeat = atof( pkvd->szValue );
+//		pkvd->fHandled = TRUE;
+//	}
 	else if (FStrEq(pkvd->szKeyName, "m_flRadius"))
 	{
 		m_flRadius = atof( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if (FStrEq(pkvd->szKeyName, "m_iRepeats"))
+	{
+		m_iRepeats = atoi( pkvd->szValue );
+		m_iRepeatsLeft = m_iRepeats;
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_fRepeatFrame"))
+	{
+		m_fRepeatFrame = atof( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
 	else if (FStrEq(pkvd->szKeyName, "m_iFinishSchedule"))
 	{
 		m_iFinishSchedule = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_iPriority"))
+	{
+		m_iPriority = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -100,11 +143,17 @@ void CCineMonster :: KeyValue( KeyValueData *pkvd )
 
 TYPEDESCRIPTION	CCineMonster::m_SaveData[] = 
 {
+	DEFINE_FIELD( CCineMonster, m_iState, FIELD_INTEGER ), //LRC
 	DEFINE_FIELD( CCineMonster, m_iszIdle, FIELD_STRING ),
 	DEFINE_FIELD( CCineMonster, m_iszPlay, FIELD_STRING ),
 	DEFINE_FIELD( CCineMonster, m_iszEntity, FIELD_STRING ),
+	DEFINE_FIELD( CCineMonster, m_iszAttack, FIELD_STRING ), //LRC
+	DEFINE_FIELD( CCineMonster, m_iszMoveTarget, FIELD_STRING ), //LRC
+	DEFINE_FIELD( CCineMonster, m_iszFireOnBegin, FIELD_STRING ),
 	DEFINE_FIELD( CCineMonster, m_fMoveTo, FIELD_INTEGER ),
-	DEFINE_FIELD( CCineMonster, m_flRepeat, FIELD_FLOAT ),
+	DEFINE_FIELD( CCineMonster, m_fTurnType, FIELD_INTEGER ),
+	DEFINE_FIELD( CCineMonster, m_fAction, FIELD_INTEGER ),
+//LRC- this is unused	DEFINE_FIELD( CCineMonster, m_flRepeat, FIELD_FLOAT ),
 	DEFINE_FIELD( CCineMonster, m_flRadius, FIELD_FLOAT ),
 
 	DEFINE_FIELD( CCineMonster, m_iDelay, FIELD_INTEGER ),
@@ -115,15 +164,21 @@ TYPEDESCRIPTION	CCineMonster::m_SaveData[] =
 	DEFINE_FIELD( CCineMonster, m_saved_effects, FIELD_INTEGER ),
 	DEFINE_FIELD( CCineMonster, m_iFinishSchedule, FIELD_INTEGER ),
 	DEFINE_FIELD( CCineMonster, m_interruptable, FIELD_BOOLEAN ),
+
+	//LRC
+	DEFINE_FIELD( CCineMonster, m_iRepeats, FIELD_INTEGER ),
+	DEFINE_FIELD( CCineMonster, m_iRepeatsLeft, FIELD_INTEGER ),
+	DEFINE_FIELD( CCineMonster, m_fRepeatFrame, FIELD_FLOAT ),
+	DEFINE_FIELD( CCineMonster, m_iPriority, FIELD_INTEGER ),
 };
 
 
 IMPLEMENT_SAVERESTORE( CCineMonster, CBaseMonster );
 
 LINK_ENTITY_TO_CLASS( scripted_sequence, CCineMonster );
-#define CLASSNAME "scripted_sequence"
+LINK_ENTITY_TO_CLASS( scripted_action, CCineMonster ); //LRC
 
-LINK_ENTITY_TO_CLASS( aiscripted_sequence, CCineAI );
+LINK_ENTITY_TO_CLASS( aiscripted_sequence, CCineMonster ); //LRC - aiscripted sequences don't need to be seperate
 
 
 void CCineMonster :: Spawn( void )
@@ -132,48 +187,29 @@ void CCineMonster :: Spawn( void )
 	// UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
 	pev->solid = SOLID_NOT;
 
+	m_iState = STATE_OFF; //LRC
 
-	// REMOVE: The old side-effect
-#if 0
-	if ( m_iszIdle )
-		m_fMoveTo = 4;
-#endif
-
-	// if no targetname, start now
-	if ( FStringNull(pev->targetname) || !FStringNull( m_iszIdle ) )
+	if ( FStringNull(m_iszIdle) && FStringNull(pev->targetname) ) // if no targetname, start now
 	{
 		SetThink( &CCineMonster::CineThink );
-		pev->nextthink = gpGlobals->time + 1.0;
-		// Wait to be used?
-		if ( pev->targetname )
-			m_startTime = gpGlobals->time + 1E6;
+		SetNextThink( 1.0 );
+	}
+	else if ( m_iszIdle )
+	{
+		SetThink( &CCineMonster::InitIdleThink );
+		SetNextThink( 1.0 );
 	}
 	if ( pev->spawnflags & SF_SCRIPT_NOINTERRUPT )
 		m_interruptable = FALSE;
 	else
 		m_interruptable = TRUE;
-}
 
-//=========================================================
-// FCanOverrideState - returns FALSE, scripted sequences 
-// cannot possess entities regardless of state.
-//=========================================================
-BOOL CCineMonster :: FCanOverrideState( void )
-{
-	if ( pev->spawnflags & SF_SCRIPT_OVERRIDESTATE )
-		return TRUE;
-	return FALSE;
+	//LRC - the only difference between AI and normal sequences
+	if ( FClassnameIs(pev, "aiscripted_sequence") || pev->spawnflags & SF_SCRIPT_OVERRIDESTATE )
+	{
+		m_iPriority |= SS_INTERRUPT_ANYSTATE;
+	}
 }
-
-//=========================================================
-// FCanOverrideState - returns true because scripted AI can
-// possess entities regardless of their state.
-//=========================================================
-BOOL CCineAI :: FCanOverrideState( void )
-{
-	return TRUE;
-}
-
 
 //
 // CineStart
@@ -189,17 +225,21 @@ void CCineMonster :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	if ( pTarget )
 	{
+//		ALERT(at_console, "Sequence \"%s\" triggered, already has a target.\n", STRING(pev->targetname));
 		// am I already playing the script?
 		if ( pTarget->m_scriptState == SCRIPT_PLAYING )
 			return;
 
-		m_startTime = gpGlobals->time + 0.05;
+		m_startTime = gpGlobals->time + 0.05; //why the delay? -- LRC
 	}
 	else
 	{
+//		ALERT(at_console, "Sequence \"%s\" triggered, can't find target; searching\n", STRING(pev->targetname));
+		m_hActivator = pActivator;
 		// if not, try finding them
 		SetThink( &CCineMonster::CineThink );
-		pev->nextthink = gpGlobals->time;
+//		SetNextThink( 0 );
+		CineThink(); //LRC
 	}
 }
 
@@ -268,53 +308,50 @@ void CCineMonster :: Pain( void )
 // ********** Cinematic Think **********
 //
 
-// find a viable entity
-int CCineMonster :: FindEntity( void )
+//LRC: now redefined... find a viable entity with the given name, and return it (or NULL if not found).
+CBaseMonster* CCineMonster :: FindEntity( const char* sName, CBaseEntity *pActivator )
 {
-	edict_t *pentTarget;
+	CBaseEntity *pEntity;
 
-	pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszEntity));
-	m_hTargetEnt = NULL;
-	CBaseMonster	*pTarget = NULL;
+	pEntity = UTIL_FindEntityByTargetname(NULL, sName, pActivator);
+	//m_hTargetEnt = NULL;
+	CBaseMonster	*pMonster = NULL;
 
-	while (!FNullEnt(pentTarget))
+	while (pEntity)
 	{
-		if ( FBitSet( VARS(pentTarget)->flags, FL_MONSTER ))
+		if ( FBitSet( pEntity->pev->flags, FL_MONSTER ))
 		{
-			pTarget = GetMonsterPointer( pentTarget );
-			if ( pTarget && pTarget->CanPlaySequence( FCanOverrideState(), SS_INTERRUPT_BY_NAME ) )
+			pMonster = pEntity->MyMonsterPointer( );
+			if ( pMonster && pMonster->CanPlaySequence( m_iPriority | SS_INTERRUPT_ALERT ) )
 			{
-				m_hTargetEnt = pTarget;
-				return TRUE;
+				return pMonster;
 			}
-			ALERT( at_console, "Found %s, but can't play!\n", STRING(m_iszEntity) );
+			ALERT( at_debug, "Found %s, but can't play!\n", sName );
 		}
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(m_iszEntity));
-		pTarget = NULL;
+		pEntity = UTIL_FindEntityByTargetname(pEntity, sName, pActivator);
+		pMonster = NULL;
 	}
 	
-	if ( !pTarget )
+	// couldn't find something with the given targetname; assume it's a classname instead.
+	if ( !pMonster )
 	{
-		CBaseEntity *pEntity = NULL;
+		pEntity = NULL;
 		while ((pEntity = UTIL_FindEntityInSphere( pEntity, pev->origin, m_flRadius )) != NULL)
 		{
-			if (FClassnameIs( pEntity->pev, STRING(m_iszEntity)))
+			if (FClassnameIs( pEntity->pev, sName))
 			{
 				if ( FBitSet( pEntity->pev->flags, FL_MONSTER ))
 				{
-					pTarget = pEntity->MyMonsterPointer( );
-					if ( pTarget && pTarget->CanPlaySequence( FCanOverrideState(), SS_INTERRUPT_IDLE ) )
+					pMonster = pEntity->MyMonsterPointer( );
+					if ( pMonster && pMonster->CanPlaySequence( m_iPriority ) )
 					{
-						m_hTargetEnt = pTarget;
-						return TRUE;
+						return pMonster;
 					}
 				}
 			}
 		}
 	}
-	pTarget = NULL;
-	m_hTargetEnt = NULL;
-	return FALSE;
+	return NULL;
 }
 
 // make the entity enter a scripted sequence
@@ -325,166 +362,126 @@ void CCineMonster :: PossessEntity( void )
 	if ( pEntity )
 		pTarget = pEntity->MyMonsterPointer();
 
+//	ALERT( at_console, "Possess: pEntity %s, pTarget %s\n", STRING(pEntity->pev->targetname), STRING(pTarget->pev->targetname));
+
 	if ( pTarget )
 	{
-
-	// FindEntity() just checked this!
-#if 0
-		if ( !pTarget->CanPlaySequence(  FCanOverrideState() ) )
+		if (pTarget->m_pCine)
 		{
-			ALERT( at_aiconsole, "Can't possess entity %s\n", STRING(pTarget->pev->classname) );
-			return;
+			pTarget->m_pCine->CancelScript();
 		}
-#endif
 
-		pTarget->m_pGoalEnt = this;
 		pTarget->m_pCine = this;
-		pTarget->m_hTargetEnt = this;
+		if (m_iszAttack)
+		{
+			// anything with that name?
+			pTarget->m_hTargetEnt = UTIL_FindEntityByTargetname(NULL, STRING(m_iszAttack), m_hActivator);
+			if ( pTarget->m_hTargetEnt == NULL )
+			{	// nothing. Anything with that classname?
+				while ((pTarget->m_hTargetEnt = UTIL_FindEntityInSphere( pTarget->m_hTargetEnt, pev->origin, m_flRadius )) != NULL)
+				{
+					if (FClassnameIs( pTarget->m_hTargetEnt->pev, STRING(m_iszAttack))) break;
+				}
+			}
+			if (pTarget->m_hTargetEnt == NULL)
+			{	// nothing. Oh well.
+				ALERT(at_debug,"%s %s has a missing \"turn target\": %s\n",STRING(pev->classname),STRING(pev->targetname),STRING(m_iszAttack));
+				pTarget->m_hTargetEnt = this;
+			}
+		}
+		else
+		{
+			pTarget->m_hTargetEnt = this;
+		}
+
+		if (m_iszMoveTarget)
+		{
+			// anything with that name?
+			pTarget->m_pGoalEnt = UTIL_FindEntityByTargetname(NULL, STRING(m_iszMoveTarget), m_hActivator);
+			if (pTarget->m_pGoalEnt == NULL)
+			{	// nothing. Oh well.
+				ALERT(at_debug,"%s %s has a missing \"move target\": %s\n",STRING(pev->classname),STRING(pev->targetname),STRING(m_iszMoveTarget));
+				pTarget->m_pGoalEnt = this;
+			}
+		}
+		else
+		{
+			pTarget->m_pGoalEnt = this;
+		}
+//		if (IsAction())
+//		  pTarget->PushEnemy(this,pev->origin);
 
 		m_saved_movetype = pTarget->pev->movetype;
 		m_saved_solid = pTarget->pev->solid;
 		m_saved_effects = pTarget->pev->effects;
 		pTarget->pev->effects |= pev->effects;
 
+//		ALERT(at_console, "script. IsAction = %d",IsAction());
+
+		m_iState = STATE_ON; // LRC: assume we'll set it to 'on', unless proven otherwise...
 		switch (m_fMoveTo)
 		{
-		case 0: 
-			pTarget->m_scriptState = SCRIPT_WAIT; 
-			break;
-
 		case 1: 
-			pTarget->m_scriptState = SCRIPT_WALK_TO_MARK; 
-			DelayStart( 1 ); 
-			break;
-
 		case 2: 
-			pTarget->m_scriptState = SCRIPT_RUN_TO_MARK; 
-			DelayStart( 1 ); 
-			break;
-
-		case 4: 
-			UTIL_SetOrigin( pTarget->pev, pev->origin );
-			pTarget->pev->ideal_yaw = pev->angles.y;
-			pTarget->pev->avelocity = Vector( 0, 0, 0 );
-			pTarget->pev->velocity = Vector( 0, 0, 0 );
-			pTarget->pev->effects |= EF_NOINTERP;
-			pTarget->pev->angles.y = pev->angles.y;
-			pTarget->m_scriptState = SCRIPT_WAIT;
-			m_startTime = gpGlobals->time + 1E6;
-			// UNDONE: Add a flag to do this so people can fixup physics after teleporting monsters
-			//			pTarget->pev->flags &= ~FL_ONGROUND;
+			DelayStart( 1 );
+			m_iState = STATE_TURN_ON;
+			// fall through...
+		case 0: 
+		case 4:
+		case 5: 
+		case 6: 
+			pTarget->m_scriptState = SCRIPT_WAIT; 
 			break;
 		}
 //		ALERT( at_aiconsole, "\"%s\" found and used (INT: %s)\n", STRING( pTarget->pev->targetname ), FBitSet(pev->spawnflags, SF_SCRIPT_NOINTERRUPT)?"No":"Yes" );
 
 		pTarget->m_IdealMonsterState = MONSTERSTATE_SCRIPT;
-		if (m_iszIdle)
-		{
-			StartSequence( pTarget, m_iszIdle, FALSE );
-			if (FStrEq( STRING(m_iszIdle), STRING(m_iszPlay)))
-			{
-				pTarget->pev->framerate = 0;
-			}
-		}
+//		if (m_iszIdle)
+//		{
+//			ALERT(at_console, "Possess: Play idle sequence\n");
+//			StartSequence( pTarget, m_iszIdle, FALSE );
+//			if (FStrEq( STRING(m_iszIdle), STRING(m_iszPlay)))
+//			{
+//				pTarget->pev->framerate = 0;
+//			}
+//		}
+//		ALERT(at_console, "Finished PossessEntity, ms %d, ims %d\n", pTarget->m_MonsterState, pTarget->m_IdealMonsterState);
 	}
+
 }
 
-// make the entity carry out the scripted sequence instructions, but without 
-// destroying the monster's state.
-void CCineAI :: PossessEntity( void )
+// at the beginning of the level, set up the idle animation. --LRC
+void CCineMonster :: InitIdleThink( void )
 {
-	Schedule_t *pNewSchedule;
-
-	CBaseEntity		*pEntity = m_hTargetEnt;
-	CBaseMonster	*pTarget = NULL;
-	if ( pEntity )
-		pTarget = pEntity->MyMonsterPointer();
-
-	if ( pTarget )
-	{
-		if ( !pTarget->CanPlaySequence( FCanOverrideState(), SS_INTERRUPT_AI ) )
-		{
-			ALERT( at_aiconsole, "(AI)Can't possess entity %s\n", STRING(pTarget->pev->classname) );
-			return;
-		}
-
-		pTarget->m_pGoalEnt = this;
-		pTarget->m_pCine = this;
-		pTarget->m_hTargetEnt = this;
-
-		m_saved_movetype = pTarget->pev->movetype;
-		m_saved_solid = pTarget->pev->solid;
-		m_saved_effects = pTarget->pev->effects;
-		pTarget->pev->effects |= pev->effects;
-
-		switch (m_fMoveTo)
-		{
-		case 0: 
-		case 5:
-			pTarget->m_scriptState = SCRIPT_WAIT; 
-			break;
-
-		case 1: 
-			pTarget->m_scriptState = SCRIPT_WALK_TO_MARK; 
-			break;
-
-		case 2: 
-			pTarget->m_scriptState = SCRIPT_RUN_TO_MARK; 
-			break;
-
-		case 4: 
-			// zap the monster instantly to the site of the script entity.
-			UTIL_SetOrigin( pTarget->pev, pev->origin );
-			pTarget->pev->ideal_yaw = pev->angles.y;
-			pTarget->pev->avelocity = Vector( 0, 0, 0 );
-			pTarget->pev->velocity = Vector( 0, 0, 0 );
-			pTarget->pev->effects |= EF_NOINTERP;
-			pTarget->pev->angles.y = pev->angles.y;
-			pTarget->m_scriptState = SCRIPT_WAIT;
-			m_startTime = gpGlobals->time + 1E6;
-			// UNDONE: Add a flag to do this so people can fixup physics after teleporting monsters
-			pTarget->pev->flags &= ~FL_ONGROUND;
-			break;
-		default:
-			ALERT ( at_aiconsole, "aiscript:  invalid Move To Position value!" );
-			break;
-		}
-		
-		ALERT( at_aiconsole, "\"%s\" found and used\n", STRING( pTarget->pev->targetname ) );
-
-		pTarget->m_IdealMonsterState = MONSTERSTATE_SCRIPT;
-
-/*
-		if (m_iszIdle)
-		{
-			StartSequence( pTarget, m_iszIdle, FALSE );
-			if (FStrEq( STRING(m_iszIdle), STRING(m_iszPlay)))
-			{
-				pTarget->pev->framerate = 0;
-			}
-		}
-*/
-		// Already in a scripted state?
-		if ( pTarget->m_MonsterState == MONSTERSTATE_SCRIPT )
-		{
-			pNewSchedule = pTarget->GetScheduleOfType( SCHED_AISCRIPT );
-			pTarget->ChangeSchedule( pNewSchedule );
-		}
-	}
-}
-
-void CCineMonster :: CineThink( void )
-{
-	if (FindEntity())
+	if ((m_hTargetEnt = FindEntity(STRING(m_iszEntity), NULL)) != NULL)
 	{
 		PossessEntity( );
+		m_startTime = gpGlobals->time + 1E6;
 		ALERT( at_aiconsole, "script \"%s\" using monster \"%s\"\n", STRING( pev->targetname ), STRING( m_iszEntity ) );
 	}
 	else
 	{
 		CancelScript( );
 		ALERT( at_aiconsole, "script \"%s\" can't find monster \"%s\"\n", STRING( pev->targetname ), STRING( m_iszEntity ) );
-		pev->nextthink = gpGlobals->time + 1.0;
+		SetNextThink( 1.0 );
+	}
+}
+
+void CCineMonster :: CineThink( void )
+{
+//	ALERT(at_console, "Sequence think, activator %s\n", STRING(m_hActivator->pev->targetname));
+	if ((m_hTargetEnt = FindEntity(STRING(m_iszEntity),m_hActivator)) != NULL)
+	{
+//		ALERT(at_console, "Sequence found %s \"%s\"\n", STRING(m_hTargetEnt->pev->classname), STRING(m_hTargetEnt->pev->targetname));
+		PossessEntity( );
+		ALERT( at_aiconsole, "script \"%s\" using monster \"%s\"\n", STRING( pev->targetname ), STRING( m_iszEntity ) );
+	}
+	else
+	{
+//		ALERT(at_console, "Sequence found nothing called %s\n", STRING(m_iszEntity));
+		CancelScript( );
+		ALERT( at_aiconsole, "script \"%s\" can't find monster \"%s\"\n", STRING( pev->targetname ), STRING( m_iszEntity ) );
+		SetNextThink( 1.0 );
 	}
 }
 
@@ -492,6 +489,8 @@ void CCineMonster :: CineThink( void )
 // lookup a sequence name and setup the target monster to play it
 BOOL CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL completeOnEmpty )
 {
+//	ALERT( at_console, "StartSequence %s \"%s\"\n", STRING(pev->classname), STRING(pev->targetname));
+
 	if ( !iszSeq && completeOnEmpty )
 	{
 		SequenceDone( pTarget );
@@ -513,38 +512,8 @@ BOOL CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL comp
 	else
 		s = "Yes";
 
-	ALERT( at_console, "%s (%s): started \"%s\":INT:%s\n", STRING( pTarget->pev->targetname ), STRING( pTarget->pev->classname ), STRING( iszSeq), s );
+	ALERT( at_debug, "%s (%s): started \"%s\":INT:%s\n", STRING( pTarget->pev->targetname ), STRING( pTarget->pev->classname ), STRING( iszSeq), s );
 #endif
-
-	pTarget->pev->frame = 0;
-	pTarget->ResetSequenceInfo( );
-	return TRUE;
-}
-
-// lookup a sequence name and setup the target monster to play it
-// overridden for CCineAI because it's ok for them to not have an animation sequence
-// for the monster to play. For a regular Scripted Sequence, that situation is an error.
-BOOL CCineAI :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL completeOnEmpty )
-{
-	if ( iszSeq == 0 && completeOnEmpty )
-	{
-		// no sequence was provided. Just let the monster proceed, however, we still have to fire any Sequence target
-		// and remove any non-repeatable CineAI entities here ( because there is code elsewhere that handles those tasks, but
-		// not until the animation sequence is finished. We have to manually take care of these things where there is no sequence.
-
-		SequenceDone ( pTarget );
-
-		return TRUE;
-	}
-
-	pTarget->pev->sequence = pTarget->LookupSequence( STRING( iszSeq ) );
-
-	if (pTarget->pev->sequence == -1)
-	{
-		ALERT( at_error, "%s: unknown aiscripted sequence \"%s\"\n", STRING( pTarget->pev->targetname ), STRING( iszSeq) );
-		pTarget->pev->sequence = 0;
-		// return FALSE;
-	}
 
 	pTarget->pev->frame = 0;
 	pTarget->ResetSequenceInfo( );
@@ -560,12 +529,14 @@ BOOL CCineAI :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL completeO
 //=========================================================
 void CCineMonster :: SequenceDone ( CBaseMonster *pMonster )
 {
-	//ALERT( at_aiconsole, "Sequence %s finished\n", STRING( m_pCine->m_iszPlay ) );
+	m_iRepeatsLeft = m_iRepeats; //LRC - reset the repeater count
+	m_iState = STATE_OFF; // we've finished.
+//	ALERT( at_console, "Sequence %s finished\n", STRING(pev->targetname));//STRING( m_pCine->m_iszPlay ) );
 
 	if ( !( pev->spawnflags & SF_SCRIPT_REPEATABLE ) )
 	{
 		SetThink( &CCineMonster::SUB_Remove );
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink( 0.1 );
 	}
 	
 	// This is done so that another sequence can take over the monster when triggered by the first
@@ -586,29 +557,15 @@ void CCineMonster :: SequenceDone ( CBaseMonster *pMonster )
 //
 // Scripted sequences just dirty the Schedule and drop the
 // monster in Idle State.
+//
+// or select a specific AMBUSH schedule, regardless of state. //LRC
 //=========================================================
 void CCineMonster :: FixScriptMonsterSchedule( CBaseMonster *pMonster )
 {
 	if ( pMonster->m_IdealMonsterState != MONSTERSTATE_DEAD )
 		pMonster->m_IdealMonsterState = MONSTERSTATE_IDLE;
-	pMonster->ClearSchedule();
-}
+//	pMonster->ClearSchedule();
 
-//=========================================================
-// When a monster finishes a scripted sequence, we have to 
-// fix up its state and schedule for it to return to a 
-// normal AI monster. 
-//
-// AI Scripted sequences will, depending on what the level
-// designer selects:
-//
-// -Dirty the monster's schedule and drop out of the 
-//  sequence in their current state.
-//
-// -Select a specific AMBUSH schedule, regardless of state.
-//=========================================================
-void CCineAI :: FixScriptMonsterSchedule( CBaseMonster *pMonster )
-{
 	switch ( m_iFinishSchedule )
 	{
 		case SCRIPT_FINISHSCHED_DEFAULT:
@@ -669,6 +626,9 @@ int	CCineMonster::IgnoreConditions( void )
 {
 	if ( CanInterrupt() )
 		return 0;
+
+	// Big fat BUG: This is an IgnoreConditions function - we need to return the conditions
+	// that _shouldn't_ be able to break the script, instead of the conditions that _should_!!
 	return SCRIPT_BREAK_CONDITIONS;
 }
 
@@ -676,8 +636,9 @@ int	CCineMonster::IgnoreConditions( void )
 void ScriptEntityCancel( edict_t *pentCine )
 {
 	// make sure they are a scripted_sequence
-	if (FClassnameIs( pentCine, CLASSNAME ))
+	if (FClassnameIs( pentCine, "scripted_sequence" ) || FClassnameIs( pentCine, "scripted_action" ))
 	{
+		((CCineMonster *)VARS(pentCine))->m_iState = STATE_OFF;
 		CCineMonster *pCineTarget = GetClassPtr((CCineMonster *)VARS(pentCine));
 		// make sure they have a monster in mind for the script
 		CBaseEntity		*pEntity = pCineTarget->m_hTargetEnt;
@@ -694,6 +655,8 @@ void ScriptEntityCancel( edict_t *pentCine )
 				pTarget->m_scriptState = CCineMonster::SCRIPT_CLEANUP;
 				// do it now
 				pTarget->CineCleanup( );
+				//LRC - clean up so that if another script is starting immediately, the monster will notice it.
+				pTarget->ClearSchedule( );
 			}
 		}
 	}
@@ -702,7 +665,7 @@ void ScriptEntityCancel( edict_t *pentCine )
 
 // find all the cinematic entities with my targetname and stop them from playing
 void CCineMonster :: CancelScript( void )
-{
+{	
 	ALERT( at_aiconsole, "Cancelling script: %s\n", STRING(m_iszPlay) );
 	
 	if ( !pev->targetname )
@@ -711,38 +674,44 @@ void CCineMonster :: CancelScript( void )
 		return;
 	}
 
-	edict_t *pentCineTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->targetname));
+	CBaseEntity *pCineTarget = UTIL_FindEntityByTargetname(NULL, STRING(pev->targetname));
 
-	while (!FNullEnt(pentCineTarget))
+	while (pCineTarget)
 	{
-		ScriptEntityCancel( pentCineTarget );
-		pentCineTarget = FIND_ENTITY_BY_TARGETNAME(pentCineTarget, STRING(pev->targetname));
+		ScriptEntityCancel( ENT(pCineTarget->pev) );
+		pCineTarget = UTIL_FindEntityByTargetname(pCineTarget, STRING(pev->targetname));
 	}
 }
 
 
-// find all the cinematic entities with my targetname and tell them to wait before starting
+// find all the cinematic entities with my targetname and tell them whether to wait before starting
 void CCineMonster :: DelayStart( int state )
 {
-	edict_t *pentCine = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->targetname));
+	CBaseEntity *pCine = UTIL_FindEntityByTargetname(NULL, STRING(pev->targetname));
 
-	while (!FNullEnt(pentCine))
+	while ( pCine )
 	{
-		if (FClassnameIs( pentCine, "scripted_sequence" ))
+		if (FClassnameIs( pCine->pev, "scripted_sequence" ) || FClassnameIs( pCine->pev, "scripted_action" ))
 		{
-			CCineMonster *pTarget = GetClassPtr((CCineMonster *)VARS(pentCine));
+			CCineMonster *pTarget = GetClassPtr((CCineMonster *)(pCine->pev));
 			if (state)
 			{
+//				ALERT(at_console, "Delaying start\n");
 				pTarget->m_iDelay++;
 			}
 			else
 			{
+//				ALERT(at_console, "Undelaying start\n");
 				pTarget->m_iDelay--;
 				if (pTarget->m_iDelay <= 0)
-					pTarget->m_startTime = gpGlobals->time + 0.05;
+				{
+					pTarget->m_iState = STATE_ON; //LRC
+					FireTargets(STRING(m_iszFireOnBegin), this, this, USE_TOGGLE, 0); //LRC
+					pTarget->m_startTime = gpGlobals->time + 0.05; // why the delay? -- LRC
+				}
 			}
 		}
-		pentCine = FIND_ENTITY_BY_TARGETNAME(pentCine, STRING(pev->targetname));
+		pCine = UTIL_FindEntityByTargetname(pCine, STRING(pev->targetname));
 	}
 }
 
@@ -751,31 +720,31 @@ void CCineMonster :: DelayStart( int state )
 // Find an entity that I'm interested in and precache the sounds he'll need in the sequence.
 void CCineMonster :: Activate( void )
 {
-	edict_t			*pentTarget;
+	CBaseEntity		*pEntity;
 	CBaseMonster	*pTarget;
 
 	// The entity name could be a target name or a classname
 	// Check the targetname
-	pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszEntity));
+	pEntity = UTIL_FindEntityByTargetname(NULL, STRING(m_iszEntity));
 	pTarget = NULL;
 
-	while (!pTarget && !FNullEnt(pentTarget))
+	while (!pTarget && pEntity)
 	{
-		if ( FBitSet( VARS(pentTarget)->flags, FL_MONSTER ))
+		if ( FBitSet( pEntity->pev->flags, FL_MONSTER ))
 		{
-			pTarget = GetMonsterPointer( pentTarget );
+			pTarget = pEntity->MyMonsterPointer( );
 		}
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(m_iszEntity));
+		pEntity = UTIL_FindEntityByTargetname(pEntity, STRING(m_iszEntity));
 	}
 	
 	// If no entity with that targetname, check the classname
 	if ( !pTarget )
 	{
-		pentTarget = FIND_ENTITY_BY_CLASSNAME(NULL, STRING(m_iszEntity));
-		while (!pTarget && !FNullEnt(pentTarget))
+		pEntity = UTIL_FindEntityByClassname(NULL, STRING(m_iszEntity));
+		while (!pTarget && pEntity)
 		{
-			pTarget = GetMonsterPointer( pentTarget );
-			pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(m_iszEntity));
+			pTarget = pEntity->MyMonsterPointer( );
+			pEntity = UTIL_FindEntityByClassname(pEntity, STRING(m_iszEntity));
 		}
 	}
 	// Found a compatible entity
@@ -790,6 +759,8 @@ void CCineMonster :: Activate( void )
 			SequencePrecache( pmodel, STRING( m_iszPlay ) );
 		}
 	}
+
+	CBaseMonster::Activate();
 }
 
 		
@@ -802,9 +773,14 @@ BOOL CBaseMonster :: CineCleanup( )
 	{
 		// okay, reset me to what it thought I was before
 		m_pCine->m_hTargetEnt = NULL;
+
 		pev->movetype = m_pCine->m_saved_movetype;
-		pev->solid = m_pCine->m_saved_solid;
-		pev->effects = m_pCine->m_saved_effects;
+
+// LRC - why mess around with this? Solidity isn't changed by sequences!
+//		pev->solid = m_pCine->m_saved_solid;
+
+		if (m_pCine->pev->spawnflags & SF_SCRIPT_STAYDEAD)
+			pev->deadflag = DEAD_DYING;
 	}
 	else
 	{
@@ -886,7 +862,7 @@ BOOL CBaseMonster :: CineCleanup( )
 
 			// pEntity->pev->origin.z = new_origin.z + 5.0; // damn, got to fix this
 
-			UTIL_SetOrigin( pev, pev->origin );
+			UTIL_SetOrigin( this, pev->origin );
 			pev->effects |= EF_NOINTERP;
 		}
 
@@ -911,7 +887,7 @@ BOOL CBaseMonster :: CineCleanup( )
 
 
 	//	SetAnimation( m_MonsterState );
-	ClearBits(pev->spawnflags, SF_MONSTER_WAIT_FOR_SCRIPT );
+	//LRC- removed, was never implemented. ClearBits(pev->spawnflags, SF_MONSTER_WAIT_FOR_SCRIPT );
 
 	return TRUE;
 }
@@ -927,14 +903,17 @@ public:
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT FindThink( void );
 	void EXPORT DelayThink( void );
+	void EXPORT DurationThink( void );
 	int	 ObjectCaps( void ) { return (CBaseToggle :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+
+	STATE GetState() { return m_playing?STATE_ON:STATE_OFF; }
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	CBaseMonster *FindEntity( void );
+	CBaseMonster *FindEntity( CBaseEntity *pActivator );
 	BOOL AcceptableSpeaker( CBaseMonster *pMonster );
 	BOOL StartSentence( CBaseMonster *pTarget );
 
@@ -944,10 +923,11 @@ private:
 	int		m_iszEntity;	// entity that is wanted for this sentence
 	float	m_flRadius;		// range to search
 	float	m_flDuration;	// How long the sentence lasts
-	float	m_flRepeat;	// repeat rate
+	float	m_flRepeat;	// maximum repeat rate
 	float	m_flAttenuation;
 	float	m_flVolume;
-	BOOL	m_active;
+	BOOL	m_active; // is the sentence enabled? (for m_flRepeat)
+	BOOL	m_playing; //LRC- is the sentence playing? (for GetState)
 	int		m_iszListener;	// name of entity to look at while talking
 };
 
@@ -966,6 +946,7 @@ TYPEDESCRIPTION	CScriptedSentence::m_SaveData[] =
 	DEFINE_FIELD( CScriptedSentence, m_flAttenuation, FIELD_FLOAT ),
 	DEFINE_FIELD( CScriptedSentence, m_flVolume, FIELD_FLOAT ),
 	DEFINE_FIELD( CScriptedSentence, m_active, FIELD_BOOLEAN ),
+	DEFINE_FIELD( CScriptedSentence, m_playing, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CScriptedSentence, m_iszListener, FIELD_STRING ),
 };
 
@@ -1026,8 +1007,9 @@ void CScriptedSentence :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	if ( !m_active )
 		return;
 //	ALERT( at_console, "Firing sentence: %s\n", STRING(m_iszSentence) );
+	m_hActivator = pActivator;
 	SetThink( &CScriptedSentence::FindThink );
-	pev->nextthink = gpGlobals->time;
+	SetNextThink( 0 );
 }
 
 
@@ -1036,11 +1018,12 @@ void CScriptedSentence :: Spawn( void )
 	pev->solid = SOLID_NOT;
 	
 	m_active = TRUE;
+	m_playing = FALSE; //LRC
 	// if no targetname, start now
 	if ( !pev->targetname )
 	{
 		SetThink( &CScriptedSentence::FindThink );
-		pev->nextthink = gpGlobals->time + 1.0;
+		SetNextThink( 1.0 );
 	}
 
 	switch( pev->impulse )
@@ -1072,30 +1055,59 @@ void CScriptedSentence :: Spawn( void )
 
 void CScriptedSentence :: FindThink( void )
 {
-	CBaseMonster *pMonster = FindEntity();
+	if (!m_iszEntity) //LRC- no target monster given: speak through HEV
+	{
+		CBasePlayer* pPlayer = (CBasePlayer*)UTIL_FindEntityByClassname( NULL, "player" );
+		if (pPlayer)
+		{
+			m_playing = TRUE;
+			if ((STRING(m_iszSentence))[0] == '!')
+				pPlayer->SetSuitUpdate((char*)STRING(m_iszSentence),FALSE,0);
+			else
+				pPlayer->SetSuitUpdate((char*)STRING(m_iszSentence),TRUE,0);
+			if ( pev->spawnflags & SF_SENTENCE_ONCE )
+				UTIL_Remove( this );
+			SetThink( &CScriptedSentence::DurationThink );
+			SetNextThink( m_flDuration );
+			m_active = FALSE;
+		}
+		else
+			ALERT( at_debug, "ScriptedSentence: can't find \"player\" to play HEV sentence!?\n");
+		return;
+	}
+
+	CBaseMonster *pMonster = FindEntity( m_hActivator );
 	if ( pMonster )
 	{
+		m_playing = TRUE;
 		StartSentence( pMonster );
 		if ( pev->spawnflags & SF_SENTENCE_ONCE )
 			UTIL_Remove( this );
-		SetThink( &CScriptedSentence::DelayThink );
-		pev->nextthink = gpGlobals->time + m_flDuration + m_flRepeat;
+		SetThink( &CScriptedSentence::DurationThink );
+		SetNextThink( m_flDuration );
 		m_active = FALSE;
 //		ALERT( at_console, "%s: found monster %s\n", STRING(m_iszSentence), STRING(m_iszEntity) );
 	}
 	else
 	{
 //		ALERT( at_console, "%s: can't find monster %s\n", STRING(m_iszSentence), STRING(m_iszEntity) );
-		pev->nextthink = gpGlobals->time + m_flRepeat + 0.5;
+		SetNextThink( m_flRepeat + 0.5 );
 	}
 }
 
+//LRC
+void CScriptedSentence :: DurationThink( void )
+{
+	m_playing = FALSE;
+	SetNextThink( m_flRepeat );
+	SetThink( &CScriptedSentence::DelayThink );
+}
 
 void CScriptedSentence :: DelayThink( void )
 {
 	m_active = TRUE;
 	if ( !pev->targetname )
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink( 0.1 );
 	SetThink( &CScriptedSentence::FindThink );
 }
 
@@ -1121,35 +1133,34 @@ BOOL CScriptedSentence :: AcceptableSpeaker( CBaseMonster *pMonster )
 }
 
 
-CBaseMonster *CScriptedSentence :: FindEntity( void )
+CBaseMonster *CScriptedSentence :: FindEntity( CBaseEntity *pActivator )
 {
-	edict_t *pentTarget;
+	CBaseEntity *pTarget;
 	CBaseMonster *pMonster;
 
-
-	pentTarget = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(m_iszEntity));
+	pTarget = UTIL_FindEntityByTargetname(NULL, STRING(m_iszEntity), pActivator);
 	pMonster = NULL;
 
-	while (!FNullEnt(pentTarget))
+	while ( pTarget )
 	{
-		pMonster = GetMonsterPointer( pentTarget );
+		pMonster = pTarget->MyMonsterPointer( );
 		if ( pMonster != NULL )
 		{
 			if ( AcceptableSpeaker( pMonster ) )
 				return pMonster;
 //			ALERT( at_console, "%s (%s), not acceptable\n", STRING(pMonster->pev->classname), STRING(pMonster->pev->targetname) );
 		}
-		pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(m_iszEntity));
+		pTarget = UTIL_FindEntityByTargetname(pTarget, STRING(m_iszEntity), pActivator);
 	}
 	
-	CBaseEntity *pEntity = NULL;
-	while ((pEntity = UTIL_FindEntityInSphere( pEntity, pev->origin, m_flRadius )) != NULL)
+	pTarget = NULL;
+	while ((pTarget = UTIL_FindEntityInSphere( pTarget, pev->origin, m_flRadius )) != NULL)
 	{
-		if (FClassnameIs( pEntity->pev, STRING(m_iszEntity)))
+		if (FClassnameIs( pTarget->pev, STRING(m_iszEntity)))
 		{
-			if ( FBitSet( pEntity->pev->flags, FL_MONSTER ))
+			if ( FBitSet( pTarget->pev->flags, FL_MONSTER ))
 			{
-				pMonster = pEntity->MyMonsterPointer( );
+				pMonster = pTarget->MyMonsterPointer( );
 				if ( AcceptableSpeaker( pMonster ) )
 					return pMonster;
 			}
@@ -1169,6 +1180,7 @@ BOOL CScriptedSentence :: StartSentence( CBaseMonster *pTarget )
 	}
 
 	BOOL bConcurrent = FALSE;
+	//LRC: Er... if the "concurrent" flag is NOT set, we make bConcurrent true!?
 	if ( !(pev->spawnflags & SF_SENTENCE_CONCURRENT) )
 		bConcurrent = TRUE;
 
@@ -1220,7 +1232,7 @@ LINK_ENTITY_TO_CLASS( monster_furniture, CFurniture );
 void CFurniture :: Die ( void )
 {
 	SetThink ( &CFurniture::SUB_Remove );
-	pev->nextthink = gpGlobals->time;
+	SetNextThink( 0 );
 }
 
 //=========================================================
@@ -1254,7 +1266,7 @@ void CFurniture :: Spawn( )
 //=========================================================
 int CFurniture::Classify ( void )
 {
-	return	CLASS_NONE;
+	return m_iClass?m_iClass:CLASS_NONE;
 }
 
 

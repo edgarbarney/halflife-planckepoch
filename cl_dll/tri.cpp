@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -21,6 +21,20 @@
 #include "particleman.h"
 #include "tri.h"
 extern IParticleMan *g_pParticleMan;
+
+extern float g_fFogColor[4];
+extern float g_fStartDist;
+extern float g_fEndDist;
+extern int g_iWaterLevel;
+
+//LRCT
+
+void RenderFog ( void )
+{
+	//Not in water and we want fog.
+	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+	gEngfuncs.pTriAPI->Fog ( g_fFogColor, g_fStartDist, g_fEndDist, bFog );
+}
 
 /*
 =================
@@ -57,4 +71,6 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 
 	if ( g_pParticleMan )
 		 g_pParticleMan->Update();
+
+	RenderFog();
 }

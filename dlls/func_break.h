@@ -28,8 +28,12 @@ public:
 	void Precache( void );
 	void KeyValue( KeyValueData* pkvd);
 	void EXPORT BreakTouch( CBaseEntity *pOther );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT RespawnThink( void );
+	void EXPORT RespawnFadeThink( void );
 	void DamageSound( void );
+	virtual int Classify ( void ) { return m_iClass; }
 
 	// breakables use an overridden takedamage
 	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
@@ -38,6 +42,8 @@ public:
 
 	BOOL IsBreakable( void );
 	BOOL SparkWhenHit( void );
+
+	STATE GetState( void );
 
 	int	 DamageDecal( int bitsDamageType );
 
@@ -69,6 +75,14 @@ public:
 	float		m_angle;
 	int			m_iszGibModel;
 	int			m_iszSpawnObject;
+	//LRC
+	int			m_iRespawnTime;
+	int			m_iInitialHealth;
+	int			m_iInitialRenderAmt;
+	int			m_iInitialRenderMode;
+	int			m_iClass; //so that monsters will attack it
+	int			m_iszWhenHit; // locus trigger
+	CPointEntity	*m_pHitProxy;
 };
 
 #endif	// FUNC_BREAK_H

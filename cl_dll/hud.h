@@ -20,8 +20,9 @@
 // CHud handles the message, calculation, and drawing the HUD
 //
 
+#define FOG_LIMIT 30000
 
-#define RGB_YELLOWISH 0x00FFA000 //255,160,0
+#define RGB_YELLOWISH 0x00FFA000 //255,160,0 -- no longer used
 #define RGB_REDISH 0x00FF1010 //255,160,0
 #define RGB_GREENISH 0x0000A000 //0,160,0
 
@@ -573,6 +574,8 @@ public:
 	int DrawHudNumberString( int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b );
 	int GetNumWidth(int iNumber, int iFlags);
 
+	int m_iHUDColor; //LRC
+
 private:
 	// the memory for these arrays are allocated in the first call to CHud::VidInit(), when the hud.txt and associated sprites are loaded.
 	// freed in ~CHud()
@@ -625,8 +628,10 @@ public:
 	int _cdecl MsgFunc_Damage(const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf);
+	int _cdecl MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf); //LRC
 	int _cdecl MsgFunc_ResetHUD(const char *pszName,  int iSize, void *pbuf);
 	void _cdecl MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf );
+	void _cdecl MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf ); //LRC
 	void _cdecl MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf);
 	int  _cdecl MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf );

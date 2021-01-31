@@ -348,6 +348,15 @@
     <ClCompile Include="..\..\dlls\UserMessages.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\movewith.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\locus.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\alias.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -489,6 +498,12 @@
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\UserMessages.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\movewith.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\locus.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>

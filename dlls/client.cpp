@@ -12,8 +12,6 @@
 *   without written permission from Valve LLC.
 *
 ****/
-// Robin, 4-22-98: Moved set_suicide_frame() here from player.cpp to allow us to 
-//				   have one without a hardcoded player.mdl in tf_client.cpp
 
 /*
 
@@ -40,6 +38,7 @@
 #include "netadr.h"
 #include "pm_shared.h"
 #include "UserMessages.h"
+#include "movewith.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -52,28 +51,14 @@ extern DLL_GLOBAL ULONG		g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 extern int giPrecacheGrunt;
+extern int gmsgSayText;
+extern int gmsgHUDColor;
 
 extern cvar_t allow_spectators;
 
 extern int g_teamplay;
 
 void LinkUserMessages( void );
-
-/*
- * used by kill command and disconnect command
- * ROBIN: Moved here from player.cpp, to allow multiple player models
- */
-void set_suicide_frame(entvars_t* pev)
-{       
-	if (!FStrEq(STRING(pev->model), "models/player.mdl"))
-		return; // allready gibbed
-
-//	pev->frame		= $deatha11;
-	pev->solid		= SOLID_NOT;
-	pev->movetype	= MOVETYPE_TOSS;
-	pev->deadflag	= DEAD_DEAD;
-	pev->nextthink	= -1;
-}
 
 
 /*
@@ -130,7 +115,7 @@ void ClientDisconnect( edict_t *pEntity )
 // since the edict doesn't get deleted, fix it so it doesn't interfere.
 	pEntity->v.takedamage = DAMAGE_NO;// don't attract autoaim
 	pEntity->v.solid = SOLID_NOT;// nonsolid
-	UTIL_SetOrigin ( &pEntity->v, pEntity->v.origin );
+	UTIL_SetEdictOrigin ( pEntity, pEntity->v.origin );
 
 	auto pPlayer = reinterpret_cast<CBasePlayer*>(GET_PRIVATE(pEntity));
 
@@ -517,8 +502,60 @@ void ClientCommand( edict_t *pEntity )
 		return;
 
 	entvars_t *pev = &pEntity->v;
+	
 
-	if ( FStrEq(pcmd, "say" ) )
+	if ( FStrEq(pcmd, "VModEnable") ) //LRC - shut up about VModEnable...
+	{
+		return;
+	}
+	else if ( FStrEq(pcmd, "hud_color") ) //LRC
+	{
+		if (CMD_ARGC() == 4)
+		{
+			int col = (atoi(CMD_ARGV(1)) & 255) << 16;
+			col += (atoi(CMD_ARGV(2)) & 255) << 8;
+			col += (atoi(CMD_ARGV(3)) & 255);
+			MESSAGE_BEGIN( MSG_ONE, gmsgHUDColor, NULL, &pEntity->v );
+				WRITE_LONG(col);
+			MESSAGE_END();
+		}
+		else
+		{
+			ALERT(at_console, "Syntax: hud_color RRR GGG BBB\n");
+		}
+	}
+	else if ( FStrEq(pcmd, "fire") ) //LRC - trigger entities manually
+	{
+		if (g_psv_cheats->value)
+		{
+			CBaseEntity *pPlayer = CBaseEntity::Instance(pEntity);
+			if (CMD_ARGC() > 1)
+			{
+				FireTargets(CMD_ARGV(1), pPlayer, pPlayer, USE_TOGGLE, 0);
+			}
+			else
+			{
+				TraceResult tr;
+				UTIL_MakeVectors(pev->v_angle);
+				UTIL_TraceLine(
+					pev->origin + pev->view_ofs,
+					pev->origin + pev->view_ofs + gpGlobals->v_forward * 1000,
+					dont_ignore_monsters, pEntity, &tr
+				); 
+
+				if (tr.pHit)
+				{
+					CBaseEntity *pHitEnt = CBaseEntity::Instance(tr.pHit);
+					if (pHitEnt)
+					{
+						pHitEnt->Use(pPlayer, pPlayer, USE_TOGGLE, 0);
+						ClientPrint( &pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs( "Fired %s \"%s\"\n", STRING(pHitEnt->pev->classname), STRING(pHitEnt->pev->targetname) ) );
+					}
+				}
+			}
+		}
+	}
+	else if ( FStrEq(pcmd, "say" ) )
 	{
 		Host_Say( pEntity, 0 );
 	}
@@ -695,6 +732,9 @@ static int g_serveractive = 0;
 
 void ServerDeactivate( void )
 {
+	// make sure they reinitialise the World in the next server
+	g_pWorld = NULL;
+
 	// It's possible that the engine will call this function more times than is necessary
 	//  Therefore, only run it one time for each call to ServerActivate 
 	if ( g_serveractive != 1 )
@@ -734,7 +774,7 @@ void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax )
 		}
 		else
 		{
-			ALERT( at_console, "Can't instance %s\n", STRING(pEdictList[i].v.classname) );
+			ALERT( at_debug, "Can't instance %s\n", STRING(pEdictList[i].v.classname) );
 		}
 	}
 
@@ -773,6 +813,10 @@ void PlayerPostThink( edict_t *pEntity )
 
 	if (pPlayer)
 		pPlayer->PostThink( );
+
+	//LRC - moved to here from CBasePlayer::PostThink, so that
+	// things don't stop when the player dies
+	CheckDesiredList( );
 }
 
 
@@ -805,6 +849,9 @@ void StartFrame( void )
 
 	gpGlobals->teamplay = teamplay.value;
 	g_ulFrameCount++;
+
+//	CheckDesiredList(); //LRC
+	CheckAssistList(); //LRC
 }
 
 
@@ -909,6 +956,10 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("common/wpn_select.wav");
 	PRECACHE_SOUND("common/wpn_denyselect.wav");
 
+#ifdef XENWARRIOR
+	PRECACHE_SOUND( SOUND_FLASHLIGHT_IDLE );
+#endif
+
 
 	// geiger sounds
 
@@ -935,7 +986,7 @@ const char *GetGameDescription()
 	if ( g_pGameRules ) // this function may be called before the world has spawned, and the game rules initialized
 		return g_pGameRules->GetGameDescription();
 	else
-		return "Half-Life";
+		return GAME_NAME;
 }
 
 /*
@@ -966,13 +1017,13 @@ void PlayerCustomization( edict_t *pEntity, customization_t *pCust )
 
 	if (!pPlayer)
 	{
-		ALERT(at_console, "PlayerCustomization:  Couldn't get player!\n");
+		ALERT(at_debug, "PlayerCustomization:  Couldn't get player!\n");
 		return;
 	}
 
 	if (!pCust)
 	{
-		ALERT(at_console, "PlayerCustomization:  NULL customization!\n");
+		ALERT(at_debug, "PlayerCustomization:  NULL customization!\n");
 		return;
 	}
 
@@ -987,7 +1038,7 @@ void PlayerCustomization( edict_t *pEntity, customization_t *pCust )
 		// Ignore for now.
 		break;
 	default:
-		ALERT(at_console, "PlayerCustomization:  Unknown customization type!\n");
+		ALERT(at_debug, "PlayerCustomization:  Unknown customization type!\n");
 		break;
 	}
 }
@@ -1255,6 +1306,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 
 	// HACK:  Somewhat...
 	// Class is overridden for non-players to signify a breakable glass object ( sort of a class? )
+	// that's 'class' in the sense medic, engineer, etc... !! --LRC
 	if ( !player )
 	{
 		state->playerclass  = ent->v.playerclass;

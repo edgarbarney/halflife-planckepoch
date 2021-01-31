@@ -61,49 +61,47 @@ Called by SpectatorThink if the spectator entered an impulse
 void CBaseSpectator::SpectatorImpulseCommand(void)
 {
 	static edict_t	*pGoal		= NULL;
-	edict_t         *pPreviousGoal;
-	edict_t         *pCurrentGoal;
+	CBaseEntity		*pPreviousGoal;
+	CBaseEntity		*pCurrentGoal;
 	BOOL			bFound;
 	
 	switch (pev->impulse)
 	{
 	case 1:
-		// teleport the spectator to the next spawn point
-		// note that if the spectator is tracking, this doesn't do
-		// much
-		pPreviousGoal = pGoal;
-		pCurrentGoal  = pGoal;
-		// Start at the current goal, skip the world, and stop if we looped
-		//  back around
+		// teleport the spectator to the next spawn point; note that if the spectator is
+		// tracking, this doesn't do much
+		pPreviousGoal = (CBaseEntity*)GET_PRIVATE(pGoal);
+		pCurrentGoal  = (CBaseEntity*)GET_PRIVATE(pGoal);
+		// Start at the current goal, skip the world, and stop if we looped back around
 
 		bFound = FALSE;
 		while (1)
 		{
-			pCurrentGoal = FIND_ENTITY_BY_CLASSNAME(pCurrentGoal, "info_player_deathmatch");
+			pCurrentGoal = UTIL_FindEntityByClassname(pCurrentGoal, "info_player_deathmatch");
 			// Looped around, failure
 			if (pCurrentGoal == pPreviousGoal)
 			{
-				ALERT(at_console, "Could not find a spawn spot.\n");
+				ALERT(at_debug, "Could not find a spawn spot.\n");
 				break;
 			}
 			// Found a non-world entity, set success, otherwise, look for the next one.
-			if (!FNullEnt(pCurrentGoal))
+			if ( pCurrentGoal )
 			{
 				bFound = TRUE;
 				break;
 			}
 		}
-
-		if (!bFound)  // Didn't find a good spot.
+		
+		if ( !bFound )  // Didn't find a good spot.
 			break;
 		
-		pGoal = pCurrentGoal;
-		UTIL_SetOrigin( pev, pGoal->v.origin );
+		pGoal = ENT(pCurrentGoal->pev);
+		UTIL_SetOrigin( this, pGoal->v.origin );
 		pev->angles = pGoal->v.angles;
 		pev->fixangle = FALSE;
 		break;
 	default:
-		ALERT(at_console, "Unknown spectator impulse\n");
+		ALERT(at_debug, "Unknown spectator impulse\n");
 		break;
 	}
 
