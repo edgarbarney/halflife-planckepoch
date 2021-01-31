@@ -28,7 +28,7 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	void KeyValue( KeyValueData* pkvd);
-	virtual float CalcRatio(CBaseEntity *pLocus,int mode);//AJH added 'mode' = ratio to return);
+	virtual bool CalcNumber(CBaseEntity *pLocus, float* OUTresult);
 	void EXPORT BreakTouch( CBaseEntity *pOther );
 	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );

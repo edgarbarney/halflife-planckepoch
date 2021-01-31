@@ -41,6 +41,7 @@
 #include "effects.h" //LRC
 #include "movewith.h" //LRC
 #include "items.h" //AJH Inventory system
+#include "locus.h" //LRC 1.8
 #include "pm_shared.h"
 #include "hltv.h"
 
@@ -201,10 +202,12 @@ int gmsgResetHUD = 0;
 int gmsgInitHUD = 0;
 int gmsgSetFog = 0; //LRC
 int gmsgKeyedDLight = 0;//LRC
+int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
 int gmsgAddShine = 0;   // LRC
 int gmsgParticle = 0; // LRC
+int gmsgClampView = 0; //LRC 1.8
 int gmsgPlayMP3 = 0; //Killar
 int gmsgShowGameTitle = 0;
 int gmsgCurWeapon = 0;
@@ -268,10 +271,12 @@ void LinkUserMessages( void )
 
 	gmsgSetFog = REG_USER_MSG("SetFog", 9 ); //LRC
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1 );	//LRC
+	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1 );	//LRC
 	gmsgSetSky = REG_USER_MSG( "SetSky", 8 );			//LRC //AJH changed size from 7 to 8 to support skybox scale
 	gmsgHUDColor = REG_USER_MSG( "HUDColor", 4 );		//LRC
-	gmsgAddShine = REG_USER_MSG( "AddShine", -1 );      //LRC
 	gmsgParticle = REG_USER_MSG( "Particle", -1);		//LRC
+	gmsgAddShine = REG_USER_MSG( "AddShine", -1 );      //LRC
+	gmsgClampView = REG_USER_MSG( "ClampView", 10 );	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
 	gmsgDeathMsg = REG_USER_MSG( "DeathMsg", -1 );
@@ -5531,12 +5536,14 @@ void CRevertSaved :: LoadThink( void )
 // Trigger to disable a player
 //=========================================================
 #define SF_FREEZE_LOCUS 1
+#define SF_DONTFREEZE 2
+#define SF_ACTIVE 0x800000
 
 class CPlayerFreeze:public CBaseDelay
 {
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void Think( void );
-	STATE GetState( void ) { return m_hActivator == NULL? STATE_OFF: STATE_ON; }
+	STATE GetState( void ) { return pev->spawnflags & SF_ACTIVE? STATE_ON: STATE_OFF; }
 };
 
 void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -5546,28 +5553,104 @@ void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		pActivator = UTIL_FindEntityByClassname(NULL, "player");
 	}
 
+	float turnSpeed = 1E6;
+
 	if (pActivator && pActivator->pev->flags & FL_CLIENT)
 	{
-		if (!ShouldToggle(useType, pActivator->pev->flags & FL_FROZEN))
-			return;
+//		if (!ShouldToggle(useType, pActivator->pev->flags & FL_FROZEN))
+//			return;
 
-		if (pActivator->pev->flags & FL_FROZEN)
+		if ((pev->spawnflags & SF_ACTIVE && useType == USE_TOGGLE) || useType == USE_OFF)
 		{
 			// unfreeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(TRUE);
-			m_hActivator = NULL;
-			DontThink();
+			if (!(pev->spawnflags & SF_DONTFREEZE))
+			{
+				((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(TRUE);
+				m_hActivator = NULL;
+				DontThink();
+			}
+
+			//unclamp his view
+			MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+				WRITE_SHORT(0);
+				WRITE_SHORT(360);
+				WRITE_BYTE(0);
+				WRITE_BYTE(255);
+				WRITE_LONG(*(long*)&turnSpeed);
+			MESSAGE_END();
+
+			pev->spawnflags &= ~SF_ACTIVE;
 		}
-		else
+		else if ((!(pev->spawnflags & SF_ACTIVE) && useType == USE_TOGGLE) || useType == USE_ON)
 		{
 			// freeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(FALSE);
+			if (!(pev->spawnflags & SF_DONTFREEZE))
+			{
+				((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(FALSE);
+			}
+
+			float yawRange = CalcLocus_Number( pActivator, STRING(pev->noise));
+			float pitchUpRange = CalcLocus_Number( pActivator, STRING(pev->noise1));
+			float pitchDownRange;
+			if ( FStringNull(pev->noise2) )
+				pitchDownRange = pitchUpRange;
+			else
+				pitchDownRange = CalcLocus_Number( pActivator, STRING(pev->noise2));
+
+			if ( yawRange < 360 || pitchUpRange < 90 || pitchDownRange < 90 )
+			{
+				Vector clampTargetDir = CalcLocus_Velocity( this, pActivator, STRING(pev->netname) );
+				Vector clampTargetAngle = UTIL_VecToAngles( clampTargetDir );
+
+				if ( !FStringNull(pev->noise3) )
+					turnSpeed = CalcLocus_Number( pActivator, STRING(pev->noise3));
+
+				// clamp max values
+				if (yawRange > 360) yawRange = 360;
+				if (pitchUpRange > 90) pitchUpRange = 90;
+				if (pitchDownRange > 90) pitchDownRange = 90;
+
+				if ( clampTargetAngle.x > 90 )
+					clampTargetAngle.x -= 360;
+
+				float minYaw = clampTargetAngle.y - yawRange/2;
+				float maxYaw = clampTargetAngle.y + yawRange/2;
+				// this is viewangle pitch, so up is negative
+				float minPitch = -clampTargetAngle.x + pitchDownRange;
+				float maxPitch = -clampTargetAngle.x - pitchUpRange;
+
+				while ( minYaw < 0 ) { minYaw += 360; maxYaw += 360; }
+
+				//clamp the view
+				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(minYaw);
+					WRITE_SHORT(maxYaw);
+					WRITE_BYTE(minPitch + 128);
+					WRITE_BYTE(maxPitch + 128);
+					WRITE_LONG(*(long*)&turnSpeed);
+				MESSAGE_END();
+			}
+			else
+			{
+				//unclamp the view
+				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(0);
+					WRITE_SHORT(360);
+					WRITE_BYTE(0);
+					WRITE_BYTE(255);
+					WRITE_LONG(*(long*)&turnSpeed);
+				MESSAGE_END();
+			}
+
+			pev->spawnflags |= SF_ACTIVE;
+
 			if (m_flDelay)
 			{
 				m_hActivator = pActivator;
 				SetNextThink(m_flDelay);
 			}
 		}
+
 	}
 }
 
@@ -5654,6 +5737,17 @@ class CHudSprite:public CBaseEntity
 
 void CHudSprite::Spawn( void )
 {
+	//LRC 1.8
+	// We can't keep a hud.txt spritename in pev->model, because on loading a saved game, it
+	// tries to precache it as though it was a model file. (And crashes.)
+	// So now we keep them in pev->message... but for backwards compatibility,
+	// transfer the "model" field into "message", and clear model.
+	if (FStringNull(pev->message))
+	{
+		pev->message = pev->model;
+		pev->model = 0;
+	}
+
 	if (FStringNull(pev->targetname))
 	{
 		pev->spawnflags |= SF_HUDSPR_ACTIVE;
@@ -5692,7 +5786,7 @@ void CHudSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 //		byte   : blue
 	MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, pActivator->pev );
 		WRITE_BYTE(pev->spawnflags & SF_HUDSPR_ACTIVE);
-		WRITE_STRING(STRING(pev->model));
+		WRITE_STRING(STRING(pev->message));
 		WRITE_BYTE(pev->rendercolor.x);
 		WRITE_BYTE(pev->rendercolor.y);
 		WRITE_BYTE(pev->rendercolor.z);
