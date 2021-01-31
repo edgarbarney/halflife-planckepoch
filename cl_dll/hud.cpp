@@ -126,6 +126,9 @@ int __MsgFunc_AddShine(const char *pszName, int iSize, void *pbuf)
 	return 1;
 }
 
+int __MsgFunc_Test(const char *pszName, int iSize, void *pbuf)
+{ return 1; }
+
 //LRC
 int __MsgFunc_SetSky(const char *pszName, int iSize, void *pbuf)
 {
@@ -137,6 +140,13 @@ int __MsgFunc_SetSky(const char *pszName, int iSize, void *pbuf)
 int __MsgFunc_RainData(const char *pszName, int iSize, void *pbuf)
 {
 	return gHUD.MsgFunc_RainData( pszName, iSize, pbuf );
+}
+
+//LRC 1.8
+int __MsgFunc_ClampView(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_ClampView( pszName, iSize, pbuf );
+	return 1;
 }
 
 int __MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf)
@@ -371,11 +381,14 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( HUDColor ); //LRC
 	HOOK_MESSAGE( SetFog ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
+//	HOOK_MESSAGE( KeyedELight ); //LRC
 	HOOK_MESSAGE( AddShine ); //LRC
+	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
 	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
 	HOOK_MESSAGE( RainData );//G-Cont. for rain control 
 	HOOK_MESSAGE( Inventory ); //AJH Inventory system
+	HOOK_MESSAGE( ClampView ); //LRC 1.8
 
 	//KILLAR: MP3	
 	if(gMP3.Initialize())
@@ -537,7 +550,7 @@ int CHud :: GetSpriteIndex( const char *SpriteName )
 void CHud :: VidInit( void )
 {
 #ifdef ENGINE_DEBUG
-	CONPRINT("## CHud::VidInit\n");
+	CONPRINT("## CHud::VidInit (hi from me)\n");
 #endif
 	m_scrinfo.iSize = sizeof(m_scrinfo);
 	GetScreenInfo(&m_scrinfo);
