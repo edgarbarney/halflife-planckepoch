@@ -218,9 +218,9 @@ extern float		UTIL_AngleDiff			( float destAngle, float srcAngle );
 extern Vector		UTIL_AxisRotationToAngles	(const Vector &vec, float angle); //LRC
 extern Vector		UTIL_AxisRotationToVec	(const Vector &vec, float angle); //LRC
 
-//LRC
-class CBaseAlias;
-extern void			UTIL_AddToAliasList( CBaseAlias *pAlias );
+//LRC 1.8 - renamed CBaseAlias
+class CBaseMutableAlias;
+extern void			UTIL_AddToAliasList(CBaseMutableAlias* pAlias);
 extern void			UTIL_FlushAliases();
 
 extern CBaseEntity	*UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius);
@@ -292,6 +292,7 @@ extern Vector		UTIL_ClampVectorToBox( const Vector &input, const Vector &clampSi
 extern float		UTIL_Approach( float target, float value, float speed );
 extern float		UTIL_ApproachAngle( float target, float value, float speed );
 extern float		UTIL_AngleDistance( float next, float cur );
+inline float		UTIL_Lerp(float lerpfactor, float A, float B) { return A + lerpfactor * (B - A); } //LRC 1.8 - long-missing convenience!
 
 extern char			*UTIL_VarArgs( const char *format, ... );
 extern void			UTIL_Remove( CBaseEntity *pEntity );
@@ -398,6 +399,7 @@ extern DLL_GLOBAL int			g_Language;
 #define AMBIENT_SOUND_LARGERADIUS		8
 #define AMBIENT_SOUND_START_SILENT		16
 #define AMBIENT_SOUND_NOT_LOOPING		32
+#define AMBIENT_SOUND_CUSTOM_ATTENUATION		0x80000
 
 #define SPEAKER_START_SILENT			1	// wait for trigger 'on' to start announcements
 
@@ -451,6 +453,7 @@ extern DLL_GLOBAL int			g_Language;
 // func_pushable (it's also func_breakable, so don't collide with those flags)
 #define SF_PUSH_BREAKABLE		128
 #define SF_PUSH_NOPULL			512//LRC
+#define SF_PUSH_NOSUPERPUSH		1024//LRC
 #define SF_PUSH_USECUSTOMSIZE	0x800000 //LRC, not yet used
 
 #define SF_LIGHT_START_OFF		1

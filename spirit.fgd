@@ -1,6 +1,6 @@
-// Spirit of Half-Life v1.5 FGD
+// Spirit of Half-Life v1.8 FGD
 // For WorldCraft 3.5+ and Half-Life 1.1.0.8+
-// Last update: 4th August 2004
+// Last update: 9th March 2008
 // Created by Laurie Cheers	 	- http://www.bearkey.com/?laurie
 // Additions by Shambler Team 		- http://shamteam.cbi.ru/
 // Additions by Killar			- http://www.bearkey.com/?killar
@@ -239,11 +239,17 @@
 	globalname(string) : "Global Entity Name" 
 ]
 
-@BaseClass base(Target) = Targetx 
+@BaseClass = Delay
 [
 	delay(string) : "Delay before trigger" : "0"
+]
+
+@BaseClass = Killtarget
+[
 	killtarget(target_destination) : "KillTarget"
 ]
+
+@BaseClass base(Target, Delay, Killtarget) = Targetx []
 
 @BaseClass = RenderFxChoices
 [
@@ -528,7 +534,7 @@
 	m_iszPosition(string) : "At position (blank = here) [LP]"
 	m_iszVelocity(string) : "At velocity (blank = angle) [LV]"
 	//* How fast the gibs are fired
-	m_flVelocity(string) : "Gib Speed Factor [LR]" : "200"
+	m_flVelocity(string) : "Gib Speed Factor [LN]" : "200"
 	//* Course variance
 	m_flVariance(string) : "Course Variance" : "0.15"
 	//* Time in seconds for gibs to live, +/- 5%
@@ -1183,7 +1189,7 @@
 		27: "Haunted"
 	]
 	volstart(integer) : "Start Volume" : 0
-	noise(string) : "Calc_ratio Volume (overrides)" : ""
+	noise(string) : "Volume calculation [LN] (overrides)" : ""
 	fadein(integer) : "Fade in time (0-100)" : 0
 	fadeout(integer) : "Fade out time (0-100)" : 0
 	pitch(integer) : "Pitch (> 100 = higher)" : 100
@@ -1201,6 +1207,10 @@
 	lfomodpitch(integer) : "LFO mod pitch (0-100)" : 0
 	lfomodvol(integer) : "LFO mod vol (0-100)" : 0
 	cspinup(integer) : "Incremental spinup count" : 0
+	//NEW 1.8
+	//* This scales the radius up (if you put more than 1) or down (if you put less than 1).
+	//* It works in addition to the small/medium/large flags.
+	radiusscale(string) : "Radius scale factor"
 	spawnflags(flags) =
 	[
 		1: "Play Everywhere"	: 0
@@ -1246,9 +1256,130 @@
 // locus calculation entities
 //
 
+//NEW 1.8
+@PointClass color(200 128 64) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_angles : "Calculate Angles"
+[
+	netname(string) : "Base angle" : "*locus"
+	impulse(choices) : "Meaning of base angle" : 0 =
+	[
+		0 : "Angles [PYR]"
+		1 : "View Angle from player [LE]"
+	]
+	message(string) : "Rotate by angle [PYR]"
+	noise(string) : "Set Pitch [LN] (blank = don't)"
+	noise1(string) : "Set Yaw [LN] (blank = don't)"
+	noise2(string) : "Set Roll [LN] (blank = don't)"
+]
+
+//NEW 1.8
+@PointClass color(200 64 64) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_numfromcvar : "Calculate a value from a console variable"
+[
+	target(string) : "Cvar name"
+	spawnflags(flags) = 
+	[
+		1 : "Parse as [LN]" : 0
+	]
+]
+
+//NEW 1.8
+//* If a locus calculation fails (for example, because its target is missing or whatever), it usually returns 0 (or 0 0 0 for vector calculations). If you want something else to happen when your calculation fails, use this to catch failed calculations and return the value you actually want, and/or trigger something.
+@PointClass color(200 64 64) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_fallback : "Handle calculation failures"
+[
+	target(string) : "Calculation [LV/P/N]" : "*locus"
+	netname(string) : "Fallback calculation [LV/P/N]"
+	message(string) : "Fire if fallback used"
+]
+
+//NEW 1.8
+//* To use this, simply refer to it in any field that's designated [LN].
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_subratio : "Calculate number based on entity properties"
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_numfroment : "Calculate number based on entity properties"
+[
+	target(string) : "Entity to use [LE]" : "*locus"
+	skin(choices) : "Number to get" : 0 =
+	[
+		2: "Number of entities"
+		0: "health/maxhealth(Monsters/Players/Breakables)"
+		1 : "HasWeapons(Players)"
+		0 : "current count(Watcher_Count)"
+		1 : "current count/Comparison number (Watcher_Count)"
+	]
+]
+
+//NEW 0.7.1
+//* To use this, simply refer to it in any field that's designated [LN].
+//OLD @PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_ratio : "Number adjustment"
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_numfromnum : "Number adjustment"
+[
+	target(string) : "Based on number [LN]" : "*locus"
+	impulse(choices) : "Calculation" : 0 =
+	[
+		0 : "None"
+		1 : "Reversed (1-X)"
+		2 : "Negative (-X)"
+		3 : "Reciprocal (1/X)"
+		4 : "Square (X*X)"
+		5 : "Inverse Square (1/X*X)"
+		6 : "Square root"
+		7 : "Cosine"
+		8 : "Sine"
+		9 : "Tangent"
+		10 : "Inverse Cosine"
+		11 : "Inverse Sine"
+		12 : "Inverse Tangent"
+	]
+	netname(string) : "Offset by [LN]" : "0"
+
+	message(string) : "Scale factor [LN]" : "1"
+
+	noise(string) : "Min (blank = none) [LN]"
+	noise1(string) : "Max (blank = none) [LN]"
+	frags(choices) : "If outside range" : 0 =
+	[
+		//* e.g. if the range were 0%-100%, and the value were 120%, the result would be 100%.
+		0 : "Pick nearest value"
+		//* In the case above, the result would be 20%.
+		1 : "Wrap around"
+		//* In the case above, the result would be 80%.
+		2 : "Bounce back"
+		//* Treated as 0. Or you can catch this failure with calc_fallback.
+		3 : "Fail
+	]
+]
+
+//NEW 1.8
+//* To use this, simply refer to it in any field that's designated [LN].
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_numfromvec : "Calculate number based on vector"
+[
+	target(string) : "Vector to use [LV]" : "*locus"
+	noise(string) : "Swizzle/replace elements": "X Y Z"
+	netname(string) : "Vector B [LV]" : "0 1 0"
+	noise1(string) : "Swizzle/replace elements B": "X Y Z"
+	impulse(choices) : "Number to get" : 0 =
+	[
+		0: "X"
+		1 : "Y"
+		2 : "Z"
+		3 : "Length"
+		4 : "Pitch"
+		5 : "Yaw"
+		6 : "Min X (of A/B)"
+		7 : "Max X (of A/B)"
+		8 : "Min Y (of A/B)"
+		9 : "Max Y (of A/B)"
+		10 : "Min Z (of A/B)"
+		11 : "Max Z (of A/B)"
+		20 : "Angle from B"
+		//* i.e. the cosine of the angle between them.
+		21 : "Component in B"
+		22 : "Length/B's Length"
+	]
+]
+
 //NEW 0.7.1
 //* To use this, simply refer to it in any field that's designated [LP].
-@PointClass color(128 200 64) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_position : "Calculate position"
+//OLD @PointClass color(128 200 64) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_position : "Calculate position"
+@PointClass color(128 200 64) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_posfroment : "Calculate position"
 [
 	netname(string) : "Entity to use [LE]" : "*locus"
 	impulse(choices) : "Position to calculate" : 1 =
@@ -1266,68 +1397,18 @@
 		9 : "Random"
 	]
 	message(string) : "Add offset [LV]" : "0 0 0"
-]
-
-
-//NEW 0.7.1
-//* To use this, simply refer to it in any field that's designated [LR].
-@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_ratio : "Ratio adjustment"
-[
-	target(string) : "Based on ratio [LR]" : "*locus"
-	skin(choices) : "Ratio to get (Basis)" : 0 =
+	spawnflags(flags) = 
 	[
-		0: "health/maxhealth(Monsters/Players/Breakables)"
-		1 : "speed (use scalefactor to obtain a ratio)(Monsters/Players)"
-		//2 : "IsSneaking (Players)"
-		3 : "HasWeapons(Players)"
-		0 : "current count(Watcher_Count)"
-		1 : "current count/Comparison number (Watcher_Count)"
-	]
-	impulse(choices) : "Transformation" : 0 =
-	[
-		0 : "None"
-		1 : "Reversed (1-X)"
-		2 : "Negative (-X)"
-		3 : "Reciprocal (1/X)"
-	]
-	netname(string) : "Offset by [LR]" : "0"
-	body(choices) : "Ratio to get (Offset)" : 0 =
-	[
-		0: "health/maxhealth(Monsters/Players/Breakables)"
-		1 : "speed (use scalefactor to obtain a ratio)(Monsters/Players)"
-		//2 : "IsSneaking (Players)"
-		3 : "HasWeapons(Players)"
-		0 : "current count(Watcher_Count)"
-		1 : "current count/Comparison number (Watcher_Count)"
-	]
-
-	message(string) : "Scale factor [LR]" : "1"
-	button (choices) : "Ratio to get (Scale)" : 0 =
-	[
-		0: "health/maxhealth(Monsters/Players/Breakables)"
-		1 : "speed (use scalefactor to obtain a ratio)(Monsters/Players)"
-		//2 : "IsSneaking (Players)"
-		3 : "HasWeapons(Players)"
-		0 : "current count(Watcher_Count)"
-		1 : "current count/Comparison number (Watcher_Count)"
-	]
-
-	noise(string) : "Min (blank = none) [LR]"
-	noise1(string) : "Max (blank = none) [LR]"
-	frags(choices) : "If outside range" : 0 =
-	[
-		//* e.g. if the range were 0%-100%, and the value were 120%, the result would be 100%.
-		0 : "Pick nearest value"
-		//* In the case above, the result would be 20%.
-		1 : "Wrap around"
-		//* In the case above, the result would be 80%.
-		2 : "Bounce back"
+		1 : "Debug" : 0
 	]
 ]
+
+
 
 //NEW 0.7.1
 //* To use this, simply refer to it in any field that's designated [LV].
-@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_subvelocity : "Calculate velocity based on entity properties"
+//OLD @PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_subvelocity : "Calculate velocity based on entity properties"
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_vecfroment : "Calculate velocity based on entity properties"
 [
 	netname(string) : "Entity to use [LE]" : "*locus"
 	impulse(choices) : "Value to calculate from" : 0 =
@@ -1340,15 +1421,16 @@
 		7 : "Attachment point 2"
 		8 : "Attachment point 3"
 	]
-	noise(string) : "Scale factor [LR]" : "1.0"
+	noise(string) : "Scale factor [LN]" : "1.0"
 	message(string) : "Add offset [LV]" : "0 0 0"
+	noise2(string) : "Swizzle/replace elements": "X Y Z"
 	spawnflags(flags) = 
 	[
 		1 : "Normalize" : 0
-		2 : "Flip Vertical" : 0
-		4 : "Discard X" : 0
-		8 : "Discard Y" : 0
-		16 : "Discard Z" :0
+//		2 : "Flip Vertical" : 0
+//		4 : "Discard X" : 0
+//		8 : "Discard Y" : 0
+//		16 : "Discard Z" :0
 	]
 ]
 
@@ -1359,7 +1441,8 @@
 //* factor" setting to change this.)
 //*   This can also be used to calculate (for example) where a beam's endpoint should
 //* be, in order for it to point towards a given location.
-@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_velocity_path : "Calculate velocity for travelling"
+//OLD @PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_velocity_path : "Calculate velocity for travelling"
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_vecfrompos : "Calculate velocity for travelling"
 [
 	target(string) : "Start position [LP]" : "*locus"
 	netname(string) : "Destination"
@@ -1384,7 +1467,7 @@
 	//* E.g: 2.0 will specify "twice as fast/twice as far", and
 	//* 0.5 will specify "half as fast/half as far".
 	//*   A negative number here will make the line go in the opposite direction.
-	noise(string) : "Length factor [LR]" : "1.0"
+	noise(string) : "Length factor [LN]" : "1.0"
 	//* If this is set, a line will be drawn from the start position to the end
 	//* position. The first obstacle it hits will then be used as the new end
 	//* position.
@@ -1396,21 +1479,28 @@
 		3 : "Walls & Monsters"
 		4 : "Walls, Monsters & Glass"
 	]
+	noise2(string) : "Swizzle/replace elements": "X Y Z"
+	spawnflags(flags) = 
+	[
+		1 : "Debug mode" : 0
+	]
 ]
 
 //NEW 0.7.1
 //* To use this, simply refer to it in any field that's designated [LV].
-@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_velocity_polar : "Calculate velocity"
+//OLD @PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_velocity_polar : "Calculate velocity"
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) iconsprite("sprites/calc.spr") = calc_vecfromvec : "Modify velocity"
 [
-	netname(string) : "Based on velocity [LV]"
+	netname(string) : "Based on velocity [LV]" : "0 1 0"
 	//* Rotate the velocity by this amount.
-	angles(string) : "Rotated by angle (Y Z X)" : "0 0 0"
+	noise1(string) : "Rotated by angle [PYR]" : "0 0 0"
 	//* Scale the velocity by this factor.
 	//*   E.g: 2.0 will specify "twice as fast/twice as far", and
 	//* 0.5 will specify "half as fast/half as far".
-	noise(string) : "Length factor [LR]" : "1.0"
+	noise(string) : "Length factor [LN]" : "1.0"
 	//* After rotation and scaling, add this offset to the velocity.
 	message(string) : "Add offset [LV]" : "0 0 0"
+	noise2(string) : "Swizzle/replace elements": "X Y Z"
 	spawnflags(flags) = 
 	[
 		//* The "length factor" field will set the exact length of the velocity,
@@ -1818,7 +1908,7 @@
 [
 	target(string) : "Position (blank = here) [LP]"
 	netname(string) : "Spray direction (blank = angle) [LV]"
-	message(string) : "Max distance (blank = none) [LR]"
+	message(string) : "Max distance (blank = none) [LN]"
 	impulse(choices) : "Decal group" : 0 =
 	[
 		1 : "Gunshot"
@@ -2252,11 +2342,11 @@
 [
 	//NEW 0.7.1
 	//* The Renderamt number will be multiplied by this factor.
-	message(string) : "FX Amount factor [LR]"
+	message(string) : "FX Amount factor [LN]"
 	//NEW 0.7.1
 	//* Set the scale of the affected model or sprite.
 	//* (If Fade Time is set, the scale will change slowly over time.)
-	m_fScale(string) : "Scale (0 = no change) [LR]"
+	m_fScale(string) : "Scale (0 = no change) [LN]"
 	target(target_destination) : "Target to affect [LE]"
 	//NEW 0.5
 	//* If you set this, the affected entity (or entities) will fade
@@ -2329,7 +2419,7 @@
 @PointClass base(gibshooterbase, RenderFields) size(-16 -16 -16, 16 16 16) studio()= env_shooter : "Model Shooter"
 [
 	shootmodel(studio) : "Model or Sprite name" : "sprites/ballsmoke.spr"
-	noise(string) : "Scale [LR]" : ""
+	noise(string) : "Scale [LN]" : ""
 	skin(integer) : "Skin" : 0
 	body(integer) : "Body (models only)"
 	//NEW 0.7.1
@@ -2741,6 +2831,11 @@
 		//NEW 0.3
 		//* Tick here if the crate can only ever be pushed.
 		512: "Can't Pull" : 0
+		//NEW 1.8
+		//* Don't let the pushable go faster than the person pushing it.
+		//* This also fixes a bug with HL pushables - if you hold "use"
+		//* while pushing them, they get pushed really hard.
+		1024: "Smooth push" : 0
 	]
 	friction(integer) : "Friction (0-400)" : 50
 	buoyancy(integer) : "Buoyancy" : 20
@@ -2813,10 +2908,11 @@
 	//* turn. (the entity will also turn 12 times faster than the
 	//* Rotation Speed you specify.)
 	//*   NB: The way the quake engine handles rotation is not exactly
-	//* intuitive. The Z axis is the primary axis, so rotation around
+	//* intuitive. The Z axis (Yaw) is the primary axis, so rotation around
 	//* the Y and X axes will be affected by the current Z position.
-	//* Similarly, the Y axis is the secondary axis, so rotation around
-	//* the X axis will be affected by the current Y position.
+	//* Similarly, the Y axis (Pitch) is the secondary axis, so rotation
+	//* around the X axis (Roll) will be affected by the current Y
+	//* position.
 	//*   To get a feel for how this works, try making a func_rotating
 	//* cube whose origin is at one corner, set its "axes" value to
 	//* "1 1 0", and watch how it moves. One edge will simply go around
@@ -3183,7 +3279,7 @@
 //*   Bear in mind, the hud isn't displayed unless you have an HEV suit.
 @PointClass base(Targetname) = hud_sprite : "Hud Sprite Display"
 [
-	model(sprite): "Sprite name" : "dmg_poison"
+	message(sprite): "Sprite name" : "dmg_poison"
 	rendercolor(color255) : "Color" : "255 255 255"
 	spawnflags(flags) =
 	[
@@ -3586,7 +3682,7 @@
 
 //NEW 0.7.1
 //*   As the name suggests, this acts like a variable in a programming language. It 
-//* stores three values - a position, a velocity, and a ratio. (if you want a variable
+//* stores three values - a position, a velocity, and a number. (if you want a variable
 //* that records entities, see @locus_alias). To set values, trigger the entity; and to
 //* access them, just refer to it like the appropriate calc_x entity.
 //*   locus_variable can also be used another way; if you give a "Child's Name"
@@ -3599,7 +3695,7 @@
 [
 	m_iszPosition(string) : "Position to record  [LP]" : "*locus"
 	m_iszVelocity(string) : "Velocity to record [LV]" : "*locus"
-	m_iszRatio(string) : "Ratio to record [LR]" : "*locus"
+	m_iszRatio(string) : "Number to record [LN]" : "*locus"
 	m_iszTargetname(string) : "Child's name (blank = no child)"
 	m_iszFireOnSpawn(string) : "Fire on spawn (locus = child)"
 	m_fDuration(string) : "Removed after time (secs)"
@@ -4538,7 +4634,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 		1 : "Offset position [LV]"
 		2 : "Set velocity [LV]"
 		3 : "Accelerate by [LV]"
-		4 : "Follow position [LV]"
+		4 : "Follow position [LP]"
 	]
 	m_iPosAxis(choices) :"Axes to Modify" : 0 =
 	[
@@ -4555,8 +4651,8 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	[
 		0 : "Face direction [LV]"
 		1 : "Rotate by [LV]"
-		2 : "Rotate by (Y Z X)"
-		3 : "Set avelocity (Y Z X)"
+		2 : "Rotate by [PYR]"
+		3 : "Set avelocity [PYR]"
 	]m_iFaceAxis(choices) :"Axes to Modify" : 0 =
 	[
 		0 : "All Axes (Default)"
@@ -4616,7 +4712,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 //*   If a master is given, then while the master is locked, the manager will ignore
 //* all signals. This won't prevent it from continuing a sequence that started while the master
 //* was unlocked, but it will prevent new sequences from starting.
-
+//*   If you refer to a multi_manager via [LN], it returns the number of seconds since the sequence started.
 @PointClass base(Targetname, Master) color(255 128 0) iconsprite("sprites/multimanager.spr") = multi_manager : "MultiTarget Manager"
 [
 	//NEW 0.3
@@ -4842,12 +4938,19 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 @PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_freeze : "Stop player from moving"
 [
 	delay(string) : "Duration (0 = until retriggered)" : "5"
+	netname(string): "Clamp view dir [LV]" : "0 1 0"
+	noise(string): "Yaw range [LN]" : "360"
+	noise1(string): "Look up range [LN]" : "90"
+	noise2(string): "Look down range [LN] (= up if blank)"
+	noise3(string): "Turn speed [LN] (blank = instant)"
 	spawnflags(Flags) =
 	[
 		//* If you set this, then the entity expects to freeze the locus you tell it.
 		//* If there's no locus, or it isn't a player, nothing will happen.
 		//*   (If you don't tick this, then player_freeze will just affect player 1.)
 		1: "Affect locus" : 0
+		//* Don't stop the player moving, only clamp his view.
+		2: "View Only " : 0
 	]
 ]
 
@@ -5237,8 +5340,9 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 
 //* Be careful when using this entity; it will trigger not only when the level starts,
 //* but also when a saved game is loaded.
-@PointClass base(Targetx) iconsprite("sprites/trigger.spr") = trigger_auto : "AutoTrigger"
+@PointClass base(Target, Killtarget) iconsprite("sprites/trigger.spr") = trigger_auto : "AutoTrigger"
 [
+	delay(string) : "Delay before trigger" : "0.1"
 	spawnflags(Flags) =
 	[
 		1 : "Remove On fire" : 0
@@ -5410,7 +5514,9 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 //NEW 0.5
 @PointClass base(Targetname) iconsprite("sprites/trigger.spr") = trigger_command : "Console Command"
 [
-	netname(string) : "Command String"
+	//* The mapping tools can't handle double-quote marks. If you need a double-quote in your
+	//*    command string, put `` (that's two backticks - top left of your keyboard) instead.
+	netname(string) : "Command String (use `` for a quote)"
 ]
 
 //* While locked by its master, the trigger_counter _will_ keep counting when fired,
@@ -5498,10 +5604,13 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 ]
 
 //NEW 0.5
+//* If you refer to this like an alias (*targetname), you refer to all the relevant entities inside
+//* the trigger area.
+//* So, for example, you could use env_render to set the render style of them all.
 @SolidClass base(Targetname, Master, TriggerCond, MoveWith) = trigger_inout : "Trigger: Activate on entering or leaving"
 [
-	target(string) : "Fire on entering"
-	m_iszAltTarget(string) : "Fire on leaving"
+	target(string) : "Fire on entering (locus=enterer)"
+	m_iszAltTarget(string) : "Fire on leaving (locus=leaver)"
 	m_iszBothTarget(string) : "Fire on/off (entering/leaving)"
 ]
 
@@ -5529,7 +5638,7 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	[
 		0 : "Set new angle [LV]"
 		1 : "Rotate by [LV]"
-		2 : "Rotate by (Y Z X)"
+		2 : "Rotate by [PYR]"
 	]
 	m_iszVelocity(string) : "Velocity (blank = no change)"
 	m_iVelMode(choices) : "Meaning of Velocity" : 0 =
@@ -5537,13 +5646,13 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 		0 : "Set new velocity [LV]"
 		1 : "Add to velocity [LV]"
 		2 : "Rotate velocity by [LV]"
-		3 : "Rotate velocity (Y Z X)"
+		3 : "Rotate velocity [PYR]"
 	]
 	m_iszAVelocity(string) : "AVelocity (blank = no change)"
 	m_iAVelMode(choices) : "Meaning of AVelocity" : 0 =
 	[
-		0 : "Set new avelocity (Y Z X)"
-		1 : "Add to avelocity (Y Z X)"
+		0 : "Set new avelocity [PYR]"
+		1 : "Add to avelocity [PYR]"
 	]
 	spawnflags(flags) =
 	[
@@ -5551,8 +5660,9 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	]
 ]
 
-@SolidClass base(Trigger, TriggerCond, MoveWith) = trigger_once : "Trigger: Activate once"
+@SolidClass base(Targetname, Master, Delay, Killtarget, TriggerCond, MoveWith) = trigger_once : "Trigger: Activate once"
 [
+	target(target_destination) : "Target when touched (locus=toucher)"
 	message(string) : "Text when triggered"
 	noise(string) : "Sound when triggered"
 ]
@@ -5662,12 +5772,12 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 		//* I.e. when triggered ON, send OFF. And vice versa.
 		6: "Opposite of input"
 		//* Setting this will cause the target momentary door to move to a particular position.
-		7: "Ratio (momentary doors)"
+		7: "Number (momentary doors)"
 	]
-	//* Use this in combination with usetype Ratio, to trigger momentary doors.
+	//* Use this in combination with usetype Number, to trigger momentary doors.
 	//* For example, sending 1.0 tells them to go fully
 	//* open, 0.0 fully closed, and 0.5 half-way.
-	message(string) : "Set ratio (blank = no change) [LR]"
+	message(string) : "Set number (blank = no change) [LN]"
 ]
 
 //* don't use. This is just a test entity.
@@ -5838,32 +5948,39 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	]
 ]
 
-// NEW 1.0
-// * Compare two ratios.
-//@PointClass base(Targetname) = watcher_ratio : "Watcher, compare ratios"
-//[
-//	m_iszRatioA(string) : "Ratio A [LR]"
-//	m_iszRatioB(string) : "Ratio B [LR]" : "0.0"
-//	m_iMode(choices) : "Type of comparison" : 0 =
-//	[
-//		0 : "'On' when A = B"
-//		//* != means "not equal"
-//		3 : "'On' when A != B"
-//		1 : "'On' when A > B"
-//		5 : "'On' when A >= B"
-//		2 : "'On' when A < B"
-//		4 : "'On' when A <= B"
-//	]
-//	target(string): "Fire on changing state"
-//	netname(string): "Fire on turning on"
-//	message(string): "Fire on turning off"
-//	spawnflags(flags) =
-//	[
-//		//* If this is set, one set of targets (on or off) will be fired,
-//		//* as appropriate, when the level starts.
-//		1: "Fire at startup" : 0
-//	]
-//]
+// NEW 1.8
+//* Compare two numbers.
+//*   If you refer to a watcher_number via [LN], it returns the last-seen value of A.
+@PointClass base(Targetname) = watcher_number : "Watcher, compare numbers"
+[
+	netname(string) : "Number A [LN]"
+	//* If left blank, this will compare the current A with the value previously seen for A.
+	//* This is useful for checking whether the number has changed,
+	//* especially in combination with "tolerance" and/or the "manual update" flag.
+	noise(string) : "Number B [LN] (blank = old A)"
+	noise1(string) : "Tolerance for equals [LN]" : "0.0"
+	impulse(choices) : "Type of comparison" : 0 =
+	[
+		0 : "'On' when A = B"
+		//* != means "not equal"
+		1 : "'On' when A != B"
+		2 : "'On' when A > B"
+		3 : "'On' when A >= B"
+		4 : "'On' when A < B"
+		5 : "'On' when A <= B"
+	]
+	noise2(string): "Fire on turning on"
+	noise3(string): "Fire on turning off"
+	spawnflags(flags) =
+	[
+		//* Don't watch continuously - only update (and fire targets if appropriate) when triggered.
+		1: "Manual update" : 0
+		//* If this is set, one set of targets (on or off) will be fired,
+		//* as appropriate, when the level starts.
+		2: "Fire at startup" : 0
+		4: "Debug mode" : 0
+	]
+]
 
 //
 // Weapons

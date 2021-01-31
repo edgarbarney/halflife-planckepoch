@@ -50,6 +50,16 @@ cvar_t  allow_spectators = { "allow_spectators", "0.0", FCVAR_SERVER };		// 0 pr
 cvar_t	impulsetarget={"sohl_impulsetarget","0", FCVAR_SERVER }; //LRC - trigger ents manually
 cvar_t	mw_debug={"sohl_mwdebug","0", FCVAR_SERVER }; //LRC - debug info. for MoveWith. (probably not useful for most people.)
 
+ //LRC 1.8 - cvars for mapmakers to read (for use with calc_cvar.)
+cvar_t	cvar_user1={"user1","0", FCVAR_SERVER };
+cvar_t	cvar_user2={"user2","0", FCVAR_SERVER };
+cvar_t	cvar_user3={"user3","0", FCVAR_SERVER };
+cvar_t	cvar_user4={"user4","0", FCVAR_SERVER };
+cvar_t	cvar_user5={"user5","0", FCVAR_SERVER };
+cvar_t	cvar_user6={"user6","0", FCVAR_SERVER };
+cvar_t	cvar_user7={"user7","0", FCVAR_SERVER };
+cvar_t	cvar_user8={"user8","0", FCVAR_SERVER };
+
 cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
 // Engine Cvars
@@ -494,6 +504,14 @@ void GameDLLInit()
 	CVAR_REGISTER (&allowmonsters);
 	CVAR_REGISTER (&impulsetarget); //LRC
 	CVAR_REGISTER (&mw_debug); //LRC
+	CVAR_REGISTER (&cvar_user1); //LRC
+	CVAR_REGISTER (&cvar_user2); //LRC
+	CVAR_REGISTER (&cvar_user3); //LRC
+	CVAR_REGISTER (&cvar_user4); //LRC
+	CVAR_REGISTER (&cvar_user5); //LRC
+	CVAR_REGISTER (&cvar_user6); //LRC
+	CVAR_REGISTER (&cvar_user7); //LRC
+	CVAR_REGISTER (&cvar_user8); //LRC
 	//CVAR_REGISTER (&mp3player); //G-Cont. Stuff for Mp3 player	//AJH - Too late, I've already added mp3/ogg
     //CVAR_REGISTER (&mp3volume); //G-Cont. Stuff for Mp3 player	//AJH
 	CVAR_REGISTER (&timeddamage); //AJH Time based damage (nervegas/rad, not poison) on/off

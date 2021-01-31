@@ -226,12 +226,14 @@ public:
 	virtual void ThinkCorrection();
 
 	//LRC - loci
-	virtual Vector	CalcPosition( CBaseEntity *pLocus )	{ return pev->origin; }
-	virtual Vector	CalcVelocity( CBaseEntity *pLocus )	{ return pev->velocity; }
-	virtual float	CalcRatio( CBaseEntity *pLocus, int mode )	{ return 0; }	//AJH added 'mode' = ratio to return
+	virtual bool	CalcPosition( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->origin; return true; }
+	virtual bool	CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->velocity; return true; }
+	virtual bool	CalcPYR( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->angles; return true; }
+	virtual bool	CalcNumber( CBaseEntity *pLocus, float* OUTresult )	{ *OUTresult = 0; return true; }
 
-	//LRC - aliases
-	virtual BOOL IsAlias() { return FALSE; }
+	//LRC 1.8 - FollowAlias is now available to all; the special alias class is only for mutable ones.
+	virtual BOOL IsMutableAlias() { return FALSE; }
+	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; }
 
 	virtual ~CBaseEntity() {}
 	
@@ -882,10 +884,10 @@ extern BOOL g_startSuit;
 extern BOOL g_allowGJump; //AJH SP Gaussjump
 
 //LRC- moved here from alias.cpp so that util functions can use these defs.
-class CBaseAlias : public CPointEntity
+class CBaseMutableAlias : public CPointEntity
 {
 public:
-	BOOL IsAlias() override { return TRUE; };
+	BOOL IsMutableAlias() override { return TRUE; }
 	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; };
 	virtual void ChangeValue( int iszValue ) { ALERT(at_error, "%s entities cannot change value!", STRING(pev->classname)); }
 	virtual void ChangeValue( CBaseEntity *pValue ) { ChangeValue(pValue->pev->targetname); }
@@ -895,7 +897,7 @@ public:
     int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	CBaseAlias *m_pNextAlias;
+	CBaseMutableAlias *m_pNextAlias;
 };
 
 class CInfoGroup : public CPointEntity
@@ -916,7 +918,7 @@ public:
 	int		m_iszDefaultMember;
 };
 
-class CMultiAlias : public CBaseAlias
+class CMultiAlias : public CBaseMutableAlias
 {
 public:
 	void KeyValue( KeyValueData *pkvd ) override;
@@ -949,7 +951,7 @@ public:
 	void Precache() override;
 	void KeyValue( KeyValueData *pkvd ) override;
 
-	CBaseAlias *m_pFirstAlias;
+	CBaseMutableAlias *m_pFirstAlias;
 };
 
 extern CWorld *g_pWorld;

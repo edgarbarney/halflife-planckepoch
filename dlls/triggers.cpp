@@ -343,7 +343,8 @@ void CTriggerRelay::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	}
 	if(!pev->skin)pev->skin=0;//AJH set skin (ratio to return) to default
 
-	if (pev->message) value = CalcLocus_Ratio(pActivator, STRING(pev->message),pev->skin);//AJH skin (ratio to return)
+	if (pev->message)
+		value = CalcLocus_Number(pActivator, STRING(pev->message)/*LRC 1.8 removed ,pev->skin*/);//AJH skin (ratio to return)
 
 	if (m_triggerType == USE_SAME){
 		if (pev->spawnflags & SF_RELAY_DEBUG){
@@ -511,6 +512,19 @@ public:
 	int		m_iszThreadName; //LRC
 	int		m_iszLocusThread; //LRC
 
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override
+    {
+		if ( m_startTime > 0 )
+		{
+			*OUTresult = gpGlobals->time - m_startTime;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	EHANDLE m_hActivator;
 private:
 	USE_TYPE	m_triggerType; //LRC
@@ -639,6 +653,7 @@ void CMultiManager :: Spawn()
 	SetThink ( &CMultiManager::ManagerThink);
 
 	m_iState = STATE_OFF;
+	m_startTime = 0;
 
 	//LRC
 	if (m_cTargets > MAX_MULTI_TARGETS)
@@ -1307,15 +1322,10 @@ public:
     STATE GetState() override { return (pev->spawnflags & SF_SWATCHER_VALID)?STATE_ON:STATE_OFF; };
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-    float	CalcRatio( CBaseEntity *pLocus, int mode  ) override
-    //AJH added 'mode' = ratio to return
+	bool	CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override
 	{
-		switch(mode){	//AJH pretty trivial switch statement! Add more cases later.
-		case 1:{
-			return pev->iuser1/pev->impulse;
-		}break;
-		}
-		return pev->iuser1;
+		*OUTresult = pev->iuser1;
+		return true;
 	}
 };
 
@@ -1484,6 +1494,192 @@ void CWatcherCount :: Think ()
 }
 
 //***********************************************************
+#define SF_WATCHERRATIO_MANUALUPDATES	0x0001
+#define SF_WATCHERRATIO_FIREONSTART		0x0002
+#define SF_WATCHERRATIO_DEBUGMODE		0x0004
+
+#define SF_WATCHERRATIO_FIRSTUPDATE		0x8000
+#define SF_WATCHERRATIO_ON				0x10000
+
+enum WatcherRatioComparison
+{
+	WRC_Equal,
+	WRC_NotEqual,
+	WRC_Greater,
+	WRC_GreaterOrEqual,
+	WRC_Less,
+	WRC_LessOrEqual,
+};
+
+class CWatcherRatio : public CBaseToggle
+{
+public:
+	void Spawn ( void );
+	void EXPORT Think ( void );
+	void Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	virtual STATE GetState( void ) { return (pev->spawnflags & SF_WATCHERRATIO_ON)?STATE_ON:STATE_OFF; };
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult );
+
+	void UpdateState(CBaseEntity* pLocus, bool mustTrigger);
+};
+
+LINK_ENTITY_TO_CLASS( watcher_number, CWatcherRatio );
+
+void CWatcherRatio :: Spawn ( void )
+{
+	pev->solid = SOLID_NOT;
+	pev->spawnflags |= SF_WATCHERRATIO_FIRSTUPDATE;
+	if ( !(pev->spawnflags & SF_WATCHERRATIO_MANUALUPDATES) )
+	{
+		SetNextThink( 0.5 );
+	}
+}
+
+void CWatcherRatio :: Think ( void )
+{
+	SetNextThink( 0.1 );
+
+	UpdateState(NULL, (pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE) && (pev->spawnflags & SF_WATCHERRATIO_FIREONSTART));
+}
+
+void CWatcherRatio :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	UpdateState(pActivator, FALSE);//pev->spawnflags & SF_WATCHERRATIO_ACTASRELAY);
+}
+
+void CWatcherRatio :: UpdateState(CBaseEntity* pLocus, bool mustTrigger)
+{
+	float testVal = CalcLocus_Number( pLocus, STRING(pev->netname) );
+	
+	float cmpVal;
+	float toleranceVal = FStringNull(pev->noise1)? 0: CalcLocus_Number( pLocus, STRING(pev->noise1) );
+
+	if ( FStringNull(pev->noise) )
+	{
+		if ( pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE )
+			cmpVal = testVal;
+		else
+			cmpVal = pev->frags; // frags = previous testVal
+	}
+	else
+	{
+		cmpVal = CalcLocus_Number( pLocus, STRING(pev->noise) );
+	}
+
+	pev->frags = testVal; // store it for next time
+
+	bool testresult;
+	bool withinTolerance = abs(testVal - cmpVal) <= toleranceVal;
+	switch( pev->impulse )
+	{
+	case WRC_Equal:
+		testresult = withinTolerance; break;
+	case WRC_NotEqual:
+		testresult = !withinTolerance; break;
+	case WRC_Greater:
+		testresult = testVal > cmpVal && !withinTolerance; break;
+	case WRC_GreaterOrEqual:
+		testresult = testVal > cmpVal || withinTolerance; break;
+	case WRC_Less:
+		testresult = testVal < cmpVal && !withinTolerance; break;
+	case WRC_LessOrEqual:
+		testresult = testVal < cmpVal || withinTolerance; break;
+	}
+
+	const char* debugString = NULL;
+	const char* opString = NULL;
+
+	if ( testresult )
+	{
+		if ( pev->spawnflags & SF_WATCHERRATIO_DEBUGMODE )
+		{
+			if ( pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE )
+			{
+				debugString = "starts on";
+			}
+			else if ( !(pev->spawnflags & SF_WATCHERRATIO_ON) )
+			{
+				debugString = "TURNS ON";
+			}
+			else
+			{
+				debugString = "still on";
+			}
+
+			switch( pev->impulse )
+			{
+				case WRC_Equal: opString = "=="; break;
+				case WRC_NotEqual: opString = "!="; break;
+				case WRC_Greater: opString = ">"; break;
+				case WRC_GreaterOrEqual: opString = ">="; break;
+				case WRC_Less: opString = "<"; break;
+				case WRC_LessOrEqual: opString = "<="; break;
+			}
+		}
+
+		if ( (!(pev->spawnflags & SF_WATCHERRATIO_ON) &&
+			!(pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE))
+			|| mustTrigger )
+		{
+			// turned on, fire noise2
+			FireTargets(STRING(pev->noise2), this, this, USE_TOGGLE, 0);
+		}
+		pev->spawnflags |= SF_WATCHERRATIO_ON;
+	}
+	else
+	{
+		if ( pev->spawnflags & SF_WATCHERRATIO_DEBUGMODE )
+		{
+			if ( pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE )
+			{
+				debugString = "starts off";
+			}
+			else if ( pev->spawnflags & SF_WATCHERRATIO_ON )
+			{
+				debugString = "TURNS OFF";
+			}
+			else
+			{
+				debugString = "still off";
+			}
+
+			switch( pev->impulse )
+			{
+				case WRC_Equal: opString = "!="; break;
+				case WRC_NotEqual: opString = "=="; break;
+				case WRC_Greater: opString = "<="; break;
+				case WRC_GreaterOrEqual: opString = "<"; break;
+				case WRC_Less: opString = ">="; break;
+				case WRC_LessOrEqual: opString = ">"; break;
+			}
+		}
+
+		if ( (pev->spawnflags & SF_WATCHERRATIO_ON &&
+			!(pev->spawnflags & SF_WATCHERRATIO_FIRSTUPDATE))
+			|| mustTrigger )
+		{
+			// turned off, fire noise3
+			FireTargets(STRING(pev->noise3), this, this, USE_TOGGLE, 0);
+		}
+		pev->spawnflags &= ~SF_WATCHERRATIO_ON;
+	}
+
+	if ( debugString )
+	{
+		ALERT(at_console, "watcher_number \"%s\" %s (%f %s %f with tolerance %f)\n", STRING(pev->targetname), debugString, testVal, opString, cmpVal, toleranceVal);
+	}
+
+	pev->spawnflags &= ~SF_WATCHERRATIO_FIRSTUPDATE;
+}
+
+bool CWatcherRatio::CalcNumber( CBaseEntity *pLocus, float* OUTresult )
+{
+	*OUTresult = float(pev->frags);
+	return true;
+}
+
+//***********************************************************
 
 //
 // Render parameters trigger
@@ -1646,7 +1842,7 @@ void CRenderFxManager::Affect( CBaseEntity *pTarget, BOOL bIsFirst, CBaseEntity 
 
 	float fAmtFactor = 1;
 	if ( pev->message && !FBitSet( pev->spawnflags, SF_RENDER_MASKAMT ) )
-		fAmtFactor = CalcLocus_Ratio(pActivator, STRING(pev->message));
+		fAmtFactor = CalcLocus_Number(pActivator, STRING(pev->message));
 
 	if ( !FBitSet( pev->spawnflags, SF_RENDER_MASKFX ) )
 		pevTarget->renderfx = pev->renderfx;
@@ -1664,7 +1860,7 @@ void CRenderFxManager::Affect( CBaseEntity *pTarget, BOOL bIsFirst, CBaseEntity 
 		if ( !FBitSet( pev->spawnflags, SF_RENDER_MASKCOLOR ) )
 			pevTarget->rendercolor = pev->rendercolor;
 		if ( pev->noise ){
-			pevTarget->scale = CalcLocus_Ratio(pActivator,STRING(pev->noise));	//AJH Allows LR scale
+			pevTarget->scale = CalcLocus_Number(pActivator,STRING(pev->noise));	//AJH Allows LR scale
 			ALERT(at_debug,"Setting scale from %s, to %f\n",STRING(pev->noise),pevTarget->scale);
 		}
 
@@ -1704,7 +1900,7 @@ void CRenderFxManager::Affect( CBaseEntity *pTarget, BOOL bIsFirst, CBaseEntity 
 		}
 
 		if ( pev->noise )
-			pFader->m_fOffsetScale = CalcLocus_Ratio(pActivator,STRING(pev->noise)) - pevTarget->scale;	//AJH Allows LR scale
+			pFader->m_fOffsetScale = CalcLocus_Number(pActivator,STRING(pev->noise)) - pevTarget->scale;	//AJH Allows LR scale
 		else
 			pFader->m_fOffsetScale = 0;
 
@@ -3136,6 +3332,7 @@ public:
 	// adds a new entry to the list
 	CInOutRegister *Add( CBaseEntity *pValue );
 	BOOL IsEmpty() { return m_pNext?FALSE:TRUE; };
+	CBaseEntity* GetFirstEntityFrom( CBaseEntity* pStartEntity );
 
     int		Save( CSave &save ) override;
     int		Restore( CRestore &restore ) override;
@@ -3161,6 +3358,9 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	STATE GetState() override { return m_pRegister->IsEmpty()?STATE_OFF:STATE_ON; }
+
+	//LRC 1.8 - let it act as an alias that refers to the entities within it
+    CBaseEntity *FollowAlias( CBaseEntity *pFrom ) override;
 
 	string_t m_iszAltTarget;
 	string_t m_iszBothTarget;
@@ -3258,6 +3458,31 @@ CInOutRegister *CInOutRegister::Prune()
 	}
 }
 
+CBaseEntity *CInOutRegister::GetFirstEntityFrom( CBaseEntity* pStartEntity )
+{
+	CBaseEntity* result = NULL;
+	int startOffset;
+	if ( pStartEntity )
+	{
+		startOffset = OFFSET(pStartEntity->pev);
+	}
+	int resultOffset = 0;
+
+	for ( CInOutRegister* current = this; current != NULL; current = current->m_pNext )
+	{
+		if ( current->m_hValue != NULL )
+		{
+			int testOffset = OFFSET(current->m_hValue->pev);
+			if ( (pStartEntity == NULL || testOffset > startOffset) && ( result == NULL || resultOffset > testOffset ) )
+			{
+				result = current->m_hValue;
+				resultOffset = testOffset;
+			}
+		}
+	}
+
+	return result;
+}
 
 
 // CTriggerInOut method bodies:
@@ -3339,6 +3564,10 @@ void CTriggerInOut :: FireOnLeaving( CBaseEntity *pEnt )
 	}
 }
 
+CBaseEntity *CTriggerInOut::FollowAlias( CBaseEntity *pStartEntity )
+{
+	return m_pRegister->GetFirstEntityFrom( pStartEntity );
+}
 
 // ==============================
 // trigger_counter
@@ -3351,6 +3580,7 @@ public:
 	void Spawn() override;
 	void EXPORT CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void KeyValue( KeyValueData *pkvd ) override;
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override;
 };
 LINK_ENTITY_TO_CLASS( trigger_counter, CTriggerCounter );
 
@@ -3410,6 +3640,13 @@ void CTriggerCounter::CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller,
 
 	ActivateMultiTrigger( m_hActivator );
 }
+
+bool CTriggerCounter::CalcNumber( CBaseEntity *pLocus, float* OUTresult )
+{
+	*OUTresult = float(m_cTriggersLeft);
+	return true;
+}
+
 
 // ====================== TRIGGER_CHANGELEVEL ================================
 
@@ -4021,7 +4258,7 @@ void CTriggerPush :: Touch( CBaseEntity *pOther )
 		vecPush = pev->movedir;
 
 	if (!FStringNull(m_iszPushSpeed))
-		vecPush = vecPush * CalcLocus_Ratio( pOther, STRING(m_iszPushSpeed) );
+		vecPush = vecPush * CalcLocus_Number( pOther, STRING(m_iszPushSpeed) );
 
 	if (pev->speed)
 		vecPush = vecPush * pev->speed;
@@ -4788,7 +5025,7 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 				ALERT(at_debug, "to %f %f %f\n", pTarget->pev->angles.x, pTarget->pev->angles.y, pTarget->pev->angles.z);
 			break;
 		case 1:
-			vecTemp = CalcLocus_Velocity( this, pActivator, STRING(m_iszVelocity) );
+			vecTemp = CalcLocus_Velocity( this, pActivator, STRING(m_iszAngles) ); //LRC 1.8 - was using m_iszVelocity by mistake
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Rotate angles from %f %f %f ", pTarget->pev->angles.x, pTarget->pev->angles.y, pTarget->pev->angles.z);
 			pTarget->pev->angles = pTarget->pev->angles + UTIL_VecToAngles( vecTemp );
@@ -4796,7 +5033,7 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 				ALERT(at_debug, "to %f %f %f\n", pTarget->pev->angles.x, pTarget->pev->angles.y, pTarget->pev->angles.z);
 			break;
 		case 2:
-			UTIL_StringToRandomVector( vecTemp, STRING(m_iszAngles) );
+			vecTemp = CalcLocus_PYR( this, pActivator, STRING(m_iszAngles) ); //LRC 1.8
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Rotate angles from %f %f %f ", pTarget->pev->angles.x, pTarget->pev->angles.y, pTarget->pev->angles.z);
 			pTarget->pev->angles = pTarget->pev->angles + vecTemp;
@@ -4836,7 +5073,7 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 				ALERT(at_debug, "to %f %f %f\n", pTarget->pev->velocity.x, pTarget->pev->velocity.y, pTarget->pev->velocity.z);
 			break;
 		case 3:
-			UTIL_StringToRandomVector( vecTemp, STRING(m_iszVelocity) );
+			vecTemp = CalcLocus_PYR( this, pActivator, STRING(m_iszVelocity) );
 			vecVelAngles = vecTemp + UTIL_VecToAngles( pTarget->pev->velocity );
 			UTIL_MakeVectors( vecVelAngles );
 			if (pev->spawnflags & SF_MOTION_DEBUG)
@@ -4849,11 +5086,12 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		}
 	}
 
-	if(m_iszAVelocity){	//AJH (you forgot to add this Laurie!!)
+	if(m_iszAVelocity)	//AJH (you forgot to add this Laurie!!)
+	{
 		switch (m_iAVelMode)
 		{
 		case 0:
-			UTIL_StringToRandomVector( vecTemp, STRING(m_iszAVelocity) );
+			vecTemp = CalcLocus_PYR( this, pActivator, STRING(m_iszAVelocity) );
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Set avelocity from %f %f %f ", pTarget->pev->avelocity.x, pTarget->pev->avelocity.y, pTarget->pev->avelocity.z);
 			pTarget->pev->avelocity = vecTemp;
@@ -4861,7 +5099,7 @@ void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 				ALERT(at_debug, "to %f %f %f\n", pTarget->pev->avelocity.x, pTarget->pev->avelocity.y, pTarget->pev->avelocity.z);
 			break;
 		case 1:
-			UTIL_StringToRandomVector( vecTemp, STRING(m_iszAVelocity) );
+			vecTemp = CalcLocus_PYR( this, pActivator, STRING(m_iszAVelocity) );
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Set avelocity from %f %f %f ", pTarget->pev->avelocity.x, pTarget->pev->avelocity.y, pTarget->pev->avelocity.z);
 			pTarget->pev->avelocity = pTarget->pev->avelocity + vecTemp;
@@ -4919,7 +5157,7 @@ IMPLEMENT_SAVERESTORE(CMotionThread,CPointEntity);
 
 void CMotionThread::Spawn() //AJH
 {
-	pev->classname = MAKE_STRING("motionthread"); //We need this for save/restore to work
+	pev->classname = MAKE_STRING("motion_thread"); //We need this for save/restore to work
 }
 
 void CMotionThread::Think()
@@ -5171,7 +5409,7 @@ void CMotionThread::Think()
 			break;
 
 		case 2: // offset angles (= fake avelocity)
-			UTIL_StringToRandomVector( vecVelAngles, STRING(m_iszFacing) );
+			vecVelAngles = CalcLocus_PYR( this, m_hLocus, STRING(m_iszFacing) );
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Rotate angles from %f %f %f ", m_hTarget->pev->angles.x, m_hTarget->pev->angles.y, m_hTarget->pev->angles.z);
 
@@ -5213,7 +5451,7 @@ void CMotionThread::Think()
 			break;
 
 		case 3: // set avelocity
-			UTIL_StringToRandomVector( vecTemp, STRING(m_iszFacing) );
+			vecVelAngles = CalcLocus_PYR( this, m_hLocus, STRING(m_iszFacing) );
 			if (pev->spawnflags & SF_MOTION_DEBUG)
 				ALERT(at_debug, "DEBUG: Set avelocity from %f %f %f ", m_hTarget->pev->avelocity.x, m_hTarget->pev->avelocity.y, m_hTarget->pev->avelocity.z);
 
@@ -5522,6 +5760,29 @@ void CTriggerCommand::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	if (pev->netname)
 	{
 		sprintf( szCommand, "%s\n", STRING(pev->netname) );
+
+		// trigger_command really needs to be able to use " marks, and map tools can't handle those in entity values.
+		// so we convert backtick-quotes into " quotes.
+		char* read = szCommand;
+		char* write = szCommand;
+		while( *read )
+		{
+			if ( read[0] == '`' && read[1] == '`' )
+			{
+				// found one
+				read++;
+				write[0] = '\"';
+			}
+			else //if ( read != write ) // could check this, but probably faster without
+			{
+				write[0] = read[0];
+			}
+
+			read++;
+			write++;
+		}
+		write[0] = 0;
+
 		SERVER_COMMAND( szCommand );
 	}
 }

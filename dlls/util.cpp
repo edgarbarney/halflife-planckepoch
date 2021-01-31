@@ -630,7 +630,7 @@ void UTIL_FlushAliases()
 	}
 }
 
-void UTIL_AddToAliasList( CBaseAlias *pAlias )
+void UTIL_AddToAliasList( CBaseMutableAlias *pAlias )
 {
 	if (!g_pWorld)
 	{
@@ -653,7 +653,7 @@ void UTIL_AddToAliasList( CBaseAlias *pAlias )
 	}
 	else
 	{
-		CBaseAlias *pCurrent = g_pWorld->m_pFirstAlias;
+		CBaseMutableAlias *pCurrent = g_pWorld->m_pFirstAlias;
 		while (pCurrent->m_pNextAlias != NULL)
 		{
 			if (pCurrent->m_pNextAlias == pAlias)
@@ -682,18 +682,16 @@ CBaseEntity *UTIL_FollowAliasReference(CBaseEntity *pStartEntity, const char* sz
 
 	while ( pEntity )
 	{
-		if (pEntity->IsAlias())
+		//LRC 1.8 - FollowAlias is now in CBaseEntity, no need to cast
+		pTempEntity = pEntity->FollowAlias( pStartEntity );
+		if ( pTempEntity )
 		{
-			pTempEntity = ((CBaseAlias*)pEntity)->FollowAlias( pStartEntity );
-			if ( pTempEntity )
+			// We've found an entity; only use it if its offset is lower than the offset we've currently got.
+			iTempOffset = OFFSET(pTempEntity->pev);
+			if (iBestOffset == -1 || iTempOffset < iBestOffset)
 			{
-				// We've found an entity; only use it if its offset is lower than the offset we've currently got.
-				iTempOffset = OFFSET(pTempEntity->pev);
-				if (iBestOffset == -1 || iTempOffset < iBestOffset)
-				{
-					iBestOffset = iTempOffset;
-					pBestEntity = pTempEntity;
-				}
+				iBestOffset = iTempOffset;
+				pBestEntity = pTempEntity;
 			}
 		}
 		pEntity = UTIL_FindEntityByTargetname(pEntity,szValue);

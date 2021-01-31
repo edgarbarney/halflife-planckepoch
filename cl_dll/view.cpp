@@ -486,7 +486,8 @@ V_CalcRefdef
 
 ==================
 */
-extern void RenderFog( void ); //LRC
+extern void RenderFog(); //LRC
+extern void ClearToFogColor(); //LRC
 
 void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 {
@@ -522,7 +523,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	    {
 		    cl_entity_t *viewentity;
 		    viewentity = gEngfuncs.GetEntityByIndex( gHUD.viewEntityIndex );
-		    if (viewentity)
+            if (viewentity)
 		    {
 			    pparams->vieworg[0] = viewentity->origin[0];
 			    pparams->vieworg[1] = viewentity->origin[1];
@@ -542,11 +543,15 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 					pparams->viewangles[0] = -viewentity->angles[0];
 				}
 			}
-			else
-				gEngfuncs.Con_DPrintf( "Warning : invalid view ent index: %i\n", gHUD.viewEntityIndex );
+            else
+            {
+                gEngfuncs.Con_DPrintf( "Warning : invalid view ent index: %i\n", gHUD.viewEntityIndex );
+            }
 		}
 	    else
+	    {
 		    pparams->crosshairangle[PITCH] = 0; // test
+		}
 
 		return;
 	}
@@ -858,8 +863,17 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 	v_origin = pparams->vieworg;
 
-	//LRC
-	RenderFog();
+	//LRC 1.8 - clear to the fog color (if any) on the first pass
+	if ( pparams->nextView == 0 )
+	{
+		ClearToFogColor();
+	}
+
+	//LRC 1.8 - no fog in the env_sky
+	if ( gHUD.m_iSkyMode != SKY_ON_DRAWING )
+	{
+		RenderFog();
+	}
 
 	if (gHUD.viewFlags & 1 && gHUD.m_iSkyMode == SKY_OFF) // custom view active (trigger_viewset) //AJH (added skymode check and copied function to above)
 	{

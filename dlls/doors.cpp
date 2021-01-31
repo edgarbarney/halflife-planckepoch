@@ -1190,7 +1190,7 @@ public:
 	float m_fLastPos;
 
 	STATE	GetState() override { return m_iState; }
-	float CalcRatio( CBaseEntity *pLocus, int mode  ) override { return m_fLastPos; }//AJH added 'mode' = ratio to return
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override { *OUTresult = m_fLastPos; return true; }
 };
 
 LINK_ENTITY_TO_CLASS( momentary_door, CMomentaryDoor );

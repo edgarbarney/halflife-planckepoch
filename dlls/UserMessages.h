@@ -24,10 +24,12 @@ extern int gmsgResetHUD;
 extern int gmsgInitHUD;
 extern int gmsgSetFog; //LRC
 extern int gmsgKeyedDLight; //LRC
+extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
 extern int gmsgAddShine; // LRC
 extern int gmsgParticle; // LRC
+extern int gmsgClampView; //LRC 1.8
 extern int gmsgPlayMP3; //Killar
 extern int gmsgShowGameTitle;
 extern int gmsgCurWeapon;

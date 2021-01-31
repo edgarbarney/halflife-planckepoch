@@ -347,16 +347,16 @@ public:
 	CBaseEntity* DropItem ( const char *pszItemName, const Vector &vecPos, const Vector &vecAng );// drop an item.
 	
 	//LRC
-	virtual float	CalcRatio( CBaseEntity *pLocus, int mode  )//AJH added 'mode' = ratio to return
- 	{
-		//ALERT(at_console, "monster CR: %f/%f = %f\n", pev->health, pev->max_health, pev->health / pev->max_health);
-		switch(mode){	//AJH pretty trivial switch statement! Add more cases later.
-		case 1:{
-			return pev->velocity.Length();
-		}break;
-		}
- 		return pev->health / pev->max_health;
- 	}
+    bool	CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override
+    {
+		//LRC 1.8 - health 0 when dead
+		if ( IsAlive() )
+			*OUTresult = pev->health / pev->max_health;
+		else
+			*OUTresult = 0;
+
+		return true;
+	}
 };
 
 

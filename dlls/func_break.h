@@ -28,7 +28,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void KeyValue( KeyValueData* pkvd) override;
-    float CalcRatio(CBaseEntity *pLocus,int mode) override;//AJH added 'mode' = ratio to return);
+	bool CalcNumber(CBaseEntity *pLocus, float* OUTresult) override;
 	void EXPORT BreakTouch( CBaseEntity *pOther );
 	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
