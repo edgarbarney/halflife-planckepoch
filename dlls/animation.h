@@ -27,6 +27,7 @@ int LookupActivity( void *pmodel, entvars_t *pev, int activity );
 int LookupActivityHeaviest( void *pmodel, entvars_t *pev, int activity );
 int LookupSequence( void *pmodel, const char *label );
 void GetSequenceInfo( void *pmodel, entvars_t *pev, float *pflFrameRate, float *pflGroundSpeed );
+int GetSequenceFrames( void *pmodel, entvars_t *pev ); //LRC
 int GetSequenceFlags( void *pmodel, entvars_t *pev );
 int LookupAnimationEvents( void *pmodel, entvars_t *pev, float flStart, float flEnd );
 float SetController( void *pmodel, entvars_t *pev, int iController, float flValue );
@@ -36,6 +37,10 @@ void SequencePrecache( void *pmodel, const char *pSequenceName );
 int FindTransition( void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir );
 void SetBodygroup( void *pmodel, entvars_t *pev, int iGroup, int iValue );
 int GetBodygroup( void *pmodel, entvars_t *pev, int iGroup );
+
+//LRC
+void SetBones( void *pmodel, float (*data)[3], int datasize );
+int GetBoneCount( void *pmodel );
 
 int GetAnimationEvent( void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index );
 int ExtractBbox( void *pmodel, int sequence, float *mins, float *maxs );

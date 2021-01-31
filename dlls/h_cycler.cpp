@@ -127,7 +127,7 @@ void CCycler :: Spawn( )
 	m_flFrameRate		= 75;
 	m_flGroundSpeed		= 0;
 
-	pev->nextthink		+= 1.0;
+	AbsoluteNextThink( m_fNextThink + 1.0 );
 
 	ResetSequenceInfo( );
 
@@ -150,7 +150,7 @@ void CCycler :: Spawn( )
 //
 void CCycler :: Think( void )
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	if (m_animate)
 	{
@@ -206,7 +206,7 @@ int CCycler :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 		pev->framerate = 1.0;
 		StudioFrameAdvance ( 0.1 );
 		pev->framerate = 0;
-		ALERT( at_console, "sequence: %d, frame %.0f\n", pev->sequence, pev->frame );
+		ALERT( at_debug, "sequence: %d, frame %.0f\n", pev->sequence, pev->frame );
 	}
 
 	return 0;
@@ -255,7 +255,7 @@ void CCyclerSprite::Spawn( void )
 	pev->effects		= 0;
 
 	pev->frame			= 0;
-	pev->nextthink		= gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	m_animate			= 1;
 	m_lastTime			= gpGlobals->time;
 
@@ -271,7 +271,7 @@ void CCyclerSprite::Think( void )
 	if ( ShouldAnimate() )
 		Animate( pev->framerate * (gpGlobals->time - m_lastTime) );
 
-	pev->nextthink		= gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 	m_lastTime = gpGlobals->time;
 }
 
@@ -279,7 +279,7 @@ void CCyclerSprite::Think( void )
 void CCyclerSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	m_animate = !m_animate;
-	ALERT( at_console, "Sprite: %s\n", STRING(pev->model) );
+	ALERT( at_debug, "Sprite: %s\n", STRING(pev->model) );
 }
 
 
@@ -332,7 +332,7 @@ void CWeaponCycler::Spawn( )
 	m_iszModel = pev->model;
 	m_iModel = pev->modelindex;
 
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
 	SetTouch( &CWeaponCycler::DefaultTouch );
 }
@@ -417,7 +417,7 @@ void CWreckage::Spawn( void )
 	pev->effects		= 0;
 
 	pev->frame			= 0;
-	pev->nextthink		= gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 
 	if (pev->model)
 	{
@@ -438,7 +438,7 @@ void CWreckage::Precache( )
 void CWreckage::Think( void )
 {
 	StudioFrameAdvance( );
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink( 0.2 );
 
 	if (pev->dmgtime)
 	{

@@ -56,7 +56,7 @@ void CBaseMonster::CorpseFallThink( void )
 		UTIL_SetOrigin( pev, pev->origin );// link into world.
 	}
 	else
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink( 0.1 );
 }
 // Call after animation/pose is set up
 void CBaseMonster :: MonsterInitDead( void )
@@ -80,7 +80,7 @@ void CBaseMonster :: MonsterInitDead( void )
 	// Setup health counters, etc.
 	BecomeDead();
 	SetThink( CorpseFallThink );
-	pev->nextthink = gpGlobals->time + 0.5;
+	SetNextThink( 0.5 );
 }
 
 

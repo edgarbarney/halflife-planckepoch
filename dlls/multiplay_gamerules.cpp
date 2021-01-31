@@ -101,7 +101,7 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 		{
 			char szCommand[256];
 			
-			ALERT( at_console, "Executing listen server config file\n" );
+			ALERT( at_debug, "Executing listen server config file\n" );
 			sprintf( szCommand, "exec %s\n", lservercfgfile );
 			SERVER_COMMAND( szCommand );
 		}
@@ -1390,7 +1390,7 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 			}
 			else
 			{
-				ALERT( at_console, "Skipping %s from mapcycle, not a valid map\n", szMap );
+				ALERT( at_debug, "Skipping %s from mapcycle, not a valid map\n", szMap );
 			}
 
 		}
@@ -1548,7 +1548,7 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 
 		if ( !ReloadMapCycleFile( mapcfile, &mapcycle ) || ( !mapcycle.items ) )
 		{
-			ALERT( at_console, "Unable to load map cycle file %s\n", mapcfile );
+			ALERT( at_debug, "Unable to load map cycle file %s\n", mapcfile );
 			do_cycle = FALSE;
 		}
 	}
@@ -1625,14 +1625,14 @@ void CHalfLifeMultiplay :: ChangeLevel( void )
 
 	g_fGameOver = TRUE;
 
-	ALERT( at_console, "CHANGE LEVEL: %s\n", szNextMap );
+	ALERT( at_debug, "CHANGE LEVEL: %s\n", szNextMap );
 	if ( minplayers || maxplayers )
 	{
-		ALERT( at_console, "PLAYER COUNT:  min %i max %i current %i\n", minplayers, maxplayers, curplayers );
+		ALERT( at_debug, "PLAYER COUNT:  min %i max %i current %i\n", minplayers, maxplayers, curplayers );
 	}
 	if ( strlen( szRules ) > 0 )
 	{
-		ALERT( at_console, "RULES:  %s\n", szRules );
+		ALERT( at_debug, "RULES:  %s\n", szRules );
 	}
 	
 	CHANGE_LEVEL( szNextMap, NULL );

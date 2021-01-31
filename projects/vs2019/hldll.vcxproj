@@ -109,6 +109,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\aflock.cpp" />
     <ClCompile Include="..\..\dlls\agrunt.cpp" />
     <ClCompile Include="..\..\dlls\airtank.cpp" />
+    <ClCompile Include="..\..\dlls\alias.cpp" />
     <ClCompile Include="..\..\dlls\animating.cpp" />
     <ClCompile Include="..\..\dlls\animation.cpp" />
     <ClCompile Include="..\..\dlls\apache.cpp" />
@@ -159,11 +160,13 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\items.cpp" />
     <ClCompile Include="..\..\dlls\leech.cpp" />
     <ClCompile Include="..\..\dlls\lights.cpp" />
+    <ClCompile Include="..\..\dlls\locus.cpp" />
     <ClCompile Include="..\..\dlls\maprules.cpp" />
     <ClCompile Include="..\..\dlls\monstermaker.cpp" />
     <ClCompile Include="..\..\dlls\monsters.cpp" />
     <ClCompile Include="..\..\dlls\monsterstate.cpp" />
     <ClCompile Include="..\..\dlls\mortar.cpp" />
+    <ClCompile Include="..\..\dlls\movewith.cpp" />
     <ClCompile Include="..\..\dlls\mp5.cpp" />
     <ClCompile Include="..\..\dlls\multiplay_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\nihilanth.cpp" />
@@ -230,8 +233,10 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\dlls\gamerules.h" />
     <ClInclude Include="..\..\dlls\hornet.h" />
     <ClInclude Include="..\..\dlls\items.h" />
+    <ClInclude Include="..\..\dlls\locus.h" />
     <ClInclude Include="..\..\dlls\monsterevent.h" />
     <ClInclude Include="..\..\dlls\monsters.h" />
+    <ClInclude Include="..\..\dlls\movewith.h" />
     <ClInclude Include="..\..\dlls\nodes.h" />
     <ClInclude Include="..\..\dlls\plane.h" />
     <ClInclude Include="..\..\dlls\player.h" />

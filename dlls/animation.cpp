@@ -139,7 +139,7 @@ void GetEyePosition ( void *pmodel, float *vecEyePosition )
 
 	if ( !pstudiohdr )
 	{
-		ALERT ( at_console, "GetEyePosition() Can't get pstudiohdr ptr!\n" );
+		ALERT ( at_debug, "GetEyePosition() Can't get pstudiohdr ptr!\n" );
 		return;
 	}
 
@@ -473,7 +473,7 @@ int FindTransition( void *pmodel, int iEndingAnim, int iGoalAnim, int *piDir )
 		}
 	}
 
-	ALERT( at_console, "error in transition graph" );
+	ALERT( at_debug, "error in transition graph" );
 	return iGoalAnim;
 }
 
@@ -518,4 +518,50 @@ int GetBodygroup( void *pmodel, entvars_t *pev, int iGroup )
 	int iCurrent = (pev->body / pbodypart->base) % pbodypart->nummodels;
 
 	return iCurrent;
+}
+
+//LRC
+int GetBoneCount( void *pmodel )
+{
+	studiohdr_t *pstudiohdr;
+	
+	pstudiohdr = (studiohdr_t *)pmodel;
+	if (!pstudiohdr)
+	{
+		ALERT(at_error, "Bad header in SetBones!\n");
+		return 0;
+	}
+
+	return pstudiohdr->numbones;
+}
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
+//LRC
+void SetBones( void *pmodel, float (*data)[3], int datasize)
+{
+	studiohdr_t *pstudiohdr;
+	
+	pstudiohdr = (studiohdr_t *)pmodel;
+	if (!pstudiohdr)
+	{
+		ALERT(at_error, "Bad header in SetBones!\n");
+		return;
+	}
+
+	mstudiobone_t	*pbone = (mstudiobone_t *)((byte *)pstudiohdr + pstudiohdr->boneindex);
+
+//	ALERT(at_console, "List begins:\n");
+	int j;
+	int limit = min(pstudiohdr->numbones, datasize);
+	// go through the bones
+	for (int i = 0; i < limit; i++, pbone++)
+	{
+//		ALERT(at_console, " %s\n", pbone->name);
+		for (j = 0; j < 3; j++)
+			pbone->value[j] = data[i][j];
+	}
+//	ALERT(at_console, "List ends.\n");
 }

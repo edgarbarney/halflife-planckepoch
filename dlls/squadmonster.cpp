@@ -248,7 +248,7 @@ void CSquadMonster :: SquadMakeEnemy ( CBaseEntity *pEnemy )
 
 	if ( !pEnemy )
 	{
-		ALERT ( at_console, "ERROR: SquadMakeEnemy() - pEnemy is NULL!\n" );
+		ALERT ( at_debug, "ERROR: SquadMakeEnemy() - pEnemy is NULL!\n" );
 		return;
 	}
 
@@ -444,15 +444,22 @@ void CSquadMonster :: StartMonster( void )
 	}
 }
 
+BOOL CSquadMonster :: NoFriendlyFire( void )
+{
+	return NoFriendlyFire( FALSE ); //default: don't like the player
+}
+
 //=========================================================
 // NoFriendlyFire - checks for possibility of friendly fire
 //
 // Builds a large box in front of the grunt and checks to see 
 // if any squad members are in that box. 
+//
+// Can now, also, check whether the player is in the box. LRC
 //=========================================================
-BOOL CSquadMonster :: NoFriendlyFire( void )
+BOOL CSquadMonster :: NoFriendlyFire( BOOL playerAlly )
 {
-	if ( !InSquad() )
+	if ( !playerAlly && !InSquad() )
 	{
 		return TRUE;
 	}
@@ -507,6 +514,19 @@ BOOL CSquadMonster :: NoFriendlyFire( void )
 				// this guy is in the check volume! Don't shoot!
 				return FALSE;
 			}
+		}
+	}
+	
+	if (playerAlly)
+	{
+		edict_t		*pentPlayer = FIND_CLIENT_IN_PVS( edict() );
+		if (!FNullEnt(pentPlayer) &&
+			backPlane.PointInFront  ( pentPlayer->v.origin ) &&
+			leftPlane.PointInFront  ( pentPlayer->v.origin ) && 
+			rightPlane.PointInFront ( pentPlayer->v.origin ) )
+		{
+			// the player is in the check volume! Don't shoot!
+			return FALSE;
 		}
 	}
 

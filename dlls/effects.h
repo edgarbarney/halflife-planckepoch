@@ -24,7 +24,12 @@
 #define SF_BEAM_DECALS			0x0040
 #define SF_BEAM_SHADEIN			0x0080
 #define SF_BEAM_SHADEOUT		0x0100
+#define SF_BEAM_SOLID			0x0200
 #define SF_BEAM_TEMPORARY		0x8000
+//LRC - tripbeams
+#define SF_BEAM_TRIPPED			0x80000
+//LRC - smoother lasers
+#define SF_LASER_INTERPOLATE	0x0400
 
 #define SF_SPRITE_STARTON		0x0001
 #define SF_SPRITE_ONCE			0x0002
@@ -49,6 +54,8 @@ public:
 	void Animate( float frames );
 	void Expand( float scaleSpeed, float fadeSpeed );
 	void SpriteInit( const char *pSpriteName, const Vector &origin );
+
+	virtual STATE GetState( void ) { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
 	inline void SetAttachment( edict_t *pEntity, int attachment )
 	{
@@ -82,7 +89,7 @@ public:
 		SetThink(&CSprite::AnimateUntilDead); 
 		pev->framerate = framerate;
 		pev->dmgtime = gpGlobals->time + (m_maxFrame / framerate); 
-		pev->nextthink = gpGlobals->time; 
+		SetNextThink( 0 );
 	}
 
 	void EXPORT AnimateUntilDead( void );
@@ -91,8 +98,6 @@ public:
 	virtual int		Restore( CRestore &restore );
 	static	TYPEDESCRIPTION m_SaveData[];
 	static CSprite *SpriteCreate( const char *pSpriteName, const Vector &origin, BOOL animate );
-
-private:
 
 	float		m_lastTime;
 	float		m_maxFrame;
@@ -152,6 +157,8 @@ public:
 	inline int  GetFrame( void ) { return pev->frame; }
 	inline int  GetScrollRate( void ) { return pev->animtime; }
 
+	CBaseEntity*	GetTripEntity( TraceResult *ptr );	//LRC
+
 	// Call after you change start/end positions
 	void		RelinkBeam( void );
 //	void		SetObjectCollisionBox( void );
@@ -167,8 +174,8 @@ public:
 	void		HoseInit( const Vector &start, const Vector &direction );
 
 	static CBeam *BeamCreate( const char *pSpriteName, int width );
-
-	inline void LiveForTime( float time ) { SetThink(&CBeam::SUB_Remove); pev->nextthink = gpGlobals->time + time; }
+	
+	inline void LiveForTime( float time ) { SetThink(&CBeam::SUB_Remove); SetNextThink( time ); }
 	inline void	BeamDamageInstant( TraceResult *ptr, float damage ) 
 	{ 
 		pev->dmg = damage; 
@@ -186,14 +193,15 @@ class CLaser : public CBeam
 {
 public:
 	void	Spawn( void );
+	void	PostSpawn( void );
 	void	Precache( void );
 	void	KeyValue( KeyValueData *pkvd );
 
 	void	TurnOn( void );
 	void	TurnOff( void );
-	int		IsOn( void );
+	virtual STATE GetState( void ) { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
-	void	FireAtPoint( TraceResult &point );
+	void	FireAtPoint( Vector startpos, TraceResult &point );
 
 	void	EXPORT StrikeThink( void );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
@@ -201,9 +209,15 @@ public:
 	virtual int		Restore( CRestore &restore );
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	CSprite	*m_pSprite;
-	int		m_iszSpriteName;
+	CSprite	*m_pStartSprite;
+	CSprite	*m_pEndSprite;
+	int		m_iszStartSpriteName;
+	int		m_iszEndSpriteName;
 	Vector  m_firePosition;
+	int		m_iProjection;
+	int		m_iStoppedBy;
+	int		m_iszStartPosition;
+	int		m_iTowardsMode;
 };
 
 #endif		//EFFECTS_H

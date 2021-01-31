@@ -59,6 +59,15 @@ CLaserSpot *CLaserSpot::CreateSpot( void )
 
 //=========================================================
 //=========================================================
+CLaserSpot *CLaserSpot::CreateSpot( const char* spritename )
+{
+	CLaserSpot *pSpot = CreateSpot();
+	SET_MODEL(ENT(pSpot->pev), spritename);
+	return pSpot;
+}
+
+//=========================================================
+//=========================================================
 void CLaserSpot::Spawn( void )
 {
 	Precache( );
@@ -70,7 +79,7 @@ void CLaserSpot::Spawn( void )
 	pev->renderamt = 255;
 
 	SET_MODEL(ENT(pev), "sprites/laserdot.spr");
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
 };
 
 //=========================================================
@@ -79,9 +88,17 @@ void CLaserSpot::Spawn( void )
 void CLaserSpot::Suspend( float flSuspendTime )
 {
 	pev->effects |= EF_NODRAW;
-	
-	SetThink( &CLaserSpot::Revive );
-	pev->nextthink = gpGlobals->time + flSuspendTime;
+
+	//LRC: -1 means suspend indefinitely
+	if (flSuspendTime == -1)
+	{
+		SetThink( NULL );
+	}
+	else
+	{
+		SetThink( &CLaserSpot::Revive );
+		SetNextThink( flSuspendTime );
+	}
 }
 
 //=========================================================
@@ -107,7 +124,7 @@ CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBa
 {
 	CRpgRocket *pRocket = GetClassPtr( (CRpgRocket *)NULL );
 
-	UTIL_SetOrigin( pRocket->pev, vecOrigin );
+	UTIL_SetOrigin( pRocket, vecOrigin );
 	pRocket->pev->angles = vecAngles;
 	pRocket->Spawn();
 	pRocket->SetTouch( &CRpgRocket::RocketTouch );
@@ -129,7 +146,7 @@ void CRpgRocket :: Spawn( void )
 
 	SET_MODEL(ENT(pev), "models/rpgrocket.mdl");
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
-	UTIL_SetOrigin( pev, pev->origin );
+	UTIL_SetOrigin( this, pev->origin );
 
 	pev->classname = MAKE_STRING("rpg_rocket");
 
@@ -143,7 +160,7 @@ void CRpgRocket :: Spawn( void )
 	pev->velocity = gpGlobals->v_forward * 250;
 	pev->gravity = 0.5;
 
-	pev->nextthink = gpGlobals->time + 0.4;
+	SetNextThink( 0.4 );
 
 	pev->dmg = gSkillData.plrDmgRPG;
 }
@@ -201,7 +218,7 @@ void CRpgRocket :: IgniteThink( void  )
 
 	// set to follow laser spot
 	SetThink( &CRpgRocket::FollowThink );
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 }
 
 
@@ -244,7 +261,7 @@ void CRpgRocket :: FollowThink( void  )
 	if (gpGlobals->time - m_flIgniteTime < 1.0)
 	{
 		pev->velocity = pev->velocity * 0.2 + vecTarget * (flSpeed * 0.8 + 400);
-		if (pev->waterlevel == 3)
+		if (pev->waterlevel == 3 && pev->watertype > CONTENT_FLYFIELD)
 		{
 			// go slow underwater
 			if (pev->velocity.Length() > 300)
@@ -269,14 +286,14 @@ void CRpgRocket :: FollowThink( void  )
 			STOP_SOUND( ENT(pev), CHAN_VOICE, "weapons/rocket1.wav" );
 		}
 		pev->velocity = pev->velocity * 0.2 + vecTarget * flSpeed * 0.798;
-		if (pev->waterlevel == 0 && pev->velocity.Length() < 1500)
+		if ((pev->waterlevel == 0 || pev->watertype == CONTENT_FOG) && pev->velocity.Length() < 1500)
 		{
 			Detonate( );
 		}
 	}
 	// ALERT( at_console, "%.0f\n", flSpeed );
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink( 0.1 );
 }
 #endif
 
@@ -566,7 +583,7 @@ void CRpg::UpdateSpot( void )
 		TraceResult tr;
 		UTIL_TraceLine ( vecSrc, vecSrc + vecAiming * 8192, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr );
 		
-		UTIL_SetOrigin( m_pSpot->pev, tr.vecEndPos );
+		UTIL_SetOrigin( m_pSpot, tr.vecEndPos );
 	}
 #endif
 
