@@ -348,8 +348,6 @@ public:
 	float	Rain_nextFadeUpdate;
 
 	int	Rain_needsUpdate;
-
-	BOOL m_bHasIntroPlayed; // not my job to clean up this mess of a class definition
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

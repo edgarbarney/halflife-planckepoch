@@ -312,8 +312,6 @@ int CCrowbar::Swing( int fFirst )
 
 		m_pPlayer->m_iWeaponVolume = flVol * CROWBAR_WALLHIT_VOLUME;
 #endif
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
-		
 		SetThink( &CCrowbar::Smack );
 		SetNextThink( 0.2 );
 

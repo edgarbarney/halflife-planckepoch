@@ -156,6 +156,7 @@ DWORD	s_hMouseThreadId = 0;
 HANDLE	s_hMouseThread = 0;
 HANDLE	s_hMouseQuitEvent = 0;
 HANDLE	s_hMouseDoneQuitEvent = 0;
+SDL_bool mouseRelative = SDL_TRUE;
 #endif
 
 float g_clampMinYaw = 0;
@@ -170,29 +171,29 @@ float V_ClampYaw(float oldYaw, float proposedYaw)
 	float wrapYaw = 0;
 
 	// are we actually doing any clamping?
-	if ( g_clampMaxYaw - g_clampMinYaw >= 360 )
+	if (g_clampMaxYaw - g_clampMinYaw >= 360)
 		return proposedYaw;
 
 	// awkwardly, yaw wraps; find the correct frame of reference
-	while ( oldYaw+wrapYaw > g_clampMaxYaw )
+	while (oldYaw + wrapYaw > g_clampMaxYaw)
 		wrapYaw -= 360;
 
-	while ( oldYaw+wrapYaw < g_clampMinYaw )
+	while (oldYaw + wrapYaw < g_clampMinYaw)
 		wrapYaw += 360;
 
-	if ( proposedYaw+wrapYaw >= g_clampMinYaw && proposedYaw+wrapYaw <= g_clampMaxYaw )
-		return proposedYaw+wrapYaw; // ok, that's in range
+	if (proposedYaw + wrapYaw >= g_clampMinYaw && proposedYaw + wrapYaw <= g_clampMaxYaw)
+		return proposedYaw + wrapYaw; // ok, that's in range
 
 	// proposedYaw is out of range, we need to return one of the endpoints.
 	// return the endpoint that's closest to the _old_ yaw.
 	// so that you can't jump over to the other side of the clamped zone with a big mouse move)
-	if ( fabs(oldYaw+wrapYaw - g_clampMinYaw) > fabs(oldYaw+wrapYaw - g_clampMaxYaw) )
+	if (fabs(oldYaw + wrapYaw - g_clampMinYaw) > fabs(oldYaw + wrapYaw - g_clampMaxYaw))
 	{
-		return g_clampMaxYaw-0.01; // this gets quantized; offset to prevent rounding errors
+		return g_clampMaxYaw - 0.01; // this gets quantized; offset to prevent rounding errors
 	}
 	else
 	{
-		return g_clampMinYaw+0.01;
+		return g_clampMinYaw + 0.01;
 	}
 }
 
@@ -200,12 +201,12 @@ float V_ClampYaw(float oldYaw, float proposedYaw)
 float V_ClampPitch(float oldPitch, float proposedPitch)
 {
 	// are we actually doing any clamping?
-	if ( g_clampMaxPitch - g_clampMinPitch >= 180 )
+	if (g_clampMaxPitch - g_clampMinPitch >= 180)
 		return proposedPitch;
 
-	if ( proposedPitch < g_clampMinPitch )
+	if (proposedPitch < g_clampMinPitch)
 		return g_clampMinPitch;
-	else if ( proposedPitch > g_clampMaxPitch )
+	else if (proposedPitch > g_clampMaxPitch)
 		return g_clampMaxPitch;
 	else
 		return proposedPitch;
@@ -216,14 +217,14 @@ Vector V_LimitClampSpeed(Vector& prev, Vector& next, float frametime)
 {
 	Vector offset(next[PITCH] - prev[PITCH], next[YAW] - prev[YAW], 0.0f);
 
-	while ( offset[YAW] > 180 )
+	while (offset[YAW] > 180)
 		offset[YAW] -= 360;
-	while ( offset[YAW] < -180 )
+	while (offset[YAW] < -180)
 		offset[YAW] += 360;
 
-	if ( offset.Length() > g_clampTurnSpeed*frametime )
+	if (offset.Length() > g_clampTurnSpeed * frametime)
 	{
-		offset = offset.Normalize() * (g_clampTurnSpeed*frametime);
+		offset = offset.Normalize() * (g_clampTurnSpeed * frametime);
 	}
 
 	return prev + offset;
@@ -306,6 +307,21 @@ void DLLEXPORT IN_ActivateMouse (void)
 #endif
 		mouseactive = 1;
 	}
+
+#ifdef _WIN32
+	if (!m_bRawInput)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		mouseRelative = SDL_FALSE;
+	}
+	else
+	{
+		mouseRelative = SDL_TRUE;
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+#else
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+#endif
 }
 
 
@@ -326,6 +342,15 @@ void DLLEXPORT IN_DeactivateMouse (void)
 
 		mouseactive = 0;
 	}
+
+#ifdef _WIN32
+	if (m_bRawInput)
+	{
+		mouseRelative = SDL_FALSE;
+	}
+
+#endif
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 /*
@@ -648,6 +673,19 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 	viewangles = V_LimitClampSpeed(oldviewangles, viewangles, frametime);
 
 	gEngfuncs.SetViewAngles( (float *)viewangles );
+
+#ifdef _WIN32
+	if (!m_bRawInput && mouseRelative)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		mouseRelative = SDL_FALSE;
+	}
+	else if (m_bRawInput && !mouseRelative)
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+		mouseRelative = SDL_TRUE;
+	}
+#endif
 
 /*
 //#define TRACE_TEST

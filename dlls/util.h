@@ -221,7 +221,7 @@ extern Vector		UTIL_AxisRotationToVec	(const Vector &vec, float angle); //LRC
 
 //LRC 1.8 - renamed CBaseAlias
 class CBaseMutableAlias;
-extern void			UTIL_AddToAliasList( CBaseMutableAlias *pAlias );
+extern void			UTIL_AddToAliasList(CBaseMutableAlias* pAlias);
 extern void			UTIL_FlushAliases( void );
 
 extern CBaseEntity	*UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius);
@@ -293,7 +293,7 @@ extern Vector		UTIL_ClampVectorToBox( const Vector &input, const Vector &clampSi
 extern float		UTIL_Approach( float target, float value, float speed );
 extern float		UTIL_ApproachAngle( float target, float value, float speed );
 extern float		UTIL_AngleDistance( float next, float cur );
-inline float		UTIL_Lerp( float lerpfactor, float A, float B ) { return A + lerpfactor*(B-A); } //LRC 1.8 - long-missing convenience!
+inline float		UTIL_Lerp(float lerpfactor, float A, float B) { return A + lerpfactor * (B - A); } //LRC 1.8 - long-missing convenience!
 
 extern char			*UTIL_VarArgs( const char *format, ... );
 extern void			UTIL_Remove( CBaseEntity *pEntity );

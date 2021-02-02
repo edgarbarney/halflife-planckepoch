@@ -20,6 +20,8 @@
 
 */
 
+#include <cmath>
+
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -670,7 +672,7 @@ BOOL CanAttack( float attack_time, float curtime, BOOL isPredicted )
 	}
 	else
 	{
-		return ( attack_time <= 0.0 ) ? TRUE : FALSE;
+		return ( (static_cast<int>(std::floor(attack_time * 1000.0)) * 1000.0) <= 0.0 ) ? TRUE : FALSE;
 	}
 }
 
@@ -1255,7 +1257,7 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
 	
 	// save the last fire time
 	m_flLastFireTime = gpGlobals->time;		
-	
+
 	float flNextAttack = UTIL_WeaponTimeBase() + delay - flCreep;
 	// we need to remember what the m_flNextPrimaryAttack time is set to for each shot, 
 	// store it as m_flPrevPrimaryAttack.
@@ -1655,7 +1657,7 @@ IMPLEMENT_SAVERESTORE( CRpg, CBasePlayerWeapon );
 TYPEDESCRIPTION	CRpgRocket::m_SaveData[] = 
 {
 	DEFINE_FIELD( CRpgRocket, m_flIgniteTime, FIELD_TIME ),
-	DEFINE_FIELD( CRpgRocket, m_pLauncher, FIELD_CLASSPTR ),
+	DEFINE_FIELD( CRpgRocket, m_pLauncher, FIELD_EHANDLE ),
 };
 IMPLEMENT_SAVERESTORE( CRpgRocket, CGrenade );
 

@@ -160,8 +160,7 @@ int CHAssassin :: ISoundMask ( void)
 //=========================================================
 int	CHAssassin :: Classify ( void )
 {
-	//return m_iClass?m_iClass:CLASS_HUMAN_MILITARY;
-	return CLASS_HUMAN_ASSASSIN;
+	return m_iClass?m_iClass:CLASS_HUMAN_ASSASSIN;
 }
 
 //=========================================================
