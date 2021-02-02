@@ -188,8 +188,8 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	//DEFINE_ARRAY( CBasePlayer, m_rgAmmoLast, FIELD_INTEGER, MAX_AMMO_SLOTS ), // Don't need to restore
 	//DEFINE_FIELD( CBasePlayer, m_fOnTarget, FIELD_BOOLEAN ), // Don't need to restore
 	//DEFINE_FIELD( CBasePlayer, m_nCustomSprayFrames, FIELD_INTEGER ), // Don't need to restore
-};
 
+	DEFINE_FIELD(CBasePlayer, m_bHasIntroPlayed, FIELD_BOOLEAN),
 };
 
 
