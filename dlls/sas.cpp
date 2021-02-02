@@ -401,7 +401,7 @@ int CSAS::ISoundMask(void)
 BOOL CSAS::FOkToSpeak(void)
 {
 	// if someone else is talking, don't speak
-	if (gpGlobals->time <= COFAllyMonster::g_talkWaitTime)
+	if (gpGlobals->time <= COFSquadTalkMonster::g_talkWaitTime)
 		return FALSE;
 
 	if (pev->spawnflags & SF_MONSTER_GAG)
@@ -424,7 +424,7 @@ BOOL CSAS::FOkToSpeak(void)
 //=========================================================
 void CSAS::JustSpoke(void)
 {
-	COFAllyMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(1.5, 2.0);
+	COFSquadTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(1.5, 2.0);
 	m_iSentence = HGRUNT_SENT_NONE;
 }
 
@@ -596,7 +596,7 @@ BOOL CSAS::CheckRangeAttack2(float flDot, float flDist)
 		}
 		else
 		{
-			// toss it to where you last AR16 them
+			// toss it to where you last saw them
 			vecTarget = m_vecEnemyLKP;
 		}
 		// vecTarget = m_vecEnemyLKP + (m_hEnemy->BodyTarget( pev->origin ) - m_hEnemy->pev->origin);
@@ -723,30 +723,37 @@ void CSAS::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, Tr
 //=========================================================
 int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
-	Forget(bits_MEMORY_INCOVER);
-
-	
 	// make sure friends talk about it if player hurts talkmonsters...
 	int ret = COFSquadTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
-	
-	//if (pev->deadflag != DEAD_NO)
-		//return ret;
-	
+
+	if (pev->deadflag != DEAD_NO)
+		return ret;
+
+	Forget(bits_MEMORY_INCOVER);
 
 	if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT))
 	{
-		if (pev->deadflag == DEAD_NO)
-		//if(pev->health - flDamage >= 0)
+		m_flPlayerDamage += flDamage;
+
+		// This is a heurstic to determine if the player intended to harm me
+		// If I have an enemy, we can't establish intent (may just be crossfire)
+		if (m_hEnemy == NULL)
 		{
-			Forget(bits_MEMORY_INCOVER);
-
-			m_flPlayerDamage += flDamage;
-
-			// This is a heurstic to determine if the player intended to harm me
-			// If I have an enemy, we can't establish intent (may just be crossfire)
-			if (m_hEnemy == NULL)
+			// If the player was facing directly at me, or I'm already suspicious, get mad
+			if (gpGlobals->time - m_flLastHitByPlayer < 4.0 && m_iPlayerHits > 2
+				&& ((m_afMemory & bits_MEMORY_SUSPICIOUS) || IsFacing(pevAttacker, pev->origin)))
 			{
-				PlaySentence("SAS_FSHOT", 4, VOL_NORM, ATTN_NORM);
+				// Alright, now I'm pissed!
+				PlaySentence("FG_MAD", 4, VOL_NORM, ATTN_NORM);
+
+				Remember(bits_MEMORY_PROVOKED);
+				StopFollowing(TRUE);
+				ALERT(at_console, "HGrunt Ally is now MAD!\n");
+			}
+			else
+			{
+				// Hey, be careful with that
+				PlaySentence("FG_SHOT", 4, VOL_NORM, ATTN_NORM);
 				Remember(bits_MEMORY_SUSPICIOUS);
 
 				if (4.0 > gpGlobals->time - m_flLastHitByPlayer)
@@ -757,59 +764,15 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 				m_flLastHitByPlayer = gpGlobals->time;
 
 				ALERT(at_console, "HGrunt Ally is now SUSPICIOUS!\n");
-				ALERT(at_console, "tester %f",pev->health);
-				//}
-			}
-			else if (!m_hEnemy->IsPlayer())
-			{
-				PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
 			}
 		}
-		else 
+		else if (!m_hEnemy->IsPlayer())
 		{
-			// This is a heurstic to determine if the player intended to harm me
-			// If I have an enemy, we can't establish intent (may just be crossfire)
-			if (m_hEnemy == NULL)
-			{
-				MySquadLeader()->PlaySentence("SAS_FKIL", 4, VOL_NORM, ATTN_NORM);
-				for (int i = 0; i < MAX_SQUAD_MEMBERS; i++)
-				{
-					if (MySquadLeader()->MySquadMember(i) != NULL)
-					{
-						ALERT(at_console, "HGrunt Allie no %d is now MAD!\n", i);
-						MySquadLeader()->MySquadMember(i)->Forget(bits_MEMORY_INCOVER);
-						MySquadLeader()->MySquadMember(i)->Remember(bits_MEMORY_PROVOKED);
-						MySquadLeader()->MySquadMember(i)->StopFollowing(TRUE);
-					}
-				}
-			}
-			/*
-			else if (!m_hEnemy->IsPlayer())
-			{
-				PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
-			}
-			*/
+			PlaySentence("FG_SHOT", 4, VOL_NORM, ATTN_NORM);
 		}
 	}
 
 	return ret;
-}
-
-BOOL IsFacing(entvars_t* pevTest, const Vector& reference)
-{
-	Vector vecDir = (reference - pevTest->origin);
-	vecDir.z = 0;
-	vecDir = vecDir.Normalize();
-	Vector forward, angle;
-	angle = pevTest->v_angle;
-	angle.x = 0;
-	UTIL_MakeVectorsPrivate(angle, forward, NULL, NULL);
-	// He's facing me, he meant it
-	if (DotProduct(forward, vecDir) > 0.96)	// +/- 15 degrees or so
-	{
-		return TRUE;
-	}
-	return FALSE;
 }
 
 //=========================================================
@@ -1039,7 +1002,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 		else if (FBitSet(pev->weapons, SASWeaponFlag::AR16))
 		{
-			DropItem("weapon_AR16", vecGunPos, vecGunAngles);
+			DropItem("weapon_ar16", vecGunPos, vecGunAngles);
 		}
 		else
 		{
@@ -2407,7 +2370,7 @@ Schedule_t* CSAS::GetSchedule(void)
 			}
 
 			// call base class, all code to handle dead enemies is centralized there.
-			return CBaseMonster::GetSchedule();
+			return COFSquadTalkMonster::GetSchedule();
 		}
 
 		if (m_hWaitMedic)
@@ -2854,12 +2817,8 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 		return pSchedule;
 	}
 
-	//These exist in the original code, but are never used
-	//schedule IDs are wrong because the ids are different
-	/*
-case 43:
-	return &slGruntAllyFail[ 0 ];
-	*/
+	case SCHED_CANT_FOLLOW:
+		return &slGruntAllyFail[0];
 
 	default:
 	{

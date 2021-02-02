@@ -48,7 +48,7 @@
 
 #define NUM_SLOTS			11// update this every time you add/remove a slot.
 
-#define	MAX_SQUAD_MEMBERS	5
+#define	MAX_SQUAD_MEMBERS	10
 
 //=========================================================
 // CSquadMonster - for any monster that forms squads.

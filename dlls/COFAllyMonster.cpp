@@ -71,7 +71,6 @@ Task_t	tlOFAllyIdleResponse[] =
 	{ TASK_TLK_RESPOND,		( float ) 0		},// Wait and then say my response
 	{ TASK_TLK_IDEALYAW,	( float ) 0		},// look at who I'm talking to
 	{ TASK_FACE_IDEAL,		( float ) 0		},
-	{ TASK_SET_ACTIVITY,	( float ) ACT_SIGNAL3	},
 	{ TASK_TLK_EYECONTACT,	( float ) 0		},// Wait until speaker is done
 };
 
@@ -94,7 +93,6 @@ Task_t	tlOFAllyIdleSpeak[] =
 	{ TASK_TLK_SPEAK,		( float ) 0		},// question or remark
 	{ TASK_TLK_IDEALYAW,	( float ) 0		},// look at who I'm talking to
 	{ TASK_FACE_IDEAL,		( float ) 0		},
-	{ TASK_SET_ACTIVITY,	( float ) ACT_SIGNAL3	},
 	{ TASK_TLK_EYECONTACT,	( float ) 0		},
 	{ TASK_WAIT_RANDOM,		( float )0.5		},
 };
@@ -115,7 +113,6 @@ Schedule_t	slOFAllyIdleSpeak[] =
 
 Task_t	tlOFAllyIdleSpeakWait[] =
 {
-	{ TASK_SET_ACTIVITY,	( float ) ACT_SIGNAL3	},// Stop and talk
 	{ TASK_TLK_SPEAK,		( float ) 0		},// question or remark
 	{ TASK_TLK_EYECONTACT,	( float ) 0		},// 
 	{ TASK_WAIT,			( float ) 2		},// wait - used when sci is in 'use' mode to keep head turned
@@ -137,7 +134,6 @@ Schedule_t	slOFAllyIdleSpeakWait[] =
 
 Task_t	tlOFAllyIdleHello[] =
 {
-	{ TASK_SET_ACTIVITY,	( float ) ACT_SIGNAL3	},// Stop and talk
 	{ TASK_TLK_HELLO,		( float ) 0		},// Try to say hello to player
 	{ TASK_TLK_EYECONTACT,	( float ) 0		},
 	{ TASK_WAIT,			( float )0.5		},// wait a bit
@@ -267,7 +263,6 @@ Task_t	tlOFAllyTlkIdleWatchClientStare[] =
 	{ TASK_TLK_STARE,			( float ) 0		},
 	{ TASK_TLK_IDEALYAW,		( float ) 0		},// look at who I'm talking to
 	{ TASK_FACE_IDEAL,			( float ) 0		},
-	{ TASK_SET_ACTIVITY,		( float ) ACT_SIGNAL3	},
 	{ TASK_TLK_EYECONTACT,		( float ) 0		},
 };
 
@@ -325,7 +320,6 @@ Task_t	tlOFAllyTlkIdleEyecontact[] =
 {
 	{ TASK_TLK_IDEALYAW,	( float ) 0		},// look at who I'm talking to
 	{ TASK_FACE_IDEAL,		( float ) 0		},
-	{ TASK_SET_ACTIVITY,	( float ) ACT_SIGNAL3	},
 	{ TASK_TLK_EYECONTACT,	( float ) 0		},// Wait until speaker is done
 };
 
@@ -360,19 +354,6 @@ DEFINE_CUSTOM_SCHEDULES( COFAllyMonster )
 };
 
 IMPLEMENT_CUSTOM_SCHEDULES( COFAllyMonster, CBaseMonster );
-
-
-void COFAllyMonster::SetActivity( Activity newActivity )
-{
-	if( newActivity == ACT_IDLE && IsTalking() )
-		newActivity = ACT_SIGNAL3;
-
-	if( newActivity == ACT_SIGNAL3 && ( LookupActivity( ACT_SIGNAL3 ) == ACTIVITY_NOT_AVAILABLE ) )
-		newActivity = ACT_IDLE;
-
-	CBaseMonster::SetActivity( newActivity );
-}
-
 
 void COFAllyMonster::StartTask( Task_t *pTask )
 {
@@ -1193,7 +1174,8 @@ void COFAllyMonster::SetAnswerQuestion( COFAllyMonster *pSpeaker )
 
 int COFAllyMonster::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
 {
-	if( IsAlive() )
+	//Don't inform friends if i'm in a script or if i'm dying/dead
+	if( m_MonsterState != MONSTERSTATE_SCRIPT && pev->deadflag == DEAD_NO )
 	{
 		// if player damaged this entity, have other friends talk about it
 		if( pevAttacker && m_MonsterState != MONSTERSTATE_PRONE && FBitSet( pevAttacker->flags, FL_CLIENT ) )

@@ -134,11 +134,8 @@ void COFSquadTalkMonster::Killed( entvars_t *pevAttacker, int iGib )
 		MySquadLeader()->SquadRemove( this );
 	}
 
-	CBaseMonster::Killed( pevAttacker, iGib );
+	COFAllyMonster::Killed( pevAttacker, iGib );
 }
-
-// These functions are still awaiting conversion to COFSquadTalkMonster 
-
 
 //=========================================================
 //
@@ -246,35 +243,107 @@ void COFSquadTalkMonster::SquadCopyEnemyInfo( void )
 //=========================================================
 void COFSquadTalkMonster::SquadMakeEnemy( CBaseEntity *pEnemy )
 {
-	if( !InSquad() )
-		return;
-
-	if( !pEnemy )
+	if (m_MonsterState == MONSTERSTATE_SCRIPT)
 	{
-		ALERT( at_console, "ERROR: SquadMakeEnemy() - pEnemy is NULL!\n" );
 		return;
 	}
 
-	COFSquadTalkMonster *pSquadLeader = MySquadLeader();
-	for( int i = 0; i < MAX_SQUAD_MEMBERS; i++ )
+	if (!InSquad())
 	{
-		COFSquadTalkMonster *pMember = pSquadLeader->MySquadMember( i );
-		if( pMember )
+		//TODO: pEnemy could be null here
+		if (m_hEnemy != NULL)
 		{
+			// remember their current enemy
+			PushEnemy(m_hEnemy, m_vecEnemyLKP);
+		}
+
+		ALERT(at_aiconsole, "Non-Squad friendly grunt adopted enemy of type %s\n", STRING(pEnemy->pev->classname));
+
+		// give them a new enemy
+		m_hEnemy = pEnemy;
+		m_vecEnemyLKP = pEnemy->pev->origin;
+		SetConditions(bits_COND_NEW_ENEMY);
+	}
+
+	if (!pEnemy)
+	{
+		ALERT(at_console, "ERROR: SquadMakeEnemy() - pEnemy is NULL!\n");
+		return;
+	}
+
+	auto squadLeader = MySquadLeader();
+
+	const bool fLeaderIsFollowing = squadLeader->m_hTargetEnt != NULL && squadLeader->m_hTargetEnt->IsPlayer();
+	const bool fImFollowing = m_hTargetEnt != NULL && m_hTargetEnt->IsPlayer();
+
+	if (!IsLeader() && fLeaderIsFollowing != fImFollowing)
+	{
+		ALERT(at_aiconsole, "Squad Member is not leader, and following state doesn't match in MakeEnemy\n");
+		return;
+	}
+
+	for (auto& squadMemberHandle : squadLeader->m_hSquadMember)
+	{
+		auto squadMember = squadMemberHandle.Entity<COFSquadTalkMonster>();
+
+		if (squadMember)
+		{
+			const bool isFollowing = squadMember->m_hTargetEnt != NULL && squadMember->m_hTargetEnt->IsPlayer();
+
 			// reset members who aren't activly engaged in fighting
-			if( pMember->m_hEnemy != pEnemy && !pMember->HasConditions( bits_COND_SEE_ENEMY ) )
+			if (fLeaderIsFollowing == isFollowing && squadMember->m_hEnemy != pEnemy && !squadMember->HasConditions(bits_COND_SEE_ENEMY))
 			{
-				if( pMember->m_hEnemy != NULL )
+				if (squadMember->m_hEnemy != NULL)
 				{
 					// remember their current enemy
-					pMember->PushEnemy( pMember->m_hEnemy, pMember->m_vecEnemyLKP );
+					squadMember->PushEnemy(squadMember->m_hEnemy, squadMember->m_vecEnemyLKP);
 				}
+
+				ALERT(at_aiconsole, "Non-Squad friendly grunt adopted enemy of type %s\n", STRING(pEnemy->pev->classname));
+
 				// give them a new enemy
-				pMember->m_hEnemy = pEnemy;
-				pMember->m_vecEnemyLKP = pEnemy->pev->origin;
-				pMember->SetConditions( bits_COND_NEW_ENEMY );
+				squadMember->m_hEnemy = pEnemy;
+				squadMember->m_vecEnemyLKP = pEnemy->pev->origin;
+				squadMember->SetConditions(bits_COND_NEW_ENEMY);
 			}
 		}
+	}
+
+	//Seems a bit redundant to recalculate this now
+	const bool leaderIsStillFollowing = squadLeader->m_hTargetEnt != NULL && squadLeader->m_hTargetEnt->IsPlayer();
+
+	// reset members who aren't activly engaged in fighting
+	if (fLeaderIsFollowing == leaderIsStillFollowing && squadLeader->m_hEnemy != pEnemy && !squadLeader->HasConditions(bits_COND_SEE_ENEMY))
+	{
+		if (squadLeader->m_hEnemy != NULL)
+		{
+			// remember their current enemy
+			squadLeader->PushEnemy(squadLeader->m_hEnemy, squadLeader->m_vecEnemyLKP);
+		}
+
+		ALERT(at_aiconsole, "Non-Squad friendly grunt adopted enemy of type %s\n", STRING(pEnemy->pev->classname));
+
+		// give them a new enemy
+		squadLeader->m_hEnemy = pEnemy;
+		squadLeader->m_vecEnemyLKP = pEnemy->pev->origin;
+		squadLeader->SetConditions(bits_COND_NEW_ENEMY);
+	}
+
+	// reset members who aren't activly engaged in fighting
+	if (squadLeader->m_hEnemy != pEnemy && !squadLeader->HasConditions(bits_COND_SEE_ENEMY))
+	{
+		if (squadLeader->m_hEnemy != NULL)
+		{
+			// remember their current enemy
+			squadLeader->PushEnemy(squadLeader->m_hEnemy, squadLeader->m_vecEnemyLKP);
+		}
+
+		ALERT(at_aiconsole, "Squad Leader friendly grunt adopted enemy of type %s\n", STRING(pEnemy->pev->classname));
+
+		// give them a new enemy
+		squadLeader->m_hEnemy = pEnemy;
+		squadLeader->m_vecEnemyLKP = pEnemy->pev->origin;
+		squadLeader->SetConditions(bits_COND_NEW_ENEMY);
 	}
 }
 
@@ -392,7 +461,7 @@ int COFSquadTalkMonster::CheckEnemy( CBaseEntity *pEnemy )
 {
 	int iUpdatedLKP;
 
-	iUpdatedLKP = CBaseMonster::CheckEnemy( m_hEnemy );
+	iUpdatedLKP = COFAllyMonster::CheckEnemy( m_hEnemy );
 
 	// communicate with squad members about the enemy IF this individual has the same enemy as the squad leader.
 	if( InSquad() && ( CBaseEntity * ) m_hEnemy == MySquadLeader()->m_hEnemy )
@@ -417,7 +486,7 @@ int COFSquadTalkMonster::CheckEnemy( CBaseEntity *pEnemy )
 //=========================================================
 void COFSquadTalkMonster::StartMonster( void )
 {
-	CBaseMonster::StartMonster();
+	COFAllyMonster::StartMonster();
 
 	if( ( m_afCapability & bits_CAP_SQUAD ) && !InSquad() )
 	{
@@ -437,14 +506,10 @@ void COFSquadTalkMonster::StartMonster( void )
 		{
 			ALERT( at_aiconsole, "Squad of %d %s formed\n", iSquadSize, STRING( pev->classname ) );
 		}
-
-		if( IsLeader() && FClassnameIs( pev, "monster_human_grunt" ) )
-		{
-			SetBodygroup( 1, 1 ); // UNDONE: truly ugly hack
-			pev->skin = 0;
-		}
-
 	}
+
+	m_flLastHitByPlayer = gpGlobals->time;
+	m_iPlayerHits = 0;
 }
 
 //=========================================================
@@ -538,7 +603,7 @@ MONSTERSTATE COFSquadTalkMonster::GetIdealState( void )
 		break;
 	}
 
-	return CBaseMonster::GetIdealState();
+	return COFAllyMonster::GetIdealState();
 }
 
 //=========================================================
@@ -620,13 +685,41 @@ Schedule_t *COFSquadTalkMonster::GetScheduleOfType( int iType )
 		}
 
 	default:
-		return CBaseMonster::GetScheduleOfType( iType );
+		return COFAllyMonster::GetScheduleOfType( iType );
 	}
 }
 
 void COFSquadTalkMonster::FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	COFAllyMonster::FollowerUse( pActivator, pCaller, useType, value );
+	// Don't allow use during a scripted_sentence
+	if (m_useTime > gpGlobals->time)
+		return;
+
+	if (pCaller != NULL && pCaller->IsPlayer())
+	{
+		// Pre-disaster followers can't be used
+		if (pev->spawnflags & SF_MONSTER_PREDISASTER)
+		{
+			DeclineFollowing();
+		}
+		else if (CanFollow())
+		{
+			//Player can form squads of up to 6 NPCs
+			LimitFollowers(pCaller, 6);
+
+			if (m_afMemory & bits_MEMORY_PROVOKED)
+				ALERT(at_console, "I'm not following you, you evil person!\n");
+			else
+			{
+				StartFollowing(pCaller);
+				SetBits(m_bitsSaid, bit_saidHelloPlayer);	// Don't say hi after you've started following
+			}
+		}
+		else
+		{
+			StopFollowing(TRUE);
+		}
+	}
 }
 
 COFSquadTalkMonster* COFSquadTalkMonster::MySquadMedic()
@@ -666,4 +759,65 @@ COFSquadTalkMonster* COFSquadTalkMonster::FindSquadMedic( int searchRadius )
 BOOL COFSquadTalkMonster::HealMe( COFSquadTalkMonster* pTarget )
 {
 	return false;
+}
+
+int COFSquadTalkMonster::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
+{
+	if (m_MonsterState == MONSTERSTATE_SCRIPT)
+	{
+		return COFAllyMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
+	}
+
+	//If this attack deals enough damage to instakill me...
+	if (pev->deadflag == DEAD_NO && flDamage >= pev->max_health)
+	{
+		//Tell my squad mates...
+		auto pSquadLeader = MySquadLeader();
+
+		for (int i = 0; i < MAX_SQUAD_MEMBERS; i++)
+		{
+			COFSquadTalkMonster* pSquadMember = pSquadLeader->MySquadMember(i);
+
+			//If they're alive and have no enemy...
+			if (pSquadMember && pSquadMember->IsAlive() && !pSquadMember->m_hEnemy)
+			{
+				//If they're not being eaten by a barnacle and the attacker is a player...
+				if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT))
+				{
+					//Friendly fire!
+					pSquadMember->Remember(bits_MEMORY_PROVOKED);
+				}
+				//Attacked by an NPC...
+				else
+				{
+					g_vecAttackDir = ((pevAttacker->origin + pevAttacker->view_ofs) - (pSquadMember->pev->origin + pSquadMember->pev->view_ofs)).Normalize();
+
+					const Vector vecStart = pSquadMember->pev->origin + pSquadMember->pev->view_ofs;
+					const Vector vecEnd = pevAttacker->origin + pevAttacker->view_ofs + (g_vecAttackDir * m_flDistLook);
+					TraceResult tr;
+
+					UTIL_TraceLine(vecStart, vecEnd, dont_ignore_monsters, pSquadMember->edict(), &tr);
+
+					//If they didn't see any enemy...
+					if (tr.flFraction == 1.0)
+					{
+						//Hunt for enemies
+						m_IdealMonsterState = MONSTERSTATE_HUNT;
+					}
+					//They can see an enemy
+					else
+					{
+						//Make the enemy an enemy of my squadmate
+						pSquadMember->m_hEnemy = CBaseEntity::Instance(tr.pHit);
+						pSquadMember->m_vecEnemyLKP = pevAttacker->origin;
+						pSquadMember->SetConditions(bits_COND_NEW_ENEMY);
+					}
+				}
+			}
+		}
+	}
+
+	m_flWaitFinished = gpGlobals->time;
+
+	return COFAllyMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
