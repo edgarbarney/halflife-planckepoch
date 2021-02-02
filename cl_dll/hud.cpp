@@ -562,6 +562,7 @@ void CHud :: VidInit( void )
 	{
 		delete m_pShinySurface;
 		m_pShinySurface = NULL;
+	}
 
 	//Removed 320 Hud
 
