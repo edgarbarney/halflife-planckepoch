@@ -37,6 +37,18 @@
     <Filter Include="Header Files\common">
       <UniqueIdentifier>{d9b0bb75-7f25-443b-8899-6b1a9e1dd63c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\dlls\entities">
+      <UniqueIdentifier>{da4d96e3-5e0e-4a27-8c81-17ba69240231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dlls\entities\effects">
+      <UniqueIdentifier>{906ff0c8-ee43-4033-b841-c66db1870620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dlls\entities">
+      <UniqueIdentifier>{f9c56631-6d96-4b27-825e-ed8926e12c9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dlls\entities\effects">
+      <UniqueIdentifier>{d83a2595-1ef2-4429-ad4a-36a5891b2799}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\aflock.cpp">
@@ -375,6 +387,15 @@
     <ClCompile Include="..\..\dlls\male_assassin.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\effects\CWeatherPrecipitation.cpp">
+      <Filter>Source Files\dlls\entities\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\effects\CWeatherController.cpp">
+      <Filter>Source Files\dlls\entities\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\effects\CWeatherWind.cpp">
+      <Filter>Source Files\dlls\entities\effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -526,6 +547,15 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\COFSquadTalkMonster.h">
       <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\entities\effects\CWeatherWind.h">
+      <Filter>Header Files\dlls\entities\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\entities\effects\CWeatherPrecipitation.h">
+      <Filter>Header Files\dlls\entities\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\entities\effects\CWeatherController.h">
+      <Filter>Header Files\dlls\entities\effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

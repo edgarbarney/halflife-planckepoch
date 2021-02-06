@@ -40,6 +40,8 @@
 #include "vgui_TeamFortressViewport.h"
 #include "../public/interface.h"
 
+#include "effects/CWeather.h"
+
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 CMP3 gMP3; //AJH - Killars MP3player
@@ -336,6 +338,8 @@ void CL_LoadParticleMan( void )
 
 		 // Add custom particle classes here BEFORE calling anything else or you will die.
 		 g_pParticleMan->AddCustomParticleClassSize ( sizeof ( CBaseParticle ) );
+
+		 g_Weather.RegisterParticleClasses();
 	}
 }
 

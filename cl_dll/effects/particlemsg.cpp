@@ -43,7 +43,7 @@ int CHudParticle:: MsgFunc_Particle(const char *pszName,  int iSize, void *pbuf 
 {
 	BEGIN_READ( pbuf, iSize );
 //	int type = READ_BYTE();
-	int entindex = READ_BYTE();
+	int entindex = READ_SHORT();
 //	float x = READ_COORD();
 //	float y = READ_COORD();
 //	float z = READ_COORD();

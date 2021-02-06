@@ -47,6 +47,9 @@ static globalvars_t	Globals;
 static CBasePlayerWeapon *g_pWpns[ 32 ];
 int g_iWaterLevel; //LRC - for DMC fog
 
+//TODO: move - Solokiller
+Vector g_vPlayerVelocity;
+
 float g_flApplyVel = 0.0;
 int   g_irunninggausspred = 0;
 
@@ -853,6 +856,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	player.ammo_hornets		= (int)from->client.vuser2[0];
 	player.ammo_rockets		= (int)from->client.ammo_rockets;
 
+	g_vPlayerVelocity = player.pev->velocity;
 	
 	// Point to current weapon object
 	if ( from->client.m_iId )

@@ -1982,6 +1982,59 @@
 	]
 ]
 
+@PointClass base(Targetname) iconsprite("sprites/env.spr") = env_weather_precipitation : "Precipitation (rain/snow)"
+[
+    type(choices) : "Type" : 1 =
+    [
+        0 : "None"
+        1 : "Rain"
+        2 : "Snow"
+    ]
+    intensity(choices) : "Intensity" : 100 =
+    [
+        0   : "None"
+        50  : "Sprinkle"
+        100 : "Light"
+        200 : "Moderate"
+        300 : "Heavy"
+        400 : "Extreme"
+    ]
+    spray_density(choices) : "Rain spray density" : 2 =
+    [
+        0  : "None"
+        1  : "Low"
+        2  : "Medium"
+        3  : "High"
+        4  : "Extreme"
+    ]
+    spawnflags(Flags) = 
+    [
+        1 : "Start On" : 0
+    ]
+]
+
+@PointClass base(Targetname, Angles) iconsprite("sprites/env.spr") = env_weather_wind : "Wind"
+[
+    wind_speed(choices) : "Wind speed (units/s)" : 50 =
+    [
+        0   : "None"
+        20  : "Gentle"
+        40  : "Light"
+        60  : "Moderate"
+        80  : "Hard"
+        100 : "Gale"
+        150 : "Tornado"
+    ]
+    yaw_variance(integer) : "Wind angle change variance (degrees)" : 10
+    speed_variance(integer) : "Wind speed change variance (units/s)" : 10
+    change_frequency(integer) : "Frequency of change (seconds)" : 5
+    change_speed(integer) : "Speed of change (seconds)" : 1
+    spawnflags(Flags) = 
+    [
+        1 : "Start On" : 0
+    ]
+]
+
 //NEW 0.4
 //* Essentially, this produces a shifting group of parallel beams. I've called it
 //* env_rain because that's the most-requested use for it.
@@ -1989,7 +2042,7 @@
 //* Drip Color = 255 255 255, Time between updates = 0, Drip Sprite = sprites/laserbeam.spr.
 //*   For snow, try Drip Speed = 20, Drip Width = 20, Drip Color = 255 255 255,
 //* Drip Sprite = sprites/rain.spr.
-@SolidClass base(Targetname, MoveWith) iconsprite("sprites/env.spr") = env_rain : "Rain Effect"
+@SolidClass base(Targetname, MoveWith) iconsprite("sprites/env.spr") = env_rain_old : "Rain Effect"
 [
 	//* Set this to (for example) "70 0 0" to make slanted rain.
 	angles(string) : "Pitch Yaw Roll (Y Z X)" : "0 0 0"

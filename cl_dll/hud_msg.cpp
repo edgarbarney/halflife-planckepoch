@@ -20,9 +20,9 @@
 #include "cl_util.h"
 #include "parsemsg.h"
 #include "r_efx.h"
-#include "rain.h"
 
 #include "particleman.h"
+#include "effects/CWeather.h"
 extern IParticleMan *g_pParticleMan;
 
 //LRC - the fogging fog
@@ -43,7 +43,6 @@ extern BEAM *pBeam2;
 void ClearEventList( void );
 #endif
 
-extern rain_properties Rain;
 extern float g_clampMinYaw, g_clampMaxYaw, g_clampMinPitch, g_clampMaxPitch;
 extern float g_clampTurnSpeed;
 
@@ -319,18 +318,31 @@ int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rai
 	return 1;
 }
 
-int CHud :: MsgFunc_RainData( const char *pszName, int iSize, void *pbuf )
+void CHud::MsgFunc_Weather(const char* pszName, int iSize, void* pBuf)
 {
-	BEGIN_READ( pbuf, iSize );
-		Rain.dripsPerSecond =	READ_SHORT();
-		Rain.distFromPlayer =	READ_COORD();
-		Rain.windX =			READ_COORD();
-		Rain.windY =			READ_COORD();
-		Rain.randX =			READ_COORD();
-		Rain.randY =			READ_COORD();
-		Rain.weatherMode =		READ_SHORT();
-		Rain.globalHeight =		READ_COORD();
-	return 1;
+	BEGIN_READ(pBuf, iSize);
+	{
+        auto messageType = READ_BYTE();
+		if (messageType == 1)
+		{
+		    // Precipitation
+			auto type = static_cast<PrecipitationType>(READ_BYTE());
+			auto numParticles = READ_SHORT();
+			auto sprayDensity = READ_BYTE();
+			g_Weather.SetPrecipitation(type, numParticles, sprayDensity);
+		}
+		else if (messageType == 2)
+		{
+		    // Wind
+			auto yaw = READ_COORD();
+			auto speed = READ_COORD();
+			auto yawVariance = READ_COORD();
+			auto speedVariance = READ_COORD();
+			auto changeFrequency = READ_COORD();
+			auto changeSpeed = READ_COORD();
+			g_Weather.SetWind(yaw, speed, yawVariance, speedVariance, changeFrequency, changeSpeed);
+		}
+	}
 }
 
 int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJH inventory system

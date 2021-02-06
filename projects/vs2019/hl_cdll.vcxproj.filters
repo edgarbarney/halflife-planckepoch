@@ -55,6 +55,21 @@
     <Filter Include="Source Files\_hl\cl_dll\hl">
       <UniqueIdentifier>{bd9d5958-4e67-4bff-bbd8-6ba6dfcdb720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cl_dll\effects">
+      <UniqueIdentifier>{dcef5fb5-e7ab-4660-90df-f85e761b7f3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\hud">
+      <UniqueIdentifier>{1d959b2c-7b98-4c9d-81cc-83ca88b0aa4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cl_dll\effects">
+      <UniqueIdentifier>{93ab672a-4ac0-4112-94c6-76125590be79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cl_dll\effects\particles">
+      <UniqueIdentifier>{b59991a2-ef61-40ca-b941-c9cf7867b8fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\effects\particles">
+      <UniqueIdentifier>{cdd36252-a82a-4c6a-976a-813a948249ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -306,26 +321,35 @@
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp">
       <Filter>Source Files\pm_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\particlemgr.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\particlemsg.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\particlesys.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\mp3.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\CustomMenu.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\rain.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\ar16.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particlemgr.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particlemsg.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particlesys.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\CWeather.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particles\CRaindrop.cpp">
+      <Filter>Source Files\cl_dll\effects\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particles\CSnowflake.cpp">
+      <Filter>Source Files\cl_dll\effects\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\particles\CRainSpray.cpp">
+      <Filter>Source Files\cl_dll\effects\particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -467,11 +491,26 @@
     <ClInclude Include="..\..\cl_dll\mp3.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\cl_dll\rain.h">
-      <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\cl_dll\glInclude.h">
       <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\particlemgr.h">
+      <Filter>Header Files\cl_dll\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\particlesys.h">
+      <Filter>Header Files\cl_dll\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\CWeather.h">
+      <Filter>Header Files\cl_dll\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\particles\CRaindrop.h">
+      <Filter>Header Files\cl_dll\effects\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\particles\CSnowflake.h">
+      <Filter>Header Files\cl_dll\effects\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\particles\CRainSpray.h">
+      <Filter>Header Files\cl_dll\effects\particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
