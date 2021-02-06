@@ -247,7 +247,14 @@ int CCrowbar::Swing( int fFirst )
 		{
 			// subsequent swings do half
 			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar / 2, gpGlobals->v_forward, &tr, DMG_CLUB ); 
-		}	
+		}
+
+#endif
+
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
+
+#ifndef CLIENT_DLL
+
 		ApplyMultiDamage( m_pPlayer->pev, m_pPlayer->pev );
 
 		//Shake
