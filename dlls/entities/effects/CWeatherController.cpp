@@ -14,6 +14,7 @@
 ****/
 
 #include "CWeatherController.h"
+#include "util.h"
 
 extern int gmsgWeather;
 

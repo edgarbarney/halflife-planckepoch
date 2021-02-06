@@ -4674,7 +4674,7 @@ void CParticle::Activate( void )
 
 void CParticle::DesiredAction( void )
 {
-	pev->nextthink = gpGlobals->time + 1;
+	pev->nextthink = gpGlobals->time + 0.1;
 }
 
 void CParticle::Think( void )
