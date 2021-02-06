@@ -26,7 +26,7 @@ public:
 	float	m_flLastEnemySightTime;						// last time anyone in the squad saw the enemy
 	BOOL	m_fEnemyEluded;
 	int		m_deadMates;								// Number of lost friends during combat
-	int		m_canSayUsLeft;								// Can talk about being last man standing with player?
+	int		m_canSayUsLeft;								// Can talk about losing teammates?
 	BOOL	m_canLoseSquad;								// Was in squad?
 
 	EHANDLE m_hWaitMedic;
