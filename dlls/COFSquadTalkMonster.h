@@ -20,11 +20,14 @@ class COFSquadTalkMonster : public COFAllyMonster
 {
 public:
 	// squad leader info
-	EHANDLE	m_hSquadLeader;		// who is my leader
+	EHANDLE	m_hSquadLeader;								// who is my leader
 	EHANDLE	m_hSquadMember[ MAX_SQUAD_MEMBERS - 1 ];	// valid only for leader
 	int		m_afSquadSlots;
-	float	m_flLastEnemySightTime; // last time anyone in the squad saw the enemy
+	float	m_flLastEnemySightTime;						// last time anyone in the squad saw the enemy
 	BOOL	m_fEnemyEluded;
+	int		m_deadMates;								// Number of lost friends during combat
+	int		m_canSayUsLeft;								// Can talk about being last man standing with player?
+	BOOL	m_canLoseSquad;								// Was in squad?
 
 	EHANDLE m_hWaitMedic;
 	float m_flMedicWaitTime;

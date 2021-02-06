@@ -39,16 +39,16 @@ extern DLL_GLOBAL int		g_iSkillLevel;
 //=========================================================
 // monster-specific DEFINE's
 //=========================================================
-#define	GRUNT_MP5_CLIP_SIZE				36 // how many bullets in a clip? - NOTE: 3 round burst sound, so keep as 3 * x!
-#define GRUNT_SHOTGUN_CLIP_SIZE			8
-#define GRUNT_AR16_CLIP_SIZE				36
-#define GRUNT_VOL						0.35		// volume of grunt sounds
-#define GRUNT_ATTN						ATTN_NORM	// attenutation of grunt sentences
-#define HGRUNT_LIMP_HEALTH				20
-#define HGRUNT_DMG_HEADSHOT				( DMG_BULLET | DMG_CLUB )	// damage types that can kill a grunt with a single headshot.
-#define HGRUNT_NUM_HEADS				2 // how many grunt heads are there? 
-#define HGRUNT_MINIMUM_HEADSHOT_DAMAGE	15 // must do at least this much damage in one shot to head to score a headshot kill
-#define	HGRUNT_SENTENCE_VOLUME			(float)0.35 // volume of grunt sentences
+#define	SAS_MP5_CLIP_SIZE				36 // how many bullets in a clip? - NOTE: 3 round burst sound, so keep as 3 * x!
+#define SAS_SHOTGUN_CLIP_SIZE			8
+#define SAS_AR16_CLIP_SIZE				36
+#define SAS_VOL						0.35		// volume of grunt sounds
+#define SAS_ATTN						ATTN_NORM	// attenutation of grunt sentences
+#define HSAS_LIMP_HEALTH				20
+#define HSAS_DMG_HEADSHOT				( DMG_BULLET | DMG_CLUB )	// damage types that can kill a grunt with a single headshot.
+#define HSAS_NUM_HEADS				2 // how many grunt heads are there? 
+#define HSAS_MINIMUM_HEADSHOT_DAMAGE	15 // must do at least this much damage in one shot to head to score a headshot kill
+#define	HSAS_SENTENCE_VOLUME			(float)0.35 // volume of grunt sentences
 
 namespace SASWeaponFlag
 {
@@ -113,33 +113,33 @@ namespace SASWeapon
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
-#define		HGRUNT_AE_RELOAD		( 2 )
-#define		HGRUNT_AE_KICK			( 3 )
-#define		HGRUNT_AE_BURST1		( 4 )
-#define		HGRUNT_AE_BURST2		( 5 ) 
-#define		HGRUNT_AE_BURST3		( 6 ) 
-#define		HGRUNT_AE_GREN_TOSS		( 7 )
-#define		HGRUNT_AE_GREN_LAUNCH	( 8 )
-#define		HGRUNT_AE_GREN_DROP		( 9 )
-#define		HGRUNT_AE_CAUGHT_ENEMY	( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
-#define		HGRUNT_AE_DROP_GUN		( 11) // grunt (probably dead) is dropping his mp5.
+#define		HSAS_AE_RELOAD		( 2 )
+#define		HSAS_AE_KICK			( 3 )
+#define		HSAS_AE_BURST1		( 4 )
+#define		HSAS_AE_BURST2		( 5 ) 
+#define		HSAS_AE_BURST3		( 6 ) 
+#define		HSAS_AE_GREN_TOSS		( 7 )
+#define		HSAS_AE_GREN_LAUNCH	( 8 )
+#define		HSAS_AE_GREN_DROP		( 9 )
+#define		HSAS_AE_CAUGHT_ENEMY	( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
+#define		HSAS_AE_DROP_GUN		( 11) // grunt (probably dead) is dropping his mp5.
 
 //=========================================================
 // monster-specific schedule types
 //=========================================================
 enum
 {
-	SCHED_GRUNT_SUPPRESS = LAST_TALKMONSTER_SCHEDULE + 1,
-	SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE,// move to a location to set up an attack against the enemy. (usually when a friendly is in the way).
-	SCHED_GRUNT_COVER_AND_RELOAD,
-	SCHED_GRUNT_SWEEP,
-	SCHED_GRUNT_FOUND_ENEMY,
-	SCHED_GRUNT_REPEL,
-	SCHED_GRUNT_REPEL_ATTACK,
-	SCHED_GRUNT_REPEL_LAND,
-	SCHED_GRUNT_WAIT_FACE_ENEMY,
-	SCHED_GRUNT_TAKECOVER_FAILED,// special schedule type that forces analysis of conditions and picks the best possible schedule to recover from this type of failure.
-	SCHED_GRUNT_ELOF_FAIL,
+	SCHED_SAS_SUPPRESS = LAST_TALKMONSTER_SCHEDULE + 1,
+	SCHED_SAS_ESTABLISH_LINE_OF_FIRE,// move to a location to set up an attack against the enemy. (usually when a friendly is in the way).
+	SCHED_SAS_COVER_AND_RELOAD,
+	SCHED_SAS_SWEEP,
+	SCHED_SAS_FOUND_ENEMY,
+	SCHED_SAS_REPEL,
+	SCHED_SAS_REPEL_ATTACK,
+	SCHED_SAS_REPEL_LAND,
+	SCHED_SAS_WAIT_FACE_ENEMY,
+	SCHED_SAS_TAKECOVER_FAILED,// special schedule type that forces analysis of conditions and picks the best possible schedule to recover from this type of failure.
+	SCHED_SAS_ELOF_FAIL,
 };
 
 //=========================================================
@@ -147,15 +147,15 @@ enum
 //=========================================================
 enum
 {
-	TASK_GRUNT_FACE_TOSS_DIR = LAST_TALKMONSTER_TASK + 1,
-	TASK_GRUNT_SPEAK_SENTENCE,
-	TASK_GRUNT_CHECK_FIRE,
+	TASK_SAS_FACE_TOSS_DIR = LAST_TALKMONSTER_TASK + 1,
+	TASK_SAS_SPEAK_SENTENCE,
+	TASK_SAS_CHECK_FIRE,
 };
 
 //=========================================================
 // monster-specific conditions
 //=========================================================
-#define bits_COND_GRUNT_NOFIRE	( bits_COND_SPECIAL1 )
+#define bits_COND_SAS_NOFIRE	( bits_COND_SPECIAL1 )
 
 class CSAS : public COFSquadTalkMonster
 {
@@ -195,6 +195,8 @@ public:
 
 	BOOL FOkToSpeak(void);
 	void JustSpoke(void);
+
+	int GetCount();
 
 	int ObjectCaps() override;
 
@@ -268,6 +270,9 @@ TYPEDESCRIPTION	CSAS::m_SaveData[] =
 	DEFINE_FIELD(CSAS, m_iWeaponIdx, FIELD_INTEGER),
 	DEFINE_FIELD(CSAS, m_iGruntHead, FIELD_INTEGER),
 	DEFINE_FIELD(CSAS, m_iGruntTorso, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_deadMates, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_canSayUsLeft, FIELD_INTEGER),
+	DEFINE_FIELD(CSAS, m_canLoseSquad, FIELD_BOOLEAN),
 };
 
 IMPLEMENT_SAVERESTORE(CSAS, COFSquadTalkMonster);
@@ -285,15 +290,15 @@ const char* CSAS::pGruntSentences[] =
 
 enum
 {
-	HGRUNT_SENT_NONE = -1,
-	HGRUNT_SENT_GREN = 0,
-	HGRUNT_SENT_ALERT,
-	HGRUNT_SENT_MONSTER,
-	HGRUNT_SENT_COVER,
-	HGRUNT_SENT_THROW,
-	HGRUNT_SENT_CHARGE,
-	HGRUNT_SENT_TAUNT,
-} HGRUNT_ALLY_SENTENCE_TYPES;
+	HSAS_SENT_NONE = -1,
+	HSAS_SENT_GREN = 0,
+	HSAS_SENT_ALERT,
+	HSAS_SENT_MONSTER,
+	HSAS_SENT_COVER,
+	HSAS_SENT_THROW,
+	HSAS_SENT_CHARGE,
+	HSAS_SENT_TAUNT,
+} HSAS_ALLY_SENTENCE_TYPES;
 
 //=========================================================
 // Speak Sentence - say your cued up sentence.
@@ -309,7 +314,7 @@ enum
 //=========================================================
 void CSAS::SpeakSentence(void)
 {
-	if (m_iSentence == HGRUNT_SENT_NONE)
+	if (m_iSentence == HSAS_SENT_NONE)
 	{
 		// no sentence cued up.
 		return;
@@ -317,7 +322,7 @@ void CSAS::SpeakSentence(void)
 
 	if (FOkToSpeak())
 	{
-		SENTENCEG_PlayRndSz(ENT(pev), pGruntSentences[m_iSentence], HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+		SENTENCEG_PlayRndSz(ENT(pev), pGruntSentences[m_iSentence], HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 		JustSpoke();
 	}
 }
@@ -425,7 +430,7 @@ BOOL CSAS::FOkToSpeak(void)
 void CSAS::JustSpoke(void)
 {
 	COFSquadTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(1.5, 2.0);
-	m_iSentence = HGRUNT_SENT_NONE;
+	m_iSentence = HSAS_SENT_NONE;
 }
 
 //=========================================================
@@ -739,36 +744,26 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 		// If I have an enemy, we can't establish intent (may just be crossfire)
 		if (m_hEnemy == NULL)
 		{
-			// If the player was facing directly at me, or I'm already suspicious, get mad
-			if (gpGlobals->time - m_flLastHitByPlayer < 4.0 && m_iPlayerHits > 2
-				&& ((m_afMemory & bits_MEMORY_SUSPICIOUS) || IsFacing(pevAttacker, pev->origin)))
-			{
-				// Alright, now I'm pissed!
-				PlaySentence("FG_MAD", 4, VOL_NORM, ATTN_NORM);
+			// Hey, be careful with that
+			Remember(bits_MEMORY_SUSPICIOUS);
 
-				Remember(bits_MEMORY_PROVOKED);
-				StopFollowing(TRUE);
-				ALERT(at_console, "HGrunt Ally is now MAD!\n");
+			if (GetCount() < 2) 
+			{
+				PlaySentence("SAS_FSHOT", 4, VOL_NORM, ATTN_NORM);
 			}
+
+			if (4.0 > gpGlobals->time - m_flLastHitByPlayer)
+				++m_iPlayerHits;
 			else
-			{
-				// Hey, be careful with that
-				PlaySentence("FG_SHOT", 4, VOL_NORM, ATTN_NORM);
-				Remember(bits_MEMORY_SUSPICIOUS);
+				m_iPlayerHits = 0;
 
-				if (4.0 > gpGlobals->time - m_flLastHitByPlayer)
-					++m_iPlayerHits;
-				else
-					m_iPlayerHits = 0;
+			m_flLastHitByPlayer = gpGlobals->time;
 
-				m_flLastHitByPlayer = gpGlobals->time;
-
-				ALERT(at_console, "HGrunt Ally is now SUSPICIOUS!\n");
-			}
+			ALERT(at_console, "HGrunt Ally is now SUSPICIOUS!\n");
 		}
 		else if (!m_hEnemy->IsPlayer())
 		{
-			PlaySentence("FG_SHOT", 4, VOL_NORM, ATTN_NORM);
+			PlaySentence("SAS_SHOT", 4, VOL_NORM, ATTN_NORM);
 		}
 	}
 
@@ -822,26 +817,59 @@ void CSAS::SetYawSpeed(void)
 	pev->yaw_speed = ys;
 }
 
+int CSAS::GetCount() 
+{
+	CBaseEntity* pMate = NULL;
+	int totCount = 0;
+	while ((pMate = UTIL_FindEntityByClassname(pMate, "monster_sas")) != NULL)
+	{
+		ALERT(at_console, "Found one. Count is now %d", totCount);
+		totCount++;
+	}
+	ALERT(at_console, "Finished. Returning %d", totCount);
+	return totCount;
+}
+
 void CSAS::IdleSound(void)
 {
 	if (FOkToSpeak() && (g_fGruntAllyQuestion || RANDOM_LONG(0, 1)))
 	{
 		if (!g_fGruntAllyQuestion)
 		{
-			// ask question or make statement
-			switch (RANDOM_LONG(0, 2))
+			//ALERT(at_console, "\n - %s - %s - \n", m_canLoseSquad ? "true" : "false", m_canSayUsLeft ? "true" : "false");
+			if (m_canSayUsLeft > 1 && m_canLoseSquad && GetCount() == 2)
 			{
-			case 0: // check in
-				SENTENCEG_PlayRndSz(ENT(pev), "SAS_CHECK", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
-				g_fGruntAllyQuestion = 1;
-				break;
-			case 1: // question
-				SENTENCEG_PlayRndSz(ENT(pev), "SAS_QUEST", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
-				g_fGruntAllyQuestion = 2;
-				break;
-			case 2: // statement
-				SENTENCEG_PlayRndSz(ENT(pev), "SAS_IDLE", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
-				break;
+				PlaySentence("SAS_GONBD", 4, VOL_NORM, ATTN_NORM);
+				m_canSayUsLeft--;
+			}
+			else if (m_canSayUsLeft > 0 && m_canLoseSquad && GetCount() < 2)
+			{
+				// Its just us left
+				SENTENCEG_PlayRndSz(ENT(pev), "SAS_JULSN", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+				m_canSayUsLeft--;
+			}
+			else if (m_canLoseSquad && GetCount() < 2 && RANDOM_LONG(0, 2) == 2)
+			{
+				// I wish my friends was here
+				SENTENCEG_PlayRndSz(ENT(pev), "SAS_MOURN", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+			}
+			else
+			{
+				// ask question or make statement
+				switch (RANDOM_LONG(0, 2))
+				{
+				case 0: // check in
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_CHECK", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+					g_fGruntAllyQuestion = 1;
+					break;
+				case 1: // question
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_QUEST", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+					g_fGruntAllyQuestion = 2;
+					break;
+				case 2: // statement
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_IDLE", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+					break;
+				}
 			}
 		}
 		else
@@ -849,10 +877,10 @@ void CSAS::IdleSound(void)
 			switch (g_fGruntAllyQuestion)
 			{
 			case 1: // check in
-				SENTENCEG_PlayRndSz(ENT(pev), "SAS_CLEAR", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz(ENT(pev), "SAS_CLEAR", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
 				break;
 			case 2: // question 
-				SENTENCEG_PlayRndSz(ENT(pev), "SAS_ANSWER", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
+				SENTENCEG_PlayRndSz(ENT(pev), "SAS_ANSWER", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, m_voicePitch);
 				break;
 			}
 			g_fGruntAllyQuestion = 0;
@@ -985,7 +1013,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	switch (pEvent->event)
 	{
-	case HGRUNT_AE_DROP_GUN:
+	case HSAS_AE_DROP_GUN:
 	{
 		Vector	vecGunPos;
 		Vector	vecGunAngles;
@@ -1018,7 +1046,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HGRUNT_AE_RELOAD:
+	case HSAS_AE_RELOAD:
 		if (FBitSet(pev->weapons, SASWeaponFlag::AR16))
 		{
 			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/AR16_reload.wav", 1, ATTN_NORM);
@@ -1030,7 +1058,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
 
-	case HGRUNT_AE_GREN_TOSS:
+	case HSAS_AE_GREN_TOSS:
 	{
 		UTIL_MakeVectors(pev->angles);
 		// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
@@ -1042,7 +1070,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HGRUNT_AE_GREN_LAUNCH:
+	case HSAS_AE_GREN_LAUNCH:
 	{
 		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/glauncher.wav", 0.8, ATTN_NORM);
 		CGrenade::ShootContact(pev, GetGunPosition(), m_vecTossVelocity);
@@ -1054,14 +1082,14 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HGRUNT_AE_GREN_DROP:
+	case HSAS_AE_GREN_DROP:
 	{
 		UTIL_MakeVectors(pev->angles);
 		CGrenade::ShootTimed(pev, pev->origin + gpGlobals->v_forward * 17 - gpGlobals->v_right * 27 + gpGlobals->v_up * 6, g_vecZero, 3);
 	}
 	break;
 
-	case HGRUNT_AE_BURST1:
+	case HSAS_AE_BURST1:
 	{
 		if (FBitSet(pev->weapons, SASWeaponFlag::MP5))
 		{
@@ -1092,8 +1120,8 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HGRUNT_AE_BURST2:
-	case HGRUNT_AE_BURST3:
+	case HSAS_AE_BURST2:
+	case HSAS_AE_BURST3:
 		if (FBitSet(pev->weapons, SASWeaponFlag::MP5))
 		{
 			Shoot();
@@ -1104,7 +1132,7 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 		break;
 
-	case HGRUNT_AE_KICK:
+	case HSAS_AE_KICK:
 	{
 		CBaseEntity* pHurt = Kick();
 
@@ -1119,11 +1147,11 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HGRUNT_AE_CAUGHT_ENEMY:
+	case HSAS_AE_CAUGHT_ENEMY:
 	{
 		if (FOkToSpeak())
 		{
-			SENTENCEG_PlayRndSz(ENT(pev), "SAS_ALERT", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+			SENTENCEG_PlayRndSz(ENT(pev), "SAS_ALERT", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 			JustSpoke();
 		}
 
@@ -1154,7 +1182,9 @@ void CSAS::Spawn()
 	m_MonsterState = MONSTERSTATE_NONE;
 	m_flNextGrenadeCheck = gpGlobals->time + 1;
 	m_flNextPainTime = gpGlobals->time;
-	m_iSentence = HGRUNT_SENT_NONE;
+	m_iSentence = HSAS_SENT_NONE;
+
+	m_deadMates = 0;
 
 	m_afCapability = bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_HEAR;
 
@@ -1163,6 +1193,8 @@ void CSAS::Spawn()
 
 	m_HackedGunPos = Vector(0, 0, 55);
 
+	m_canSayUsLeft = 2;
+
 	//Note: this code has been rewritten to use SetBodygroup since it relies on hardcoded offsets in the original
 	pev->body = 0;
 	m_iGruntTorso = SASTorso::Normal;
@@ -1170,12 +1202,12 @@ void CSAS::Spawn()
 	if (pev->weapons & SASWeaponFlag::MP5)
 	{
 		m_iWeaponIdx = SASWeapon::MP5;
-		m_cClipSize = GRUNT_MP5_CLIP_SIZE;
+		m_cClipSize = SAS_MP5_CLIP_SIZE;
 		pev->controller[1] = 255;
 	}
 	else if (pev->weapons & SASWeaponFlag::Shotgun)
 	{
-		m_cClipSize = GRUNT_SHOTGUN_CLIP_SIZE;
+		m_cClipSize = SAS_SHOTGUN_CLIP_SIZE;
 		m_iWeaponIdx = SASWeapon::Shotgun;
 		m_iGruntTorso = SASTorso::Shotgun;
 		pev->controller[1] = 0;
@@ -1183,7 +1215,7 @@ void CSAS::Spawn()
 	else if (pev->weapons & SASWeaponFlag::AR16)
 	{
 		m_iWeaponIdx = SASWeapon::AR16;
-		m_cClipSize = GRUNT_AR16_CLIP_SIZE;
+		m_cClipSize = SAS_AR16_CLIP_SIZE;
 		m_iGruntTorso = SASTorso::AR16;
 		pev->controller[1] = 0;
 	}
@@ -1305,15 +1337,15 @@ void CSAS::StartTask(Task_t* pTask)
 
 	switch (pTask->iTask)
 	{
-	case TASK_GRUNT_CHECK_FIRE:
+	case TASK_SAS_CHECK_FIRE:
 		if (!NoFriendlyFire())
 		{
-			SetConditions(bits_COND_GRUNT_NOFIRE);
+			SetConditions(bits_COND_SAS_NOFIRE);
 		}
 		TaskComplete();
 		break;
 
-	case TASK_GRUNT_SPEAK_SENTENCE:
+	case TASK_SAS_SPEAK_SENTENCE:
 		SpeakSentence();
 		TaskComplete();
 		break;
@@ -1329,7 +1361,7 @@ void CSAS::StartTask(Task_t* pTask)
 		m_IdealActivity = ACT_RELOAD;
 		break;
 
-	case TASK_GRUNT_FACE_TOSS_DIR:
+	case TASK_SAS_FACE_TOSS_DIR:
 		break;
 
 	case TASK_FACE_IDEAL:
@@ -1354,7 +1386,7 @@ void CSAS::RunTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_GRUNT_FACE_TOSS_DIR:
+	case TASK_SAS_FACE_TOSS_DIR:
 	{
 		// project a point along the toss vector and turn to face that point.
 		MakeIdealYaw(pev->origin + m_vecTossVelocity * 64);
@@ -1387,7 +1419,7 @@ void CSAS::PainSound(void)
 			// pain sentences are rare
 			if (FOkToSpeak())
 			{
-				//SENTENCEG_PlayRndSz(ENT(pev), "SAS_PAIN", HGRUNT_SENTENCE_VOLUME, ATTN_NORM, 0, PITCH_NORM);
+				//SENTENCEG_PlayRndSz(ENT(pev), "SAS_PAIN", HSAS_SENTENCE_VOLUME, ATTN_NORM, 0, PITCH_NORM);
 				JustSpoke();
 				return;
 			}
@@ -1535,9 +1567,9 @@ Schedule_t	slGruntAllyVictoryDance[] =
 //=========================================================
 Task_t tlGruntAllyEstablishLineOfFire[] =
 {
-	{ TASK_SET_FAIL_SCHEDULE,	(float)SCHED_GRUNT_ELOF_FAIL	},
+	{ TASK_SET_FAIL_SCHEDULE,	(float)SCHED_SAS_ELOF_FAIL	},
 	{ TASK_GET_PATH_TO_ENEMY,	(float)0						},
-	{ TASK_GRUNT_SPEAK_SENTENCE,(float)0						},
+	{ TASK_SAS_SPEAK_SENTENCE,(float)0						},
 	{ TASK_RUN_PATH,			(float)0						},
 	{ TASK_WAIT_FOR_MOVEMENT,	(float)0						},
 };
@@ -1592,7 +1624,7 @@ Task_t	tlGruntAllyCombatFace1[] =
 	{ TASK_SET_ACTIVITY,			(float)ACT_IDLE				},
 	{ TASK_FACE_ENEMY,				(float)0					},
 	{ TASK_WAIT,					(float)1.5					},
-	{ TASK_SET_SCHEDULE,			(float)SCHED_GRUNT_SWEEP	},
+	{ TASK_SET_SCHEDULE,			(float)SCHED_SAS_SWEEP	},
 };
 
 Schedule_t	slGruntAllyCombatFace[] =
@@ -1619,19 +1651,19 @@ Task_t	tlGruntAllySignalSuppress[] =
 	{ TASK_FACE_IDEAL,					(float)0				},
 	{ TASK_PLAY_SEQUENCE_FACE_ENEMY,	(float)ACT_SIGNAL2		},
 	{ TASK_FACE_ENEMY,					(float)0				},
-	{ TASK_GRUNT_CHECK_FIRE,			(float)0				},
+	{ TASK_SAS_CHECK_FIRE,			(float)0				},
 	{ TASK_RANGE_ATTACK1,				(float)0				},
 	{ TASK_FACE_ENEMY,					(float)0				},
-	{ TASK_GRUNT_CHECK_FIRE,			(float)0				},
+	{ TASK_SAS_CHECK_FIRE,			(float)0				},
 	{ TASK_RANGE_ATTACK1,				(float)0				},
 	{ TASK_FACE_ENEMY,					(float)0				},
-	{ TASK_GRUNT_CHECK_FIRE,			(float)0				},
+	{ TASK_SAS_CHECK_FIRE,			(float)0				},
 	{ TASK_RANGE_ATTACK1,				(float)0				},
 	{ TASK_FACE_ENEMY,					(float)0				},
-	{ TASK_GRUNT_CHECK_FIRE,			(float)0				},
+	{ TASK_SAS_CHECK_FIRE,			(float)0				},
 	{ TASK_RANGE_ATTACK1,				(float)0				},
 	{ TASK_FACE_ENEMY,					(float)0				},
-	{ TASK_GRUNT_CHECK_FIRE,			(float)0				},
+	{ TASK_SAS_CHECK_FIRE,			(float)0				},
 	{ TASK_RANGE_ATTACK1,				(float)0				},
 };
 
@@ -1644,7 +1676,7 @@ Schedule_t	slGruntAllySignalSuppress[] =
 		bits_COND_LIGHT_DAMAGE |
 		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND |
-		bits_COND_GRUNT_NOFIRE |
+		bits_COND_SAS_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
 
 		bits_SOUND_DANGER,
@@ -1656,19 +1688,19 @@ Task_t	tlGruntAllySuppress[] =
 {
 	{ TASK_STOP_MOVING,			0							},
 	{ TASK_FACE_ENEMY,			(float)0					},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0					},
+	{ TASK_SAS_CHECK_FIRE,	(float)0					},
 	{ TASK_RANGE_ATTACK1,		(float)0					},
 	{ TASK_FACE_ENEMY,			(float)0					},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0					},
+	{ TASK_SAS_CHECK_FIRE,	(float)0					},
 	{ TASK_RANGE_ATTACK1,		(float)0					},
 	{ TASK_FACE_ENEMY,			(float)0					},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0					},
+	{ TASK_SAS_CHECK_FIRE,	(float)0					},
 	{ TASK_RANGE_ATTACK1,		(float)0					},
 	{ TASK_FACE_ENEMY,			(float)0					},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0					},
+	{ TASK_SAS_CHECK_FIRE,	(float)0					},
 	{ TASK_RANGE_ATTACK1,		(float)0					},
 	{ TASK_FACE_ENEMY,			(float)0					},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0					},
+	{ TASK_SAS_CHECK_FIRE,	(float)0					},
 	{ TASK_RANGE_ATTACK1,		(float)0					},
 };
 
@@ -1681,7 +1713,7 @@ Schedule_t	slGruntAllySuppress[] =
 		bits_COND_LIGHT_DAMAGE |
 		bits_COND_HEAVY_DAMAGE |
 		bits_COND_HEAR_SOUND |
-		bits_COND_GRUNT_NOFIRE |
+		bits_COND_SAS_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
 
 		bits_SOUND_DANGER,
@@ -1726,14 +1758,14 @@ Schedule_t	slGruntAllyWaitInCover[] =
 Task_t	tlGruntAllyTakeCover1[] =
 {
 	{ TASK_STOP_MOVING,				(float)0							},
-	{ TASK_SET_FAIL_SCHEDULE,		(float)SCHED_GRUNT_TAKECOVER_FAILED	},
+	{ TASK_SET_FAIL_SCHEDULE,		(float)SCHED_SAS_TAKECOVER_FAILED	},
 	{ TASK_WAIT,					(float)0.2							},
 	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0							},
-	{ TASK_GRUNT_SPEAK_SENTENCE,	(float)0							},
+	{ TASK_SAS_SPEAK_SENTENCE,	(float)0							},
 	{ TASK_RUN_PATH,				(float)0							},
 	{ TASK_WAIT_FOR_MOVEMENT,		(float)0							},
 	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER			},
-	{ TASK_SET_SCHEDULE,			(float)SCHED_GRUNT_WAIT_FACE_ENEMY	},
+	{ TASK_SET_SCHEDULE,			(float)SCHED_SAS_WAIT_FACE_ENEMY	},
 };
 
 Schedule_t	slGruntAllyTakeCover[] =
@@ -1759,7 +1791,7 @@ Task_t	tlGruntAllyGrenadeCover1[] =
 	{ TASK_CLEAR_MOVE_WAIT,					(float)0							},
 	{ TASK_RUN_PATH,						(float)0							},
 	{ TASK_WAIT_FOR_MOVEMENT,				(float)0							},
-	{ TASK_SET_SCHEDULE,					(float)SCHED_GRUNT_WAIT_FACE_ENEMY	},
+	{ TASK_SET_SCHEDULE,					(float)SCHED_SAS_WAIT_FACE_ENEMY	},
 };
 
 Schedule_t	slGruntAllyGrenadeCover[] =
@@ -1888,16 +1920,16 @@ Task_t	tlGruntAllyRangeAttack1A[] =
 {
 	{ TASK_STOP_MOVING,			(float)0		},
 	{ TASK_PLAY_SEQUENCE_FACE_ENEMY,		(float)ACT_CROUCH },
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 };
 
@@ -1911,7 +1943,7 @@ Schedule_t	slGruntAllyRangeAttack1A[] =
 		bits_COND_HEAVY_DAMAGE |
 		bits_COND_ENEMY_OCCLUDED |
 		bits_COND_HEAR_SOUND |
-		bits_COND_GRUNT_NOFIRE |
+		bits_COND_SAS_NOFIRE |
 		bits_COND_NO_AMMO_LOADED,
 
 		bits_SOUND_DANGER,
@@ -1928,16 +1960,16 @@ Task_t	tlGruntAllyRangeAttack1B[] =
 {
 	{ TASK_STOP_MOVING,				(float)0		},
 	{ TASK_PLAY_SEQUENCE_FACE_ENEMY,(float)ACT_IDLE_ANGRY  },
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 	{ TASK_FACE_ENEMY,			(float)0		},
-	{ TASK_GRUNT_CHECK_FIRE,	(float)0		},
+	{ TASK_SAS_CHECK_FIRE,	(float)0		},
 	{ TASK_RANGE_ATTACK1,		(float)0		},
 };
 
@@ -1951,7 +1983,7 @@ Schedule_t	slGruntAllyRangeAttack1B[] =
 		bits_COND_HEAVY_DAMAGE |
 		bits_COND_ENEMY_OCCLUDED |
 		bits_COND_NO_AMMO_LOADED |
-		bits_COND_GRUNT_NOFIRE |
+		bits_COND_SAS_NOFIRE |
 		bits_COND_HEAR_SOUND,
 
 		bits_SOUND_DANGER,
@@ -1966,9 +1998,9 @@ Schedule_t	slGruntAllyRangeAttack1B[] =
 Task_t	tlGruntAllyRangeAttack2[] =
 {
 	{ TASK_STOP_MOVING,				(float)0					},
-	{ TASK_GRUNT_FACE_TOSS_DIR,		(float)0					},
+	{ TASK_SAS_FACE_TOSS_DIR,		(float)0					},
 	{ TASK_PLAY_SEQUENCE,			(float)ACT_RANGE_ATTACK2	},
-	{ TASK_SET_SCHEDULE,			(float)SCHED_GRUNT_WAIT_FACE_ENEMY	},// don't run immediately after throwing grenade.
+	{ TASK_SET_SCHEDULE,			(float)SCHED_SAS_WAIT_FACE_ENEMY	},// don't run immediately after throwing grenade.
 };
 
 Schedule_t	slGruntAllyRangeAttack2[] =
@@ -2240,7 +2272,7 @@ void CSAS::SetActivity(Activity NewActivity)
 		}
 		break;
 	case ACT_RUN:
-		if (pev->health <= HGRUNT_LIMP_HEALTH)
+		if (pev->health <= HSAS_LIMP_HEALTH)
 		{
 			// limp!
 			iSequence = LookupActivity(ACT_RUN_HURT);
@@ -2251,7 +2283,7 @@ void CSAS::SetActivity(Activity NewActivity)
 		}
 		break;
 	case ACT_WALK:
-		if (pev->health <= HGRUNT_LIMP_HEALTH)
+		if (pev->health <= HSAS_LIMP_HEALTH)
 		{
 			// limp!
 			iSequence = LookupActivity(ACT_WALK_HURT);
@@ -2302,7 +2334,7 @@ Schedule_t* CSAS::GetSchedule(void)
 {
 
 	// clear old sentence
-	m_iSentence = HGRUNT_SENT_NONE;
+	m_iSentence = HSAS_SENT_NONE;
 
 	// flying? If PRONE, barnacle has me. IF not, it's assumed I am rapelling. 
 	if (pev->movetype == MOVETYPE_FLY && m_MonsterState != MONSTERSTATE_PRONE)
@@ -2311,15 +2343,15 @@ Schedule_t* CSAS::GetSchedule(void)
 		{
 			// just landed
 			pev->movetype = MOVETYPE_STEP;
-			return GetScheduleOfType(SCHED_GRUNT_REPEL_LAND);
+			return GetScheduleOfType(SCHED_SAS_REPEL_LAND);
 		}
 		else
 		{
 			// repel down a rope, 
 			if (m_MonsterState == MONSTERSTATE_COMBAT)
-				return GetScheduleOfType(SCHED_GRUNT_REPEL_ATTACK);
+				return GetScheduleOfType(SCHED_SAS_REPEL_ATTACK);
 			else
-				return GetScheduleOfType(SCHED_GRUNT_REPEL);
+				return GetScheduleOfType(SCHED_SAS_REPEL);
 		}
 	}
 
@@ -2344,7 +2376,7 @@ Schedule_t* CSAS::GetSchedule(void)
 
 				if (FOkToSpeak())
 				{
-					SENTENCEG_PlayRndSz(ENT(pev), "SAS_GREN", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_GREN", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 					JustSpoke();
 				}
 				return GetScheduleOfType(SCHED_TAKE_COVER_FROM_BEST_SOUND);
@@ -2411,24 +2443,24 @@ Schedule_t* CSAS::GetSchedule(void)
 					{
 						if ((m_hEnemy != NULL) && m_hEnemy->IsPlayer())
 							// player
-							SENTENCEG_PlayRndSz(ENT(pev), "SAS_ALERT", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+							SENTENCEG_PlayRndSz(ENT(pev), "SAS_ALERT", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 						else if ((m_hEnemy != NULL) &&
 							(m_hEnemy->Classify() != CLASS_PLAYER_ALLY) &&
 							(m_hEnemy->Classify() != CLASS_HUMAN_PASSIVE) &&
 							(m_hEnemy->Classify() != CLASS_MACHINE))
 							// monster
-							SENTENCEG_PlayRndSz(ENT(pev), "SAS_MONST", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+							SENTENCEG_PlayRndSz(ENT(pev), "SAS_MONST", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 
 						JustSpoke();
 					}
 
 					if (HasConditions(bits_COND_CAN_RANGE_ATTACK1))
 					{
-						return GetScheduleOfType(SCHED_GRUNT_SUPPRESS);
+						return GetScheduleOfType(SCHED_SAS_SUPPRESS);
 					}
 					else
 					{
-						return GetScheduleOfType(SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE);
+						return GetScheduleOfType(SCHED_SAS_ESTABLISH_LINE_OF_FIRE);
 					}
 				}
 			}
@@ -2445,7 +2477,7 @@ Schedule_t* CSAS::GetSchedule(void)
 			//!!!KELLY - this individual just realized he's out of bullet ammo. 
 			// He's going to try to find cover to run to and reload, but rarely, if 
 			// none is available, he'll drop and reload in the open here. 
-			return GetScheduleOfType(SCHED_GRUNT_COVER_AND_RELOAD);
+			return GetScheduleOfType(SCHED_SAS_COVER_AND_RELOAD);
 		}
 
 		// damaged just a little
@@ -2463,8 +2495,8 @@ Schedule_t* CSAS::GetSchedule(void)
 				//!!!KELLY - this grunt was hit and is going to run to cover.
 				if (FOkToSpeak()) // && RANDOM_LONG(0,1))
 				{
-					//SENTENCEG_PlayRndSz( ENT(pev), "SAS_COVER", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
-					m_iSentence = HGRUNT_SENT_COVER;
+					//SENTENCEG_PlayRndSz( ENT(pev), "SAS_COVER", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
+					m_iSentence = HSAS_SENT_COVER;
 					//JustSpoke();
 				}
 				return GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY);
@@ -2497,7 +2529,7 @@ Schedule_t* CSAS::GetSchedule(void)
 				if (MySquadLeader()->m_fEnemyEluded && !HasConditions(bits_COND_ENEMY_FACING_ME))
 				{
 					MySquadLeader()->m_fEnemyEluded = FALSE;
-					return GetScheduleOfType(SCHED_GRUNT_FOUND_ENEMY);
+					return GetScheduleOfType(SCHED_SAS_FOUND_ENEMY);
 				}
 			}
 
@@ -2525,7 +2557,7 @@ Schedule_t* CSAS::GetSchedule(void)
 				//!!!KELLY - this grunt is about to throw or fire a grenade at the player. Great place for "fire in the hole"  "frag out" etc
 				if (FOkToSpeak())
 				{
-					SENTENCEG_PlayRndSz(ENT(pev), "SAS_THROW", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_THROW", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 					JustSpoke();
 				}
 				return GetScheduleOfType(SCHED_RANGE_ATTACK2);
@@ -2536,12 +2568,12 @@ Schedule_t* CSAS::GetSchedule(void)
 				// charge the enemy's position. 
 				if (FOkToSpeak())// && RANDOM_LONG(0,1))
 				{
-					//SENTENCEG_PlayRndSz( ENT(pev), "SAS_CHARGE", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
-					m_iSentence = HGRUNT_SENT_CHARGE;
+					//SENTENCEG_PlayRndSz( ENT(pev), "SAS_CHARGE", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
+					m_iSentence = HSAS_SENT_CHARGE;
 					//JustSpoke();
 				}
 
-				return GetScheduleOfType(SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE);
+				return GetScheduleOfType(SCHED_SAS_ESTABLISH_LINE_OF_FIRE);
 			}
 			else
 			{
@@ -2550,7 +2582,7 @@ Schedule_t* CSAS::GetSchedule(void)
 				// grunt's covered position. Good place for a taunt, I guess?
 				if (FOkToSpeak() && RANDOM_LONG(0, 1))
 				{
-					SENTENCEG_PlayRndSz(ENT(pev), "SAS_TAUNT", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_TAUNT", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 					JustSpoke();
 				}
 				return GetScheduleOfType(SCHED_STANDOFF);
@@ -2562,7 +2594,7 @@ Schedule_t* CSAS::GetSchedule(void)
 		{
 			if (HasConditions(bits_COND_SEE_ENEMY) && !HasConditions(bits_COND_CAN_RANGE_ATTACK1))
 			{
-				return GetScheduleOfType(SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE);
+				return GetScheduleOfType(SCHED_SAS_ESTABLISH_LINE_OF_FIRE);
 			}
 		}
 
@@ -2655,7 +2687,7 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 			{
 				if (FOkToSpeak())
 				{
-					SENTENCEG_PlayRndSz(ENT(pev), "SAS_THROW", HGRUNT_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
+					SENTENCEG_PlayRndSz(ENT(pev), "SAS_THROW", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
 					JustSpoke();
 				}
 				return slGruntAllyTossGrenadeCover;
@@ -2681,7 +2713,7 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 	{
 		return &slGruntAllyTakeCoverFromBestSound[0];
 	}
-	case SCHED_GRUNT_TAKECOVER_FAILED:
+	case SCHED_SAS_TAKECOVER_FAILED:
 	{
 		if (HasConditions(bits_COND_CAN_RANGE_ATTACK1) && OccupySlot(bits_SLOTS_HGRUNT_ENGAGE))
 		{
@@ -2691,13 +2723,13 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 		return GetScheduleOfType(SCHED_FAIL);
 	}
 	break;
-	case SCHED_GRUNT_ELOF_FAIL:
+	case SCHED_SAS_ELOF_FAIL:
 	{
 		// human grunt is unable to move to a position that allows him to attack the enemy.
 		return GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY);
 	}
 	break;
-	case SCHED_GRUNT_ESTABLISH_LINE_OF_FIRE:
+	case SCHED_SAS_ESTABLISH_LINE_OF_FIRE:
 	{
 		return &slGruntAllyEstablishLineOfFire[0];
 	}
@@ -2728,19 +2760,19 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 	{
 		return &slGruntAllyCombatFace[0];
 	}
-	case SCHED_GRUNT_WAIT_FACE_ENEMY:
+	case SCHED_SAS_WAIT_FACE_ENEMY:
 	{
 		return &slGruntAllyWaitInCover[0];
 	}
-	case SCHED_GRUNT_SWEEP:
+	case SCHED_SAS_SWEEP:
 	{
 		return &slGruntAllySweep[0];
 	}
-	case SCHED_GRUNT_COVER_AND_RELOAD:
+	case SCHED_SAS_COVER_AND_RELOAD:
 	{
 		return &slGruntAllyHideReload[0];
 	}
-	case SCHED_GRUNT_FOUND_ENEMY:
+	case SCHED_SAS_FOUND_ENEMY:
 	{
 		return &slGruntAllyFoundEnemy[0];
 	}
@@ -2750,6 +2782,24 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 		{
 			if (!IsLeader())
 			{
+				if (MySquadLeader()->m_deadMates > 2)
+				{
+					//Sad Victory Dance Taunt
+					MySquadLeader()->PlaySentence("SAS_VDNSD", 4, VOL_NORM, ATTN_NORM);
+					ALERT(at_console, "\n THIS WORKS \n");
+				}
+				else if (MySquadLeader()->m_deadMates == 2)
+				{
+					//Happy Victory Dance Taunt
+					MySquadLeader()->PlaySentence("SAS_VDNCL", 4, VOL_NORM, ATTN_NORM);
+					ALERT(at_console, "\n THIS WORKS \n");
+					}
+				else
+				{
+					//Happy Victory Dance Taunt
+					MySquadLeader()->PlaySentence("SAS_VDNHP", 4, VOL_NORM, ATTN_NORM);
+					ALERT(at_console, "\n THIS WORKS \n");
+				}
 				return &slGruntAllyFail[0];
 			}
 		}
@@ -2757,7 +2807,7 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 		return &slGruntAllyVictoryDance[0];
 	}
 
-	case SCHED_GRUNT_SUPPRESS:
+	case SCHED_SAS_SUPPRESS:
 	{
 		if (m_hEnemy->IsPlayer() && m_fFirstEncounter)
 		{
@@ -2779,19 +2829,19 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 
 		return &slGruntAllyFail[0];
 	}
-	case SCHED_GRUNT_REPEL:
+	case SCHED_SAS_REPEL:
 	{
 		if (pev->velocity.z > -128)
 			pev->velocity.z -= 32;
 		return &slGruntAllyRepel[0];
 	}
-	case SCHED_GRUNT_REPEL_ATTACK:
+	case SCHED_SAS_REPEL_ATTACK:
 	{
 		if (pev->velocity.z > -128)
 			pev->velocity.z -= 32;
 		return &slGruntAllyRepelAttack[0];
 	}
-	case SCHED_GRUNT_REPEL_LAND:
+	case SCHED_SAS_REPEL_LAND:
 	{
 		return &slGruntAllyRepelLand[0];
 	}
@@ -2844,7 +2894,8 @@ void CSAS::TalkInit()
 	m_szGrp[TLK_UNUSE] = "SAS_WAIT";
 	m_szGrp[TLK_STOP] = "SAS_STOP";
 
-	m_szGrp[TLK_NOSHOOT] = "SAS_SCARED";
+	m_szGrp[TLK_NOSHOOT] = "SAS_FSHOT";
+	m_szGrp[TLK_FRKILL] = "SAS_FKIL";
 	m_szGrp[TLK_HELLO] = "SAS_ALERT";
 
 	m_szGrp[TLK_PLHURT1] = "!SAS_CUREA";
@@ -3085,7 +3136,7 @@ public:
 	static char* m_szPoses[7];
 };
 
-char* CDeadSAS::m_szPoses[] = { "deadstomach", "deadside", "deadsitting", "dead_on_back", "hgrunt_dead_stomach", "dead_headcrabed", "dead_canyon" };
+char* CDeadSAS::m_szPoses[] = { "deadstomach", "deadside", "deadsitting", "dead_on_back", "HSAS_dead_stomach", "dead_headcrabed", "dead_canyon" };
 
 void CDeadSAS::KeyValue(KeyValueData* pkvd)
 {

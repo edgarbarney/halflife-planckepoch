@@ -186,6 +186,26 @@ Schedule_t	slOFAllyIdleStopShooting[] =
 	},
 };
 
+Task_t	tlOFAllyIdleKilledMate[] =
+{
+	{ TASK_TLK_KILLEDMATE,	(float)0		},// taunt at player cus they killed the one of our mates
+	// { TASK_TLK_EYECONTACT,		(float)0		},// look at the player
+};
+
+Schedule_t	slOFAllyIdleKilledMate[] =
+{
+	{
+		tlOFAllyIdleKilledMate,
+		ARRAYSIZE(tlOFAllyIdleKilledMate),
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND,
+		0,
+		"Idle Killed Mate"
+	},
+};
+
 Task_t	tlOFAllyMoveAway[] =
 {
 	{ TASK_SET_FAIL_SCHEDULE,		( float ) SCHED_MOVE_AWAY_FAIL },
@@ -427,6 +447,12 @@ void COFAllyMonster::StartTask( Task_t *pTask )
 		TaskComplete();
 		break;
 
+	case TASK_TLK_KILLEDMATE:
+		// taunt at player cus they killed the one of our mates
+		PlaySentence(m_szGrp[TLK_FRKILL], RANDOM_FLOAT(2.8, 3.2), VOL_NORM, ATTN_NORM);
+		TaskComplete();
+		break;
+
 	case TASK_CANT_FOLLOW:
 		StopFollowing( FALSE );
 		PlaySentence( m_szGrp[ TLK_STOP ], RANDOM_FLOAT( 2, 2.5 ), VOL_NORM, ATTN_NORM );
@@ -610,7 +636,7 @@ void COFAllyMonster::RunTask( Task_t *pTask )
 }
 
 
-void COFAllyMonster::Killed( entvars_t *pevAttacker, int iGib )
+void COFAllyMonster::Killed( entvars_t *pevAttacker, int iGib)
 {
 	// If a client killed me (unless I was already Barnacle'd), make everyone else mad/afraid of him
 	if( ( pevAttacker->flags & FL_CLIENT ) && m_MonsterState != MONSTERSTATE_PRONE )
@@ -618,7 +644,6 @@ void COFAllyMonster::Killed( entvars_t *pevAttacker, int iGib )
 		AlertFriends();
 		LimitFollowers( CBaseEntity::Instance( pevAttacker ), 0 );
 	}
-
 	m_hTargetEnt = NULL;
 	// Don't finish that sentence
 	StopTalking();

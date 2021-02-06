@@ -131,6 +131,12 @@ void COFSquadTalkMonster::Killed( entvars_t *pevAttacker, int iGib )
 
 	if( InSquad() )
 	{
+		if ( (pevAttacker->flags & FL_CLIENT) )
+		{
+			COFAllyMonster::ShutUpFriends();
+			MySquadLeader()->PlaySentence("SAS_FKIL", 4, VOL_NORM, ATTN_NORM);
+		}
+		MySquadLeader()->m_deadMates++;
 		MySquadLeader()->SquadRemove( this );
 	}
 
@@ -198,6 +204,8 @@ BOOL COFSquadTalkMonster::SquadAdd( COFSquadTalkMonster *pAdd )
 		{
 			m_hSquadMember[ i ] = pAdd;
 			pAdd->m_hSquadLeader = this;
+			pAdd->m_canLoseSquad = TRUE;
+			pAdd->m_canSayUsLeft = 2;
 			return TRUE;
 		}
 	}
@@ -381,7 +389,7 @@ int COFSquadTalkMonster::SquadRecruit( int searchRadius, int maxMembers )
 {
 	int squadCount;
 	int iMyClass = Classify();// cache this monster's class
-
+	m_canLoseSquad = true;
 
 	// Don't recruit if I'm already in a group
 	if( InSquad() )
@@ -500,7 +508,7 @@ void COFSquadTalkMonster::StartMonster( void )
 		}
 
 		// try to form squads now.
-		int iSquadSize = SquadRecruit( 1024, 4 );
+		int iSquadSize = SquadRecruit( 1024, MAX_SQUAD_MEMBERS );
 
 		if( iSquadSize )
 		{
