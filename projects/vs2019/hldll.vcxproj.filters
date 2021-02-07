@@ -387,13 +387,7 @@
     <ClCompile Include="..\..\dlls\male_assassin.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\entities\effects\CWeatherPrecipitation.cpp">
-      <Filter>Source Files\dlls\entities\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\dlls\entities\effects\CWeatherController.cpp">
-      <Filter>Source Files\dlls\entities\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\dlls\entities\effects\CWeatherWind.cpp">
+    <ClCompile Include="..\..\dlls\entities\effects\CWeather.cpp">
       <Filter>Source Files\dlls\entities\effects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -548,13 +542,7 @@
     <ClInclude Include="..\..\dlls\COFSquadTalkMonster.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\dlls\entities\effects\CWeatherWind.h">
-      <Filter>Header Files\dlls\entities\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dlls\entities\effects\CWeatherPrecipitation.h">
-      <Filter>Header Files\dlls\entities\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dlls\entities\effects\CWeatherController.h">
+    <ClInclude Include="..\..\dlls\entities\effects\CWeather.h">
       <Filter>Header Files\dlls\entities\effects</Filter>
     </ClInclude>
   </ItemGroup>

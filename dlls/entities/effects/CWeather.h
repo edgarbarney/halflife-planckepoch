@@ -14,8 +14,35 @@
 ****/
 #pragma once
 
-#include	"extdll.h"
+#include    "extdll.h"
+#include    "util.h"
 #include	"cbase.h"
+
+#define SF_WEATHER_START_ON 1
+
+/// <summary>
+/// Triggerable entity to alter the current rain/snow parameters.
+/// </summary>
+class CWeatherPrecipitation : public CBaseEntity
+{
+public:
+    void Spawn() override;
+    void KeyValue(KeyValueData* pkvd) override;
+    void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+    int ObjectCaps() override { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+
+    int Save(CSave& save) override;
+    int Restore(CRestore& restore) override;
+    static TYPEDESCRIPTION m_SaveData[];
+
+    DLLEXPORT void SendWeather();
+
+private:
+    int type = 1;
+    int intensity = 100;
+    int sprayDensity = 2;
+};
 
 /// <summary>
 /// This entity isn't placed by the mapper, it is
@@ -56,4 +83,30 @@ private:
     float speedVariance = 0;
     float changeFrequency = 0;
     float changeSpeed = 0;
+};
+
+/// <summary>
+/// Triggerable entity to alter the current wind parameters.
+/// </summary>
+class CWeatherWind : public CBaseEntity
+{
+public:
+    void Spawn() override;
+    void KeyValue(KeyValueData* pkvd) override;
+    void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+    int ObjectCaps() override { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+
+    int Save(CSave& save) override;
+    int Restore(CRestore& restore) override;
+    static TYPEDESCRIPTION m_SaveData[];
+
+    DLLEXPORT void SendWeather();
+
+private:
+    float windSpeed = 50;
+    float yawVariance = 10;
+    float speedVariance = 10;
+    float changeFrequency = 5;
+    float changeSpeed = 1;
 };
