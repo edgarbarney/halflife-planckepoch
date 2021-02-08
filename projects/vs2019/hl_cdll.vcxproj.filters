@@ -351,6 +351,9 @@
     <ClCompile Include="..\..\cl_dll\effects\particles\CRainSpray.cpp">
       <Filter>Source Files\cl_dll\effects\particles</Filter>
     </ClCompile>
+    <ClCompile Include="CPostProcessing.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -511,6 +514,9 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\effects\particles\CRainSpray.h">
       <Filter>Header Files\cl_dll\effects\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="CPostProcessing.h">
+      <Filter>Header Files\cl_dll\effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
