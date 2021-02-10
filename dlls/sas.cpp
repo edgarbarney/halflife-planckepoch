@@ -78,13 +78,23 @@ namespace SASHead
 	{
 		Default = -1,
 		GasMask = 0,
-		BeretWhite,
-		OpsMask,
-		BandanaWhite,
-		BandanaBlack,
-		MilitaryPolice,
-		Commander,
-		BeretBlack,
+		Leader
+	};
+}
+
+namespace SASSkin
+{
+	enum SASSkin
+	{
+		Default = -1,
+		WhiteBrown = 0,
+		WhiteBlu,
+		ScotBrown,
+		ScotBlu,
+		LeaderWhite,
+		LeaderScot,
+		SKINCOUNT_SOLDIERS = 3, // Total heads (Leaders Excluded);
+		SKINCOUNT_LEADERS = 1, // Total heads (Leaders Only);
 	};
 }
 
@@ -1255,16 +1265,35 @@ void CSAS::Spawn()
 
 	*/
 
-	//SetBodygroup(SASBodygroup::Head, m_iGruntHead);
-	//SetBodygroup(SASBodygroup::Torso, m_iGruntTorso);
-	SetBodygroup(SASBodygroup::Weapons, m_iWeaponIdx);
-
 	//TODO: probably also needs this for head SASHead::BeretBlack
-	if (m_iGruntHead == SASHead::OpsMask || m_iGruntHead == SASHead::BandanaBlack)
-		m_voicePitch = 90;
+	//if (m_iGruntHead == SASHead::OpsMask || m_iGruntHead == SASHead::BandanaBlack)
+	//	m_voicePitch = 90;
 
 	//Random Skin
-	pev->skin = RANDOM_LONG(0, 1);
+	if (pev->spawnflags & SF_SQUADMONSTER_LEADER)
+	{
+		pev->skin = SASSkin::LeaderScot;
+		m_iGruntHead = SASHead::Leader;
+	}
+	else
+	{
+		pev->skin = RANDOM_LONG(1, SASSkin::SKINCOUNT_SOLDIERS);
+		m_iGruntHead = SASHead::GasMask;
+	}
+
+	// get voice pitch
+	if (RANDOM_LONG(0, 1) && !(pev->spawnflags & SF_SQUADMONSTER_LEADER))
+	{ 
+		m_voicePitch = 100 + RANDOM_LONG(0, 18);
+	}
+	else
+	{
+		m_voicePitch = 100;
+	}
+
+	SetBodygroup(SASBodygroup::Head, m_iGruntHead);
+	//SetBodygroup(SASBodygroup::Torso, m_iGruntTorso); // Theres just one torso
+	SetBodygroup(SASBodygroup::Weapons, m_iWeaponIdx);
 
 	m_iAR16Shell = PRECACHE_MODEL("models/556shell.mdl");
 	//m_iAR16Link = PRECACHE_MODEL("models/AR16_link.mdl");
@@ -1318,9 +1347,6 @@ void CSAS::Precache()
 	PRECACHE_SOUND("sas/help04.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav");// because we use the basemonster SWIPE animation event
-
-	// get voice pitch
-	m_voicePitch = 100;
 
 	m_iBrassShell = PRECACHE_MODEL("models/shell.mdl");// brass shell
 	m_iShotgunShell = PRECACHE_MODEL("models/shotgunshell.mdl");
@@ -2786,19 +2812,16 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 				{
 					//Sad Victory Dance Taunt
 					MySquadLeader()->PlaySentence("SAS_VDNSD", 4, VOL_NORM, ATTN_NORM);
-					ALERT(at_console, "\n THIS WORKS \n");
 				}
 				else if (MySquadLeader()->m_deadMates == 2)
 				{
-					//Happy Victory Dance Taunt
+					//"That Was Close" Victory Dance Taunt
 					MySquadLeader()->PlaySentence("SAS_VDNCL", 4, VOL_NORM, ATTN_NORM);
-					ALERT(at_console, "\n THIS WORKS \n");
 					}
 				else
 				{
 					//Happy Victory Dance Taunt
 					MySquadLeader()->PlaySentence("SAS_VDNHP", 4, VOL_NORM, ATTN_NORM);
-					ALERT(at_console, "\n THIS WORKS \n");
 				}
 				return &slGruntAllyFail[0];
 			}
@@ -3157,7 +3180,7 @@ void CDeadSAS::KeyValue(KeyValueData* pkvd)
 LINK_ENTITY_TO_CLASS(monster_sas_dead, CDeadSAS);
 
 //=========================================================
-// ********** DeadHGrunt SPAWN **********
+// ********** DeadSAS SPAWN **********
 //=========================================================
 void CDeadSAS::Spawn(void)
 {
