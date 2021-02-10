@@ -60,6 +60,8 @@ CWeather::CWeather()
 
 void CWeather::Initialise()
 {
+    this->precipitationType = PrecipitationType::None;
+    this->numParticles = 0;
     this->lastClientTime = gEngfuncs.GetClientTime();
     this->nextPrecipitationUpdate = 0;
 
