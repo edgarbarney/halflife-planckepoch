@@ -178,6 +178,100 @@ void CFuncWallToggle :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 	}
 }
 
+// EDMD - Func Wall CVar
+#pragma region FuncWallCVarToggle
+
+class CFuncWallCvar : public CFuncWall
+{
+public:
+	void	KeyValue(KeyValueData* pkvd);
+	void	Spawn(void);
+	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	void	TurnOff(void);
+	void	TurnOn(void);
+	BOOL	IsOn(void);
+
+	int	m_cVarName;
+
+	int		m_cVarValue;
+
+	virtual STATE GetState(void) { return (pev->solid == SOLID_NOT) ? STATE_OFF : STATE_ON; };
+};
+
+LINK_ENTITY_TO_CLASS(func_wall_cvar, CFuncWallCvar);
+
+void CFuncWallCvar::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "conVarName"))
+	{
+		// For some reason, cannot get the string (char array) directly
+		m_cVarName = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "conVarValue"))
+	{
+		m_cVarValue = atoi(pkvd->szValue);
+	}
+	else
+		CFuncWall::KeyValue(pkvd);
+}
+
+void CFuncWallCvar::Spawn(void)
+{
+	CFuncWall::Spawn();
+
+	if (CVAR_GET_FLOAT(STRING(m_cVarName)) == m_cVarValue)
+	{
+		TurnOn();
+	} 
+	else
+	{
+		TurnOff();
+	}
+	ALERT(at_console, STRING(m_cVarName));
+	ALERT(at_console, " is %f \n", CVAR_GET_FLOAT(STRING(m_cVarName)));
+}
+
+
+void CFuncWallCvar::TurnOff(void)
+{
+	pev->solid = SOLID_NOT;
+	pev->effects |= EF_NODRAW;
+	UTIL_SetOrigin(this, pev->origin);
+}
+
+
+void CFuncWallCvar::TurnOn(void)
+{
+	pev->solid = SOLID_BSP;
+	pev->effects &= ~EF_NODRAW;
+	UTIL_SetOrigin(this, pev->origin);
+}
+
+
+BOOL CFuncWallCvar::IsOn(void)
+{
+	if (pev->solid == SOLID_NOT)
+		return FALSE;
+	return TRUE;
+}
+
+void CFuncWallCvar::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	if (CVAR_GET_FLOAT(STRING(m_cVarName)) == m_cVarValue)
+	{
+		TurnOn();
+	}
+	else
+	{
+		TurnOff();
+	}
+	ALERT(at_console, STRING(m_cVarName));
+	ALERT(at_console, " is %f \n", CVAR_GET_FLOAT(STRING(m_cVarName)));
+}
+
+#pragma endregion
+// EDMD - END
 
 #define SF_CONVEYOR_VISUAL		0x0001
 #define SF_CONVEYOR_NOTSOLID	0x0002
