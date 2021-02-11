@@ -3173,6 +3173,14 @@
 	vuser1(string) : "Rotate by Pitch Yaw Roll (Y Z X)" : "0 0 0"
 ]
 
+//EDMD - Sets wall on when desired cvar is at desired value, sets off when otherwise
+@SolidClass base(func_wall) = func_wall_cvar : "ConVar (CVar) Toggleable geometry" 
+[
+	conVarName(string) : "CVar Name" : "sv_cheats"
+	conVarValue(integer) : "Set On When" : 1
+]
+
+
 @SolidClass base(func_wall) = func_wall_toggle : "Toggleable geometry" 
 [
 	spawnflags(flags) =
