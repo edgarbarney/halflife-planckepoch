@@ -34,6 +34,7 @@
 #include "gamerules.h"
 #include "teamplay_gamerules.h"
 #include "movewith.h" //LRC
+#include <ctime>
 
 extern CGraph WorldGraph;
 extern CSoundEnt *pSoundEnt;
@@ -481,6 +482,14 @@ void CWorld :: Spawn( void )
 	g_fGameOver = FALSE;
 	Precache( );
 	g_flWeaponCheat = CVAR_GET_FLOAT( "sv_cheats" );  // Is the impulse 101 command allowed?
+	
+	// When "worldspawn" is spawned, check holidays. Cus why not.
+	std::time_t t = std::time(0);
+	std::tm* loctim = std::localtime(&t);
+	if (loctim->tm_mon == 5) // Check the pride month
+	{
+		CVAR_SET_FLOAT("sv_holiday", 1.0f);
+	}
 }
 
 void CWorld :: Precache( void )

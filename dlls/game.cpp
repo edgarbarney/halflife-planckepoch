@@ -60,6 +60,9 @@ cvar_t	cvar_user6={"user6","0", FCVAR_SERVER };
 cvar_t	cvar_user7={"user7","0", FCVAR_SERVER };
 cvar_t	cvar_user8={"user8","0", FCVAR_SERVER };
 
+// EDMD - Convars
+cvar_t	holidaycvar = { "sv_holiday","0", FCVAR_SERVER };
+
 cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
 // Engine Cvars
@@ -585,6 +588,7 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&cvar_user6); //LRC
 	CVAR_REGISTER (&cvar_user7); //LRC
 	CVAR_REGISTER (&cvar_user8); //LRC
+	CVAR_REGISTER (&holidaycvar); //EDMD
 	//CVAR_REGISTER (&mp3player); //G-Cont. Stuff for Mp3 player	//AJH - Too late, I've already added mp3/ogg
     //CVAR_REGISTER (&mp3volume); //G-Cont. Stuff for Mp3 player	//AJH
 	CVAR_REGISTER (&timeddamage); //AJH Time based damage (nervegas/rad, not poison) on/off
