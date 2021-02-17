@@ -390,6 +390,9 @@
     <ClCompile Include="..\..\dlls\entities\effects\CWeather.cpp">
       <Filter>Source Files\dlls\entities\effects</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\clyde.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">

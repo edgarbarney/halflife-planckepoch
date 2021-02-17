@@ -93,8 +93,8 @@ namespace SASSkin
 		ScotBlu,
 		LeaderWhite,
 		LeaderScot,
-		SKINCOUNT_SOLDIERS = 3, // Total heads (Leaders Excluded);
-		SKINCOUNT_LEADERS = 1, // Total heads (Leaders Only);
+		SKINCOUNT_SOLDIERS = 3, // Total heads -1 (Leaders Excluded);
+		SKINCOUNT_LEADERS = 1, // Total heads -1 (Leaders Only);
 	};
 }
 
@@ -273,7 +273,7 @@ TYPEDESCRIPTION	CSAS::m_SaveData[] =
 	DEFINE_FIELD(CSAS, m_fStanding, FIELD_BOOLEAN),
 	DEFINE_FIELD(CSAS, m_fFirstEncounter, FIELD_BOOLEAN),
 	DEFINE_FIELD(CSAS, m_cClipSize, FIELD_INTEGER),
-	//	DEFINE_FIELD( CSAS, m_voicePitch, FIELD_INTEGER ),
+	DEFINE_FIELD( CSAS, m_voicePitch, FIELD_INTEGER ),
 	//  DEFINE_FIELD( CShotgun, m_iBrassShell, FIELD_INTEGER ),
 	//  DEFINE_FIELD( CShotgun, m_iShotgunShell, FIELD_INTEGER ),
 	DEFINE_FIELD(CSAS, m_iSentence, FIELD_INTEGER),
@@ -1270,7 +1270,7 @@ void CSAS::Spawn()
 	//	m_voicePitch = 90;
 
 	//Random Skin
-	if (pev->spawnflags & SF_SQUADMONSTER_LEADER)
+	if (pev->skin == -1 && pev->spawnflags & SF_SQUADMONSTER_LEADER)
 	{
 		pev->skin = SASSkin::LeaderScot;
 		m_iGruntHead = SASHead::Leader;

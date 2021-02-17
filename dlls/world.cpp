@@ -486,9 +486,17 @@ void CWorld :: Spawn( void )
 	// When "worldspawn" is spawned, check holidays. Cus why not.
 	std::time_t t = std::time(0);
 	std::tm* loctim = std::localtime(&t);
-	if (loctim->tm_mon == 5) // Check the pride month
+	if (loctim->tm_mon == 5) // Check for the pride month
 	{
 		CVAR_SET_FLOAT("sv_holiday", 1.0f);
+	}
+	else if (loctim->tm_mon == 11 && loctim->tm_mday == 27) // Christmas time is once a year. Every critter holds it dear.
+	{
+		CVAR_SET_FLOAT("sv_holiday", 2.0f);
+	}
+	else 
+	{
+		CVAR_SET_FLOAT("sv_holiday", 0.0f);
 	}
 }
 

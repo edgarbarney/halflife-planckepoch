@@ -3873,6 +3873,13 @@
 		//* Ensure the player can't take this monster's ammo or weapons.
 		1024: "Don't Drop Gun" : 0
 	]
+	skin(choices) : "Set skin" : -1 =
+	[
+		-1 : "Random"
+		0  : "White"
+		1  : "Black"
+		2  : "Blond"
+	]
 	sequence(Choices) : "Animation Sequence (editor)" : 0 =
 	[
 		0 : "Idle1"
@@ -3959,6 +3966,103 @@
 		2 : "On stomach"
 	]
 ]
+
+// EDMD - Clyde
+
+@PointClass base(Monster, TalkMonster) size(-16 -16 0, 16 16 72) studio("models/clyde.mdl") = monster_clyde : "Clyde"
+[
+	wpnkey(Choices) : "Weapon" : 2 =
+	[
+		2 : "Glock"
+		3 : "MP5"
+		4 : "AR16"
+	]
+	spawnflags(Flags) = 
+	[
+		//NEW 0.3
+		//* Ensure the player can't take this monster's ammo or weapons.
+		1024: "Don't Drop Gun" : 0
+	]
+	sequence(Choices) : "Animation Sequence (editor)" : 0 =
+	[
+		0 : "Idle1"
+		1 : "Idle2"
+		2 : "Idle3"
+		3 : "Idle4"
+		4 : "walk"
+		5 : "run"
+		6 : "shootgun"
+		7 : "shootgun2"
+		8 : "draw"
+		9 : "disarm"
+		10 : "reload"
+		11 : "turnleft"
+		12 : "turnright"
+		13 : "laflinch"
+		14 : "raflinch"
+		15 : "llflinch"
+		16 : "rlflinch"
+		17 : "smlflinch"
+		18 : "cower stand"
+		19 : "locked door"
+		20 : "fall loop"
+		21 : "barn wave"
+		22 : "beat grunt"
+		23 : "beat grunt idle"
+		24 : "flashlight"
+		25 : "diesimple"
+		26 : "dieviolent"
+		27 : "diegutshot"
+		28 : "die forward"
+		29 : "die back"
+		30 : "die crump"
+		31 : "barnaclehit"
+		32 : "barnaclepull"
+		33 : "barnaclecrunch"
+		34 : "barnaclechew"
+		35 : "lie back"
+		36 : "lie side"
+		37 : "lie stomach"
+		38 : "stuffed in vent"
+		39 : "standing idle"
+		40 : "cpr barney"
+		41 : "cpr revive"
+		42 : "barney drag vent"
+		43 : "dying"
+		44 : "dying idle"
+		45 : "dying friend"
+		46 : "dying friend idle"
+		47 : "c1a3idle"
+		48 : "c1a3ventb"
+		49 : "c1a3 emergeidle"
+		50 : "c1a3emerge"
+		51 : "haul barney"
+		52 : "push buttons"
+		53 : "fence die"
+		54 : "sit1"
+		55 : "almostidle"
+		56 : "almost"
+		57 : "laseridle"
+		58 : "laser top"
+		59 : "laser bottom"
+		60 : "fallidle"
+		61 : "fall"
+		62 : "c3a2 draw"
+		63 : "corner2"
+		64 : "unlatch"
+		65 : "retina"
+		66 : "relax stand"
+		67 : "assasinated"
+		68 : "plunger"
+		69 : "pepsiswing"
+		70 : "pepsi push"
+		71 : "push button"
+	]
+
+]
+
+// EDMD - End of clyde
+
 @PointClass base(Monster) size(-95 -95 0, 95 95 190) studio("models/big_mom.mdl") = monster_bigmomma : "Big Mamma" 
 [
 	netname(string) : "First node"

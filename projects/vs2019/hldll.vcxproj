@@ -123,6 +123,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\buttons.cpp" />
     <ClCompile Include="..\..\dlls\cbase.cpp" />
     <ClCompile Include="..\..\dlls\client.cpp" />
+    <ClCompile Include="..\..\dlls\clyde.cpp" />
     <ClCompile Include="..\..\dlls\COFAllyMonster.cpp" />
     <ClCompile Include="..\..\dlls\COFSquadTalkMonster.cpp" />
     <ClCompile Include="..\..\dlls\combat.cpp" />
