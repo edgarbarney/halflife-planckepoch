@@ -56,6 +56,8 @@ extern int giPrecacheGrunt;
 extern int gmsgSayText;
 extern int gmsgHUDColor;
 extern int gmsgCamData; // for trigger_viewset
+extern int gmsgWeather;
+extern int gmsgServerState; // used for pause/menu detection
 
 extern cvar_t allow_spectators;
 

@@ -19,6 +19,7 @@ private:
 	FSOUND_STREAM*		(_stdcall * SOF)	(const char *filename, unsigned int mode,int memlength);				//AJH old fmod
 	FSOUND_STREAM*		(_stdcall * SO)	(const char *filename, unsigned int mode,int offset, int memlength);	//AJH use new fmod
 	int 			(_stdcall * SPLAY)	(int channel, FSOUND_STREAM *stream);
+	signed char		(__stdcall* SETVOLUME)(int channel, int volume);
 	void			(_stdcall * CLOSE)	( void );
 	
 	FSOUND_STREAM  *m_Stream;

@@ -245,6 +245,7 @@ int gmsgCamData; // for trigger_viewset
 int gmsgRainData = 0;
 int gmsgInventory = 0; //AJH Inventory system
 int gmsgWeather = 0;
+int gmsgServerState = 0; // used for pause/menu detection
 
 void LinkUserMessages( void )
 {
@@ -307,6 +308,7 @@ void LinkUserMessages( void )
 	gmsgRainData = REG_USER_MSG("RainData", 16);
 	gmsgInventory = REG_USER_MSG("Inventory", -1);	//AJH Inventory system
 	gmsgWeather = REG_USER_MSG("Weather", -1);
+	gmsgServerState = REG_USER_MSG("ServerState", 1);
 }
 
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );

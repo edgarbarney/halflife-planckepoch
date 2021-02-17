@@ -354,6 +354,9 @@
     <ClCompile Include="CPostProcessing.cpp">
       <Filter>Source Files\cl_dll\effects</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -517,6 +520,9 @@
     </ClInclude>
     <ClInclude Include="CPostProcessing.h">
       <Filter>Header Files\cl_dll\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\CGameStateManager.h">
+      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

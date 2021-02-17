@@ -126,6 +126,8 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	//Probably not a good place to put this.
 	pBeam = pBeam2 = NULL;
 #endif
+
+	g_gameStateManager.InitHud();
 }
 
 //LRC
@@ -343,6 +345,14 @@ void CHud::MsgFunc_Weather(const char* pszName, int iSize, void* pBuf)
 			g_Weather.SetWind(yaw, speed, yawVariance, speedVariance, changeFrequency, changeSpeed);
 		}
 	}
+}
+
+void CHud::MsgFunc_ServerState(const char* pszName, int iSize, void* pBuf)
+{
+	BEGIN_READ(pBuf, iSize);
+	const auto state = READ_BYTE();
+
+	g_gameStateManager.UpdateServerState(state);
 }
 
 int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJH inventory system

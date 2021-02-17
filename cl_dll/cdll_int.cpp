@@ -29,6 +29,8 @@
 #include "pm_shared.h"
 
 #include <string.h>
+
+#include "CGameStateManager.h"
 #include "hud_servers.h"
 #include "vgui_int.h"
 #include "interface.h"
@@ -263,6 +265,8 @@ Called by engine every frame that client .dll is loaded
 
 void DLLEXPORT HUD_Frame( double time )
 {
+	g_gameStateManager.HudFrame();
+
 //	RecClHudFrame(time);
 
 	ServersThink( time );
