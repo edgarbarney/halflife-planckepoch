@@ -4364,6 +4364,25 @@ void CBasePlayer::SendAmmoUpdate(void)
 	}
 }
 
+struct server_t
+{
+	qboolean active;
+	qboolean paused;
+	qboolean loadgame;
+
+	double time;
+	double oldtime;
+
+	int lastcheck;
+	double lastchecktime;
+
+	char name[MAX_QPATH];
+	char oldname[MAX_QPATH];
+	char startspot[MAX_QPATH];
+};
+int lastServerState = -1;
+
+
 /*
 =========================================================
 	UpdateClientData
@@ -4768,6 +4787,21 @@ void CBasePlayer :: UpdateClientData( void )
 	{
 		UpdateStatusBar();
 		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
+	}
+
+	auto* const pStartSpot = const_cast<char*>(STRING(gpGlobals->startspot));
+	auto* svrt = reinterpret_cast<server_t*>(pStartSpot - offsetof(server_t, startspot));
+	const auto state =
+		!svrt->active ? 0 // inactive
+		: svrt->loadgame ? 3 // loading
+		: svrt->paused ? 2 // paused
+		: 1; // active
+	if (lastServerState != state) {
+		lastServerState = state;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgServerState, NULL, pev);
+		WRITE_BYTE(state);
+		MESSAGE_END();
 	}
 }
 

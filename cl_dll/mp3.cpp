@@ -103,6 +103,7 @@ int CMP3::PlayMP3( const char *pszSong )
 	}
 	if(m_Stream)
 	{
+		const auto volume = static_cast<int>(gEngfuncs.pfnGetCvarFloat("mp3volume") * 255);
 		SPLAY( 0, m_Stream );
 		SETVOLUME(0, volume);
 		m_iIsPlaying = 1;

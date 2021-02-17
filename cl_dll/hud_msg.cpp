@@ -22,6 +22,7 @@
 #include "r_efx.h"
 
 #include "particleman.h"
+#include "CGameStateManager.h"
 #include "effects/CWeather.h"
 extern IParticleMan *g_pParticleMan;
 

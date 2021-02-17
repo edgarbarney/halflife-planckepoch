@@ -17,7 +17,7 @@
 
 #include <algorithm>
 
-#include "hud/hud.h"
+#include "hud.h"
 
 CGameStateManager g_gameStateManager;
 
