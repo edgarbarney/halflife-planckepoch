@@ -18,8 +18,6 @@ public:
 	void EXPORT StartPlayFrom(void);
 	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void ForceStopSound(void);
-	void SoundFadeOut(void);
-	void SoundFadeIn(void);
 	void RefreshPlayerVar(void);
 	char* GetSoundFileDir();
 
@@ -31,7 +29,9 @@ public:
 
 	float m_fVolBase = 10;		// Base volume.
 	float m_fVolValue = 10;		// Volume to play. Changes with fade effects.
-	float m_pPitch = 0;			// 
+	float m_pPitch = 0;			// Pitch
+	
+	int m_ssType = 0;
 
 
 	CBasePlayer* m_pPlayer;
@@ -41,7 +41,7 @@ public:
 	BOOL	m_fLooping;	// TRUE when the sound played will loop
 	edict_t* m_pPlayFrom; //LRC - the entity to play from
 
-	int		m_iChannel = CHAN_STREAM; //LRC - the channel to play from, for "play from X" sounds
+	int		m_iChannel = CHAN_AUTO; //LRC - the channel to play from, for "play from X" sounds
 };
 
 LINK_ENTITY_TO_CLASS(env_soundscape, CSoundScape);
@@ -56,6 +56,7 @@ TYPEDESCRIPTION	CSoundScape::m_SaveData[] =
 	DEFINE_FIELD(CSoundScape, m_fVolValue, FIELD_FLOAT),
 	DEFINE_FIELD(CSoundScape, m_fVolBase, FIELD_FLOAT),
 	DEFINE_FIELD(CSoundScape, m_pPitch, FIELD_FLOAT),
+	DEFINE_FIELD(CSoundScape, m_ssType, FIELD_INTEGER),
 };
 
 IMPLEMENT_SAVERESTORE(CSoundScape, CBaseEntity);
@@ -128,16 +129,11 @@ void CSoundScape::Precache(void)
 			PRECACHE_SOUND(szSoundFile);
 	}
 
-
 	if (!FBitSet(pev->spawnflags, AMBIENT_SOUND_START_SILENT))
 	{
 		// start the sound ASAP
 		if (m_fLooping)
 			m_fActive = TRUE;
-	}
-	else
-	{
-		m_fVolValue = 0.01;
 	}
 
 	if (m_fActive)
@@ -186,12 +182,15 @@ void CSoundScape::ForceStopSound(void)
 // this function is used to delay the effect until the first Think, which seems to fix the problem.
 void CSoundScape::StartPlayFrom(void)
 {
-	char* szSoundFile = (char*)STRING(pev->message);
-	RefreshPlayerVar();
-	EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
-		m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
+	if (!m_fActive){
+		char* szSoundFile = (char*)STRING(pev->message);
+		RefreshPlayerVar();
+		EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile, //LRC
+			m_fVolValue, m_flAttenuation, SND_SPAWNING, m_pPitch);
 
-	SetNextThink(0.1);
+		SetNextThink(0.1);
+		m_fActive = true;
+	}
 }
 
 //Thanks to Admer and Solokiller
@@ -202,71 +201,18 @@ void CSoundScape::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	while (((soundScape = static_cast<CSoundScape*>(UTIL_FindEntityByClassname(soundScape, "env_soundscape")))) != nullptr && !FNullEnt(soundScape->pev))
 	{
 		if (!soundScape->m_fCanPlay && GetSoundFileDir() != soundScape->GetSoundFileDir()){
-			soundScape->RefreshPlayerVar();
-			soundScape->m_fCanPlay = FALSE;
-			soundScape->SetThink(&CSoundScape::SoundFadeOut);
-			soundScape->SetNextThink(0.1);
+			soundScape->ForceStopSound();
 		}
 	}
-	RefreshPlayerVar();
-	m_fVolValue = 0.01;
-	SetThink(&CSoundScape::SoundFadeIn);
-	SetNextThink(0.1);
-	m_fCanPlay = TRUE;
-}
-
-void CSoundScape::SoundFadeOut(void)
-{
-	//char* szSoundFile = (char*)STRING(pev->message);
-	ForceStopSound();
-	DontThink();
-	/*
-	if (m_fVolValue >= 1)
+	if (m_ssType == 0)
 	{
-		SetNextThink(0.1);
-		if (m_fVolValue - (gpGlobals->frametime * m_fVolBase * 10) > 0)
-		{
-			m_fVolValue -= (gpGlobals->frametime * m_fVolBase * 10);
-		}
-		else
-		{
-			m_fVolValue = 0.01;
-		}
-		EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile,
-			m_fVolValue, m_flAttenuation, SND_CHANGE_VOL, m_pPitch);
-	}
-	else 
-	{
-		SetNextThink(0.1);
-		//m_fVolValue = m_fVolBase;
-		ForceStopSound();
-		DontThink();
-	}
-	*/
-}
-
-void CSoundScape::SoundFadeIn(void)
-{
-	//char* szSoundFile = (char*)STRING(pev->message);
-	/*
-	if (m_fVolValue < m_fVolBase)
-	{
-		SetNextThink(0.1);
-		m_fVolValue += (gpGlobals->frametime * m_fVolBase * 10);
-		EMIT_SOUND_DYN(m_pPlayFrom, m_iChannel, szSoundFile,
-			m_fVolValue, m_flAttenuation, SND_CHANGE_VOL, m_pPitch);
+		RefreshPlayerVar();
+		StartPlayFrom();
 	}
 	else
 	{
-			SetNextThink(0.1);
-			m_fVolValue = m_fVolBase;
-			StartPlayFrom();
-			DontThink();
+		ForceStopSound();
 	}
-	*/
-	m_fVolValue = m_fVolBase;
-	StartPlayFrom();
-	DontThink();
 }
 
 // KeyValue - Load keyvalues from the entity data thingy
@@ -294,6 +240,13 @@ void CSoundScape::KeyValue(KeyValueData* pkvd)
 
 		m_fVolValue *= 10;	// 0 - 100
 
+		pkvd->fHandled = TRUE;
+	}
+
+	// pitchrun
+	else if (FStrEq(pkvd->szKeyName, "sstype"))
+	{
+		m_ssType = atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 

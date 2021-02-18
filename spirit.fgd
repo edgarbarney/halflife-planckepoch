@@ -1225,6 +1225,11 @@
 	message(sound) : "WAV Name (e.g. vox/c.wav)"
 	health(integer) : "Volume (10 = loudest)" : 10
 	pitch(integer) : "Pitch (> 100 = higher)" : 100
+	sstype(Choices) : "Scape Type" : 0 =
+    [
+        0 : "Default"
+        1 : "Mute"
+    ]
 	spawnflags(flags) =
 	[
 		//1: "Play Everywhere"	: 0

@@ -6249,20 +6249,13 @@ void CTriggerSoundscape::MultiTouch(CBaseEntity* pOther)
 //
 void CTriggerSoundscape::ActivateMultiTrigger(CBaseEntity* pActivator)
 {
-	if (pActivator->IsPlayer()) {
+	if (pActivator->IsPlayer()) 
+	{
 		if (m_fNextThink > gpGlobals->time)
 			return;         // still waiting for reset time
 
 		if (!UTIL_IsMasterTriggered(m_sMaster, pActivator))
 			return;
-
-		// Probably a leftover from quake. Maybe delete later.
-		if (FClassnameIs(pev, "trigger_secret"))
-		{
-			if (pev->enemy == NULL || !FClassnameIs(pev->enemy, "player"))
-				return;
-			gpGlobals->found_secrets++;
-		}
 
 		//if (!FStringNull(pev->noise))
 		//EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
