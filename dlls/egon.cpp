@@ -165,7 +165,7 @@ void CEgon::UseAmmo( int count )
 void CEgon::Attack( void )
 {
 	// don't fire underwater
-	if ( m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD )
+	if ( m_pPlayer->pev->waterlevel == 3 )
 	{
 		
 		if ( m_fireState != FIRE_OFF || m_pBeam )
