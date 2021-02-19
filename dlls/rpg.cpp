@@ -22,9 +22,7 @@
 #include "nodes.h"
 #include "player.h"
 #include "gamerules.h"
-
-
-
+#include "UserMessages.h"
 
 enum rpg_e {
 	RPG_IDLE = 0,
@@ -510,8 +508,6 @@ void CRpg::WeaponIdle( void )
 {
 	UpdateSpot( );
 
-	ResetEmptySound( );
-
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
@@ -538,6 +534,7 @@ void CRpg::WeaponIdle( void )
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0;
 		}
 
+		ResetEmptySound();
 		SendWeaponAnim( iAnim );
 	}
 	else

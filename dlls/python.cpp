@@ -21,7 +21,7 @@
 #include "monsters.h"
 #include "player.h"
 #include "gamerules.h"
-
+#include "UserMessages.h"
 
 enum python_e {
 	PYTHON_IDLE1 = 0,
@@ -120,7 +120,7 @@ void CPython::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
-	if ( m_fInZoom )
+	if (m_pPlayer->m_iFOV != 0)
 	{
 		SecondaryAttack();
 	}
@@ -141,15 +141,13 @@ void CPython::SecondaryAttack( void )
 		return;
 	}
 
-	if ( m_pPlayer->pev->fov != 0 )
+	if ( m_pPlayer->m_iFOV != 0 )
 	{
-		m_fInZoom = FALSE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
-	else if ( m_pPlayer->pev->fov != 40 )
+	else if ( m_pPlayer->m_iFOV != 40 )
 	{
-		m_fInZoom = TRUE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
+		m_pPlayer->m_iFOV = 40;
 	}
 
 	m_flNextSecondaryAttack = 0.5;
@@ -167,11 +165,9 @@ void CPython::PrimaryAttack()
 
 	if (m_iClip <= 0)
 	{
-		if (!m_fFireOnEmpty)
-			Reload( );
-		else
+		if (m_fFireOnEmpty)
 		{
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
+			PlayEmptySound();
 			m_flNextPrimaryAttack = 0.15;
 		}
 
@@ -220,10 +216,9 @@ void CPython::Reload( void )
 	if ( m_pPlayer->ammo_357 <= 0 )
 		return;
 
-	if ( m_pPlayer->pev->fov != 0 )
+	if ( m_pPlayer->m_iFOV != 0 )
 	{
-		m_fInZoom = FALSE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
 
 	int bUseScope = FALSE;
