@@ -20,6 +20,7 @@
 #include "cl_util.h"
 #include "parsemsg.h"
 #include "r_efx.h"
+#include "rain.h"
 
 #include "particleman.h"
 #include "CGameStateManager.h"

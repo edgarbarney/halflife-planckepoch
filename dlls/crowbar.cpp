@@ -66,7 +66,6 @@ void CCrowbar::Precache( void )
 	PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
 	PRECACHE_SOUND("weapons/cbar_miss1.wav");
 
-	m_usCbarSwing = PRECACHE_EVENT(1, "events/cbar.sc");
 }
 
 int CCrowbar::GetItemInfo(ItemInfo *p)

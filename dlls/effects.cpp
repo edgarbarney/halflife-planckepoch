@@ -22,6 +22,7 @@
 #include "decals.h"
 #include "func_break.h"
 #include "shake.h"
+#include "UserMessages.h"
 #include "player.h" //LRC - footstep stuff
 #include "locus.h" //LRC - locus utilities
 #include "movewith.h" //LRC - the DesiredThink system

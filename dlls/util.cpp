@@ -30,6 +30,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "gamerules.h"
+#include "UserMessages.h"
 #include "movewith.h"
 #include "locus.h"
 
@@ -1114,8 +1115,6 @@ void UTIL_HudMessageAll( const hudtextparms_t &textparms, const char *pMessage )
 	}
 }
 
-					 
-extern int gmsgTextMsg, gmsgSayText;
 void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
 {
 	MESSAGE_BEGIN( MSG_ALL, gmsgTextMsg );

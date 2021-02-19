@@ -20,6 +20,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "player.h"
+#include "UserMessages.h"
 
 class CDebugger: public CBasePlayerWeapon
 {

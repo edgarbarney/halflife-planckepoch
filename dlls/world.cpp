@@ -481,7 +481,6 @@ void CWorld :: Spawn( void )
 {
 	g_fGameOver = FALSE;
 	Precache( );
-	g_flWeaponCheat = CVAR_GET_FLOAT( "sv_cheats" );  // Is the impulse 101 command allowed?
 	
 	// When "worldspawn" is spawned, check holidays. Cus why not.
 	std::time_t t = std::time(0);

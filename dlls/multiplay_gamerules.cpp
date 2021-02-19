@@ -27,6 +27,7 @@
 #include	"items.h"
 #include	"voice_gamemgr.h"
 #include	"hltv.h"
+#include "UserMessages.h"
 
 #if !defined ( _WIN32 )
 #include <ctype.h>
@@ -34,10 +35,6 @@
 
 extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
-extern int gmsgDeathMsg;	// client dll messages
-extern int gmsgScoreInfo;
-extern int gmsgMOTD;
-extern int gmsgServerName;
 
 extern int g_teamplay;
 
@@ -114,6 +111,11 @@ BOOL CHalfLifeMultiplay::ClientCommand( CBasePlayer *pPlayer, const char *pcmd )
 		return TRUE;
 
 	return CGameRules::ClientCommand(pPlayer, pcmd);
+}
+
+void CHalfLifeMultiplay::ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer)
+{
+	pPlayer->SetPrefsFromUserinfo(infobuffer);
 }
 
 //=========================================================
@@ -315,6 +317,18 @@ BOOL CHalfLifeMultiplay::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerI
 		return FALSE;
 	}
 
+	//Never switch
+	if (pPlayer->m_iAutoWepSwitch == 0)
+	{
+		return FALSE;
+	}
+
+	//Only switch if not attacking
+	if (pPlayer->m_iAutoWepSwitch == 2 && (pPlayer->m_afButtonLast & (IN_ATTACK | IN_ATTACK2)))
+	{
+		return FALSE;
+	}
+
 	if ( pWeapon->iWeight() > pPlayer->m_pActiveItem->iWeight() )
 	{
 		return TRUE;
@@ -397,9 +411,6 @@ BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszNam
 	g_VoiceGameMgr.ClientConnected(pEntity);
 	return TRUE;
 }
-
-extern int gmsgSayText;
-extern int gmsgGameMode;
 
 void CHalfLifeMultiplay :: UpdateGameMode( CBasePlayer *pPlayer )
 {
@@ -556,6 +567,10 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 	BOOL		addDefault;
 	CBaseEntity	*pWeaponEntity = NULL;
 
+	//Ensure the player switches to the Glock on spawn regardless of setting
+	const int originalAutoWepSwitch = pPlayer->m_iAutoWepSwitch;
+	pPlayer->m_iAutoWepSwitch = 1;
+
 	pPlayer->pev->weapons |= (1<<WEAPON_SUIT);
 	
 	addDefault = TRUE;
@@ -572,6 +587,8 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 		pPlayer->GiveNamedItem( "weapon_9mmhandgun" );
 		pPlayer->GiveAmmo( 68, "9mm", _9MM_MAX_CARRY );// 4 full reloads
 	}
+
+	pPlayer->m_iAutoWepSwitch = originalAutoWepSwitch;
 }
 
 //=========================================================

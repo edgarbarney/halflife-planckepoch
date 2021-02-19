@@ -393,6 +393,9 @@
     <ClCompile Include="..\..\dlls\clyde.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\UserMessages.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -547,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\entities\effects\CWeather.h">
       <Filter>Header Files\dlls\entities\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\UserMessages.h">
+      <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

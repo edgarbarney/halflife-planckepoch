@@ -39,6 +39,7 @@
 #include "usercmd.h"
 #include "netadr.h"
 #include "pm_shared.h"
+#include "UserMessages.h"
 #include "movewith.h"
 #include "items.h"
 
@@ -137,6 +138,17 @@ void ClientDisconnect( edict_t *pEntity )
 	pEntity->v.takedamage = DAMAGE_NO;// don't attract autoaim
 	pEntity->v.solid = SOLID_NOT;// nonsolid
 	UTIL_SetEdictOrigin ( pEntity, pEntity->v.origin );
+
+	auto pPlayer = reinterpret_cast<CBasePlayer*>(GET_PRIVATE(pEntity));
+
+	if (pPlayer)
+	{
+		if (pPlayer->m_pTank != NULL)
+		{
+			pPlayer->m_pTank->Use(pPlayer, pPlayer, USE_OFF, 0);
+			pPlayer->m_pTank = NULL;
+		}
+	}
 
 	g_pGameRules->ClientDisconnected( pEntity );
 }
@@ -539,7 +551,7 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq(pcmd, "fire") ) //LRC - trigger entities manually
 	{
-		if (g_flWeaponCheat)
+		if (g_psv_cheats->value)
 		{
 			CBaseEntity *pPlayer = CBaseEntity::Instance(pEntity);
 			if (CMD_ARGC() > 1)
@@ -652,7 +664,7 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq(pcmd, "give" ) )
 	{
-		if ( g_flWeaponCheat != 0.0)
+		if (g_psv_cheats->value)
 		{
 			int iszItem = ALLOC_STRING( CMD_ARGV(1) );	// Make a copy of the classname
 			GetClassPtr((CBasePlayer *)pev)->GiveNamedItem( STRING(iszItem) );
@@ -666,7 +678,7 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq(pcmd, "fov" ) )
 	{
-		if ( g_flWeaponCheat && CMD_ARGC() > 1)
+		if (g_psv_cheats->value && CMD_ARGC() > 1)
 		{
 			GetClassPtr((CBasePlayer *)pev)->m_iFOV = atoi( CMD_ARGV(1) );
 		}
@@ -1872,7 +1884,7 @@ void UpdateClientData ( const edict_t *ent, int sendweapons, struct clientdata_s
 	strcpy( cd->physinfo, ENGINE_GETPHYSINFO( ent ) );
 
 	cd->maxspeed		= pev->maxspeed;
-	cd->fov				= pev->fov;
+	cd->fov				= pl->m_iFOV;
 	cd->weaponanim		= pev->weaponanim;
 
 	cd->pushmsec		= pev->pushmsec;

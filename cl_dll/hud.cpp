@@ -88,6 +88,9 @@ extern client_sprite_t *GetSpriteList(client_sprite_t *pList, const char *psz, i
 
 extern cvar_t *sensitivity;
 cvar_t *cl_lw = NULL;
+cvar_t* cl_rollangle = nullptr;
+cvar_t* cl_rollspeed = nullptr;
+cvar_t* cl_bobtilt = nullptr;
 
 void ShutdownInput (void);
 
@@ -450,6 +453,7 @@ void CHud :: Init( void )
 	m_iHUDColor = 0x0000A000; //0,160,0 -- LRC
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
+	CVAR_CREATE("cl_autowepswitch", "1", FCVAR_ARCHIVE | FCVAR_USERINFO);
 	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
 	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
@@ -787,8 +791,11 @@ int CHud::MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf)
 	int def_fov = CVAR_GET_FLOAT( "default_fov" );
 
 	//Weapon prediction already takes care of changing the fog. ( g_lastFOV ).
+	//But it doesn't restore correctly so this still needs to be used
+	/*
 	if ( cl_lw && cl_lw->value )
 		return 1;
+		*/
 
 	g_lastFOV = newfov;
 

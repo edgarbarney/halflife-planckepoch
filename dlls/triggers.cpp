@@ -2987,17 +2987,6 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 };
 
-/*
- * - Always toggles
- * - Ignores user's mp3 volume settings
- * - Doesn't pause when you pause the game
- * - Doesn't stop when you disconnect or even after you start a new game/server
- * - Doesn't stop when you change levels
- * - JUST DOESN'T STOP EVER
- * - Kinda unstable
- */
-
-
 LINK_ENTITY_TO_CLASS( ambient_fmodstream, CTargetFMODAudio );
 LINK_ENTITY_TO_CLASS( trigger_mp3audio, CTargetFMODAudio );
 
@@ -5991,6 +5980,8 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		pActivator = CBaseEntity::Instance(g_engfuncs.pfnPEntityOfEntIndex( 1 ));
 	}
 
+	auto player = static_cast<CBasePlayer*>(pActivator);
+		
 	m_hPlayer = pActivator;
 
 	if (m_flWait == -1)//G-Cont. if wait time = -1, set is 1E6 for retriggered only
@@ -6021,7 +6012,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	if (FBitSet (pev->spawnflags, SF_CAMERA_PLAYER_TAKECONTROL ) )
 	{
-		((CBasePlayer *)pActivator)->EnableControl(FALSE);
+		player->EnableControl(FALSE);
 	}
 
 	if ( m_sPath )
@@ -6082,6 +6073,8 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		((CBasePlayer *)pActivator)->viewNeedsUpdate = 1;
 	}
 
+	player->m_hViewEntity = this;
+
 	SET_MODEL(ENT(pev), STRING(pActivator->pev->model) );
 
 	// follow the player down
@@ -6100,13 +6093,19 @@ void CTriggerCamera::FollowTarget( )
 
 	if (m_hTarget == NULL || m_flReturnTime < gpGlobals->time)
 	{
-		if (m_hPlayer->IsAlive( ))
+		auto player = static_cast<CBasePlayer*>(static_cast<CBaseEntity*>(m_hPlayer));
+
+		if (player->IsAlive( ))
 		{
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->viewEntity = 0;
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->viewFlags = 0;
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->viewNeedsUpdate = 1;
-			((CBasePlayer *)((CBaseEntity *)m_hPlayer))->EnableControl(TRUE);
+			player->viewEntity = 0;
+			player->viewFlags = 0;
+			player->viewNeedsUpdate = 1;
+			player->EnableControl(TRUE);
 		}
+
+		player->m_hViewEntity = nullptr;
+		player->m_bResetViewEntity = false;
+
 		SUB_UseTargets( this, USE_TOGGLE, 0 );
 		pev->avelocity = Vector( 0, 0, 0 );
 		m_state = 0;

@@ -44,6 +44,7 @@
 #include "locus.h" //LRC 1.8
 #include "pm_shared.h"
 #include "hltv.h"
+#include "UserMessages.h"
 
 // #define DUCKFIX
 
@@ -131,6 +132,7 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, m_tbdPrev, FIELD_TIME ),
 
 	DEFINE_FIELD( CBasePlayer, m_pTank, FIELD_EHANDLE ), // NB: this points to a CFuncTank*Controls* now. --LRC
+	//DEFINE_FIELD( CBasePlayer, m_hViewEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( CBasePlayer, m_iHideHUD, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, m_iFOV, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, viewEntity, FIELD_STRING),
@@ -188,128 +190,12 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	//DEFINE_ARRAY( CBasePlayer, m_rgAmmoLast, FIELD_INTEGER, MAX_AMMO_SLOTS ), // Don't need to restore
 	//DEFINE_FIELD( CBasePlayer, m_fOnTarget, FIELD_BOOLEAN ), // Don't need to restore
 	//DEFINE_FIELD( CBasePlayer, m_nCustomSprayFrames, FIELD_INTEGER ), // Don't need to restore
-	
 	DEFINE_FIELD( CBasePlayer, m_bHasIntroPlayed, FIELD_BOOLEAN ),
+
 };
 
 
 int giPrecacheGrunt = 0;
-int gmsgShake = 0;
-int gmsgFade = 0;
-int gmsgSelAmmo = 0;
-int gmsgFlashlight = 0;
-int gmsgFlashBattery = 0;
-int gmsgResetHUD = 0;
-int gmsgInitHUD = 0;
-int gmsgSetFog = 0; //LRC
-int gmsgKeyedDLight = 0;//LRC
-int gmsgKeyedELight = 0;//LRC
-int gmsgSetSky = 0;		//LRC
-int gmsgHUDColor = 0;	//LRC
-int gmsgAddShine = 0;   // LRC
-int gmsgParticle = 0; // LRC
-int gmsgClampView = 0; //LRC 1.8
-int gmsgPlayMP3 = 0; //Killar
-int gmsgShowGameTitle = 0;
-int gmsgCurWeapon = 0;
-int gmsgHealth = 0;
-int gmsgDamage = 0;
-int gmsgBattery = 0;
-int gmsgTrain = 0;
-int gmsgLogo = 0;
-int gmsgWeaponList = 0;
-int gmsgAmmoX = 0;
-int gmsgHudText = 0;
-int gmsgDeathMsg = 0;
-int gmsgScoreInfo = 0;
-int gmsgTeamInfo = 0;
-int gmsgTeamScore = 0;
-int gmsgGameMode = 0;
-int gmsgMOTD = 0;
-int gmsgServerName = 0;
-int gmsgAmmoPickup = 0;
-int gmsgWeapPickup = 0;
-int gmsgItemPickup = 0;
-int gmsgHideWeapon = 0;
-int gmsgSetCurWeap = 0;
-int gmsgSayText = 0;
-int gmsgTextMsg = 0;
-int gmsgSetFOV = 0;
-int gmsgShowMenu = 0;
-int gmsgGeigerRange = 0;
-int gmsgTeamNames = 0;
-int gmsgStatusIcon = 0; //LRC
-int gmsgStatusText = 0;
-int gmsgStatusValue = 0;
-int gmsgCamData; // for trigger_viewset
-int gmsgRainData = 0;
-int gmsgInventory = 0; //AJH Inventory system
-int gmsgWeather = 0;
-int gmsgServerState = 0; // used for pause/menu detection
-
-void LinkUserMessages( void )
-{
-	// Already taken care of?
-	if ( gmsgSelAmmo )
-	{
-		return;
-	}
-
-	gmsgSelAmmo = REG_USER_MSG("SelAmmo", sizeof(SelAmmo));
-	gmsgCurWeapon = REG_USER_MSG("CurWeapon", 3);
-	gmsgGeigerRange = REG_USER_MSG("Geiger", 1);
-	gmsgFlashlight = REG_USER_MSG("Flashlight", 2);
-	gmsgFlashBattery = REG_USER_MSG("FlashBat", 1);
-	gmsgHealth = REG_USER_MSG( "Health", 1 );
-	gmsgDamage = REG_USER_MSG( "Damage", 12 );
-	gmsgBattery = REG_USER_MSG( "Battery", 2);
-	gmsgTrain = REG_USER_MSG( "Train", 1);
-	//gmsgHudText = REG_USER_MSG( "HudTextPro", -1 );
-	gmsgHudText = REG_USER_MSG( "HudText", -1 ); // we don't use the message but 3rd party addons may!
-	gmsgSayText = REG_USER_MSG( "SayText", -1 );
-	gmsgTextMsg = REG_USER_MSG( "TextMsg", -1 );
-	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
-	gmsgResetHUD = REG_USER_MSG("ResetHUD", 1);		// called every respawn
-	gmsgInitHUD = REG_USER_MSG("InitHUD", 0 );		// called every time a new player joins the server
-
-	gmsgSetFog = REG_USER_MSG("SetFog", 9 ); //LRC
-	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1 );	//LRC
-	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1 );	//LRC
-	gmsgSetSky = REG_USER_MSG( "SetSky", 8 );			//LRC //AJH changed size from 7 to 8 to support skybox scale
-	gmsgHUDColor = REG_USER_MSG( "HUDColor", 4 );		//LRC
-	gmsgParticle = REG_USER_MSG( "Particle", -1);		//LRC
-	gmsgAddShine = REG_USER_MSG( "AddShine", -1 );      //LRC
-	gmsgClampView = REG_USER_MSG( "ClampView", 10 );	//LRC 1.8
-
-	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
-	gmsgDeathMsg = REG_USER_MSG( "DeathMsg", -1 );
-	gmsgScoreInfo = REG_USER_MSG( "ScoreInfo", 9 );
-	gmsgTeamInfo = REG_USER_MSG( "TeamInfo", -1 );  // sets the name of a player's team
-	gmsgTeamScore = REG_USER_MSG( "TeamScore", -1 );  // sets the score of a team on the scoreboard
-	gmsgGameMode = REG_USER_MSG( "GameMode", 1 );
-	gmsgMOTD = REG_USER_MSG( "MOTD", -1 );
-	gmsgServerName = REG_USER_MSG( "ServerName", -1 );
-	gmsgAmmoPickup = REG_USER_MSG( "AmmoPickup", 2 );
-	gmsgWeapPickup = REG_USER_MSG( "WeapPickup", 1 );
-	gmsgItemPickup = REG_USER_MSG( "ItemPickup", -1 );
-	gmsgHideWeapon = REG_USER_MSG( "HideWeapon", 1 );
-	gmsgSetFOV = REG_USER_MSG( "SetFOV", 1 );
-	gmsgShowMenu = REG_USER_MSG( "ShowMenu", -1 );
-	gmsgShake = REG_USER_MSG("ScreenShake", sizeof(ScreenShake));
-	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
-	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
-	gmsgTeamNames = REG_USER_MSG( "TeamNames", -1 );
-	gmsgStatusIcon = REG_USER_MSG( "StatusIcon", -1 );
-
-	gmsgStatusText = REG_USER_MSG("StatusText", -1);
-	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
-	gmsgCamData = REG_USER_MSG("CamData", -1);
-	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1);	//Killar
-	gmsgRainData = REG_USER_MSG("RainData", 16);
-	gmsgInventory = REG_USER_MSG("Inventory", -1);	//AJH Inventory system
-	gmsgWeather = REG_USER_MSG("Weather", -1);
-	gmsgServerState = REG_USER_MSG("ServerState", 1);
-}
 
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 
@@ -774,7 +660,7 @@ void CBasePlayer::PackDeadPlayerItems( void )
 	int iWeaponRules;
 	int iAmmoRules;
 	int i;
-	CBasePlayerWeapon *rgpPackWeapons[ 20 ];// 20 hardcoded for now. How to determine exactly how many weapons we have?
+	CBasePlayerWeapon *rgpPackWeapons[ MAX_WEAPONS ];
 	int iPackAmmo[ MAX_AMMO_SLOTS + 1];
 	int iPW = 0;// index into packweapons array
 	int iPA = 0;// index into packammo array
@@ -985,11 +871,8 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 	CBasePlayerItem *pCurrentItem;
 
 	// hornetgun is outside the spawnflags Worldcraft can set - handle it seperately.
-	if (iHornet) iWeaponMask |= 1 << WEAPON_HORNETGUN;
-	if (iSnark) iWeaponMask |= 1 << WEAPON_SNARK;
-	if (iTrip) iWeaponMask |= 1 << WEAPON_TRIPMINE;
-	if (iGren) iWeaponMask |= 1 << WEAPON_HANDGRENADE;
-	if (iSatchel) iWeaponMask |= 1 << WEAPON_SATCHEL;
+	if (iHornet)
+		iWeaponMask |= 1<<WEAPON_HORNETGUN;
 
 	RemoveAmmo("9mm", i9mm);
 	RemoveAmmo("357", i357);
@@ -1003,44 +886,47 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 	RemoveAmmo("Trip Mine", iTrip);
 	RemoveAmmo("Hand Grenade", iGren);
 	RemoveAmmo("Hornets", iHornet);
-	
+
 	for (i = 0; i < MAX_ITEM_TYPES; i++)
 	{
-		if (m_rgpPlayerItems[i] == NULL) continue;
+		if (m_rgpPlayerItems[i] == NULL)
+			continue;
 		pCurrentItem = m_rgpPlayerItems[i];
 		while (pCurrentItem->m_pNext)
 		{
-			if (!(1  <<  pCurrentItem->m_pNext->m_iId & iWeaponMask))
+			if (!(1<<pCurrentItem->m_pNext->m_iId & iWeaponMask))
 			{
-				((CBasePlayerWeapon*)pCurrentItem->m_pNext)->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//remove pCurrentItem->m_pNext from the list
-				//ALERT(at_console, "Removing %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
+//				ALERT(at_console, "Removing %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem->m_pNext->Drop( );
-				if (m_pLastItem == pCurrentItem->m_pNext) m_pLastItem = NULL;
+				if (m_pLastItem == pCurrentItem->m_pNext)
+					m_pLastItem = NULL;
 				pCurrentItem->m_pNext = pCurrentItem->m_pNext->m_pNext;
 			}
 			else
 			{
 				//we're keeping this, so we need to empty the clip
-				((CBasePlayerWeapon*)pCurrentItem->m_pNext)->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//now, leave pCurrentItem->m_pNext in the list and go on to the next
-				//ALERT(at_console, "Keeping %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
+//				ALERT(at_console, "Keeping %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem = pCurrentItem->m_pNext;
 			}
 		}
 		// we've gone through items 2+, now we finish off by checking item 1.
-		if (!(1 << m_rgpPlayerItems[i]->m_iId & iWeaponMask))
+		if (!(1<<m_rgpPlayerItems[i]->m_iId & iWeaponMask))
 		{
-			((CBasePlayerWeapon*)m_rgpPlayerItems[i])->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
-			//ALERT(at_console, "Removing %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
+			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+//			ALERT(at_console, "Removing %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 			m_rgpPlayerItems[i]->Drop( );
-			if (m_pLastItem == m_rgpPlayerItems[i]) m_pLastItem = NULL;
+			if (m_pLastItem == m_rgpPlayerItems[i])
+				m_pLastItem = NULL;
 			m_rgpPlayerItems[i] = m_rgpPlayerItems[i]->m_pNext;
 		}
 		else
 		{
-			((CBasePlayerWeapon*)m_rgpPlayerItems[i])->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
-			//ALERT(at_console, "Keeping %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
+			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+//			ALERT(at_console, "Keeping %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 		}
 	}
 
@@ -1145,7 +1031,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	MESSAGE_END();
 
 	// reset FOV
-	pev->fov = m_iFOV = m_iClientFOV = 0;
+	m_iFOV = m_iClientFOV = 0;
 
 	viewEntity = 0;
 	viewFlags = 0;
@@ -1677,7 +1563,6 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 
 	// reset FOV
 	m_iFOV = m_iClientFOV = 0;
-	pev->fov = m_iFOV;
 	MESSAGE_BEGIN( MSG_ONE, gmsgSetFOV, NULL, pev );
 		WRITE_BYTE(0);
 	MESSAGE_END();
@@ -2123,6 +2008,17 @@ void CBasePlayer::PreThink(void)
 	else
 		m_iHideHUD |= HIDEHUD_FLASHLIGHT;
 
+	if (m_bResetViewEntity)
+	{
+		m_bResetViewEntity = false;
+
+		CBaseEntity* viewEntity = m_hViewEntity;
+
+		if (viewEntity)
+		{
+			SET_VIEW(edict(), viewEntity->edict());
+		}
+	}
 
 	// JOHN: checks if new client data (for HUD and view control) needs to be sent to the client
 	UpdateClientData();
@@ -3174,7 +3070,7 @@ void CBasePlayer::Spawn( void )
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "hl", "1" );
 
-	pev->fov = m_iFOV				= 0;// init field of view.
+	m_iFOV				= 0;// init field of view.
 	m_iClientFOV		= -1; // make sure fov reset is sent
 
 	m_flNextDecalTime	= 0;// let this player decal as soon as he spawns.
@@ -3381,6 +3277,8 @@ int CBasePlayer::Restore( CRestore &restore )
 	//			Barring that, we clear it out here instead of using the incorrect restored time value.
 	m_flNextAttack = UTIL_WeaponTimeBase();
 #endif
+
+	m_bResetViewEntity = true;
 
 	return status;
 }
@@ -3776,8 +3674,6 @@ void CBasePlayer :: ForceClientDllUpdate( void )
 ImpulseCommands
 ============
 */
-extern float g_flWeaponCheat;
-
 void CBasePlayer::ImpulseCommands( )
 {
 	TraceResult	tr;// UNDONE: kill me! This is temporary for PreAlpha CDs
@@ -3859,7 +3755,7 @@ void CBasePlayer::ImpulseCommands( )
 void CBasePlayer::CheatImpulseCommands( int iImpulse )
 {
 #if !defined( HLDEMO_BUILD )
-	if ( g_flWeaponCheat == 0.0 )
+	if (!g_psv_cheats->value)
 	{
 		return;
 
@@ -4956,6 +4852,10 @@ Vector CBasePlayer :: GetAutoaimVector( float flDelta )
 			m_lasty = m_vecAutoAim.y;
 		}
 	}
+	else
+	{
+		ResetAutoaim();
+	}
 
 	// ALERT( at_console, "%f %f\n", angles.x, angles.y );
 
@@ -5299,6 +5199,20 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 	pWeapon->Deploy( );
 #endif
 	return TRUE;
+}
+
+void CBasePlayer::SetPrefsFromUserinfo(char* infobuffer)
+{
+	const char* value = g_engfuncs.pfnInfoKeyValue(infobuffer, "cl_autowepswitch");
+
+	if (*value)
+	{
+		m_iAutoWepSwitch = atoi(value);
+	}
+	else
+	{
+		m_iAutoWepSwitch = 1;
+	}
 }
 
 //=========================================================

@@ -20,6 +20,7 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "player.h"
+#include "UserMessages.h"
 
 enum glock_e {
 	GLOCK_IDLE1 = 0,

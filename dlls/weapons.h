@@ -18,7 +18,6 @@
 #include "effects.h"
 
 class CBasePlayer;
-extern int gmsgWeapPickup;
 
 void DeactivateSatchels( CBasePlayer *pOwner );
 
@@ -600,8 +599,6 @@ public:
 	void Reload( void );
 	void WeaponIdle( void );
 
-	BOOL m_fInZoom;// don't save this. 
-
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )
@@ -698,8 +695,6 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
-
-	int m_fInZoom; // don't save this
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -906,6 +901,7 @@ public:
 	void EndAttack( void );
 	void Attack( void );
 	void PrimaryAttack( void );
+	BOOL ShouldWeaponIdle() override { return TRUE; }
 	void WeaponIdle( void );
 
 	float m_flAmmoUseTime;// since we use < 1 point of ammo per update, we subtract ammo on a timer.
