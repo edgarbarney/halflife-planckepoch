@@ -65,5 +65,7 @@ extern int gmsgStatusValue;
 extern int gmsgCamData; // for trigger_viewset
 extern int gmsgRainData;
 extern int gmsgInventory; //AJH Inventory system
+extern int gmsgWeather;
+extern int gmsgServerState; // used for pause/menu detection
 
 void LinkUserMessages(void);

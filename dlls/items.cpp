@@ -45,21 +45,6 @@ void I_Precache( void )
 	UTIL_PrecacheOther( "item_medicalkit" );
 }
 
-void I_Precache( void )
-{	
-	// common world objects (moved from W_Precache - weapons.cpp)
-	UTIL_PrecacheOther( "item_suit" );
-	UTIL_PrecacheOther( "item_battery" );
-	UTIL_PrecacheOther( "item_antidote" );
-	UTIL_PrecacheOther( "item_security" );
-	UTIL_PrecacheOther( "item_longjump" );
-	UTIL_PrecacheOther( "item_healthkit" );  
-	UTIL_PrecacheOther( "item_camera" );
-	UTIL_PrecacheOther( "item_flare" );
-	UTIL_PrecacheOther( "item_antirad" );
-	UTIL_PrecacheOther( "item_medicalkit" );
-}
-
 class CWorldItem : public CBaseEntity
 {
 public:

@@ -10,6 +10,7 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
+#include "UserMessages.h"
 
 enum ar16_e
 {
