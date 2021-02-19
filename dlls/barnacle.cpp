@@ -197,8 +197,7 @@ void CBarnacle :: BarnacleThink ()
 
 				pVictim = m_hEnemy->MyMonsterPointer();
 
-				m_flKillVictimTime = gpGlobals->time + 10;// now that the victim is in place,
-										// the killing bite will be administered in 10 seconds.
+				m_flKillVictimTime = gpGlobals->time + 10;// now that the victim is in place, the killing bite will be administered in 10 seconds.
 
 				if ( pVictim )
 				{

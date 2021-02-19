@@ -36,6 +36,8 @@ extern DLL_GLOBAL Vector		g_vecAttackDir;
 #define		noiseStart		noise1
 #define		noiseStop		noise2
 #define		noiseRunning	noise3
+
+#define		SF_PENDULUM_SWING		2	// spawnflag that makes a pendulum a rope swing.
 //
 // BModelOrigin - calculates origin of a bmodel from absmin/size because all bmodel origins are 0 0 0
 //
@@ -115,7 +117,8 @@ public:
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void	TurnOff();
 	void	TurnOn();
-    STATE GetState() override { return (pev->solid == SOLID_NOT)?STATE_OFF:STATE_ON; };
+	BOOL	IsOn();
+	STATE GetState() override { return (pev->solid == SOLID_NOT)?STATE_OFF:STATE_ON; };
 };
 
 LINK_ENTITY_TO_CLASS( func_wall_toggle, CFuncWallToggle );
@@ -144,8 +147,17 @@ void CFuncWallToggle :: TurnOn()
 }
 
 
+BOOL CFuncWallToggle :: IsOn( void )
+{
+	if ( pev->solid == SOLID_NOT )
+		return FALSE;
+	return TRUE;
+}
+
+
 void CFuncWallToggle :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+//	int status = IsOn();
 	BOOL status = (GetState() == STATE_ON);
 
 	if ( ShouldToggle( useType, status ) )
@@ -256,6 +268,59 @@ void CFuncIllusionary :: Spawn()
 	// these entities after they have been moved to the client, or respawn them ala Quake
 	// Perhaps we can do this in deathmatch only.
 	//	MAKE_STATIC(ENT(pev));
+}
+
+// =================== FUNC_SHINE ==============================================
+
+//LRC - shiny surfaces
+class CFuncShine : public CBaseEntity
+{
+public:
+	void Spawn() override;
+	void Activate() override;
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+
+	void EXPORT Think() override;
+};
+
+LINK_ENTITY_TO_CLASS( func_shine, CFuncShine );
+
+extern int gmsgAddShine;
+
+void CFuncShine :: Spawn()
+{
+	pev->solid = SOLID_NOT;// always solid_not 
+	SET_MODEL( ENT(pev), STRING(pev->model) );
+	pev->effects |= EF_NODRAW;
+
+	// not that we actually need to precache it here, but we do need to make sure it exists
+	PRECACHE_MODEL( (char*)STRING(pev->message) );
+}
+
+void CFuncShine :: Activate()
+{
+	//LRC
+//	ALERT(at_console, "Activate shine\n");
+	if (pev->message && pev->renderamt)
+	{
+//		ALERT(at_console, "Prepare think\n");
+		pev->nextthink = gpGlobals->time + 1.5;
+	}
+}
+
+void CFuncShine :: Think()
+{
+//	ALERT(at_console, "Think shine\n");
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgAddShine, NULL);
+		WRITE_BYTE(pev->scale);
+		WRITE_BYTE(pev->renderamt);
+		WRITE_COORD(pev->absmin.x + 2); // take off 2: mins values are padded, but we just want to hug the surface
+		WRITE_COORD(pev->absmax.x - 2);
+		WRITE_COORD(pev->absmin.y + 2);
+		WRITE_COORD(pev->absmax.y - 2);
+		WRITE_COORD(pev->absmin.z + 2);
+		WRITE_STRING(STRING(pev->message));
+	MESSAGE_END();
 }
 
 
@@ -860,6 +925,11 @@ void CPendulum :: Spawn()
 	}
 	pev->speed = 0;
 	SetUse( &CPendulum::PendulumUse );
+
+	if ( FBitSet( pev->spawnflags, SF_PENDULUM_SWING ) )
+	{
+		SetTouch(&CPendulum :: RopeTouch );
+	}
 }
 
 
@@ -986,4 +1056,24 @@ void CPendulum :: Touch ( CBaseEntity *pOther )
 	pOther->TakeDamage( pev, pev, damage, DMG_CRUSH );
 	
 	pevOther->velocity = (pevOther->origin - VecBModelOrigin(pev) ).Normalize() * damage;
+}
+
+void CPendulum :: RopeTouch ( CBaseEntity *pOther )
+{
+	entvars_t	*pevOther = pOther->pev;
+
+	if ( !pOther->IsPlayer() )
+	{// not a player!
+		ALERT ( at_console, "Not a client\n" );
+		return;
+	}
+
+	if ( ENT(pevOther) == pev->enemy )
+	{// this player already on the rope.
+		return;
+	}
+
+	pev->enemy = pOther->edict();
+	pevOther->velocity = g_vecZero;
+	pevOther->movetype = MOVETYPE_NONE;
 }

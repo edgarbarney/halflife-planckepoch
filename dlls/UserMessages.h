@@ -23,6 +23,10 @@ extern int gmsgFlashBattery;
 extern int gmsgResetHUD;
 extern int gmsgInitHUD;
 extern int gmsgSetFog; //LRC
+extern int gmsgKeyedDLight; //LRC
+extern int gmsgSetSky; // LRC
+extern int gmsgHUDColor; // LRC
+extern int gmsgAddShine; // LRC
 extern int gmsgShowGameTitle;
 extern int gmsgCurWeapon;
 extern int gmsgHealth;
@@ -30,7 +34,6 @@ extern int gmsgDamage;
 extern int gmsgBattery;
 extern int gmsgTrain;
 extern int gmsgLogo;
-extern int gmsgHUDColor; //LRC
 extern int gmsgWeaponList;
 extern int gmsgAmmoX;
 extern int gmsgHudText;

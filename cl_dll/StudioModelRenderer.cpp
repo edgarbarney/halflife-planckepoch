@@ -1774,8 +1774,6 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 
 #endif
 	
-//LRC - if you wanted to set player models with an env_customize
-//	m_pRenderModel = m_pCurrentEntity->model;
 	if (m_pRenderModel == NULL)
 		return 0;
 
@@ -2064,10 +2062,10 @@ void CStudioModelRenderer::StudioRenderModel()
 			gEngfuncs.pTriAPI->RenderMode( kRenderTransAdd );
 		}
 
-		IEngineStudio.SetForceFaceFlags( STUDIO_NF_CHROME ); // comment out for bloating effects! --LRC
+		IEngineStudio.SetForceFaceFlags( STUDIO_NF_CHROME );
 
-		gEngfuncs.pTriAPI->SpriteTexture( m_pChromeSprite, 0 ); // for some reason this only has an effect if FxGlowShell is set
-		m_pCurrentEntity->curstate.renderfx = kRenderFxGlowShell; // causes bloating/swirling chrome effects --LRC
+		gEngfuncs.pTriAPI->SpriteTexture( m_pChromeSprite, 0 );
+		m_pCurrentEntity->curstate.renderfx = kRenderFxGlowShell;
 
 		StudioRenderFinal( );
 		if ( !IEngineStudio.IsHardware() )

@@ -100,6 +100,34 @@ int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
 	return gHUD.MsgFunc_HUDColor(pszName, iSize, pbuf );
 }
 
+//LRC
+int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
+	return 1;
+}
+
+//LRC
+int __MsgFunc_KeyedDLight(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_KeyedDLight( pszName, iSize, pbuf );
+	return 1;
+}
+
+//LRC
+int __MsgFunc_AddShine(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_AddShine( pszName, iSize, pbuf );
+	return 1;
+}
+
+//LRC
+int __MsgFunc_SetSky(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_SetSky( pszName, iSize, pbuf );
+	return 1;
+}
+
 int __MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf)
 {
 	return gHUD.MsgFunc_ResetHUD(pszName, iSize, pbuf );
@@ -108,13 +136,6 @@ int __MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf)
 int __MsgFunc_InitHUD(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_InitHUD( pszName, iSize, pbuf );
-	return 1;
-}
-
-//LRC
-int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
-{
-	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
 	return 1;
 }
 
@@ -290,14 +311,17 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 void CHud :: Init()
 {
 	HOOK_MESSAGE( Logo );
-	HOOK_MESSAGE( HUDColor ); //LRC
 	HOOK_MESSAGE( ResetHUD );
 	HOOK_MESSAGE( GameMode );
 	HOOK_MESSAGE( InitHUD );
-	HOOK_MESSAGE( SetFog ); //LRC
 	HOOK_MESSAGE( ViewMode );
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
+	HOOK_MESSAGE( HUDColor ); //LRC
+	HOOK_MESSAGE( SetFog ); //LRC
+	HOOK_MESSAGE( KeyedDLight ); //LRC
+	HOOK_MESSAGE( AddShine ); //LRC
+	HOOK_MESSAGE( SetSky ); //LRC
 
 	// TFFree CommandMenu
 	HOOK_COMMAND( "+commandmenu", OpenCommandMenu );
@@ -345,6 +369,7 @@ void CHud :: Init()
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
 
 	m_pSpriteList = NULL;
+	m_pShinySurface = NULL; //LRC
 
 	// Clear any old HUD list
 	if ( m_pHudList )
