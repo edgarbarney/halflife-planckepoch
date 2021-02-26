@@ -210,7 +210,7 @@ public:
 	int MsgFunc_Train(const char *pszName, int iSize, void *pbuf);
 
 private:
-	HSPRITE m_hSprite;
+	HL_HSPRITE m_hSprite;
 	int m_iPos;
 
 };
@@ -344,8 +344,8 @@ public:
 	int MsgFunc_Battery(const char *pszName,  int iSize, void *pbuf );
 	
 private:
-	HSPRITE m_hSprite1;
-	HSPRITE m_hSprite2;
+	HL_HSPRITE m_hSprite1;
+	HL_HSPRITE m_hSprite2;
 	wrect_t *m_prc1;
 	wrect_t *m_prc2;
 	int	  m_iBat;	
@@ -382,9 +382,9 @@ public:
 	int MsgFunc_FlashBat(const char *pszName,  int iSize, void *pbuf );
 	
 private:
-	HSPRITE m_hSprite1;
-	HSPRITE m_hSprite2;
-	HSPRITE m_hBeam;
+	HL_HSPRITE m_hSprite1;
+	HL_HSPRITE m_hSprite2;
+	HL_HSPRITE m_hBeam;
 	wrect_t *m_prc1;
 	wrect_t *m_prc2;
 	wrect_t *m_prcBeam;
@@ -496,7 +496,7 @@ private:
 	typedef struct
 	{
 		char szSpriteName[MAX_ICONSPRITENAME_LENGTH];
-		HSPRITE spr;
+		HL_HSPRITE spr;
 		wrect_t rc;
 		unsigned char r, g, b;
 	} icon_sprite_t;
@@ -572,7 +572,7 @@ class CHud
 {
 private:
 	HUDLIST						*m_pHudList;
-	HSPRITE						m_hsprLogo;
+	HL_HSPRITE						m_hsprLogo;
 	int							m_iLogo;
 	client_sprite_t				*m_pSpriteList;
 	int							m_iSpriteCount;
@@ -582,7 +582,7 @@ private:
 
 public:
 
-	HSPRITE						m_hsprCursor;
+	HL_HSPRITE						m_hsprCursor;
 	float m_flTime;	   // the current client time
 	float m_fOldTime;  // the time at which the HUD was last redrawn
 	double m_flTimeDelta; // the difference between flTime and fOldTime
@@ -618,13 +618,13 @@ public:
 private:
 	// the memory for these arrays are allocated in the first call to CHud::VidInit(), when the hud.txt and associated sprites are loaded.
 	// freed in ~CHud()
-	HSPRITE *m_rghSprites;	/*[HUD_SPRITE_COUNT]*/			// the sprites loaded from hud.txt
+	HL_HSPRITE *m_rghSprites;	/*[HUD_SPRITE_COUNT]*/			// the sprites loaded from hud.txt
 	wrect_t *m_rgrcRects;	/*[HUD_SPRITE_COUNT]*/
 	char *m_rgszSpriteNames; /*[HUD_SPRITE_COUNT][MAX_SPRITE_NAME_LENGTH]*/
 
 	struct cvar_s *default_fov;
 public:
-	HSPRITE GetSprite( int index ) 
+	HL_HSPRITE GetSprite( int index ) 
 	{
 		return (index < 0) ? 0 : m_rghSprites[index];
 	}

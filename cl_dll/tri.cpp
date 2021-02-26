@@ -44,7 +44,7 @@ extern IParticleMan *g_pParticleMan;
 extern int g_iWaterLevel;
 extern vec3_t v_origin;
 
-int UseTexture(HSPRITE &hsprSpr, char * str)
+int UseTexture(HL_HSPRITE &hsprSpr, char * str)
 {
 	if (hsprSpr == 0)
 	{
@@ -119,7 +119,7 @@ void DrawRain( void )
 	if (FirstChainDrip.p_Next == NULL)
 		return; // no drips to draw
 
-	HSPRITE hsprTexture;
+	HL_HSPRITE hsprTexture;
 	const model_s *pTexture;
 	float visibleHeight = Rain.globalHeight - SNOWFADEDIST;
 
@@ -233,7 +233,7 @@ void DrawFXObjects( void )
 	float curtime = gEngfuncs.GetClientTime();
 
 	// usual triapi stuff
-	HSPRITE hsprTexture;
+	HL_HSPRITE hsprTexture;
 	const model_s *pTexture;
 	hsprTexture = LoadSprite( "sprites/waterring.spr" ); // load water ring sprite
 	pTexture = gEngfuncs.GetSpritePointer( hsprTexture );
