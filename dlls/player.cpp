@@ -4663,12 +4663,12 @@ void CBasePlayer :: UpdateClientData( void )
 }
 // Trinity Removed
 //Not Trinity. Due to global message system
-//extern int gmsgSetTrinityFog;
+//extern int gmsgSetFog;
 
 //RENDERERS START
 void CBasePlayer :: ClearEffects( void )
 {
-	MESSAGE_BEGIN( MSG_ONE, gmsgSetTrinityFog, NULL, pev );
+	MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, pev );
 		WRITE_SHORT ( 0 );
 		WRITE_SHORT ( 0 );
 		WRITE_SHORT ( 0 );

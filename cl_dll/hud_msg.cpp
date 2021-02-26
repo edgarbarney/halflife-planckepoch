@@ -158,53 +158,6 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 }
 
 //LRC
-void CHud :: MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf )
-{
-//	CONPRINT("MSG:SetFog");
-	BEGIN_READ( pbuf, iSize );
-
-	for ( int i = 0; i < 3; i++ )
-	{
-		g_fogPostFade.fogColor[i] = READ_BYTE();
-
-		if ( g_fog.fogColor[i] >= 0 )
-			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
-		else
-			g_fogPreFade.fogColor[i] = g_fogPostFade.fogColor[i];
-	}
-
-	g_fFogFadeDuration = READ_SHORT();
-
-	g_fogPostFade.startDist = READ_SHORT();
-	if ( g_fog.startDist >= 0 )
-		g_fogPreFade.startDist = g_fog.startDist;
-	else
-		g_fogPreFade.startDist = g_fogPostFade.startDist;
-
-	g_fogPostFade.endDist = READ_SHORT();
-	if ( g_fog.endDist >= 0 )
-		g_fogPreFade.endDist = g_fog.endDist;
-	else
-		g_fogPreFade.endDist = g_fogPostFade.endDist;
-
-	if ( g_fFogFadeDuration < 0 )
-	{
-		g_fFogFadeDuration *= -1;
-		g_fogPostFade.startDist = FOG_LIMIT;
-		g_fogPostFade.endDist = FOG_LIMIT;
-	}
-	else if ( g_fFogFadeDuration == 0 )
-	{
-		g_fog.endDist = g_fogPostFade.endDist;
-		for ( int i = 0; i < 3; i++ )
-		{
-			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
-		}
-	}
-	g_fFogFadeFraction = 0;
-}
-
-//LRC
 void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 {
 //	CONPRINT("MSG:KeyedDLight");
@@ -357,7 +310,7 @@ int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJ
 }
 
 //RENDERERS START
-int CHud ::MsgFunc_SetTrinityFog( const char *pszName, int iSize, void *pbuf )
+int CHud ::MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf )
 {
 	BEGIN_READ( pbuf, iSize );
 	gHUD.m_pFogSettings.color.x = (float)READ_SHORT()/255;

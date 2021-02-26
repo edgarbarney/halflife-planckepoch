@@ -106,23 +106,24 @@ void ParticleSystemManager::SortSystems()
 
 void ParticleSystemManager::UpdateSystems( float frametime ) //LRC - now with added time!
 {
-//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAdd);
-//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAlpha);
+	/*
+	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAdd);
+	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAlpha);
 	ParticleSystem* pSystem;
 	ParticleSystem* pLast = NULL;
 	ParticleSystem*pLastSorted = NULL;
 	cl_entity_t *localPlayer = gEngfuncs.GetLocalPlayer();
-//	vec3_t normal, forward, right, up;
+	//	vec3_t normal, forward, right, up;
 
-//	gEngfuncs.GetViewAngles((float*)normal);
-//	AngleVectors(normal,forward,right,up);
+	//	gEngfuncs.GetViewAngles((float*)normal);
+	//	AngleVectors(normal,forward,right,up);
 
 	//SortSystems();
 
 	pSystem = m_pFirstSystem;
 	while( pSystem )
 	{
-		if(	pSystem->UpdateSystem(frametime, /*right, up,*/ localPlayer->curstate.messagenum) )
+		if(	pSystem->UpdateSystem(frametime, localPlayer->curstate.messagenum) )
 		{
 			pSystem->DrawSystem();
 			pLast = pSystem;
@@ -145,6 +146,7 @@ void ParticleSystemManager::UpdateSystems( float frametime ) //LRC - now with ad
 		}
 	}
 	gEngfuncs.pTriAPI->RenderMode(kRenderNormal);
+	*/
 }
 
 void ParticleSystemManager::ClearSystems( void )

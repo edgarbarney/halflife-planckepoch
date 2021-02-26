@@ -3684,7 +3684,7 @@ void CEnvRain::Think( void )
 
 // Trinity Removed
 //Not Trinity. Due to global message system
-//extern int gmsgSetTrinityFog;
+//extern int gmsgSetFog;
 
 #define SF_FOG_STARTON 1
 
@@ -3752,9 +3752,9 @@ void CClientFog::SendInitMessage( CBasePlayer *player )
 	if ( m_fActive )
 	{
 		if(player)
-			MESSAGE_BEGIN( MSG_ONE, gmsgSetTrinityFog, NULL, player->pev );
+			MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, player->pev );
 		else
-			MESSAGE_BEGIN( MSG_ALL, gmsgSetTrinityFog, NULL );
+			MESSAGE_BEGIN( MSG_ALL, gmsgSetFog, NULL );
 
 			WRITE_SHORT ( pev->rendercolor.x );
 			WRITE_SHORT ( pev->rendercolor.y );
@@ -3767,9 +3767,9 @@ void CClientFog::SendInitMessage( CBasePlayer *player )
 	else
 	{
 		if(player)
-			MESSAGE_BEGIN( MSG_ONE, gmsgSetTrinityFog, NULL, player->pev );
+			MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, player->pev );
 		else
-			MESSAGE_BEGIN( MSG_ALL, gmsgSetTrinityFog, NULL );
+			MESSAGE_BEGIN( MSG_ALL, gmsgSetFog, NULL );
 
 			WRITE_SHORT ( 0 );
 			WRITE_SHORT ( 0 );

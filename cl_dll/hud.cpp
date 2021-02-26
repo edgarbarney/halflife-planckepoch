@@ -121,7 +121,7 @@ int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
 	return gHUD.MsgFunc_HUDColor(pszName, iSize, pbuf );
 }
 
-//LRC
+// Trinity
 int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
@@ -374,9 +374,9 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 //RENDERERS START
-int MsgFunc_SetTrinityFog(const char *pszName, int iSize, void *pbuf )
+int MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf )
 {
-	return gHUD.MsgFunc_SetTrinityFog( pszName, iSize, pbuf );
+	return gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
 }
 int __MsgFunc_LightStyle(const char *pszName, int iSize, void *pbuf )
 {
@@ -428,7 +428,6 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
 	HOOK_MESSAGE( HUDColor ); //LRC
-	HOOK_MESSAGE( SetFog ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
 	HOOK_MESSAGE( Test ); //LRC

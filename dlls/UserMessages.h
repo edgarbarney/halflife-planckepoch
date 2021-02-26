@@ -22,7 +22,6 @@ extern int gmsgFlashlight;
 extern int gmsgFlashBattery;
 extern int gmsgResetHUD;
 extern int gmsgInitHUD;
-extern int gmsgSetFog; //LRC
 extern int gmsgKeyedDLight; //LRC
 extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
@@ -66,7 +65,7 @@ extern int gmsgRainData;
 extern int gmsgInventory; //AJH Inventory system
 
 //RENDERERS START
-extern int gmsgSetTrinityFog;
+extern int gmsgSetFog;
 extern int gmsgLightStyle;
 extern int gmsgCreateDecal;
 extern int gmsgStudioDecal;
