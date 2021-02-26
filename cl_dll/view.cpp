@@ -21,6 +21,12 @@
 #include "hltv.h"
 #include "Exports.h"
 
+//RENDERERS START
+#include "bsprenderer.h"
+#include "propmanager.h"
+#include "mirrormanager.h"
+#include "watershader.h"
+//RENDERERS END
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
@@ -1838,6 +1844,10 @@ void DLLEXPORT V_CalcRefdef( struct ref_params_s *pparams )
 	}
 #endif
 */
+// RENDERER START
+	//2012-02-25
+	R_CalcRefDef(pparams);
+// RENDERER END
 }
 
 /*

@@ -257,4 +257,51 @@ public:
 	float fadeTime;
 };
 
+//RENDERERS START
+//=======================
+// ClientFog
+//=======================
+class CClientFog : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+	void SendInitMessage( CBasePlayer *player );
+
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	float m_iStartDist;
+	float m_iEndDist;
+
+	BOOL  m_fActive;
+	BOOL  m_bDontAffectSky;
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+public:
+	static CClientFog *FogCreate( void );
+};
+
+//=======================
+// CItemProp
+//=======================
+class CItemProp : public CBaseAnimating
+{
+public:
+	void	Spawn( void );
+	void	Precache( void );
+	void	KeyValue( KeyValueData *pkvd );
+
+	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+	BOOL m_fDisableShadows;
+	BOOL m_fDisableDrawing;
+};
+//RENDERERS END
+
 #endif		//EFFECTS_H

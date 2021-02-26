@@ -973,7 +973,7 @@ BOOL CBreakable :: IsBreakable( void )
 	return m_Material != matUnbreakableGlass;
 }
 
-
+/* Trinity Removed
 int	CBreakable :: DamageDecal( int bitsDamageType )
 {
 	if ( m_Material == matGlass  )
@@ -984,7 +984,20 @@ int	CBreakable :: DamageDecal( int bitsDamageType )
 
 	return CBaseEntity::DamageDecal( bitsDamageType );
 }
+*/
 
+//RENDERERS START
+char *CBreakable :: DamageDecal( int bitsDamageType )
+{
+	if ( pev->rendermode == kRenderTransAlpha )
+		return 0;
+
+	if ( pev->rendermode != kRenderNormal )
+		return "shot_glass";
+
+	return "shot";
+}
+//RENDERERS END
 
 class CPushable : public CBreakable
 {

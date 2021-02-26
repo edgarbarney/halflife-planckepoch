@@ -27,7 +27,6 @@ extern int gmsgKeyedDLight; //LRC
 extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
-extern int gmsgAddShine; // LRC
 extern int gmsgParticle; // LRC
 extern int gmsgClampView; //LRC 1.8
 extern int gmsgPlayMP3; //Killar
@@ -65,5 +64,18 @@ extern int gmsgStatusValue;
 extern int gmsgCamData; // for trigger_viewset
 extern int gmsgRainData;
 extern int gmsgInventory; //AJH Inventory system
+
+//RENDERERS START
+extern int gmsgSetTrinityFog;
+extern int gmsgLightStyle;
+extern int gmsgCreateDecal;
+extern int gmsgStudioDecal;
+extern int gmsgCreateDLight;
+extern int gmsgFreeEnt;
+extern int gmsgSkyMark_Sky;
+extern int gmsgSkyMark_World;
+extern int gmsgCreateSystem;
+
+//RENDERERS END
 
 void LinkUserMessages(void);

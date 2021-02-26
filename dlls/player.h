@@ -354,6 +354,11 @@ public:
 	float	Rain_nextFadeUpdate;
 
 	int	Rain_needsUpdate;
+	//RENDERERS START
+	BOOL m_bUpdateEffects;
+	void ClearEffects( void );
+	void SendInitMessages( void );
+	//RENDERERS END
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

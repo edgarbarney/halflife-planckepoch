@@ -968,7 +968,7 @@ BOOL CBaseEntity::ShouldToggle( USE_TYPE useType )
 	return TRUE;
 }
 
-
+/* Trinity Removed
 int	CBaseEntity :: DamageDecal( int bitsDamageType )
 {
 	if ( pev->rendermode == kRenderTransAlpha )
@@ -979,7 +979,20 @@ int	CBaseEntity :: DamageDecal( int bitsDamageType )
 
 	return DECAL_GUNSHOT1 + RANDOM_LONG(0,4);
 }
+*/
 
+//RENDERERS START
+char *CBaseEntity :: DamageDecal( int bitsDamageType )
+{
+	if ( pev->rendermode == kRenderTransAlpha )
+		return 0;
+
+	if ( pev->rendermode != kRenderNormal )
+		return "shot_glass";
+
+	return "shot";
+}
+//RENDERERS END
 
 
 // NOTE: szName must be a pointer to constant memory, e.g. "monster_class" because the entity

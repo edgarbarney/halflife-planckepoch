@@ -16,6 +16,7 @@
 #define WEAPONS_H
 
 #include "effects.h"
+#include "UserMessages.h"
 
 class CBasePlayer;
 
@@ -423,9 +424,19 @@ extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage(entvars_t* pevInflictor, entvars_t* pevAttacker );
 extern void AddMultiDamage( entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
 
+/* Trinity Removed
 extern void DecalGunshot( TraceResult *pTrace, int iBulletType );
 extern void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage);
 extern int DamageDecal( CBaseEntity *pEntity, int bitsDamageType );
+*/
+
+extern void DecalGunshot( TraceResult *pTrace, int iBulletType, Vector vecSrc, Vector vecEnd );
+extern void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage);
+
+//RENDERERS START
+extern char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType );
+//RENDERERS END
+
 extern void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType );
 
 typedef struct 

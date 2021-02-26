@@ -37,6 +37,22 @@
 
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
+//RENDERERS START
+#include "bsprenderer.h"
+#include "propmanager.h"
+#include "textureloader.h"
+#include "particle_engine.h"
+#include "watershader.h"
+#include "mirrormanager.h"
+#include "r_efx.h"
+
+#include "studio.h"
+#include "StudioModelRenderer.h"
+#include "GameStudioModelRenderer.h"
+
+extern CGameStudioModelRenderer g_StudioRenderer;
+extern engine_studio_api_t IEngineStudio;
+//RENDERERS END
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -116,13 +132,6 @@ int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
 int __MsgFunc_KeyedDLight(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_KeyedDLight( pszName, iSize, pbuf );
-	return 1;
-}
-
-//LRC
-int __MsgFunc_AddShine(const char *pszName, int iSize, void *pbuf)
-{
-	gHUD.MsgFunc_AddShine( pszName, iSize, pbuf );
 	return 1;
 }
 
@@ -364,6 +373,44 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 		return gViewPort->MsgFunc_AllowSpec( pszName, iSize, pbuf );
 	return 0;
 }
+//RENDERERS START
+int MsgFunc_SetTrinityFog(const char *pszName, int iSize, void *pbuf )
+{
+	return gHUD.MsgFunc_SetTrinityFog( pszName, iSize, pbuf );
+}
+int __MsgFunc_LightStyle(const char *pszName, int iSize, void *pbuf )
+{
+	return gHUD.MsgFunc_LightStyle( pszName, iSize, pbuf );
+}
+int __MsgFunc_CreateDecal(const char *pszName, int iSize, void *pbuf )
+{
+	return gBSPRenderer.MsgCustomDecal( pszName, iSize, pbuf );
+}
+int __MsgFunc_StudioDecal(const char *pszName, int iSize, void *pbuf )
+{
+	return gHUD.MsgFunc_StudioDecal( pszName, iSize, pbuf );
+}
+int __MsgFunc_SkyMark_S(const char *pszName, int iSize, void *pbuf )
+{
+	return gBSPRenderer.MsgSkyMarker_Sky( pszName, iSize, pbuf );
+}
+int __MsgFunc_SkyMark_W(const char *pszName, int iSize, void *pbuf )
+{
+	return gBSPRenderer.MsgSkyMarker_World( pszName, iSize, pbuf );
+}
+int __MsgFunc_DynLight(const char *pszName, int iSize, void *pbuf )
+{
+	return gBSPRenderer.MsgDynLight( pszName, iSize, pbuf );
+}
+int __MsgFunc_FreeEnt(const char *pszName, int iSize, void *pbuf )
+{
+	return gHUD.MsgFunc_FreeEnt( pszName, iSize, pbuf );
+}
+int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
+{
+	return gParticleEngine.MsgCreateSystem( pszName, iSize, pbuf );
+}
+//RENDERERS END
 
 // This is called every time the DLL is loaded
 void CHud :: Init( void )
@@ -382,7 +429,6 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( SetFog ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
-	HOOK_MESSAGE( AddShine ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
 	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
@@ -427,7 +473,26 @@ void CHud :: Init( void )
 
 	CVAR_CREATE( "hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO );		// controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE( "hud_takesshots", "0", FCVAR_ARCHIVE );		// controls whether or not to automatically take screenshots at the end of a round
+	
+	//RENDERERS START
+	HOOK_MESSAGE( SetFog );
+	HOOK_MESSAGE( LightStyle );
+	HOOK_MESSAGE( CreateDecal );
+	HOOK_MESSAGE( StudioDecal );
+	HOOK_MESSAGE( SkyMark_S );
+	HOOK_MESSAGE( SkyMark_W );
+	HOOK_MESSAGE( DynLight );
+	HOOK_MESSAGE( FreeEnt );
+	HOOK_MESSAGE( Particle );
 
+	gPropManager.Init();
+	gTextureLoader.Init();
+	gBSPRenderer.Init();
+	gParticleEngine.Init();
+	gWaterShader.Init();
+	gMirrorManager.Init();
+	//RENDERERS END
+	
 	//start glow effect --FragBait0
 	CVAR_CREATE("r_glow", "0", FCVAR_ARCHIVE );
 	//CVAR_CREATE("r_glowmode", "0", FCVAR_ARCHIVE ); //AJH this is now redundant
@@ -455,7 +520,6 @@ void CHud :: Init( void )
 
 	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
 	m_pSpriteList = NULL;
-	m_pShinySurface = NULL; //LRC
 
 	// Clear any old HUD list
 	if ( m_pHudList )
@@ -509,12 +573,6 @@ CHud :: ~CHud()
 	delete [] m_rgszSpriteNames;
 	gMP3.Shutdown();
 	ResetRain();
-	//LRC - clear all shiny surfaces
-	if (m_pShinySurface)
-	{
-		delete m_pShinySurface;
-		m_pShinySurface = NULL;
-	}
 
 	if ( m_pHudList )
 	{
@@ -528,6 +586,10 @@ CHud :: ~CHud()
 		m_pHudList = NULL;
 	}
 
+	//RENDERERS START
+	gTextureLoader.Shutdown();
+	gBSPRenderer.Shutdown();
+	//RENDERERS END
 	ServersShutdown();
 }
 
@@ -564,13 +626,6 @@ void CHud :: VidInit( void )
 	m_hsprCursor = 0;
 	numMirrors = 0;
 	ResetRain();
-
-	//LRC - clear all shiny surfaces
-	if (m_pShinySurface)
-	{
-		delete m_pShinySurface;
-		m_pShinySurface = NULL;
-	}
 
 	if (ScreenWidth < 640)
 		m_iRes = 320;
@@ -662,6 +717,14 @@ void CHud :: VidInit( void )
 	m_StatusIcons.VidInit();
 	GetClientVoiceMgr()->VidInit();
 	m_Particle.VidInit(); // (LRC) -- 30/08/02 November235: Particles to Order
+	//RENDERERS START
+	gTextureLoader.VidInit();
+	gWaterShader.VidInit();
+	gBSPRenderer.VidInit();
+	gParticleEngine.VidInit();
+	gMirrorManager.VidInit();
+	g_StudioRenderer.VidInit();
+	//RENDERERS_END
 }
 
 int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)

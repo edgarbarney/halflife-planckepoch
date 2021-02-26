@@ -599,6 +599,7 @@ void Bench_SpotPosition( vec3_t dot, vec3_t target )
 	gHUD.m_Benchmark.SetScore( delta.Length() );
 }
 
+/* Trinity Removed
 typedef struct model_s
 {
 	char		name[64];
@@ -615,6 +616,7 @@ typedef struct model_s
 //		
 	vec3_t		mins, maxs;
 } model_t;
+*/
 
 static vec3_t g_dotorg;
 vec3_t g_aimorg;

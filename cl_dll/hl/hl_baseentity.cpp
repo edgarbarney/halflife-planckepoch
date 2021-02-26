@@ -52,7 +52,13 @@ void CBaseEntity :: MakeDormant( void ) { }
 int CBaseEntity :: IsDormant( void ) { return 0; }
 BOOL CBaseEntity :: IsInWorld( void ) { return TRUE; }
 int CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState ) { return 0; }
-int	CBaseEntity :: DamageDecal( int bitsDamageType ) { return -1; }
+
+// Trinity Removed
+//int	CBaseEntity :: DamageDecal( int bitsDamageType ) { return -1; }
+
+//RENDERERS START
+char *CBaseEntity :: DamageDecal( int bitsDamageType ) { return NULL; }
+//RENDERERS END
 CBaseEntity * CBaseEntity::Create( const char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner ) { return NULL; }
 void CBaseEntity::SUB_Remove( void ) { }
 void CBaseEntity::Activate( void ) { } //LRC
@@ -309,8 +315,15 @@ void ClearMultiDamage(void) { }
 void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker ) { }
 void AddMultiDamage( entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType) { }
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage) { }
+/* Trinity Removed
 int DamageDecal( CBaseEntity *pEntity, int bitsDamageType ) { return 0; }
 void DecalGunshot( TraceResult *pTrace, int iBulletType ) { }
+*/
+
+//RENDERERS START
+char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vector vecEnd ) { return 0; }
+void DecalGunshot( TraceResult *pTrace, int iBulletType, Vector vecSrc, Vector vecEnd ) { }
+//RENDERERS END
 void EjectBrass ( const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype ) { }
 void AddAmmoNameToAmmoRegistry( const char *szAmmoname ) { }
 int CBasePlayerItem::Restore( class CRestore & ) { return 1; }

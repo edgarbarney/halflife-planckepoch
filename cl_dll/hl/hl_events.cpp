@@ -36,7 +36,6 @@ void EV_EgonStop( struct event_args_s *args );
 void EV_HornetGunFire( struct event_args_s *args );
 void EV_TripmineFire( struct event_args_s *args );
 void EV_SnarkFire( struct event_args_s *args );
-void EV_Mirror( struct event_args_s *args );//temporary mirror stuff
 void EV_GenericFire1( struct event_args_s *args );
 void EV_GenericFire2( struct event_args_s *args );
 void EV_GenericFire3( struct event_args_s *args );
@@ -77,7 +76,6 @@ void Game_HookEvents( void )
 	gEngfuncs.pfnHookEvent( "events/firehornet.sc",				EV_HornetGunFire );
 	gEngfuncs.pfnHookEvent( "events/tripfire.sc",				EV_TripmineFire );
 	gEngfuncs.pfnHookEvent( "events/snarkfire.sc",				EV_SnarkFire );
-	gEngfuncs.pfnHookEvent( "events/mirror.sc", 				EV_Mirror );
 	gEngfuncs.pfnHookEvent( "events/generic1.sc", 				EV_GenericFire1 );
 	gEngfuncs.pfnHookEvent( "events/generic2.sc", 				EV_GenericFire2 );
 	gEngfuncs.pfnHookEvent( "events/generic3.sc", 				EV_GenericFire3 );	

@@ -153,7 +153,8 @@ void CCrowbar::PrimaryAttack()
 
 void CCrowbar::Smack( )
 {
-	DecalGunshot( &m_trHit, BULLET_PLAYER_CROWBAR );
+	// Trinity Removed
+	//DecalGunshot( &m_trHit, BULLET_PLAYER_CROWBAR );
 }
 
 
@@ -302,6 +303,9 @@ int CCrowbar::Swing( int fFirst )
 		SetThink( &CCrowbar::Smack );
 		SetNextThink( 0.2 );
 
+		//RENDERERS START
+		DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR, vecSrc, vecEnd);
+		//RENDERERS END
 		
 	}
 	return fDidHit;

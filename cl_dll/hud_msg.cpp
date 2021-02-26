@@ -24,6 +24,17 @@
 
 #include "particleman.h"
 extern IParticleMan *g_pParticleMan;
+//RENDERERS START
+#include "bsprenderer.h"
+#include "propmanager.h"
+#include "watershader.h"
+
+#include "studio.h"
+#include "StudioModelRenderer.h"
+#include "GameStudioModelRenderer.h"
+
+extern CGameStudioModelRenderer g_StudioRenderer;
+//RENDERERS END
 
 //LRC - the fogging fog
 FogSettings g_fog;
@@ -53,6 +64,14 @@ int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
 {
 	ASSERT( iSize == 0 );
 
+//RENDERERS START
+	gHUD.m_pFogSettings.end = 0.0; 
+	gHUD.m_pFogSettings.start = 0.0;
+	gHUD.m_pFogSettings.active = false;
+	gHUD.m_pSkyFogSettings.end = 0.0; 
+	gHUD.m_pSkyFogSettings.start = 0.0;
+	gHUD.m_pSkyFogSettings.active = false;
+//RENDERERS END
 	// clear all hud data
 	HUDLIST *pList = m_pHudList;
 
@@ -102,6 +121,15 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	numMirrors = 0;
 
 	m_iSkyMode = SKY_OFF; //LRC
+	
+	//RENDERERS START
+	gHUD.m_pFogSettings.end = 0.0; 
+	gHUD.m_pFogSettings.start = 0.0;
+	gHUD.m_pFogSettings.active = false;
+	gHUD.m_pSkyFogSettings.end = 0.0; 
+	gHUD.m_pSkyFogSettings.start = 0.0;
+	gHUD.m_pSkyFogSettings.active = false;
+	//RENDERERS END
 
 	// prepare all hud data
 	HUDLIST *pList = m_pHudList;
@@ -209,28 +237,6 @@ void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 		dl->color.g = READ_BYTE();
 		dl->color.b = READ_BYTE();
 	}
-}
-
-//LRC
-void CHud :: MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf )
-{
-//	CONPRINT("MSG:AddShine");
-	BEGIN_READ( pbuf, iSize );
-
-	float fScale = READ_BYTE();
-	float fAlpha = READ_BYTE()/255.0;
-	float fMinX = READ_COORD();
-	float fMaxX = READ_COORD();
-	float fMinY = READ_COORD();
-	float fMaxY = READ_COORD();
-	float fZ = READ_COORD();
-	char *szSprite = READ_STRING();
-
-//	gEngfuncs.Con_Printf("minx %f, maxx %f, miny %f, maxy %f\n", fMinX, fMaxX, fMinY, fMaxY);
-
-	CShinySurface *pSurface = new CShinySurface(fScale, fAlpha, fMinX, fMaxX, fMinY, fMaxY, fZ, szSprite);
-	pSurface->m_pNext = m_pShinySurface;
-	m_pShinySurface = pSurface;
 }
 
 //LRC
@@ -349,3 +355,76 @@ int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJ
 		}
 	return 1;
 }
+
+//RENDERERS START
+int CHud ::MsgFunc_SetTrinityFog( const char *pszName, int iSize, void *pbuf )
+{
+	BEGIN_READ( pbuf, iSize );
+	gHUD.m_pFogSettings.color.x = (float)READ_SHORT()/255;
+	gHUD.m_pFogSettings.color.y = (float)READ_SHORT()/255;
+	gHUD.m_pFogSettings.color.z = (float)READ_SHORT()/255;
+	gHUD.m_pFogSettings.start = READ_SHORT();
+	gHUD.m_pFogSettings.end = READ_SHORT();
+	gHUD.m_pFogSettings.affectsky = (READ_SHORT() == 1) ? false : true;
+
+	if( gHUD.m_pFogSettings.end < 1 && gHUD.m_pFogSettings.start < 1 )
+		gHUD.m_pFogSettings.active = false;
+	else
+		gHUD.m_pFogSettings.active = true;
+
+	return 1;
+}
+int CHud :: MsgFunc_LightStyle(const char *pszName, int iSize, void *pbuf )
+{
+	BEGIN_READ( pbuf, iSize );
+
+	int m_iStyleNum = READ_BYTE();
+	char *szStyle = READ_STRING();
+	gBSPRenderer.AddLightStyle(m_iStyleNum,szStyle);
+
+	return 1;
+}
+int CHud ::MsgFunc_StudioDecal(const char *pszName, int iSize, void *pbuf)
+{
+	BEGIN_READ( pbuf, iSize );
+
+	vec3_t pos, normal;
+	pos.x = READ_COORD();
+	pos.y = READ_COORD();
+	pos.z = READ_COORD();
+	normal.x = READ_COORD();
+	normal.y = READ_COORD();
+	normal.z = READ_COORD();
+	int entindex = READ_SHORT();
+	
+	if(!entindex)
+		return 1;
+
+	cl_entity_t *pEntity = gEngfuncs.GetEntityByIndex(entindex);
+	
+	if(!pEntity)
+		return 1;
+
+	g_StudioRenderer.StudioDecalForEntity(pos, normal, READ_STRING(), pEntity);
+
+	return 1;
+}
+int CHud ::MsgFunc_FreeEnt(const char *pszName, int iSize, void *pbuf)
+{
+	BEGIN_READ( pbuf, iSize );
+
+	int iEntIndex = READ_SHORT();
+	
+	if(!iEntIndex)
+		return 1;
+	
+
+	cl_entity_t *pEntity = gEngfuncs.GetEntityByIndex(iEntIndex);
+
+	if(!pEntity)
+		return 1;
+
+	pEntity->efrag = NULL;
+	return 1;
+}
+//RENDERERS END

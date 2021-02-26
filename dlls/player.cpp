@@ -1456,6 +1456,9 @@ void CBasePlayer::PlayerDeathThink(void)
 
 	//ALERT(at_console, "Respawn\n");
 
+	//RENDERERS START
+	m_bUpdateEffects = TRUE;
+	//RENDERERS END
 	respawn(pev, !(m_afPhysicsFlags & PFLAG_OBSERVER) );// don't copy a corpse if we're in deathcam.
 	DontThink();
 }
@@ -3179,6 +3182,9 @@ void CBasePlayer :: Precache( void )
 
 	m_iUpdateTime = 5;  // won't update for 1/2 a second
 
+	//RENDERERS START
+	m_bUpdateEffects = TRUE;
+	//RENDERERS END
 	if ( gInitHUD )
 		m_fInitHUD = TRUE;
 	Rain_needsUpdate = 1;
@@ -4310,6 +4316,14 @@ void CBasePlayer :: UpdateClientData( void )
 		InitStatusBar();
 	}
 
+	//RENDERERS START
+	if ( m_bUpdateEffects )
+	{
+		ClearEffects();
+		SendInitMessages();
+		m_bUpdateEffects = FALSE;
+	}
+	//RENDERERS END
 	if ( m_iHideHUD != m_iClientHideHUD )
 	{
 		MESSAGE_BEGIN( MSG_ONE, gmsgHideWeapon, NULL, pev );
@@ -4647,8 +4661,44 @@ void CBasePlayer :: UpdateClientData( void )
 		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
 	}
 }
+// Trinity Removed
+//Not Trinity. Due to global message system
+//extern int gmsgSetTrinityFog;
 
+//RENDERERS START
+void CBasePlayer :: ClearEffects( void )
+{
+	MESSAGE_BEGIN( MSG_ONE, gmsgSetTrinityFog, NULL, pev );
+		WRITE_SHORT ( 0 );
+		WRITE_SHORT ( 0 );
+		WRITE_SHORT ( 0 );
+		WRITE_SHORT ( 0 );
+		WRITE_SHORT ( 0 );
+	MESSAGE_END();
+}
+// Thanks BUzer
+void CBasePlayer :: SendInitMessages( void )
+{
+	edict_t		*pEdict = g_engfuncs.pfnPEntityOfEntIndex( 1 );
+	CBaseEntity *pEntity;
 
+	if ( !pEdict )
+		return;
+
+	for ( int i = 1; i < gpGlobals->maxEntities; i++, pEdict++ )
+	{
+		if ( pEdict->free )	// Not in use
+			continue;
+
+		pEntity = CBaseEntity::Instance(pEdict);
+		if ( !pEntity )
+			continue;
+
+		pEntity->SendInitMessage(this);
+	}
+	
+}
+//RENDERERS END
 //=========================================================
 // FBecomeProne - Overridden for the player to set the proper
 // physics flags when a barnacle grabs player.
@@ -5578,31 +5628,6 @@ void CPlayerFreeze::Think ( void )
 }
 
 LINK_ENTITY_TO_CLASS( player_freeze, CPlayerFreeze );
-
-//==========================================================
-// player marker for right mirroring a player in env_mirror
-//==========================================================
-
-class CPlayerMarker : public CBaseEntity
-{
-public:
-	void Spawn( void );
-	void Precache ( void );
-};
-
-LINK_ENTITY_TO_CLASS( player_marker, CPlayerMarker );
-
-void CPlayerMarker :: Spawn( void )
-{
-	Precache();
-	SET_MODEL( ENT(pev), "models/null.mdl" );
-	ALERT(at_aiconsole, "DEBUG: Player_marker coordinates is %f %f %f \n", pev->origin.x, pev->origin.y, pev->origin.z);
-}
-
-void CPlayerMarker :: Precache( void )
-{
-	PRECACHE_MODEL( "models/null.mdl" );
-}
 
 //=========================================================
 // Multiplayer intermission spots.

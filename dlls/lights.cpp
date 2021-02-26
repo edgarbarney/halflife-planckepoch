@@ -23,6 +23,8 @@
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+//RENDERERS START
+#include "player.h"
 
 //LRC
 int GetStdLightStyle (int iStyle)
@@ -100,83 +102,66 @@ class CLight : public CPointEntity
 {
 public:
 	virtual void	KeyValue( KeyValueData* pkvd ); 
-	virtual void	Spawn( void );
+	virtual void	SendInitMessage( CBasePlayer *player );
+	void EXPORT	LightStyleThink( void );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	Think( void );
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
-	virtual STATE	GetState(void) { return m_iState; }; //LRC
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	int		GetStyle( void ) { return m_iszCurrentStyle; }; //LRC
-	void	SetStyle( int iszPattern ); //LRC
-
-	void	SetCorrectStyle( void ); //LRC
-
 private:
-	STATE	m_iState; // current state
-	int		m_iOnStyle; // style to use while on
-	int		m_iOffStyle; // style to use while off
-	int		m_iTurnOnStyle; // style to use while turning on
-	int		m_iTurnOffStyle; // style to use while turning off
-	int		m_iTurnOnTime; // time taken to turn on
-	int		m_iTurnOffTime; // time taken to turn off
-	int		m_iszPattern; // custom style to use while on
-	int		m_iszCurrentStyle; // current style string
+	int		m_iStyle;
+	int		m_iszPattern;
+	BOOL	m_bAlreadySent;
 };
 LINK_ENTITY_TO_CLASS( light, CLight );
 
 TYPEDESCRIPTION	CLight::m_SaveData[] = 
 {
-	DEFINE_FIELD( CLight, m_iState, FIELD_INTEGER ),
+	DEFINE_FIELD( CLight, m_iStyle, FIELD_INTEGER ),
 	DEFINE_FIELD( CLight, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_iszCurrentStyle, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_iOnStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iOffStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOnStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOffStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOnTime, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOffTime, FIELD_INTEGER ),
+	DEFINE_FIELD( CLight, m_bAlreadySent, FIELD_BOOLEAN ),
 };
 
 IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
 
-
 //
 // Cache user-entity-field values until spawn is called.
 //
+extern int gmsgLightStyle;
+void CLight :: SendInitMessage( CBasePlayer *player )
+{
+	char szPattern[64];
+	memset(szPattern, 0, sizeof(szPattern));
+
+	if (m_iStyle >= 32)
+	{
+		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
+			strcpy(szPattern,"a");
+		else if (m_iszPattern)
+			strcpy(szPattern,(char *)STRING( m_iszPattern ));
+		else
+			strcpy(szPattern,"m");
+
+		if(player)
+			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, NULL, player->pev);
+		else
+			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+
+			WRITE_BYTE( m_iStyle );
+			WRITE_STRING( szPattern );
+		MESSAGE_END();
+	}
+
+	m_bAlreadySent = TRUE;
+}
 void CLight :: KeyValue( KeyValueData* pkvd)
 {
-	if (FStrEq(pkvd->szKeyName, "m_iOnStyle"))
+	if (FStrEq(pkvd->szKeyName, "style"))
 	{
-		m_iOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iOffStyle"))
-	{
-		m_iOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnStyle"))
-	{
-		m_iTurnOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffStyle"))
-	{
-		m_iTurnOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnTime"))
-	{
-		m_iTurnOnTime = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffTime"))
-	{
-		m_iTurnOffTime = atoi(pkvd->szValue);
+		m_iStyle = atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
@@ -189,140 +174,43 @@ void CLight :: KeyValue( KeyValueData* pkvd)
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "firetarget"))
-	{
-		pev->target = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
-	}
 	else
 	{
 		CPointEntity::KeyValue( pkvd );
 	}
 }
-
-void CLight :: SetStyle ( int iszPattern )
-{
-	if (m_iStyle < 32) // if it's using a global style, don't change it
-		return;
-	m_iszCurrentStyle = iszPattern;
-//	ALERT(at_console, "SetStyle %d \"%s\"\n", m_iStyle, (char *)STRING( iszPattern ));
-	LIGHT_STYLE(m_iStyle, (char *)STRING( iszPattern ));
-}
-
-// regardless of what's been set by trigger_lightstyle ents, set the style I think I need
-void CLight :: SetCorrectStyle ( void )
-{
-	if (m_iStyle >= 32)
-	{
-		switch (m_iState)
-		{
-		case STATE_ON:
-			if (m_iszPattern) // custom styles have priority over standard ones
-				SetStyle( m_iszPattern );
-			else if (m_iOnStyle)
-				SetStyle(GetStdLightStyle(m_iOnStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		case STATE_OFF:
-			if (m_iOffStyle)
-				SetStyle(GetStdLightStyle(m_iOffStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_ON:
-			if (m_iTurnOnStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOnStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_OFF:
-			if (m_iTurnOffStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOffStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		}
-	}
-	else
-	{
-		m_iszCurrentStyle = GetStdLightStyle( m_iStyle );
-	}
-}
-
-void CLight :: Think( void )
-{
-	switch (GetState())
-	{
-	case STATE_TURN_ON:
-		m_iState = STATE_ON;
-		FireTargets(STRING(pev->target),this,this,USE_ON,0);
-		break;
-	case STATE_TURN_OFF:
-		m_iState = STATE_OFF;
-		FireTargets(STRING(pev->target),this,this,USE_OFF,0);
-		break;
-	}
-	SetCorrectStyle();
-}
-
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LIGHT_START_OFF
-Non-displayed light.
-Default light value is 300
-Default style is 0
-If targeted, it will toggle between on or off.
-*/
-
-void CLight :: Spawn( void )
-{
-	if (FStringNull(pev->targetname))
-	{       // inert light
-		REMOVE_ENTITY(ENT(pev));
-		return;
-	}
-
-	if (FBitSet(pev->spawnflags,SF_LIGHT_START_OFF))
-		m_iState = STATE_OFF;
-	else
-		m_iState = STATE_ON;
-	SetCorrectStyle();
-}
-
-
 void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	char szPattern[64];
+	memset(szPattern, 0, sizeof(szPattern));
+
 	if (m_iStyle >= 32)
 	{
-		if ( !ShouldToggle( useType ) )
+		if ( !ShouldToggle( useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF) ) )
 			return;
 
-		switch (GetState())
+		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
 		{
-		case STATE_ON:
-		case STATE_TURN_ON:
-			if (m_iTurnOffTime)
-			{
-				m_iState = STATE_TURN_OFF;
-				SetNextThink( m_iTurnOffTime );
-			}
+			if (m_iszPattern)
+				strcpy(szPattern,(char *)STRING( m_iszPattern ));
 			else
-				m_iState = STATE_OFF;
-			break;
-		case STATE_OFF:
-		case STATE_TURN_OFF:
-			if (m_iTurnOnTime)
-			{
-				m_iState = STATE_TURN_ON;
-				SetNextThink( m_iTurnOnTime );
-			}
-			else
-				m_iState = STATE_ON;
-			break;
+				strcpy(szPattern,"m");
+			ClearBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
-		SetCorrectStyle();
+		else
+		{
+			strcpy(szPattern,"a");
+			SetBits(pev->spawnflags, SF_LIGHT_START_OFF);
+		}
 	}
-}
 
+	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+			WRITE_BYTE(m_iStyle);
+			WRITE_STRING(szPattern);
+	MESSAGE_END();
+	LIGHT_STYLE(m_iStyle,szPattern); 
+}
+//RENDERERS END
 //
 // shut up spawn functions for new spotlights
 //
@@ -391,6 +279,7 @@ void CEnvLight :: Spawn( void )
 	CLight::Spawn( );
 }
 
+/* Trinity Removed
 //**********************************************************
 //LRC- the CLightDynamic entity - works like the flashlight.
 //**********************************************************
@@ -651,4 +540,4 @@ void CTriggerLightstyle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 			}
 		}
 	}
-}
+	*/
