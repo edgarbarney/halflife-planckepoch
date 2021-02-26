@@ -35,6 +35,7 @@
 
 //RENDERERS START
 #include "frustum.h"
+#include "particle_engine.h"
 
 struct fog_settings_t
 {
@@ -354,20 +355,6 @@ private:
 	int	  m_iHeight;		// width of the battery innards
 };
 
-
-//
-//-----------------------------------------------------
-//
-// (LRC) -- 30/08/02 November235: Particles to Order
-class CHudParticle: public CHudBase
-{
-public:
-	int Init(void);
-	int VidInit(void);
-	int Draw(float flTime);
-	int MsgFunc_Particle(const char *pszName, int iSize, void *pbuf );
-};
-
 //
 //-----------------------------------------------------
 //
@@ -653,7 +640,7 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
-	CHudParticle	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
+	CParticleEngine	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
 	void Init( void );
 	void VidInit( void );

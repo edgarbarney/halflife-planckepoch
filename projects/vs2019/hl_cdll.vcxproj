@@ -151,7 +151,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\mirrormanager.cpp" />
     <ClCompile Include="..\..\cl_dll\mp3.cpp" />
     <ClCompile Include="..\..\cl_dll\particlemgr.cpp" />
-    <ClCompile Include="..\..\cl_dll\particlemsg.cpp" />
     <ClCompile Include="..\..\cl_dll\particlesys.cpp" />
     <ClCompile Include="..\..\cl_dll\particle_engine.cpp" />
     <ClCompile Include="..\..\cl_dll\propmanager.cpp" />

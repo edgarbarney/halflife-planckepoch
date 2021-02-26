@@ -74,6 +74,7 @@ void SetPoint( float x, float y, float z, float (*matrix)[4])
 
 //LRCT
 
+/* Trinity Removed
 void BlackFog ( void )
 {
 	//Not in water and we want fog.
@@ -103,6 +104,8 @@ void ClearToFogColor( void )
 		glClear( GL_COLOR_BUFFER_BIT );
 	}
 }
+
+*/
 
 /*
 =================================

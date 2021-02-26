@@ -411,7 +411,7 @@ void BlackFog ( void )
 //	RenderFog
 //
 //==========================
-void RenderFog ( void ) 
+void RenderFog( void )
 {
 	if ( gHUD.m_pFogSettings.active )
 	{
