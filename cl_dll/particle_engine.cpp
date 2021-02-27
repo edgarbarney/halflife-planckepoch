@@ -49,10 +49,8 @@ Init
 
 ====================
 */
-DECLARE_MESSAGE(m_Particle, Particle)
 void CParticleEngine::Init( void ) 
 {
-	HOOK_MESSAGE(Particle);
 	m_pCvarDrawParticles = CVAR_CREATE( "te_particles", "1", 0 );
 	m_pCvarParticleDebug = CVAR_CREATE( "te_particles_debug", "0", 0 );
 	m_pCvarGravity = gEngfuncs.pfnGetCvarPointer("sv_gravity");
@@ -1722,9 +1720,4 @@ int CParticleEngine::MsgCreateSystem( const char *pszName, int iSize, void *pbuf
 		CreateSystem(szPath, pos, ang, iId);
 
 	return 1;
-}
-
-int CParticleEngine::MsgFunc_Particle(const char* pszName, int iSize, void* pbuf)
-{
-	return MsgCreateSystem(pszName, iSize, pbuf);
 }

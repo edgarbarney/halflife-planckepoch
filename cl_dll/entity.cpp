@@ -15,8 +15,6 @@
 #include "bench.h"
 #include "Exports.h"
 
-#include "particleman.h"
-extern IParticleMan *g_pParticleMan;
 //RENDERERS START
 #include "bsprenderer.h"
 #include "particle_engine.h"
@@ -439,9 +437,6 @@ void DLLEXPORT HUD_TempEntUpdate (
 	Vector		vAngles;
 
 	gEngfuncs.GetViewAngles( (float*)vAngles );
-
-	if ( g_pParticleMan )
-		 g_pParticleMan->SetVariables( cl_gravity, vAngles );
 
 	//RENDERERS START
 	// Get bsp renderer list

@@ -23,7 +23,7 @@ Merged and given some nicer CVARs by FragBait0, tlevi@tpg.com.au
 #include "entity_state.h"
 #include "cl_entity.h"
 #include "triangleapi.h"
-#include "particlemgr.h"
+
 //End tri.cpp
 
 #include <windows.h>

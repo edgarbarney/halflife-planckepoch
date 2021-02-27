@@ -71,14 +71,6 @@ CPropManager gPropManager;
 CMirrorManager gMirrorManager;
 //RENDERERS END
 
-// Include SOHL particles cus why not lol
-#include "particleman.h"
-CSysModule *g_hParticleManModule = NULL;
-IParticleMan *g_pParticleMan = NULL;
-
-void CL_LoadParticleMan( void );
-void CL_UnloadParticleMan( void );
-
 void InitInput (void);
 void EV_HookEvents( void );
 void IN_Commands( void );
@@ -179,7 +171,6 @@ int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 	memcpy(&gEngfuncs, pEnginefuncs, sizeof(cl_enginefunc_t));
 
 	EV_HookEvents();
-	CL_LoadParticleMan();
 
 	// get tracker interface, if any
 	return 1;
@@ -354,46 +345,6 @@ extern "C" __declspec( dllexport ) void CL_GetModelByIndex(int iIndex, void **pP
 	*pPointer = pModel;
 }
 //RENDERERS_END
-
-void CL_UnloadParticleMan( void )
-{
-	Sys_UnloadModule( g_hParticleManModule );
-
-	g_pParticleMan = NULL;
-	g_hParticleManModule = NULL;
-}
-
-void CL_LoadParticleMan( void )
-{
-	char szPDir[512];
-
-	if ( gEngfuncs.COM_ExpandFilename( PARTICLEMAN_DLLNAME, szPDir, sizeof( szPDir ) ) == FALSE )
-	{
-		g_pParticleMan = NULL;
-		g_hParticleManModule = NULL;
-		return;
-	}
-
-	g_hParticleManModule = Sys_LoadModule( szPDir );
-	CreateInterfaceFn particleManFactory = Sys_GetFactory( g_hParticleManModule );
-
-	if ( particleManFactory == NULL )
-	{
-		g_pParticleMan = NULL;
-		g_hParticleManModule = NULL;
-		return;
-	}
-
-	g_pParticleMan = (IParticleMan *)particleManFactory( PARTICLEMAN_INTERFACE, NULL);
-
-	if ( g_pParticleMan )
-	{
-		 g_pParticleMan->SetUp( &gEngfuncs );
-
-		 // Add custom particle classes here BEFORE calling anything else or you will die.
-		 g_pParticleMan->AddCustomParticleClassSize ( sizeof ( CBaseParticle ) );
-	}
-}
 
 cldll_func_dst_t *g_pcldstAddrs;
 

@@ -22,8 +22,6 @@
 #include "r_efx.h"
 #include "rain.h"
 
-#include "particleman.h"
-extern IParticleMan *g_pParticleMan;
 //RENDERERS START
 #include "bsprenderer.h"
 #include "propmanager.h"
@@ -147,9 +145,6 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	// catch up on any building events that are going on
 	gEngfuncs.pfnServerCmd("sendevents");
 #endif
-
-	if ( g_pParticleMan )
-		 g_pParticleMan->ResetParticles();
 
 #if !defined( _TFC )
 	//Probably not a good place to put this.

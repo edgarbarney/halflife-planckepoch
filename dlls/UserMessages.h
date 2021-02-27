@@ -26,7 +26,6 @@ extern int gmsgKeyedDLight; //LRC
 extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
-extern int gmsgParticle; // LRC
 extern int gmsgClampView; //LRC 1.8
 extern int gmsgPlayMP3; //Killar
 extern int gmsgShowGameTitle;

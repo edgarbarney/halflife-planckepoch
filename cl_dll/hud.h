@@ -640,7 +640,6 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
-	CParticleEngine	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
 	void Init( void );
 	void VidInit( void );

@@ -150,8 +150,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\message.cpp" />
     <ClCompile Include="..\..\cl_dll\mirrormanager.cpp" />
     <ClCompile Include="..\..\cl_dll\mp3.cpp" />
-    <ClCompile Include="..\..\cl_dll\particlemgr.cpp" />
-    <ClCompile Include="..\..\cl_dll\particlesys.cpp" />
     <ClCompile Include="..\..\cl_dll\particle_engine.cpp" />
     <ClCompile Include="..\..\cl_dll\propmanager.cpp" />
     <ClCompile Include="..\..\cl_dll\rain.cpp" />
@@ -234,8 +232,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\kbutton.h" />
     <ClInclude Include="..\..\cl_dll\mirrormanager.h" />
     <ClInclude Include="..\..\cl_dll\mp3.h" />
-    <ClInclude Include="..\..\cl_dll\particlemgr.h" />
-    <ClInclude Include="..\..\cl_dll\particlesys.h" />
     <ClInclude Include="..\..\cl_dll\particle_engine.h" />
     <ClInclude Include="..\..\cl_dll\propmanager.h" />
     <ClInclude Include="..\..\cl_dll\rain.h" />

@@ -28,18 +28,14 @@
 
 extern CGameStudioModelRenderer g_StudioRenderer;
 //RENDERERS END
-#include "particlemgr.h"
 #include "rain.h"
 #include "com_model.h"
 #include "studio_util.h"
 
 #include "Exports.h"
-#include "particleman.h"
 #include "tri.h"
 
 #include "glInclude.h"
-
-extern IParticleMan *g_pParticleMan;
 
 extern int g_iWaterLevel;
 extern vec3_t v_origin;
@@ -308,7 +304,6 @@ HUD_DrawTransparentTriangles
 Render any triangles with transparent rendermode needs here
 =================
 */
-extern ParticleSystemManager* g_pParticleSystems; // LRC
 
 void DLLEXPORT HUD_DrawTransparentTriangles( void )
 {
@@ -322,9 +317,6 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 	RunEventList();
 #endif
 
-	if ( g_pParticleMan )
-		 g_pParticleMan->Update();
-	
 	BlackFog();
 
 	// LRC: find out the time elapsed since the last redraw
@@ -332,8 +324,6 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 	fOldTime = fTime;
 	fTime = gEngfuncs.GetClientTime();
 
-	// LRC: draw and update particle systems
-	g_pParticleSystems->UpdateSystems(fTime - fOldTime);
 
 	ProcessFXObjects();
 	ProcessRain();

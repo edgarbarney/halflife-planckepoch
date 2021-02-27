@@ -406,12 +406,10 @@ int __MsgFunc_FreeEnt(const char *pszName, int iSize, void *pbuf )
 {
 	return gHUD.MsgFunc_FreeEnt( pszName, iSize, pbuf );
 }
-/*
 int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
 {
 	return gParticleEngine.MsgCreateSystem( pszName, iSize, pbuf );
 }
-*/
 //RENDERERS END
 
 // This is called every time the DLL is loaded
@@ -484,7 +482,7 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( SkyMark_W );
 	HOOK_MESSAGE( DynLight );
 	HOOK_MESSAGE( FreeEnt );
-	//HOOK_MESSAGE( Particle );
+	HOOK_MESSAGE( Particle );
 
 	gPropManager.Init();
 	gTextureLoader.Init();
@@ -553,7 +551,6 @@ void CHud :: Init( void )
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
-	m_Particle.Init();
 
 	m_Menu.Init();
 	InitRain();	
@@ -717,7 +714,6 @@ void CHud :: VidInit( void )
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
 	GetClientVoiceMgr()->VidInit();
-	m_Particle.VidInit(); // (LRC) -- 30/08/02 November235: Particles to Order
 	//RENDERERS START
 	gTextureLoader.VidInit();
 	gWaterShader.VidInit();

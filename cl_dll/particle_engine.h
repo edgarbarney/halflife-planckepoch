@@ -63,8 +63,6 @@ public:
 
 	int MsgCreateSystem( const char *pszName, int iSize, void *pbuf );
 
-	int MsgFunc_Particle(const char* pszName, int iSize, void* pbuf);
-
 public:
 	particle_system_t	*m_pSystemHeader;
 
