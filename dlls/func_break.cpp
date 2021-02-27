@@ -966,25 +966,10 @@ void CBreakable::Die( void )
 	}
 }
 
-
-
 BOOL CBreakable :: IsBreakable( void )
 {
 	return m_Material != matUnbreakableGlass;
 }
-
-/* Trinity Removed
-int	CBreakable :: DamageDecal( int bitsDamageType )
-{
-	if ( m_Material == matGlass  )
-		return DECAL_GLASSBREAK1 + RANDOM_LONG(0,2);
-
-	if ( m_Material == matUnbreakableGlass )
-		return DECAL_BPROOF1;
-
-	return CBaseEntity::DamageDecal( bitsDamageType );
-}
-*/
 
 //RENDERERS START
 char *CBreakable :: DamageDecal( int bitsDamageType )

@@ -48,9 +48,6 @@ public:
 
 	STATE GetState( void );
 	
-	// Trinity Removed
-	//int	 DamageDecal( int bitsDamageType );
-	
 	//RENDERERS START
 	char	*DamageDecal( int bitsDamageType );
 	//RENDERERS END

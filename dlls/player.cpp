@@ -4661,9 +4661,6 @@ void CBasePlayer :: UpdateClientData( void )
 		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
 	}
 }
-// Trinity Removed
-//Not Trinity. Due to global message system
-//extern int gmsgSetFog;
 
 //RENDERERS START
 void CBasePlayer :: ClearEffects( void )

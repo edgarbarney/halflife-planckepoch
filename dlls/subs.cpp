@@ -181,11 +181,7 @@ void CBaseEntity::UpdateOnRemove( void )
 }
 
 // Convenient way to delay removing oneself
-//RENDERERS START
-// Trinity Removed
-// Actually not because of Rrinity. Because of the Global Message System
-// extern int gmsgFreeEnt;
-//RENDERERS END
+
 void CBaseEntity :: SUB_Remove( void )
 {
 	UpdateOnRemove();

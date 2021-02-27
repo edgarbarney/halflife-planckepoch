@@ -444,9 +444,6 @@ void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 {
 	int iRand;
 	physent_t *pe;
-
-	// Trinity Removed
-	//gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
 	
 	//RENDERERS START
 	if( gParticleEngine.m_pCvarDrawParticles->value <= 0 )
@@ -1649,15 +1646,6 @@ void EV_EgonFire( event_args_t *args )
 			float r = 50.0f;
 			float g = 50.0f;
 			float b = 125.0f;
-			
-			/* Trinity Removed
-			//if ( IEngineStudio.IsHardware() )
-			{
-				r /= 255.0f;
-				g /= 255.0f;
-				b /= 255.0f;
-			}
-			*/
 			
 			if ( IEngineStudio.IsHardware() )
 			{

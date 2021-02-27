@@ -968,19 +968,6 @@ BOOL CBaseEntity::ShouldToggle( USE_TYPE useType )
 	return TRUE;
 }
 
-/* Trinity Removed
-int	CBaseEntity :: DamageDecal( int bitsDamageType )
-{
-	if ( pev->rendermode == kRenderTransAlpha )
-		return -1;
-
-	if ( pev->rendermode != kRenderNormal )
-		return DECAL_BPROOF1;
-
-	return DECAL_GUNSHOT1 + RANDOM_LONG(0,4);
-}
-*/
-
 //RENDERERS START
 char *CBaseEntity :: DamageDecal( int bitsDamageType )
 {

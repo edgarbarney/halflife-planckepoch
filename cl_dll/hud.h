@@ -596,8 +596,6 @@ public:
 	int GetNumWidth(int iNumber, int iFlags);
 	int viewEntityIndex; // for trigger_viewset
 	int viewFlags;
-	// Trinity Removed
-	//struct cl_mirror_s Mirrors[32]; //Limit - 32 mirrors!
 	int numMirrors;
 
 	int m_iHUDColor; //LRC

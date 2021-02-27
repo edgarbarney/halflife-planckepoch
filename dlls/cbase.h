@@ -315,8 +315,6 @@ public:
 	virtual float	GetDelay( void ) { return 0; }
 	virtual int		IsMoving( void ) { return pev->velocity != g_vecZero; }
 	virtual void	OverrideReset( void ) {}
-	// Trinity Removed
-	//virtual int		DamageDecal( int bitsDamageType );
 	
 	//RENDERERS START
 	virtual char	*DamageDecal( int bitsDamageType );

@@ -1978,11 +1978,6 @@ void UTIL_BubbleTrail( Vector from, Vector to, int count )
 	MESSAGE_END();
 }
 
-//RENDERERS START
-// Trinity Removed
-// Actually not because of Rrinity. Because of the Global Message System
-//extern int gmsgFreeEnt;
-//RENDERERS END
 void UTIL_Remove( CBaseEntity *pEntity )
 {
 	if ( !pEntity )
@@ -3052,10 +3047,6 @@ int HaveCamerasInPVS( edict_t* edict )
 
 //RENDERERS START
 
-// Trinity Removed
-//Not Trinity. Due to global message system
-//extern int gmsgCreateDecal;
-
 void UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent )
 {
 	if (pTrace->flFraction == 1.0)
@@ -3073,10 +3064,6 @@ void UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent )
 	MESSAGE_END();
 }
 
-// Trinity Removed
-//Not Trinity. Due to global message system
-//extern int gmsgStudioDecal;
-
 void UTIL_StudioDecal( vec3_t normal, vec3_t position, const char *name, int entindex )
 {
 	MESSAGE_BEGIN( MSG_BROADCAST, gmsgStudioDecal );
@@ -3090,10 +3077,6 @@ void UTIL_StudioDecal( vec3_t normal, vec3_t position, const char *name, int ent
 		WRITE_STRING( name );
 	MESSAGE_END();
 }
-
-// Trinity Removed
-//Not Trinity. Due to global message system
-//extern int gmsgCreateSystem;
 
 void UTIL_Particle( char *szName, Vector vecOrigin, Vector vDirection, int iType )
 {

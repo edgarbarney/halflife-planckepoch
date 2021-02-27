@@ -68,41 +68,6 @@ void SetPoint( float x, float y, float z, float (*matrix)[4])
 	gEngfuncs.pTriAPI->Vertex3f(result[0], result[1], result[2]);
 }
 
-//LRCT
-
-/* Trinity Removed
-void BlackFog ( void )
-{
-	//Not in water and we want fog.
-	static float fColorBlack[3] = {0,0,0};
-	bool bFog = g_iWaterLevel < 2 && g_fog.startDist > 0 && g_fog.endDist > 0;
-	if (bFog)
-		gEngfuncs.pTriAPI->Fog ( fColorBlack, g_fog.startDist, g_fog.endDist, bFog );
-	else
-		gEngfuncs.pTriAPI->Fog ( g_fog.fogColor, g_fog.startDist, g_fog.endDist, bFog );
-}
-
-void RenderFog ( void )
-{
-	//Not in water and we want fog.
-	bool bFog = g_iWaterLevel < 2 && g_fog.startDist > 0 && g_fog.endDist > 0;
-	if (bFog)
-		gEngfuncs.pTriAPI->Fog ( g_fog.fogColor, g_fog.startDist, g_fog.endDist, bFog );
-//	else
-//		gEngfuncs.pTriAPI->Fog ( g_fFogColor, 10000, 10001, 0 );
-}
-
-void ClearToFogColor( void )
-{
-	if ( g_fog.startDist > 0 && g_fog.endDist > 0 )
-	{
-		glClearColor( g_fog.fogColor[0], g_fog.fogColor[1], g_fog.fogColor[2], 1.0f );
-		glClear( GL_COLOR_BUFFER_BIT );
-	}
-}
-
-*/
-
 /*
 =================================
 DrawRain

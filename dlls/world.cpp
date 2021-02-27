@@ -586,13 +586,6 @@ void CWorld :: Precache( void )
 //
 	int i;
 
-	/* Trinity Removed
-	// 0 normal
-	for (i = 0; i <= 13; i++)
-	{
-		LIGHT_STYLE(i, (char*)STRING(GetStdLightStyle(i)));
-	}
-	*/
 //RENDERERS START
 	// 0 normal
 	LIGHT_STYLE(0, "m");

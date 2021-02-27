@@ -104,9 +104,6 @@ enum gauss_e {
 
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName );
 
-// Trinity Removed
-//void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType );
-
 //RENDERERS START
 void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType, float *vecSrc, float *vecEnd );
 //RENDERERS END
