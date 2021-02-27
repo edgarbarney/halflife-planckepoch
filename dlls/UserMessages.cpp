@@ -109,7 +109,7 @@ void LinkUserMessages(void)
 	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
-	gmsgParticle = REG_USER_MSG("Particle", -1);		//LRC
+	gmsgParticle = REG_USER_MSG("ParticleSpirit", -1);		//LRC
 	gmsgClampView = REG_USER_MSG("ClampView", 10);	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
