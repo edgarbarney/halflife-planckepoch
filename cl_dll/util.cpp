@@ -32,7 +32,7 @@
 
 vec3_t vec3_origin( 0, 0, 0 );
 
-HSPRITE LoadSprite(const char *pszName)
+HL_HSPRITE LoadSprite(const char *pszName)
 {
 	int i;
 	char sz[256]; 

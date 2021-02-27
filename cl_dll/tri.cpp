@@ -32,7 +32,7 @@ extern IParticleMan *g_pParticleMan;
 extern int g_iWaterLevel;
 extern vec3_t v_origin;
 
-int UseTexture(HSPRITE &hsprSpr, char * str)
+int UseTexture(HL_HSPRITE &hsprSpr, char * str)
 {
 	if (hsprSpr == 0)
 	{
