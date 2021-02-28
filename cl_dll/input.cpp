@@ -1064,7 +1064,6 @@ void ShutdownInput (void)
 }
 
 #include "interface.h"
-void CL_UnloadParticleMan( void );
 
 #if defined( _TFC )
 void ClearEventList( void );
@@ -1079,6 +1078,5 @@ void DLLEXPORT HUD_Shutdown( void )
 #if defined( _TFC )
 	ClearEventList();
 #endif
-	
-	CL_UnloadParticleMan();
+
 }

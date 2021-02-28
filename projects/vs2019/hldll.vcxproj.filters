@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -387,9 +387,6 @@
     <ClCompile Include="..\..\dlls\male_assassin.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\entities\effects\CWeather.cpp">
-      <Filter>Source Files\dlls\entities\effects</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\clyde.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
@@ -547,9 +544,6 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\COFSquadTalkMonster.h">
       <Filter>Header Files\dlls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dlls\entities\effects\CWeather.h">
-      <Filter>Header Files\dlls\entities\effects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\UserMessages.h">
       <Filter>Header Files\dlls</Filter>

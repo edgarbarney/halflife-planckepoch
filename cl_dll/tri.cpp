@@ -16,18 +16,13 @@
 #include "entity_state.h"
 #include "cl_entity.h"
 #include "triangleapi.h"
-#include "particlemgr.h"
 #include "com_model.h"
 #include "studio_util.h"
 
 #include "Exports.h"
-#include "particleman.h"
 #include "tri.h"
-#include "effects/CWeather.h"
 
 #include "glInclude.h"
-
-extern IParticleMan *g_pParticleMan;
 
 extern int g_iWaterLevel;
 extern vec3_t v_origin;
@@ -190,7 +185,6 @@ HUD_DrawTransparentTriangles
 Render any triangles with transparent rendermode needs here
 =================
 */
-extern ParticleSystemManager* g_pParticleSystems; // LRC
 
 void DLLEXPORT HUD_DrawTransparentTriangles( void )
 {
@@ -199,12 +193,6 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 #if defined( _TFC )
 	RunEventList();
 #endif
-
-	if (g_pParticleMan)
-	{
-		g_pParticleMan->Update();
-		g_Weather.Update();
-	}
 	
 	BlackFog();
 
@@ -216,7 +204,4 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 	static float fOldTime, fTime;
 	fOldTime = fTime;
 	fTime = gEngfuncs.GetClientTime();
-
-	// LRC: draw and update particle systems
-	g_pParticleSystems->UpdateSystems(fTime - fOldTime);
 }

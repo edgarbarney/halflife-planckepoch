@@ -140,7 +140,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\flyingmonster.cpp" />
     <ClCompile Include="..\..\dlls\func_break.cpp" />
     <ClCompile Include="..\..\dlls\func_tank.cpp" />
-    <ClCompile Include="..\..\dlls\entities\effects\CWeather.cpp" />
     <ClCompile Include="..\..\dlls\game.cpp" />
     <ClCompile Include="..\..\dlls\gamerules.cpp" />
     <ClCompile Include="..\..\dlls\gargantua.cpp" />
@@ -229,7 +228,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\dlls\animation.h" />
     <ClInclude Include="..\..\dlls\basemonster.h" />
     <ClInclude Include="..\..\dlls\cbase.h" />
-    <ClInclude Include="..\..\dlls\entities\effects\CWeather.h" />
     <ClInclude Include="..\..\dlls\cdll_dll.h" />
     <ClInclude Include="..\..\dlls\client.h" />
     <ClInclude Include="..\..\dlls\COFAllyMonster.h" />

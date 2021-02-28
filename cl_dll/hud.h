@@ -342,20 +342,6 @@ private:
 	int	  m_iHeight;		// width of the battery innards
 };
 
-
-//
-//-----------------------------------------------------
-//
-// (LRC) -- 30/08/02 November235: Particles to Order
-class CHudParticle: public CHudBase
-{
-public:
-	int Init(void);
-	int VidInit(void);
-	int Draw(float flTime);
-	int MsgFunc_Particle(const char *pszName, int iSize, void *pbuf );
-};
-
 //
 //-----------------------------------------------------
 //
@@ -679,7 +665,6 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
-	CHudParticle	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
 	void Init( void );
 	void VidInit( void );
@@ -709,7 +694,6 @@ public:
 	void _cdecl MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf );    		//LRC
 	int  _cdecl MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf );	//AJH
 	void _cdecl MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf );	//LRC 1.8
-	void _cdecl MsgFunc_Weather(const char* pszName, int iSize, void* pBuf);
 	void _cdecl MsgFunc_ServerState(const char* pszName, int iSize, void* pBuf);
 
 	// Screen information

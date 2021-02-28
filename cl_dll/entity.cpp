@@ -15,9 +15,6 @@
 #include "bench.h"
 #include "Exports.h"
 
-#include "particleman.h"
-extern IParticleMan *g_pParticleMan;
-
 void Game_AddObjects( void );
 
 extern vec3_t v_origin;
@@ -397,13 +394,6 @@ void DLLEXPORT HUD_TempEntUpdate (
 	int			i;
 	TEMPENTITY	*pTemp, *pnext, *pprev;
 	float		freq, gravity, gravitySlow, life, fastFreq;
-
-	Vector		vAngles;
-
-	gEngfuncs.GetViewAngles( (float*)vAngles );
-
-	if ( g_pParticleMan )
-		 g_pParticleMan->SetVariables( cl_gravity, vAngles );
 
 	// Nothing to simulate
 	if ( !*ppTempEntActive )		

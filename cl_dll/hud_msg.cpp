@@ -22,10 +22,7 @@
 #include "r_efx.h"
 #include "rain.h"
 
-#include "particleman.h"
 #include "CGameStateManager.h"
-#include "effects/CWeather.h"
-extern IParticleMan *g_pParticleMan;
 
 //LRC - the fogging fog
 FogSettings g_fog;
@@ -120,9 +117,6 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	// catch up on any building events that are going on
 	gEngfuncs.pfnServerCmd("sendevents");
 #endif
-
-	if ( g_pParticleMan )
-		 g_pParticleMan->ResetParticles();
 
 #if !defined( _TFC )
 	//Probably not a good place to put this.
@@ -320,33 +314,6 @@ int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rai
 		gHUD.viewFlags = READ_SHORT();
 //	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
 	return 1;
-}
-
-void CHud::MsgFunc_Weather(const char* pszName, int iSize, void* pBuf)
-{
-	BEGIN_READ(pBuf, iSize);
-	{
-        auto messageType = READ_BYTE();
-		if (messageType == 1)
-		{
-		    // Precipitation
-			auto type = static_cast<PrecipitationType>(READ_BYTE());
-			auto numParticles = READ_SHORT();
-			auto sprayDensity = READ_BYTE();
-			g_Weather.SetPrecipitation(type, numParticles, sprayDensity);
-		}
-		else if (messageType == 2)
-		{
-		    // Wind
-			auto yaw = READ_COORD();
-			auto speed = READ_COORD();
-			auto yawVariance = READ_COORD();
-			auto speedVariance = READ_COORD();
-			auto changeFrequency = READ_COORD();
-			auto changeSpeed = READ_COORD();
-			g_Weather.SetWind(yaw, speed, yawVariance, speedVariance, changeFrequency, changeSpeed);
-		}
-	}
 }
 
 void CHud::MsgFunc_ServerState(const char* pszName, int iSize, void* pBuf)

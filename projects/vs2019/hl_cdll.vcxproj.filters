@@ -64,12 +64,6 @@
     <Filter Include="Header Files\cl_dll\effects">
       <UniqueIdentifier>{93ab672a-4ac0-4112-94c6-76125590be79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\cl_dll\effects\particles">
-      <UniqueIdentifier>{b59991a2-ef61-40ca-b941-c9cf7867b8fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cl_dll\effects\particles">
-      <UniqueIdentifier>{cdd36252-a82a-4c6a-976a-813a948249ca}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -330,27 +324,6 @@
     <ClCompile Include="..\..\dlls\ar16.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particlemgr.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particlemsg.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particlesys.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\CWeather.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particles\CRaindrop.cpp">
-      <Filter>Source Files\cl_dll\effects\particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particles\CSnowflake.cpp">
-      <Filter>Source Files\cl_dll\effects\particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\particles\CRainSpray.cpp">
-      <Filter>Source Files\cl_dll\effects\particles</Filter>
-    </ClCompile>
     <ClCompile Include="CPostProcessing.cpp">
       <Filter>Source Files\cl_dll\effects</Filter>
     </ClCompile>
@@ -482,12 +455,6 @@
     <ClInclude Include="..\..\common\Platform.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\cl_dll\particlemgr.h">
-      <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\particlesys.h">
-      <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\cl_dll\fmod.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
@@ -499,24 +466,6 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\glInclude.h">
       <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\particlemgr.h">
-      <Filter>Header Files\cl_dll\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\particlesys.h">
-      <Filter>Header Files\cl_dll\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\CWeather.h">
-      <Filter>Header Files\cl_dll\effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\particles\CRaindrop.h">
-      <Filter>Header Files\cl_dll\effects\particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\particles\CSnowflake.h">
-      <Filter>Header Files\cl_dll\effects\particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\particles\CRainSpray.h">
-      <Filter>Header Files\cl_dll\effects\particles</Filter>
     </ClInclude>
     <ClInclude Include="CPostProcessing.h">
       <Filter>Header Files\cl_dll\effects</Filter>
