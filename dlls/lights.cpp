@@ -23,6 +23,8 @@
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+//RENDERERS START
+#include "player.h"
 
 //LRC
 int GetStdLightStyle (int iStyle)
@@ -100,83 +102,66 @@ class CLight : public CPointEntity
 {
 public:
 	virtual void	KeyValue( KeyValueData* pkvd ); 
-	virtual void	Spawn( void );
+	virtual void	SendInitMessage( CBasePlayer *player );
+	void EXPORT	LightStyleThink( void );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	Think( void );
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
-	virtual STATE	GetState(void) { return m_iState; }; //LRC
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	int		GetStyle( void ) { return m_iszCurrentStyle; }; //LRC
-	void	SetStyle( int iszPattern ); //LRC
-
-	void	SetCorrectStyle( void ); //LRC
-
 private:
-	STATE	m_iState; // current state
-	int		m_iOnStyle; // style to use while on
-	int		m_iOffStyle; // style to use while off
-	int		m_iTurnOnStyle; // style to use while turning on
-	int		m_iTurnOffStyle; // style to use while turning off
-	int		m_iTurnOnTime; // time taken to turn on
-	int		m_iTurnOffTime; // time taken to turn off
-	int		m_iszPattern; // custom style to use while on
-	int		m_iszCurrentStyle; // current style string
+	int		m_iStyle;
+	int		m_iszPattern;
+	BOOL	m_bAlreadySent;
 };
 LINK_ENTITY_TO_CLASS( light, CLight );
 
 TYPEDESCRIPTION	CLight::m_SaveData[] = 
 {
-	DEFINE_FIELD( CLight, m_iState, FIELD_INTEGER ),
+	DEFINE_FIELD( CLight, m_iStyle, FIELD_INTEGER ),
 	DEFINE_FIELD( CLight, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_iszCurrentStyle, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_iOnStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iOffStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOnStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOffStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOnTime, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iTurnOffTime, FIELD_INTEGER ),
+	DEFINE_FIELD( CLight, m_bAlreadySent, FIELD_BOOLEAN ),
 };
 
 IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
 
-
 //
 // Cache user-entity-field values until spawn is called.
 //
+extern int gmsgLightStyle;
+void CLight :: SendInitMessage( CBasePlayer *player )
+{
+	char szPattern[64];
+	memset(szPattern, 0, sizeof(szPattern));
+
+	if (m_iStyle >= 32)
+	{
+		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
+			strcpy(szPattern,"a");
+		else if (m_iszPattern)
+			strcpy(szPattern,(char *)STRING( m_iszPattern ));
+		else
+			strcpy(szPattern,"m");
+
+		if(player)
+			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, NULL, player->pev);
+		else
+			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+
+			WRITE_BYTE( m_iStyle );
+			WRITE_STRING( szPattern );
+		MESSAGE_END();
+	}
+
+	m_bAlreadySent = TRUE;
+}
 void CLight :: KeyValue( KeyValueData* pkvd)
 {
-	if (FStrEq(pkvd->szKeyName, "m_iOnStyle"))
+	if (FStrEq(pkvd->szKeyName, "style"))
 	{
-		m_iOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iOffStyle"))
-	{
-		m_iOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnStyle"))
-	{
-		m_iTurnOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffStyle"))
-	{
-		m_iTurnOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnTime"))
-	{
-		m_iTurnOnTime = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffTime"))
-	{
-		m_iTurnOffTime = atoi(pkvd->szValue);
+		m_iStyle = atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
@@ -189,140 +174,43 @@ void CLight :: KeyValue( KeyValueData* pkvd)
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
-	else if (FStrEq(pkvd->szKeyName, "firetarget"))
-	{
-		pev->target = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
-	}
 	else
 	{
 		CPointEntity::KeyValue( pkvd );
 	}
 }
-
-void CLight :: SetStyle ( int iszPattern )
-{
-	if (m_iStyle < 32) // if it's using a global style, don't change it
-		return;
-	m_iszCurrentStyle = iszPattern;
-//	ALERT(at_console, "SetStyle %d \"%s\"\n", m_iStyle, (char *)STRING( iszPattern ));
-	LIGHT_STYLE(m_iStyle, (char *)STRING( iszPattern ));
-}
-
-// regardless of what's been set by trigger_lightstyle ents, set the style I think I need
-void CLight :: SetCorrectStyle ( void )
-{
-	if (m_iStyle >= 32)
-	{
-		switch (m_iState)
-		{
-		case STATE_ON:
-			if (m_iszPattern) // custom styles have priority over standard ones
-				SetStyle( m_iszPattern );
-			else if (m_iOnStyle)
-				SetStyle(GetStdLightStyle(m_iOnStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		case STATE_OFF:
-			if (m_iOffStyle)
-				SetStyle(GetStdLightStyle(m_iOffStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_ON:
-			if (m_iTurnOnStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOnStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_OFF:
-			if (m_iTurnOffStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOffStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		}
-	}
-	else
-	{
-		m_iszCurrentStyle = GetStdLightStyle( m_iStyle );
-	}
-}
-
-void CLight :: Think( void )
-{
-	switch (GetState())
-	{
-	case STATE_TURN_ON:
-		m_iState = STATE_ON;
-		FireTargets(STRING(pev->target),this,this,USE_ON,0);
-		break;
-	case STATE_TURN_OFF:
-		m_iState = STATE_OFF;
-		FireTargets(STRING(pev->target),this,this,USE_OFF,0);
-		break;
-	}
-	SetCorrectStyle();
-}
-
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LIGHT_START_OFF
-Non-displayed light.
-Default light value is 300
-Default style is 0
-If targeted, it will toggle between on or off.
-*/
-
-void CLight :: Spawn( void )
-{
-	if (FStringNull(pev->targetname))
-	{       // inert light
-		REMOVE_ENTITY(ENT(pev));
-		return;
-	}
-
-	if (FBitSet(pev->spawnflags,SF_LIGHT_START_OFF))
-		m_iState = STATE_OFF;
-	else
-		m_iState = STATE_ON;
-	SetCorrectStyle();
-}
-
-
 void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	char szPattern[64];
+	memset(szPattern, 0, sizeof(szPattern));
+
 	if (m_iStyle >= 32)
 	{
-		if ( !ShouldToggle( useType ) )
+		if ( !ShouldToggle( useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF) ) )
 			return;
 
-		switch (GetState())
+		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
 		{
-		case STATE_ON:
-		case STATE_TURN_ON:
-			if (m_iTurnOffTime)
-			{
-				m_iState = STATE_TURN_OFF;
-				SetNextThink( m_iTurnOffTime );
-			}
+			if (m_iszPattern)
+				strcpy(szPattern,(char *)STRING( m_iszPattern ));
 			else
-				m_iState = STATE_OFF;
-			break;
-		case STATE_OFF:
-		case STATE_TURN_OFF:
-			if (m_iTurnOnTime)
-			{
-				m_iState = STATE_TURN_ON;
-				SetNextThink( m_iTurnOnTime );
-			}
-			else
-				m_iState = STATE_ON;
-			break;
+				strcpy(szPattern,"m");
+			ClearBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
-		SetCorrectStyle();
+		else
+		{
+			strcpy(szPattern,"a");
+			SetBits(pev->spawnflags, SF_LIGHT_START_OFF);
+		}
 	}
-}
 
+	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+			WRITE_BYTE(m_iStyle);
+			WRITE_STRING(szPattern);
+	MESSAGE_END();
+	LIGHT_STYLE(m_iStyle,szPattern); 
+}
+//RENDERERS END
 //
 // shut up spawn functions for new spotlights
 //
@@ -389,266 +277,4 @@ void CEnvLight :: Spawn( void )
 	CVAR_SET_STRING( "sv_skyvec_z", szVector );
 
 	CLight::Spawn( );
-}
-
-//**********************************************************
-//LRC- the CLightDynamic entity - works like the flashlight.
-//**********************************************************
-
-#define SF_LIGHTDYNAMIC_START_OFF	1
-#define SF_LIGHTDYNAMIC_FLARE		2
-
-class CLightDynamic : public CBaseEntity
-{
-public:
-	void Spawn( void );
-	void Precache( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	void SetEffects( void );
-	STATE GetState( void );
-};
-
-LINK_ENTITY_TO_CLASS( light_glow, CLightDynamic );
-
-void CLightDynamic::Spawn( void )
-{
-	Precache( );
-
-	SET_MODEL(ENT(pev), "sprites/null.spr");
-	pev->solid			= SOLID_NOT;
-	pev->movetype		= MOVETYPE_NONE;
-
-	if (!(pev->spawnflags & SF_LIGHTDYNAMIC_START_OFF))
-	{
-		pev->health = 1;
-		SetEffects();
-	}
-}
-
-void CLightDynamic :: Precache( void )
-{
-	PRECACHE_MODEL("sprites/null.spr");
-}
-
-void CLightDynamic::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-{
-	if (ShouldToggle(useType, pev->health))
-	{
-		if (pev->health)
-			pev->health = 0;
-		else
-			pev->health = 1;
-		SetEffects();
-	}
-}
-
-void CLightDynamic::SetEffects( void )
-{
-	if (pev->health)
-	{
-		if (pev->frags == 2)
-			pev->effects |= EF_BRIGHTLIGHT;
-		else if (pev->frags)
-			pev->effects |= EF_DIMLIGHT;
-
-		if (pev->spawnflags & SF_LIGHTDYNAMIC_FLARE)
-			pev->effects |= EF_LIGHT;
-	}
-	else
-	{
-		pev->effects &= ~(EF_DIMLIGHT | EF_BRIGHTLIGHT | EF_LIGHT);
-	}
-}
-
-STATE CLightDynamic::GetState( void )
-{
-	if (pev->health)
-		return STATE_ON;
-	else
-		return STATE_OFF;
-}
-
-//**********************************************************
-//LRC- the CTriggerLightstyle entity - changes the style of a light temporarily.
-//**********************************************************
-class CLightFader : public CPointEntity
-{
-public:
-	void EXPORT FadeThink( void );
-	void EXPORT WaitThink( void );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-
-	static	TYPEDESCRIPTION m_SaveData[];
-
-	CLight *m_pLight;
-	char m_cFrom;
-	char m_cTo;
-	char m_szCurStyle[2];
-	float m_fEndTime;
-	int m_iszPattern;
-	float m_fStep;
-	int m_iWait;
-};
-
-LINK_ENTITY_TO_CLASS( lightfader, CLightFader );
-
-TYPEDESCRIPTION	CLightFader::m_SaveData[] = 
-{
-	DEFINE_FIELD( CLightFader, m_pLight, FIELD_CLASSPTR ),
-	DEFINE_FIELD( CLightFader, m_cFrom, FIELD_CHARACTER ),
-	DEFINE_FIELD( CLightFader, m_cTo, FIELD_CHARACTER ),
-	DEFINE_ARRAY( CLightFader, m_szCurStyle, FIELD_CHARACTER, 2 ),
-	DEFINE_FIELD( CLightFader, m_fEndTime, FIELD_FLOAT ),
-	DEFINE_FIELD( CLightFader, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CLightFader, m_fStep, FIELD_FLOAT ),
-	DEFINE_FIELD( CLightFader, m_iWait, FIELD_INTEGER ),
-};
-
-IMPLEMENT_SAVERESTORE(CLightFader,CPointEntity);
-
-void CLightFader::FadeThink( void )
-{
-	if (m_fEndTime > gpGlobals->time)
-	{
-		m_szCurStyle[0] = m_cTo + (char)((m_cFrom - m_cTo) * (m_fEndTime - gpGlobals->time) * m_fStep);
-		m_szCurStyle[1] = 0; // null terminator
-//		ALERT(at_console, "FadeThink: %s %s\n", STRING(m_pLight->pev->classname), m_szCurStyle);
-		m_pLight->SetStyle(MAKE_STRING(m_szCurStyle));
-		SetNextThink( 0.1 );
-	}
-	else
-	{
-		// fade is finished
-		m_pLight->SetStyle(m_iszPattern);
-		if (m_iWait > -1)
-		{
-			// wait until it's time to switch off
-			SetThink( &CLightFader::WaitThink );
-			SetNextThink( m_iWait );
-		}
-		else
-		{
-			// we've finished, kill the fader
-			SetThink( &CLightFader::SUB_Remove );
-			SetNextThink( 0.1 );
-		}
-	}
-}
-
-// we've finished. revert the light and kill the fader.
-void CLightFader::WaitThink( void )
-{
-	m_pLight->SetCorrectStyle();
-	SetThink( &CLightFader::SUB_Remove );
-	SetNextThink( 0.1 );
-}
-
-
-
-class CTriggerLightstyle : public CPointEntity
-{
-public:
-	void KeyValue( KeyValueData *pkvd );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-
-private:
-	int m_iszPattern;
-	int m_iFade;
-	int m_iWait;
-};
-
-LINK_ENTITY_TO_CLASS( trigger_lightstyle, CTriggerLightstyle );
-
-TYPEDESCRIPTION	CTriggerLightstyle::m_SaveData[] = 
-{
-	DEFINE_FIELD( CTriggerLightstyle, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CTriggerLightstyle, m_iFade, FIELD_INTEGER ),
-	DEFINE_FIELD( CTriggerLightstyle, m_iWait, FIELD_INTEGER ),
-};
-
-IMPLEMENT_SAVERESTORE(CTriggerLightstyle,CBaseEntity);
-
-void CTriggerLightstyle::KeyValue( KeyValueData *pkvd )
-{
-	if (FStrEq(pkvd->szKeyName, "pattern"))
-	{
-		m_iszPattern = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iFade"))
-	{
-		m_iFade = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "m_iWait"))
-	{
-		m_iWait = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
-	}
-	else
-		CBaseEntity::KeyValue( pkvd );
-}
-
-void CTriggerLightstyle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-{
-	CBaseEntity *pTarget = NULL;
-	if ( !pev->target )
-		return;
-
-	//ALERT( at_console, "Lightstyle change for: (%s)\n", STRING(pev->target) );
-
-	for (;;)
-	{
-		pTarget = UTIL_FindEntityByTargetname(pTarget,STRING(pev->target), pActivator);
-		if (FNullEnt(pTarget))
-			break;
-
-		int iszPattern;
-		if (m_iszPattern)
-			iszPattern = m_iszPattern;
-		else
-			iszPattern = GetStdLightStyle(m_iStyle);
-
-		// not a light entity?
-		if (!FClassnameIs(pTarget->pev, "light") && !FClassnameIs(pTarget->pev, "light_spot") && !FClassnameIs(pTarget->pev, "light_environment"))
-		{
-			if (pTarget->m_iStyle >= 32)
-				LIGHT_STYLE(pTarget->m_iStyle, (char*)STRING(iszPattern));
-		}
-		else
-		{
-			CLight *pLight = (CLight*)pTarget;
-
-			if (m_iFade)
-			{
-//				ALERT(at_console, "Making fader ent, step 1/%d = %f\n", m_iFade, 1/m_iFade);
-				CLightFader *pFader = GetClassPtr( (CLightFader*)NULL );
-				pFader->m_pLight = pLight;
-				pFader->m_cFrom = ((char*)STRING(pLight->GetStyle()))[0];
-				pFader->m_cTo = ((char*)STRING(iszPattern))[0];
-				pFader->m_iszPattern = iszPattern;
-				pFader->m_fEndTime = gpGlobals->time + m_iFade;
-				pFader->m_fStep = ((float)1)/m_iFade;
-				pFader->m_iWait = m_iWait;
-				pFader->SetThink( &CLightFader::FadeThink );
-				pFader->SetNextThink( 0.1 );
-			}
-			else
-			{
-				pLight->SetStyle( iszPattern );
-				if (m_iWait != -1)
-				{
-					CLightFader *pFader = GetClassPtr( (CLightFader*)NULL );
-					pFader->m_pLight = pLight;
-					pFader->SetThink( &CLightFader::WaitThink );
-					pFader->SetNextThink( m_iWait );
-				}
-			}
-		}
-	}
 }

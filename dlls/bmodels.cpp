@@ -293,6 +293,9 @@ void CFuncConveyor :: Spawn( void )
 	if ( !(pev->spawnflags & SF_CONVEYOR_VISUAL) )
 		SetBits( pev->flags, FL_CONVEYOR );
 
+//RENDERERS START
+	pev->effects |= FL_CONVEYOR;
+//RENDERERS END
 	// HACKHACK - This is to allow for some special effects
 	if ( pev->spawnflags & SF_CONVEYOR_NOTSOLID )
 	{
@@ -329,6 +332,22 @@ void CFuncConveyor :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	UpdateSpeed( pev->speed );
 }
 
+//RENDERERS START
+class CFuncMirror : public CFuncWall
+{
+public:
+	void	Spawn( void );
+};
+
+LINK_ENTITY_TO_CLASS( func_mirror, CFuncMirror );
+LINK_ENTITY_TO_CLASS( func_detail_ext, CFuncWall );
+
+void CFuncMirror :: Spawn( void )
+{
+	CFuncWall::Spawn();
+	pev->effects |= FL_MIRROR;
+}
+//RENDERERS END
 
 
 // =================== FUNC_ILLUSIONARY ==============================================
@@ -372,66 +391,6 @@ void CFuncIllusionary :: Spawn( void )
 	// Perhaps we can do this in deathmatch only.
 	//	MAKE_STATIC(ENT(pev));
 }
-
-// =================== FUNC_SHINE ==============================================
-
-//LRC - shiny surfaces
-class CFuncShine : public CBaseEntity
-{
-public:
-	void Spawn( void );
-	void Activate( void );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	
-	void DesiredAction( void );
-	void EXPORT Think( void );
-};
-
-LINK_ENTITY_TO_CLASS( func_shine, CFuncShine );
-
-extern int gmsgAddShine;
-void CFuncShine :: Spawn( void )
-{
-	pev->solid = SOLID_NOT;// always solid_not 
-	SET_MODEL( ENT(pev), STRING(pev->model) );
-	pev->effects |= EF_NODRAW;
-
-	// not that we actually need to precache it here, but we do need to make sure it exists
-	PRECACHE_MODEL( (char*)STRING(pev->message) );
-}
-
-void CFuncShine :: Activate( void )
-{
-//	ALERT(at_console, "Activate shine\n");
-
-	CBaseEntity::Activate();
-	UTIL_DesiredAction(this);
-}
-
-void CFuncShine :: DesiredAction( void )
-{
-	if (pev->message && pev->renderamt)
-	{
-//		ALERT(at_console, "Prepare think\n");
-		pev->nextthink = gpGlobals->time + 1.5;
-	}
-}
-
-void CFuncShine :: Think( void )
-{
-//	ALERT(at_console, "Think shine\n");
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgAddShine, NULL);
-		WRITE_BYTE(pev->scale);
-		WRITE_BYTE(pev->renderamt);
-		WRITE_COORD(pev->absmin.x + 2); // take off 2: mins values are padded, but we just want to hug the surface
-		WRITE_COORD(pev->absmax.x - 2);
-		WRITE_COORD(pev->absmin.y + 2);
-		WRITE_COORD(pev->absmax.y - 2);
-		WRITE_COORD(pev->absmin.z + 2);
-		WRITE_STRING(STRING(pev->message));
-	MESSAGE_END();
-}
-
 
 // -------------------------------------------------------------------------------
 //

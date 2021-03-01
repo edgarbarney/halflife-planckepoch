@@ -1078,5 +1078,6 @@ void DLLEXPORT HUD_Shutdown( void )
 #if defined( _TFC )
 	ClearEventList();
 #endif
+	
 
 }

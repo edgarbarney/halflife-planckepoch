@@ -330,6 +330,30 @@
     <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\frustum.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\mirrormanager.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\particle_engine.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\propmanager.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\rendererdefs.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\textureloader.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\watershader.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\bsprenderer.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -471,6 +495,30 @@
       <Filter>Header Files\cl_dll\effects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\CGameStateManager.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\bsprenderer.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\frustum.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\mirrormanager.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\particle_engine.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\propmanager.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\rendererdefs.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\textureloader.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\watershader.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
   </ItemGroup>

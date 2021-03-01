@@ -22,13 +22,10 @@ extern int gmsgFlashlight;
 extern int gmsgFlashBattery;
 extern int gmsgResetHUD;
 extern int gmsgInitHUD;
-extern int gmsgSetFog; //LRC
 extern int gmsgKeyedDLight; //LRC
 extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC
-extern int gmsgAddShine; // LRC
-extern int gmsgParticle; // LRC
 extern int gmsgClampView; //LRC 1.8
 extern int gmsgPlayMP3; //Killar
 extern int gmsgShowGameTitle;
@@ -67,5 +64,18 @@ extern int gmsgRainData;
 extern int gmsgInventory; //AJH Inventory system
 extern int gmsgWeather;
 extern int gmsgServerState; // used for pause/menu detection
+
+//RENDERERS START
+extern int gmsgSetFog;
+extern int gmsgLightStyle;
+extern int gmsgCreateDecal;
+extern int gmsgStudioDecal;
+extern int gmsgCreateDLight;
+extern int gmsgFreeEnt;
+extern int gmsgSkyMark_Sky;
+extern int gmsgSkyMark_World;
+extern int gmsgCreateSystem;
+
+//RENDERERS END
 
 void LinkUserMessages(void);

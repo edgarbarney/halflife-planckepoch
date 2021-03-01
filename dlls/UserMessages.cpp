@@ -26,15 +26,12 @@ int gmsgFlashlight = 0;
 int gmsgFlashBattery = 0;
 int gmsgResetHUD = 0;
 int gmsgInitHUD = 0;
-int gmsgSetFog = 0; //LRC
 int gmsgKeyedDLight = 0;//LRC
 int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
-int gmsgAddShine = 0;   // LRC
-int gmsgParticle = 0; // LRC
-int gmsgClampView = 0; //LRC 1.8
-int gmsgPlayMP3 = 0; //Killar
+int gmsgClampView = 0;	//LRC 1.8
+int gmsgPlayMP3 = 0;	//Killar
 int gmsgShowGameTitle = 0;
 int gmsgCurWeapon = 0;
 int gmsgHealth = 0;
@@ -69,8 +66,19 @@ int gmsgStatusValue = 0;
 int gmsgCamData = 0; // for trigger_viewset
 int gmsgRainData = 0;
 int gmsgInventory = 0; //AJH Inventory system
-int gmsgWeather = 0;
 int gmsgServerState = 0; // used for pause/menu detection
+
+//RENDERERS START
+int gmsgSetFog		= 0;
+int gmsgLightStyle	= 0;
+int gmsgCreateDecal	= 0;
+int gmsgStudioDecal	= 0;
+int gmsgSkyMark_Sky	= 0;
+int gmsgSkyMark_World	= 0;
+int gmsgCreateDLight	= 0;
+int gmsgFreeEnt		= 0;
+int gmsgCreateSystem	= 0;
+//RENDERERS END
 
 void LinkUserMessages(void)
 {
@@ -97,13 +105,10 @@ void LinkUserMessages(void)
 	gmsgResetHUD = REG_USER_MSG("ResetHUD", 1);		// called every respawn
 	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);		// called every time a new player joins the server
 
-	gmsgSetFog = REG_USER_MSG("SetFog", 9); //LRC
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
 	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
-	gmsgParticle = REG_USER_MSG("Particle", -1);		//LRC
-	gmsgAddShine = REG_USER_MSG("AddShine", -1);      //LRC
 	gmsgClampView = REG_USER_MSG("ClampView", 10);	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
@@ -132,6 +137,17 @@ void LinkUserMessages(void)
 	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1);	//Killar
 	gmsgRainData = REG_USER_MSG("RainData", 16);
 	gmsgInventory = REG_USER_MSG("Inventory", -1);	//AJH Inventory system
-	gmsgWeather = REG_USER_MSG("Weather", -1);
 	gmsgServerState = REG_USER_MSG("ServerState", 1);
+	
+	//RENDERERS START
+	gmsgSetFog = REG_USER_MSG("SetFog", -1);
+	gmsgLightStyle = REG_USER_MSG("LightStyle", -1);
+	gmsgCreateDecal = REG_USER_MSG("CreateDecal", -1);
+	gmsgStudioDecal = REG_USER_MSG("StudioDecal", -1);
+	gmsgCreateDLight = REG_USER_MSG("DynLight", -1);
+	gmsgFreeEnt = REG_USER_MSG("FreeEnt", -1);
+	gmsgSkyMark_Sky = REG_USER_MSG("SkyMark_S", -1); 
+	gmsgSkyMark_World = REG_USER_MSG("SkyMark_W", -1); 
+	gmsgCreateSystem = REG_USER_MSG("Particle", -1);
+	//RENDERERS END
 }

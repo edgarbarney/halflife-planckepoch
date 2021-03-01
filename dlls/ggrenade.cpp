@@ -83,6 +83,10 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 		WRITE_BYTE( TE_EXPLFLAG_NONE );
 	MESSAGE_END();
 
+//RENDERERS START
+	if(iContents != CONTENTS_WATER)
+		UTIL_Particle("explosion_cluster.txt", pev->origin, g_vecZero, 1);
+//RENDERERS END
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
 	entvars_t *pevOwner;
 	if ( pev->owner )

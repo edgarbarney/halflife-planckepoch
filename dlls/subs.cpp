@@ -29,6 +29,7 @@
 #include "saverestore.h"
 #include "nodes.h"
 #include "doors.h"
+#include "UserMessages.h"
 #include "movewith.h"
 #include "player.h"
 #include "locus.h"
@@ -180,6 +181,7 @@ void CBaseEntity::UpdateOnRemove( void )
 }
 
 // Convenient way to delay removing oneself
+
 void CBaseEntity :: SUB_Remove( void )
 {
 	UpdateOnRemove();
@@ -190,6 +192,14 @@ void CBaseEntity :: SUB_Remove( void )
 		ALERT( at_aiconsole, "SUB_Remove called on entity with health > 0\n");
 	}
 
+//RENDERERS START
+	if(gmsgFreeEnt)
+	{
+		MESSAGE_BEGIN(MSG_ALL, gmsgFreeEnt);
+			WRITE_SHORT(entindex());
+		MESSAGE_END();
+	}
+//RENDERERS END
 	REMOVE_ENTITY(ENT(pev));
 }
 

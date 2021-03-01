@@ -34,6 +34,20 @@
 #include "cl_dll.h"
 #include "ammo.h"
 
+//RENDERERS START
+#include "frustum.h"
+#include "particle_engine.h"
+
+struct fog_settings_t
+{
+	vec3_t color;
+	int start;
+	int end;
+	
+	bool affectsky;
+	bool active;
+};
+//RENDERERS END
 #define DHN_DRAWZERO 1
 #define DHN_2DIGITS  2
 #define DHN_3DIGITS  4
@@ -537,48 +551,10 @@ private:
 //-----------------------------------------------------
 //
 
-//LRC
-//methods actually defined in tri.cpp
-
-class CShinySurface
-{
-	float m_fMinX, m_fMinY, m_fMaxX, m_fMaxY, m_fZ;
-	char m_fScale;
-	float m_fAlpha; // texture scale and brighness
-	HL_HSPRITE m_hsprSprite;
-	char m_szSprite[128];
-
-public:
-	CShinySurface *m_pNext;
-
-	CShinySurface( float fScale, float fAlpha, float fMinX, float fMaxX, float fMinY, float fMaxY, float fZ, char *szSprite);
-	~CShinySurface();
-
-	// draw the surface as seen from the given position
-	void Draw(const vec3_t &org);
-
-	void DrawAll(const vec3_t &org);
-};
-
-//
-//-----------------------------------------------------
-//
-
-
 //LRC - for the moment, skymode has only two settings
 #define SKY_OFF 0
 #define SKY_ON_DRAWING  2
 #define SKY_ON  1
-
-typedef struct cl_mirror_s
-{
-	vec3_t origin;
-	int enabled;
-	float radius;
-	int type;
-} cl_mirror_t;
-
-
 
 class CHud
 {
@@ -608,7 +584,6 @@ public:
 	cvar_t  *m_pCvarStealMouse;
 	cvar_t	*m_pCvarDraw;
 	cvar_t	*RainInfo;
-	CShinySurface *m_pShinySurface; //LRC
 	Vector	m_vecSkyPos; //LRC
 	int		m_iSkyMode;  //LRC
 	int		m_iSkyScale;	//AJH Allows parallax for the sky. 0 means no parallax, i.e infinitly large & far away.
@@ -622,7 +597,6 @@ public:
 	int GetNumWidth(int iNumber, int iFlags);
 	int viewEntityIndex; // for trigger_viewset
 	int viewFlags;
-	struct cl_mirror_s Mirrors[32]; //Limit - 32 mirrors!
 	int numMirrors;
 
 	int m_iHUDColor; //LRC
@@ -672,7 +646,7 @@ public:
 	int Redraw( float flTime, int intermission );
 	int UpdateClientData( client_data_t *cdata, float time );
 	
-	CHud() : m_iSpriteCount(0), m_pHudList(NULL), m_pShinySurface(NULL) {}
+	CHud() : m_iSpriteCount(0), m_pHudList(NULL) {}
 	~CHud();			// destructor, frees allocated memory
 
 	// user messages
@@ -687,11 +661,9 @@ public:
 	int  _cdecl MsgFunc_RainData( const char *pszName, int iSize, void *pbuf ); 		//G-Cont
 	int  _cdecl MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf );		//KILLAR
 	int _cdecl MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf);		//LRC
-	void _cdecl MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf );		//LRC
 	void _cdecl MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf );	//LRC
 	void _cdecl MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf );		//LRC
 	int  _cdecl MsgFunc_CamData( const char *pszName, int iSize, void *pbuf );		//G-Cont
-	void _cdecl MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf );    		//LRC
 	int  _cdecl MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf );	//AJH
 	void _cdecl MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf );	//LRC 1.8
 	void _cdecl MsgFunc_ServerState(const char* pszName, int iSize, void* pBuf);
@@ -711,6 +683,22 @@ public:
 
 	float GetSensitivity();
 
+//RENDERERS START
+	fog_settings_t m_pSkyFogSettings;
+	fog_settings_t m_pFogSettings;
+	FrustumCheck viewFrustum;
+
+	int  _cdecl MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_LightStyle( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_StudioDecal( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_FreeEnt( const char *pszName, int iSize, void *pbuf );
+
+	int  _cdecl MsgFunc_CreateDecal( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_SkyMark_S( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_SkyMark_W( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_DynLight( const char *pszName, int iSize, void *pbuf );
+	int  _cdecl MsgFunc_CreateSystem( const char *pszName, int iSize, void *pbuf );
+//RENDERERS END
 };
 
 extern CHud gHUD;

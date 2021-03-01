@@ -355,6 +355,11 @@ public:
 
 	int	Rain_needsUpdate;
 	BOOL m_bHasIntroPlayed; // not my job to clean up this mess of a class definition
+	//RENDERERS START
+	BOOL m_bUpdateEffects;
+	void ClearEffects( void );
+	void SendInitMessages( void );
+	//RENDERERS END
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

@@ -116,6 +116,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\ammohistory.cpp" />
     <ClCompile Include="..\..\cl_dll\ammo_secondary.cpp" />
     <ClCompile Include="..\..\cl_dll\battery.cpp" />
+    <ClCompile Include="..\..\cl_dll\bsprenderer.cpp" />
     <ClCompile Include="..\..\cl_dll\cdll_int.cpp" />
     <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp" />
     <ClCompile Include="..\..\cl_dll\com_weapons.cpp" />
@@ -127,6 +128,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\ev_common.cpp" />
     <ClCompile Include="..\..\cl_dll\ev_hldm.cpp" />
     <ClCompile Include="..\..\cl_dll\flashlight.cpp" />
+    <ClCompile Include="..\..\cl_dll\frustum.cpp" />
     <ClCompile Include="..\..\cl_dll\GameStudioModelRenderer.cpp" />
     <ClCompile Include="..\..\cl_dll\geiger.cpp" />
     <ClCompile Include="..\..\cl_dll\health.cpp" />
@@ -148,12 +150,17 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\in_camera.cpp" />
     <ClCompile Include="..\..\cl_dll\menu.cpp" />
     <ClCompile Include="..\..\cl_dll\message.cpp" />
+    <ClCompile Include="..\..\cl_dll\mirrormanager.cpp" />
     <ClCompile Include="..\..\cl_dll\mp3.cpp" />
+    <ClCompile Include="..\..\cl_dll\particle_engine.cpp" />
+    <ClCompile Include="..\..\cl_dll\propmanager.cpp" />
+    <ClCompile Include="..\..\cl_dll\rendererdefs.cpp" />
     <ClCompile Include="..\..\cl_dll\saytext.cpp" />
     <ClCompile Include="..\..\cl_dll\statusbar.cpp" />
     <ClCompile Include="..\..\cl_dll\status_icons.cpp" />
     <ClCompile Include="..\..\cl_dll\StudioModelRenderer.cpp" />
     <ClCompile Include="..\..\cl_dll\studio_util.cpp" />
+    <ClCompile Include="..\..\cl_dll\textureloader.cpp" />
     <ClCompile Include="..\..\cl_dll\text_message.cpp" />
     <ClCompile Include="..\..\cl_dll\train.cpp" />
     <ClCompile Include="..\..\cl_dll\tri.cpp" />
@@ -171,6 +178,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\vgui_teammenu.cpp" />
     <ClCompile Include="..\..\cl_dll\view.cpp" />
     <ClCompile Include="..\..\cl_dll\voice_status.cpp" />
+    <ClCompile Include="..\..\cl_dll\watershader.cpp" />
     <ClCompile Include="..\..\common\parsemsg.cpp" />
     <ClCompile Include="..\..\dlls\ar16.cpp" />
     <ClCompile Include="..\..\dlls\crossbow.cpp" />
@@ -204,6 +212,7 @@ EXIT /B 0</Command>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\ammo.h" />
     <ClInclude Include="..\..\cl_dll\ammohistory.h" />
+    <ClInclude Include="..\..\cl_dll\bsprenderer.h" />
     <ClInclude Include="..\..\cl_dll\camera.h" />
     <ClInclude Include="..\..\cl_dll\CGameStateManager.h" />
     <ClInclude Include="..\..\cl_dll\cl_dll.h" />
@@ -214,6 +223,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\ev_hldm.h" />
     <ClInclude Include="..\..\cl_dll\fmod.h" />
     <ClInclude Include="..\..\cl_dll\fmod_errors.h" />
+    <ClInclude Include="..\..\cl_dll\frustum.h" />
     <ClInclude Include="..\..\cl_dll\GameStudioModelRenderer.h" />
     <ClInclude Include="..\..\cl_dll\glInclude.h" />
     <ClInclude Include="..\..\cl_dll\health.h" />
@@ -224,8 +234,13 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\interpolation.h" />
     <ClInclude Include="..\..\cl_dll\in_defs.h" />
     <ClInclude Include="..\..\cl_dll\kbutton.h" />
+    <ClInclude Include="..\..\cl_dll\mirrormanager.h" />
     <ClInclude Include="..\..\cl_dll\mp3.h" />
+    <ClInclude Include="..\..\cl_dll\particle_engine.h" />
+    <ClInclude Include="..\..\cl_dll\propmanager.h" />
+    <ClInclude Include="..\..\cl_dll\rendererdefs.h" />
     <ClInclude Include="..\..\cl_dll\StudioModelRenderer.h" />
+    <ClInclude Include="..\..\cl_dll\textureloader.h" />
     <ClInclude Include="..\..\cl_dll\tri.h" />
     <ClInclude Include="..\..\cl_dll\util_vector.h" />
     <ClInclude Include="..\..\cl_dll\vgui_ControlConfigPanel.h" />
@@ -235,6 +250,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\vgui_ServerBrowser.h" />
     <ClInclude Include="..\..\cl_dll\vgui_SpectatorPanel.h" />
     <ClInclude Include="..\..\cl_dll\view.h" />
+    <ClInclude Include="..\..\cl_dll\watershader.h" />
     <ClInclude Include="..\..\cl_dll\wrect.h" />
     <ClInclude Include="..\..\common\parsemsg.h" />
     <ClInclude Include="..\..\common\Platform.h" />

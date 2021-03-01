@@ -123,7 +123,11 @@ enum gauss_e {
 };
 
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName );
-void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType );
+
+//RENDERERS START
+void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType, float *vecSrc, float *vecEnd );
+//RENDERERS END
+
 int EV_HLDM_CheckTracer( int idx, float *vecSrc, float *end, float *forward, float *right, int iBulletType, int iTracerFreq, int *tracerCount );
 void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY );
 

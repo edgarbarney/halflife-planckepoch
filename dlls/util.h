@@ -249,6 +249,11 @@ inline void UTIL_MakeVectorsPrivate( const Vector &vecAngles, float *p_vForward,
 	g_engfuncs.pfnAngleVectors( vecAngles, p_vForward, p_vRight, p_vUp );
 }
 
+//RENDERERS START
+extern void			UTIL_Particle( char *szName, Vector vecOrigin, Vector vDirection, int iType );
+extern void			UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent = 0);
+extern void			UTIL_StudioDecal( vec3_t normal, vec3_t position, const char *name, int entindex );
+//RENDERERS END
 extern void			UTIL_MakeAimVectors		( const Vector &vecAngles ); // like MakeVectors, but assumes pitch isn't inverted
 extern void			UTIL_MakeInvVectors		( const Vector &vec, globalvars_t *pgv );
 

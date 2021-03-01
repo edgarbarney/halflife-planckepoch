@@ -759,8 +759,11 @@ void CISlave :: ArmBeam( int side )
 	if ( flDist == 1.0 )
 		return;
 
-	DecalGunshot( &tr, BULLET_PLAYER_CROWBAR );
-
+	//RENDERERS START
+	Vector vecAim = gpGlobals->v_right * side * RANDOM_FLOAT( 0, 1 ) + gpGlobals->v_up * RANDOM_FLOAT( -1, 1 );
+	DecalGunshot( &tr, BULLET_PLAYER_CROWBAR, vecSrc, vecSrc + vecAim * 512 );
+	//RENDERERS END
+	
 	m_pBeam[m_iBeams] = CBeam::BeamCreate( "sprites/lgtning.spr", 30 );
 	if (!m_pBeam[m_iBeams])
 		return;

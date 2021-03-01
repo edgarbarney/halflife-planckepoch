@@ -47,8 +47,10 @@ public:
 	BOOL SparkWhenHit( void );
 
 	STATE GetState( void );
-
-	int	 DamageDecal( int bitsDamageType );
+	
+	//RENDERERS START
+	char	*DamageDecal( int bitsDamageType );
+	//RENDERERS END
 
 	void EXPORT		Die( void );
 	virtual int		ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }

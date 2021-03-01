@@ -37,6 +37,22 @@
 
 #include "Platform.h"
 #include "Exports.h"
+//RENDERERS START
+#include "rendererdefs.h"
+#include "particle_engine.h"
+#include "bsprenderer.h"
+#include "propmanager.h"
+#include "textureloader.h"
+#include "watershader.h"
+#include "mirrormanager.h"
+
+#include "studio.h"
+#include "StudioModelRenderer.h"
+#include "GameStudioModelRenderer.h"
+
+extern CGameStudioModelRenderer g_StudioRenderer;
+extern engine_studio_api_t IEngineStudio;
+//RENDERERS END
 
 #include "tri.h"
 #include "vgui_TeamFortressViewport.h"
@@ -46,6 +62,16 @@ cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 CMP3 gMP3; //AJH - Killars MP3player
 TeamFortressViewport *gViewPort = NULL;
+
+//RENDERERS START
+CBSPRenderer gBSPRenderer;
+CParticleEngine gParticleEngine;
+CWaterShader gWaterShader;
+
+CTextureLoader gTextureLoader;
+CPropManager gPropManager;
+CMirrorManager gMirrorManager;
+//RENDERERS END
 
 void InitInput (void);
 void EV_HookEvents( void );
@@ -203,7 +229,9 @@ called every screen frame to
 redraw the HUD.
 ===========================
 */
-
+//RENDERERS START
+extern void HUD_PrintSpeeds( void );
+//RENDERERS END
 int DLLEXPORT HUD_Redraw( float time, int intermission )
 {
 //	RecClHudRedraw(time, intermission);
@@ -213,6 +241,9 @@ int DLLEXPORT HUD_Redraw( float time, int intermission )
 
 	gHUD.Redraw( time, intermission );
 
+//RENDERERS START
+	HUD_PrintSpeeds();
+//RENDERERS END
 	return 1;
 }
 
@@ -303,6 +334,21 @@ void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
 
 	gHUD.m_Spectator.DirectorMessage( iSize, pbuf );
 }
+
+//RENDERERS_START
+/*
+==========================
+CL_GetModelData
+
+
+==========================
+*/
+extern "C" __declspec( dllexport ) void CL_GetModelByIndex(int iIndex, void **pPointer)
+{
+	void *pModel = IEngineStudio.GetModelByIndex(iIndex);
+	*pPointer = pModel;
+}
+//RENDERERS_END
 
 cldll_func_dst_t *g_pcldstAddrs;
 
