@@ -77,7 +77,7 @@ void CShotgun::Precache( void )
 	PRECACHE_SOUND ("weapons/scock1.wav");	// cock gun
 
 	m_usSingleFire = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
-	m_usDoubleFire = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
+	m_usEjectShell = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
 }
 
 int CShotgun::AddToPlayer( CBasePlayer *pPlayer )
@@ -192,6 +192,7 @@ void CShotgun::PrimaryAttack()
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usSingleFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usEjectShell, 0.8, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
@@ -214,7 +215,6 @@ void CShotgun::SecondaryAttack( void )
 {
 	return;
 }
-
 
 void CShotgun::Reload( void )
 {
