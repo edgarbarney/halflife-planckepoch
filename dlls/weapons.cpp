@@ -37,6 +37,9 @@
 //extern CGraph	WorldGraph;
 extern int gEvilImpulse101;
 
+//For making it easy to modify
+//#define WEAPON_TIMEBASE UTIL_WeaponTimeBase()
+#define WEAPON_TIMEBASE gpGlobals->time
 
 #define NOT_USED 255
 
@@ -1349,6 +1352,43 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
 // 	char szMsg[256];
 // 	_snprintf( szMsg, sizeof(szMsg), "next attack time: %0.4f\n", gpGlobals->time + flNextAttack );
 // 	OutputDebugString( szMsg );
+	return flNextAttack;
+}
+
+//=========================================================================
+// GetNextAttackDelay - An accurate way of calcualting the next attack time.
+//=========================================================================
+float CBasePlayerWeapon::GetNextAttackDelayGlobal(float delay)
+{
+	if (m_flLastFireTime == 0 || m_flNextPrimaryAttack == -1)
+	{
+		// At this point, we are assuming that the client has stopped firing
+		// and we are going to reset our book keeping variables.
+		m_flLastFireTime = gpGlobals->time;
+		m_flPrevPrimaryAttack = delay;
+	}
+	// calculate the time between this shot and the previous
+	float flTimeBetweenFires = gpGlobals->time - m_flLastFireTime;
+	float flCreep = 0.0f;
+	if (flTimeBetweenFires > 0)
+		flCreep = flTimeBetweenFires - m_flPrevPrimaryAttack; // postive or negative
+
+// save the last fire time
+	m_flLastFireTime = gpGlobals->time;
+
+	float flNextAttack = WEAPON_TIMEBASE + delay - flCreep;
+	/*
+	float flNextAttack = UTIL_WeaponTimeBase() + delay - flCreep;
+	*/
+	// we need to remember what the m_flNextPrimaryAttack time is set to for each shot, 
+	// store it as m_flPrevPrimaryAttack.
+	m_flPrevPrimaryAttack = flNextAttack - WEAPON_TIMEBASE;
+	/*
+	m_flPrevPrimaryAttack = flNextAttack - UTIL_WeaponTimeBase();
+	*/
+	// 	char szMsg[256];
+	// 	_snprintf( szMsg, sizeof(szMsg), "next attack time: %0.4f\n", gpGlobals->time + flNextAttack );
+	// 	OutputDebugString( szMsg );
 	return flNextAttack;
 }
 

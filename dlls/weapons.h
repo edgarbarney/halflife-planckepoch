@@ -16,6 +16,7 @@
 #define WEAPONS_H
 
 #include "effects.h"
+#include "weaponinfo.h"
 #include "UserMessages.h"
 
 class CBasePlayer;
@@ -289,6 +290,10 @@ public:
 
 	virtual CBasePlayerItem *GetWeaponPtr( void ) { return NULL; };
 
+	virtual void GetWeaponData(weapon_data_t& data) {}
+
+	virtual void SetWeaponData(const weapon_data_t& data) {}
+
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
 
@@ -386,6 +391,7 @@ public:
 
 	virtual CBasePlayerItem *GetWeaponPtr( void ) { return (CBasePlayerItem *)this; };
 	float GetNextAttackDelay( float delay );
+	float GetNextAttackDelayGlobal(float delay);
 
 	float m_flPumpTime;
 	int		m_fInSpecialReload;									// Are we in the middle of a reload for the shotguns
@@ -456,6 +462,7 @@ typedef struct
 
 extern MULTIDAMAGE gMultiDamage;
 
+void FindHullIntersection(const Vector& vecSrc, TraceResult& tr, float* mins, float* maxs, edict_t* pEntity);
 
 #define LOUD_GUN_VOLUME			1000
 #define NORMAL_GUN_VOLUME		600
@@ -563,31 +570,57 @@ private:
 
 class CCrowbar : public CBasePlayerWeapon
 {
-private:
-	unsigned short m_usCbarSwing;
+	enum SwingMode
+	{
+		SWING_NONE = 0,
+		SWING_START_BIG,
+		SWING_DOING_BIG,
+	};
 
 public:
-	void Spawn( void );
-	void Precache( void );
-	void EXPORT SwingAgain( void );
-	void EXPORT Smack( void );
-	int GetItemInfo(ItemInfo *p);
+	using BaseClass = CBasePlayerWeapon;
 
-	void PrimaryAttack( void );
-	int Swing( int fFirst );
-	BOOL Deploy( void );
-	void Holster( int skiplocal = 0 );
+#ifndef CLIENT_DLL
+	int Save(CSave& save) override;
+	int Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
+	void Spawn() override;
+	void Precache() override;
+	void EXPORT SwingAgain();
+	void EXPORT Smack();
+
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	bool Swing(const bool bFirst);
+	void EXPORT BigSwing();
+	BOOL Deploy() override;
+	void Holster(int skiplocal = 0) override;
+	void WeaponIdle() override;
+
+	void GetWeaponData(weapon_data_t& data) override;
+
+	void SetWeaponData(const weapon_data_t& data) override;
+
+	int iItemSlot() override;
+
+	int GetItemInfo(ItemInfo* p) override;
+
+	BOOL UseDecrement() override
+	{
+		return FALSE;
+	}
+
+	float m_flBigSwingStart;
+	int m_iSwingMode;
 	int m_iSwing;
 	TraceResult m_trHit;
 
-	virtual BOOL UseDecrement( void )
-	{ 
-#if defined( CLIENT_WEAPONS )
-		return TRUE;
-#else
-		return FALSE;
-#endif
-	}
+private:
+	unsigned short m_usCrowbar;
+	int m_eventFlags;
 };
 
 class CPython : public CBasePlayerWeapon
@@ -751,7 +784,7 @@ public:
 	}
 
 private:
-	unsigned short m_usDoubleFire;
+	unsigned short m_usEjectShell;
 	unsigned short m_usSingleFire;
 };
 

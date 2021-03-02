@@ -64,11 +64,11 @@ extern "C"
 {
 
 // HLDM
-void EV_CbarSwing(struct event_args_s* args);
+void EV_Crowbar(struct event_args_s* args);
 void EV_FireGlock1( struct event_args_s *args  );
 void EV_FireGlock2( struct event_args_s *args  );
 void EV_FireShotGunSingle( struct event_args_s *args  );
-void EV_FireShotGunDouble( struct event_args_s *args  );
+void EV_EjectShell( struct event_args_s *args  );
 void EV_FireMP5( struct event_args_s *args  );
 //void EV_FireMP52( struct event_args_s *args  ); replaced by AR16
 void EV_FireAR16(struct event_args_s* args);
@@ -682,22 +682,109 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 	}
 }
 
+enum crowbar_e
+{
+	CROWBAR_IDLE1 = 0,
+	CROWBAR_IDLE2,
+	CROWBAR_IDLE3,
+	CROWBAR_DRAW,
+	CROWBAR_HOLSTER,
+	CROWBAR_ATTACK1HIT,
+	CROWBAR_ATTACK1MISS,
+	CROWBAR_ATTACK2HIT,
+	CROWBAR_ATTACK2MISS,
+	CROWBAR_ATTACK3HIT,
+	CROWBAR_ATTACK3MISS,
+	CROWBAR_BIG_SWING_START,
+	CROWBAR_BIG_SWING_HIT,
+	CROWBAR_BIG_SWING_MISS,
+	CROWBAR_BIG_SWING_IDLE
+};
+
 //======================
 //	  CROWBAR START
 //======================
+int g_iClub;
 
-void EV_CbarSwing(event_args_t* args)
+//Only predict the miss sounds, hit sounds are still played 
+//server side, so players don't get the wrong idea.
+void EV_Crowbar(event_args_t* args)
 {
-	int idx;
-	idx = args->entindex;
+	const int idx = args->entindex;
+	Vector origin = args->origin;
+	const int iBigSwing = args->bparam1;
+	const int hitSomething = args->bparam2;
 
 	float shakeX = args->fparam1;
 	float shakeY = args->fparam2;
 
-	if (EV_IsLocal(idx))
+	if (!EV_IsLocal(idx))
 	{
-		V_PunchAxis(0, shakeX);
-		V_PunchAxis(1, shakeY);
+		return;
+	}
+
+	//Play Swing sound
+	if (iBigSwing)
+	{
+		// Shake Start
+		if (EV_IsLocal(idx))
+		{
+			V_PunchAxis(0, shakeX * 2);
+			V_PunchAxis(1, shakeY * 2);
+		}
+		// Shake End
+		if (hitSomething)
+		{
+			gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_BIG_SWING_HIT, 0);
+		}
+		else
+		{
+			gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_BIG_SWING_MISS, 0);
+		}
+
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/fireaxe_big_miss.wav", 1, ATTN_NORM, 0, PITCH_NORM);
+	}
+	else
+	{
+		// Shake Start
+		if (EV_IsLocal(idx))
+		{
+			V_PunchAxis(0, shakeX);
+			V_PunchAxis(1, shakeY);
+		}
+		// Shake End
+		if (hitSomething)
+		{
+			switch (g_iClub % 3)
+			{
+			case 0:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK1HIT, 0); break;
+			case 1:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK2HIT, 0); break;
+			case 2:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK3HIT, 0); break;
+			}
+		}
+		else
+		{
+			switch (g_iClub % 3)
+			{
+			case 0:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK1MISS, 0); break;
+			case 1:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK2MISS, 0); break;
+			case 2:
+				gEngfuncs.pEventAPI->EV_WeaponAnimation(CROWBAR_ATTACK3MISS, 0); break;
+			}
+
+			switch (g_iClub % 2)
+			{
+			case 0: gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/fireaxe_miss1.wav", 1, ATTN_NORM, 0, PITCH_NORM); break;
+			case 1: gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/fireaxe_miss2.wav", 1, ATTN_NORM, 0, PITCH_NORM); break;
+			}
+		}
+
+		++g_iClub;
 	}
 }
 
@@ -817,21 +904,13 @@ void EV_GenericFire3( struct event_args_s *args )
 //NULL EVENT
 }
 
-//======================
-//	   GENERIC END
-//======================
-
-//======================
-//	  SHOTGUN START
-//======================
-void EV_FireShotGunDouble( event_args_t *args )
+void EV_EjectShell(event_args_t* args)
 {
 	int idx;
 	vec3_t origin;
 	vec3_t angles;
 	vec3_t velocity;
 
-	int j;
 	vec3_t ShellVelocity;
 	vec3_t ShellOrigin;
 	int shell;
@@ -841,44 +920,26 @@ void EV_FireShotGunDouble( event_args_t *args )
 	float flSpread = 0.01;
 
 	idx = args->entindex;
-	VectorCopy( args->origin, origin );
-	VectorCopy( args->angles, angles );
-	VectorCopy( args->velocity, velocity );
+	VectorCopy(args->origin, origin);
+	VectorCopy(args->angles, angles);
+	VectorCopy(args->velocity, velocity);
 
-	AngleVectors( angles, forward, right, up );
+	AngleVectors(angles, forward, right, up);
 
-	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shotgunshell.mdl");// brass shell
+	shell = gEngfuncs.pEventAPI->EV_FindModelIndex("models/shotgunshell.mdl");// brass shell
 
-	if ( EV_IsLocal( idx ) )
-	{
-		// Add muzzle flash to current weapon model
-		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE2, 2 );
-		V_PunchAxis( 0, -10.0 );
-	}
-
-	for ( j = 0; j < 2; j++ )
-	{
-		EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6 );
-
-		EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHOTSHELL ); 
-	}
-
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/dbarrel1.wav", gEngfuncs.pfnRandomFloat(0.98, 1.0), ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
-
-	EV_GetGunPosition( args, vecSrc, origin );
-	VectorCopy( forward, vecAiming );
-
-	if ( gEngfuncs.GetMaxClients() > 1 )
-	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 8, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.17365, 0.04362 );
-	}
-	else
-	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 12, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
-	}
+	//Eject Shotgun Shell
+	EV_GetDefaultShellInfo(args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6);
+	EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHOTSHELL);
 }
 
+//======================
+//	   GENERIC END
+//======================
+
+//======================
+//	  SHOTGUN START
+//======================
 void EV_FireShotGunSingle( event_args_t *args )
 {
 	int idx;
@@ -911,10 +972,6 @@ void EV_FireShotGunSingle( event_args_t *args )
 
 		V_PunchAxis( 0, -10.0 );
 	}
-
-	//Eject Shotgun Shell
-	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6 );
-	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHOTSHELL ); 
 
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sbarrel1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
 

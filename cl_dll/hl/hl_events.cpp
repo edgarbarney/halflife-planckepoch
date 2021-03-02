@@ -19,11 +19,11 @@
 extern "C"
 {
 // HLDM
-void EV_CbarSwing(struct event_args_s* args);
+void EV_Crowbar(struct event_args_s* args);
 void EV_FireGlock1( struct event_args_s *args  );
 void EV_FireGlock2( struct event_args_s *args  );
 void EV_FireShotGunSingle( struct event_args_s *args  );
-void EV_FireShotGunDouble( struct event_args_s *args  );
+void EV_EjectShell( struct event_args_s *args  );
 void EV_FireMP5( struct event_args_s *args  );
 //void EV_FireMP52( struct event_args_s *args  ); replaced by AR16
 void EV_FireAR16(struct event_args_s* args);
@@ -63,16 +63,16 @@ That was what we were going to do, but we ran out of time...oh well.
 */
 void Game_HookEvents( void )
 {
-	gEngfuncs.pfnHookEvent( "events/cbar.sc",					EV_CbarSwing  );
+	gEngfuncs.pfnHookEvent( "events/crowbar.sc",				EV_Crowbar );
 	gEngfuncs.pfnHookEvent( "events/glock1.sc",					EV_FireGlock1 );
 	gEngfuncs.pfnHookEvent( "events/glock2.sc",					EV_FireGlock2 );
 	gEngfuncs.pfnHookEvent( "events/shotgun1.sc",				EV_FireShotGunSingle );
-	gEngfuncs.pfnHookEvent( "events/shotgun2.sc",				EV_FireShotGunDouble );
+	gEngfuncs.pfnHookEvent( "events/shotgun2.sc",				EV_EjectShell);
 	gEngfuncs.pfnHookEvent( "events/mp5.sc",					EV_FireMP5 );
 	//gEngfuncs.pfnHookEvent( "events/mp52.sc",					EV_FireMP52 ); replaced by AR16
-	gEngfuncs.pfnHookEvent("events/ar16.sc",					EV_FireAR16);
-	gEngfuncs.pfnHookEvent("events/ar162.sc",					EV_FireAR162);
-	gEngfuncs.pfnHookEvent("events/ar163.sc",					EV_FireAR163);
+	gEngfuncs.pfnHookEvent("events/ar16.sc",					EV_FireAR16 );
+	gEngfuncs.pfnHookEvent("events/ar162.sc",					EV_FireAR162 );
+	gEngfuncs.pfnHookEvent("events/ar163.sc",					EV_FireAR163 );
 	gEngfuncs.pfnHookEvent( "events/python.sc",					EV_FirePython );
 	gEngfuncs.pfnHookEvent("events/python2.sc",					EV_FirePythonSecnd);
 	gEngfuncs.pfnHookEvent( "events/gauss.sc",					EV_FireGauss );
