@@ -1135,6 +1135,24 @@ BOOL CBasePlayerWeapon :: DefaultDeploy( const char *szViewModel, const char *sz
 	return TRUE;
 }
 
+BOOL CBasePlayerWeapon::CbarDeploy(const char* szViewModel, const char* szWeaponModel, int iAnim, const char* szAnimExt, int skiplocal /* = 0 */, int body)
+{
+	if (!CanDeploy())
+		return FALSE;
+
+	m_pPlayer->TabulateAmmo();
+	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
+	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
+	strcpy(m_pPlayer->m_szAnimExtention, szAnimExt);
+	SendWeaponAnim(iAnim, skiplocal, body);
+
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.35;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
+	m_flLastFireTime = 0.0;
+
+	return TRUE;
+}
+
 
 BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay, int body )
 {

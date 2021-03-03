@@ -235,6 +235,21 @@ BOOL CBasePlayerWeapon :: DefaultDeploy(const char *szViewModel, const char *szW
 	return TRUE;
 }
 
+BOOL CBasePlayerWeapon::CbarDeploy(const char* szViewModel, const char* szWeaponModel, int iAnim, const char* szAnimExt, int skiplocal, int	body)
+{
+	if (!CanDeploy())
+		return FALSE;
+
+	gEngfuncs.CL_LoadModel(szViewModel, &m_pPlayer->pev->viewmodel);
+
+	SendWeaponAnim(iAnim, skiplocal, body);
+
+	g_irunninggausspred = false;
+	m_pPlayer->m_flNextAttack = 1.35;
+	m_flTimeWeaponIdle = 1.0;
+	return TRUE;
+}
+
 /*
 =====================
 CBasePlayerWeapon :: PlayEmptySound

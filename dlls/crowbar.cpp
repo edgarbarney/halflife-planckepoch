@@ -142,12 +142,12 @@ void CCrowbar::Precache()
 
 BOOL CCrowbar::Deploy()
 {
-	return DefaultDeploy("models/v_crowbar.mdl", "models/p_crowbar.mdl", CROWBAR_DRAW, "crowbar");
+	return CbarDeploy("models/v_crowbar.mdl", "models/p_crowbar.mdl", CROWBAR_DRAW, "crowbar");
 }
 
 void CCrowbar::Holster(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASE + 0.5;
+	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASE + 1.35;
 	SendWeaponAnim(CROWBAR_HOLSTER);
 }
 
@@ -261,7 +261,7 @@ bool CCrowbar::Swing(const bool bFirst)
 				break;
 			}
 
-			switch (((m_iSwing++) % 2) + 1)
+			switch ((m_iSwing++) % 3)
 			{
 			case 0:
 				SendWeaponAnim(CROWBAR_ATTACK1MISS); 
@@ -280,7 +280,7 @@ bool CCrowbar::Swing(const bool bFirst)
 	}
 	else
 	{
-		switch (((m_iSwing++) % 2) + 1)
+		switch ((m_iSwing++) % 3)
 		{
 		case 0:
 			SendWeaponAnim(CROWBAR_ATTACK1HIT); 
