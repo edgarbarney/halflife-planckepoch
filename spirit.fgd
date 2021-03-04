@@ -3538,6 +3538,7 @@
 	spawnflags(Flags) =
 	[
 		1 : "Short Logon" : 0
+		2 : "No Logon" : 0
 	]
 ]
 
