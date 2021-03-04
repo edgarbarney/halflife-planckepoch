@@ -570,7 +570,6 @@ CHud :: ~CHud()
 	gMP3.Shutdown();
 
 	if ( m_pHudList )
-	if ( m_pHudList )
 	{
 		HUDLIST *pList;
 		while ( m_pHudList )

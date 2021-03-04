@@ -425,19 +425,15 @@ void CBSPRenderer::VidInit( void )
 	VectorClear(m_vSkyOrigin);
 	VectorClear(m_vSkyWorldOrigin);
 
-	// HACK 
-	// Not removing textures FOR NOW. NVIDIA cards are crashing during removal.
 
-	/*
 	if(m_bShadowSupport)
 	{
 		for(int i = 0; i < MAX_DYNLIGHTS; i++)
 		{
 			if(m_pDynLights[i].depth != NULL)
-				glDeleteTextures(1, (GLuint *)m_pDynLights[i].depth);
+				glDeleteTextures(1, (GLuint *)&m_pDynLights[i].depth);
 		}
 	}
-	*/
 
 	// Clear all lightstyles.
 	memset(m_iLightStyleValue,		0, sizeof(m_iLightStyleValue));

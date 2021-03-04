@@ -434,6 +434,10 @@ void DLLEXPORT HUD_TempEntUpdate (
 	TEMPENTITY	*pTemp, *pnext, *pprev;
 	float		freq, gravity, gravitySlow, life, fastFreq;
 
+	Vector		vAngles;
+
+	gEngfuncs.GetViewAngles( (float*)vAngles );
+
 	//RENDERERS START
 	// Get bsp renderer list
 	gBSPRenderer.GetRenderEnts();

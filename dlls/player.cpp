@@ -132,7 +132,7 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, m_tbdPrev, FIELD_TIME ),
 
 	DEFINE_FIELD( CBasePlayer, m_pTank, FIELD_EHANDLE ), // NB: this points to a CFuncTank*Controls* now. --LRC
-	//DEFINE_FIELD( CBasePlayer, m_hViewEntity, FIELD_EHANDLE ),
+	DEFINE_FIELD( CBasePlayer, m_hViewEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( CBasePlayer, m_iHideHUD, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, m_iFOV, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, viewEntity, FIELD_STRING),
