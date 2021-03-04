@@ -419,12 +419,11 @@ void CBSPRenderer::VidInit( void )
 		gEngfuncs.Con_Printf("Error! Your hardware doesn't support shadow filtering! Filtering on shadows won't be available.\n");
 
 	if(!m_bDontPromptParanoia)
-		gEngfuncs.Con_Printf("Paranoia's shitty opengl32.dll was detected! This conflicts with shadow mapping! Remove this dll in order to have shadow maps.\n");
+		gEngfuncs.Con_Printf("Paranoia's opengl32.dll was detected! This conflicts with shadow mapping! Remove this dll in order to have shadow maps.\n");
 
 	// Clear this
 	VectorClear(m_vSkyOrigin);
 	VectorClear(m_vSkyWorldOrigin);
-
 
 	if(m_bShadowSupport)
 	{
