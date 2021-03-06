@@ -16,6 +16,7 @@
 #include "cl_util.h"
 #include "const.h"
 #include "com_model.h"
+#include "gl/gl.h"
 #include "frustum.h"
 
 #include "ref_params.h"

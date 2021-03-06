@@ -58,9 +58,6 @@
     <Filter Include="Source Files\cl_dll\effects">
       <UniqueIdentifier>{dcef5fb5-e7ab-4660-90df-f85e761b7f3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\cl_dll\hud">
-      <UniqueIdentifier>{1d959b2c-7b98-4c9d-81cc-83ca88b0aa4f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\cl_dll\effects">
       <UniqueIdentifier>{93ab672a-4ac0-4112-94c6-76125590be79}</UniqueIdentifier>
     </Filter>
@@ -324,9 +321,6 @@
     <ClCompile Include="..\..\dlls\ar16.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="CPostProcessing.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
@@ -490,9 +484,6 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\glInclude.h">
       <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="CPostProcessing.h">
-      <Filter>Header Files\cl_dll\effects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\CGameStateManager.h">
       <Filter>Header Files\cl_dll</Filter>

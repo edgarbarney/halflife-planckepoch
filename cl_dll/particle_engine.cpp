@@ -17,6 +17,7 @@ Written by Andrew Lucas
 #include "windows.h"
 #include "hud.h"
 #include "cl_util.h"
+#include "gl/gl.h"
 #include <gl/glu.h>
 
 #include "const.h"

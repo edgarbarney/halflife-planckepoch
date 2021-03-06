@@ -207,7 +207,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\pm_shared\pm_math.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp" />
     <ClCompile Include="..\..\public\interface.cpp" />
-    <ClCompile Include="CPostProcessing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\ammo.h" />
@@ -264,7 +263,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\pm_shared\pm_materials.h" />
     <ClInclude Include="..\..\pm_shared\pm_movevars.h" />
     <ClInclude Include="..\..\pm_shared\pm_shared.h" />
-    <ClInclude Include="CPostProcessing.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\public\game_controls.lib" />
