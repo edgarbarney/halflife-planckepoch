@@ -32,10 +32,19 @@
 #include "pm_shared.h"
 #include "pm_defs.h"
 
+#define NadeVectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
+
 float Distance(const float* v1, const float* v2);
 
-//===================grenade
-
+enum mp5_e
+{
+	NADEDIR_WTF = -1,
+	NADEDIR_NOPE = 0,
+	NADEDIR_FRONT = 1,
+	NADEDIR_RIGHT,
+	NADEDIR_REAR,
+	NADEDIR_LEFT,
+};
 
 LINK_ENTITY_TO_CLASS( grenade, CGrenade );
 
@@ -126,16 +135,26 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 		//												  (plrHeathDif / 8) / 10
 		if (Distance(thePlayerPtr->pev->origin, pev->origin) < 250.0f)
 		{
-			//float pos1	= thePlayerPtr->pev->origin.y - pev->origin.y;  // playerposy - grenadeposy
-			//float pos2	= thePlayerPtr->pev->origin.x - pev->origin.x;	// playerposx - grenadeposx
-			//float angle = acos(pos1 / pos2)								// Arc Tangent
-			//			* (180.0 / 3.141592653589793238463);				// convert to degrees
-
-			//float fAng	= thePlayerPtr->pev->angles.y - angle;			// final angle difference
-			//	  fAng	= fmod((fAng + 180), 360) - 180;
-
 			float volu = (150 - Distance(thePlayerPtr->pev->origin, pev->origin)) / 125; if (volu < 0) volu = 0;
-			EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+			switch (CalcDamageDirection(pev->origin, thePlayerPtr))
+			{
+			case NADEDIR_FRONT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_RIGHT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_right.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_REAR:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_LEFT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_left.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_WTF:
+			case NADEDIR_NOPE:
+			default:
+				break;
+			}
 		}
 	}
 	else
@@ -174,6 +193,85 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	}
 }
 
+int CGrenade::CalcDamageDirection(vec3_t vecFrom, CBasePlayer* playaPtr)
+{
+	vec3_t	forward, right, up;
+	float	side, front;
+	vec3_t vecOrigin, vecAngles;
+
+	if (!vecFrom[0] && !vecFrom[1] && !vecFrom[2])
+	{
+		m_fAttackFront = m_fAttackRear = m_fAttackRight = m_fAttackLeft = 0;
+		return -1;
+	}
+
+
+	memcpy(vecOrigin, playaPtr->pev->origin, sizeof(vec3_t));
+	memcpy(vecAngles, playaPtr->pev->angles, sizeof(vec3_t));
+
+
+	NadeVectorSubtract(vecFrom, vecOrigin, vecFrom);
+
+	float flDistToTarget = vecFrom.Length();
+
+	vecFrom = vecFrom.Normalize();
+	g_engfuncs.pfnAngleVectors(vecAngles, forward, right, up);
+
+	front = DotProduct(vecFrom, right);
+	side = DotProduct(vecFrom, forward);
+
+	if (flDistToTarget <= 50)
+	{
+		m_fAttackFront = m_fAttackRear = m_fAttackRight = m_fAttackLeft = 1;
+	}
+	else
+	{
+		if (side > 0)
+		{
+			if (side > 0.3)
+				m_fAttackFront = V_max(m_fAttackFront, side);
+		}
+		else
+		{
+			float f = fabs(side);
+			if (f > 0.3)
+				m_fAttackRear = V_max(m_fAttackRear, f);
+		}
+
+		if (front > 0)
+		{
+			if (front > 0.3)
+				m_fAttackRight = V_max(m_fAttackRight, front);
+		}
+		else
+		{
+			float f = fabs(front);
+			if (f > 0.3)
+				m_fAttackLeft = V_max(m_fAttackLeft, f);
+		}
+	}
+	return EmitDir();
+}
+
+int CGrenade::EmitDir()
+{
+	if (!(m_fAttackFront || m_fAttackRear || m_fAttackLeft || m_fAttackRight))
+		return 0;
+
+	if	(m_fAttackFront > 0.4)	return NADEDIR_FRONT;
+	else m_fAttackFront = 0;
+
+	if	(m_fAttackRight > 0.4)	return NADEDIR_RIGHT;
+	else m_fAttackRight = 0;
+
+	if	(m_fAttackRear > 0.4)	return NADEDIR_REAR;
+	else m_fAttackRear = 0;
+
+	if	(m_fAttackLeft > 0.4)	return NADEDIR_LEFT;
+	else m_fAttackLeft = 0;
+
+	return 0;
+}
 
 void CGrenade::Smoke( void )
 {
@@ -528,6 +626,3 @@ void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 		pEnt = UTIL_FindEntityByClassname( pEnt, "grenade" );
 	}
 }
-
-//======================end grenade
- 

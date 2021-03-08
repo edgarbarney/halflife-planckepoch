@@ -504,7 +504,9 @@ void W_Precache(void)
 	
 	PRECACHE_SOUND ("items/weapondrop1.wav");// weapon falls to the ground
 
-	PRECACHE_SOUND ("player/earringing.wav");// Ear ringing by explosion
+	PRECACHE_SOUND ("player/earringing.wav");// Ear ringings by explosion
+	PRECACHE_SOUND ("player/earringing_left.wav");
+	PRECACHE_SOUND ("player/earringing_right.wav");
 
 }
 
