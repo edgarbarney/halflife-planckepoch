@@ -192,6 +192,7 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	//DEFINE_FIELD( CBasePlayer, m_nCustomSprayFrames, FIELD_INTEGER ), // Don't need to restore
 	DEFINE_FIELD( CBasePlayer, m_bHasIntroPlayed, FIELD_BOOLEAN ),
 
+	DEFINE_FIELD( CBasePlayer, m_isGlockAuto, FIELD_BOOLEAN),
 };
 
 

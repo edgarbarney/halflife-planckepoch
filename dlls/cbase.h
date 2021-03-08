@@ -510,7 +510,7 @@ public:
 	float m_flReleaseThrow;
 	int m_chargeReady;
 	int m_fInAttack;
-	//Glocks auto
+
 	BOOL m_isGlockAuto;
 
 	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };

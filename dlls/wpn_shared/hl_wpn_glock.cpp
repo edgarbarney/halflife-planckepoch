@@ -21,6 +21,7 @@
 #include "nodes.h"
 #include "player.h"
 #include "UserMessages.h"
+//#include "animation.h"
 
 enum glock_e {
 	GLOCK_IDLE1 = 0,
@@ -34,17 +35,6 @@ enum glock_e {
 	GLOCK_HOLSTER,
 	GLOCK_ADD_SILENCER
 };
-
-#ifndef CLIENT_DLL
-
-TYPEDESCRIPTION CGlock::m_SaveData[] =
-{
-	DEFINE_FIELD(CGlock, m_isGlockAuto, FIELD_BOOLEAN),
-};
-
-IMPLEMENT_SAVERESTORE(CGlock, CBasePlayerWeapon);
-
-#endif
 
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
 LINK_ENTITY_TO_CLASS( weapon_9mmhandgun, CGlock );
@@ -121,13 +111,14 @@ int CGlock::GetItemInfo(ItemInfo *p)
 
 BOOL CGlock::Deploy( )
 {
-	// pev->body = 1;
+	SetBodygroup(2, m_pPlayer->m_isGlockAuto);
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
 }
 
 void CGlock::SecondaryAttack( void )
 {
 	m_pPlayer->m_isGlockAuto = !m_pPlayer->m_isGlockAuto;
+	SetBodygroup(2, m_pPlayer->m_isGlockAuto);
 	//EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
 	PlayEmptySound();
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
@@ -136,7 +127,7 @@ void CGlock::SecondaryAttack( void )
 void CGlock::PrimaryAttack( void )
 {
 	if (m_pPlayer->m_isGlockAuto)
-		GlockFire(0.05, 0.07, FALSE); //Full auto modification!
+		GlockFire( 0.05, 0.07, FALSE ); //Full auto modification!
 	else
 		GlockFire( 0.01, 0.2, TRUE );
 }

@@ -537,12 +537,6 @@ public:
 	int GetItemInfo(ItemInfo *p);
 	int AddToPlayer( CBasePlayer *pPlayer );
 
-#ifndef CLIENT_DLL
-	virtual int Save(CSave& save);
-	virtual int Restore(CRestore& restore);
-	static    TYPEDESCRIPTION m_SaveData[];
-#endif
-
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
 	void GlockFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
@@ -564,7 +558,6 @@ public:
 private:
 	int m_iShell;
 	
-
 	unsigned short m_usFireGlock1;
 	unsigned short m_usFireGlock2;
 };
