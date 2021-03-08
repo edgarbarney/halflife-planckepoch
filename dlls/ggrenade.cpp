@@ -18,15 +18,21 @@
 
 */
 
+#include <cmath>
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+#include "player.h"
 #include "monsters.h"
 #include "weapons.h"
 #include "nodes.h"
 #include "soundent.h"
 #include "decals.h"
+#include "pm_movevars.h"
+#include "pm_shared.h"
+#include "pm_defs.h"
 
+float Distance(const float* v1, const float* v2);
 
 //===================grenade
 
@@ -51,6 +57,8 @@ void CGrenade::Explode( Vector vecSrc, Vector vecAim )
 void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 {
 	float		flRndSound;// sound randomizer
+
+	CBasePlayer* thePlayerPtr = nullptr;
 
 	pev->model = iStringNull;//invisible
 	pev->solid = SOLID_NOT;// intangible
@@ -87,6 +95,7 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	if(iContents != CONTENTS_WATER)
 		UTIL_Particle("explosion_cluster.txt", pev->origin, g_vecZero, 1);
 //RENDERERS END
+
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
 	entvars_t *pevOwner;
 	if ( pev->owner )
@@ -96,7 +105,43 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 
 	pev->owner = NULL; // can't traceline attack owner if this is set
 
-	RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
+	if (!thePlayerPtr) 
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+			if (!pPlayer) // Failed to retrieve a player at this index, skip and move on to the next one
+				continue;
+
+			thePlayerPtr = pPlayer;
+		}
+	}
+
+	if (thePlayerPtr)
+	{
+		float plrHeathOld = plrHeathOld = thePlayerPtr->pev->health;
+		RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
+		float plrHeathDif = plrHeathDif = (plrHeathOld - thePlayerPtr->pev->health) * 8.0f;
+		UTIL_ScreenShake(pev->origin, plrHeathDif, 255.0f, plrHeathDif / 80.0f, plrHeathDif * 8.0f);
+		//												  (plrHeathDif / 8) / 10
+		if (Distance(thePlayerPtr->pev->origin, pev->origin) < 250.0f)
+		{
+			//float pos1	= thePlayerPtr->pev->origin.y - pev->origin.y;  // playerposy - grenadeposy
+			//float pos2	= thePlayerPtr->pev->origin.x - pev->origin.x;	// playerposx - grenadeposx
+			//float angle = acos(pos1 / pos2)								// Arc Tangent
+			//			* (180.0 / 3.141592653589793238463);				// convert to degrees
+
+			//float fAng	= thePlayerPtr->pev->angles.y - angle;			// final angle difference
+			//	  fAng	= fmod((fAng + 180), 360) - 180;
+
+			float volu = (150 - Distance(thePlayerPtr->pev->origin, pev->origin)) / 125; if (volu < 0) volu = 0;
+			EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+		}
+	}
+	else
+	{
+		RadiusDamage(pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
+	}
 
 	if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )
 	{
@@ -150,6 +195,7 @@ void CGrenade::Smoke( void )
 	}
 	UTIL_Remove( this );
 }
+
 
 void CGrenade::Killed( entvars_t *pevAttacker, int iGib )
 {
