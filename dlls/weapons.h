@@ -218,6 +218,14 @@ typedef	enum
 	BULLET_MONSTER_556, // 5.56 NATO of new AR on Monsters
 } Bullet;
 
+// model types
+typedef	enum
+{
+	MDL_VIEW = 0,
+	MDL_WORLD,
+	MDL_PLAYA,
+} ModelType;
+
 
 #define ITEM_FLAG_SELECTONEMPTY		1
 #define ITEM_FLAG_NOAUTORELOAD		2
