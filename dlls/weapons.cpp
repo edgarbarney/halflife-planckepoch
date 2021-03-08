@@ -513,6 +513,8 @@ void W_Precache()
 	
 	PRECACHE_SOUND ("items/weapondrop1.wav");// weapon falls to the ground
 
+	PRECACHE_SOUND ("player/earringing.wav");// Ear ringing by explosion
+
 }
 
 void CBasePlayerItem::KeyValue( KeyValueData *pkvd ) //AJH
