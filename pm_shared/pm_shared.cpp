@@ -1126,6 +1126,8 @@ void PM_WalkMove ()
 
 	pmtrace_t trace;
 	
+	BOOL isBoosting = pmove->iuser1;
+
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
@@ -1137,8 +1139,13 @@ void PM_WalkMove ()
 	VectorNormalize (pmove->forward);  // Normalize remainder of vectors.
 	VectorNormalize (pmove->right);    // 
 
+	
+
 	for (i=0 ; i<2 ; i++)       // Determine x and y parts of velocity
-		wishvel[i] = pmove->forward[i]*fmove + pmove->right[i]*smove;
+		if(!isBoosting)
+		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+		else
+		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 	
 	wishvel[2] = 0;             // Zero out z part of velocity
 

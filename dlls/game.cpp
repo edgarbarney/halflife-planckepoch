@@ -545,6 +545,11 @@ cvar_t	sk_556_bullet1 = { "sk_556_bullet1","0" };
 cvar_t	sk_556_bullet2 = { "sk_556_bullet2","0" };
 cvar_t	sk_556_bullet3 = { "sk_556_bullet3","0" };
 
+// Healthkit
+cvar_t	sk_plr_max_healthkit1 = { "sk_plr_max_healthkit1","0" };
+cvar_t	sk_plr_max_healthkit2 = { "sk_plr_max_healthkit2","0" };
+cvar_t	sk_plr_max_healthkit3 = { "sk_plr_max_healthkit3","0" };
+
 
 // END Cvars for Skill Level settings
 
@@ -1068,10 +1073,15 @@ void GameDLLInit( void )
 	CVAR_REGISTER(&sk_plr_556_bullet1);// {"sk_plr_9mm_bullet1","0"};
 	CVAR_REGISTER(&sk_plr_556_bullet2);// {"sk_plr_9mm_bullet2","0"};
 	CVAR_REGISTER(&sk_plr_556_bullet3);// {"sk_plr_9mm_bullet3","0"};
-
+	
 	CVAR_REGISTER(&sk_556_bullet1);// {"sk_plr_9mm_bullet1","0"};
 	CVAR_REGISTER(&sk_556_bullet2);// {"sk_plr_9mm_bullet2","0"};
 	CVAR_REGISTER(&sk_556_bullet3);// {"sk_plr_9mm_bullet3","0"};
+
+	// Healthkit
+	CVAR_REGISTER(&sk_plr_max_healthkit1);// {"sk_plr_9mm_bullet1","0"};
+	CVAR_REGISTER(&sk_plr_max_healthkit2);// {"sk_plr_9mm_bullet2","0"};
+	CVAR_REGISTER(&sk_plr_max_healthkit3);// {"sk_plr_9mm_bullet3","0"};
 
 
 // END REGISTER CVARS FOR SKILL LEVEL STUFF

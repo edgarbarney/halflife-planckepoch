@@ -152,6 +152,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\hassassin.cpp" />
     <ClCompile Include="..\..\dlls\headcrab.cpp" />
     <ClCompile Include="..\..\dlls\healthkit.cpp" />
+    <ClCompile Include="..\..\dlls\healthshot.cpp" />
     <ClCompile Include="..\..\dlls\hgrunt.cpp" />
     <ClCompile Include="..\..\dlls\hornet.cpp" />
     <ClCompile Include="..\..\dlls\hornetgun.cpp" />

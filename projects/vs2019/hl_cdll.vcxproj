@@ -186,6 +186,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\egon.cpp" />
     <ClCompile Include="..\..\dlls\gauss.cpp" />
     <ClCompile Include="..\..\dlls\handgrenade.cpp" />
+    <ClCompile Include="..\..\dlls\healthshot.cpp" />
     <ClCompile Include="..\..\dlls\hornetgun.cpp" />
     <ClCompile Include="..\..\dlls\mp5.cpp" />
     <ClCompile Include="..\..\dlls\python.cpp" />

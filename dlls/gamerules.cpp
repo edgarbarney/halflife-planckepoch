@@ -278,12 +278,15 @@ void CGameRules::RefreshSkillData ( void )
 
 	// Hand Grendade
 	gSkillData.plrDmgHandGrenade = GetSkillCvar( "sk_plr_hand_grenade");
-
+	
 	// Satchel Charge
 	gSkillData.plrDmgSatchel = GetSkillCvar( "sk_plr_satchel");
 
 	// Tripmine
 	gSkillData.plrDmgTripmine = GetSkillCvar( "sk_plr_tripmine");
+
+	// Healthkit
+	gSkillData.plrStockHealthkit = GetSkillCvar("sk_plr_max_healthkit");
 
 	// MONSTER WEAPONS
 	gSkillData.monDmg12MM = GetSkillCvar( "sk_12mm_bullet");

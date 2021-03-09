@@ -141,7 +141,7 @@ public:
 #define HANDGRENADE_MAX_CARRY	10
 #define SATCHEL_MAX_CARRY		5
 #define TRIPMINE_MAX_CARRY		5
-#define HEALTHSHOT_MAX_CARRY	1
+#define HEALTHSHOT_MAX_CARRY	2  // Un-moved from Skill
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
@@ -199,6 +199,7 @@ public:
 #define AMMO_RPGCLIP_GIVE		RPG_MAX_CLIP
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_SNARKBOX_GIVE		5
+#define AMMO_HEALTHSHOT_GIVE	1
 
 // bullet types
 typedef	enum
@@ -631,6 +632,36 @@ public:
 private:
 	unsigned short m_usCrowbar;
 	int m_eventFlags;
+};
+
+class CHealthShot : public CBasePlayerWeapon
+{
+public:
+	void Spawn(void);
+	void Precache(void);
+	int iItemSlot(void) { return 5; }
+	int GetItemInfo(ItemInfo* p);
+
+	int AddToPlayer(CBasePlayer* pPlayer);
+
+	void PrimaryAttack(void);
+	BOOL Deploy(void);
+	void Holster(int skiplocal = 0);
+	void WeaponIdle(void);
+	void ApplyHealth(void);
+
+	bool m_isUsed;
+	
+	float m_healthToAdd;
+
+	virtual BOOL UseDecrement(void)
+	{
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
 };
 
 class CPython : public CBasePlayerWeapon
