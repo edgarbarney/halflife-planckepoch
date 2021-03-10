@@ -1254,6 +1254,7 @@ void CBasePlayer::TabulateAmmo()
 	ammo_rockets = AmmoInventory( GetAmmoIndex( "rockets" ) );
 	ammo_uranium = AmmoInventory( GetAmmoIndex( "uranium" ) );
 	ammo_hornets = AmmoInventory( GetAmmoIndex( "Hornets" ) );
+	ammo_healthshot = AmmoInventory(GetAmmoIndex("Healthshot"));
 }
 
 
@@ -1455,9 +1456,6 @@ void CBasePlayer::PlayerDeathThink(void)
 		// go to dead camera. 
 		StartDeathCam();
 	}
-
-	if ( pev->iuser1 )	// player is in spectator mode
-		return;	
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
 	if (!fAnyButtonDown 
@@ -1600,10 +1598,6 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 
 	// Move them to the new position
 	UTIL_SetOrigin( this, vecPosition );
-
-	// Find a player to watch
-	m_flNextObserverInput = 0;
-	Observer_SetMode( m_iObserverLastMode );
 }
 
 // 
@@ -1613,9 +1607,6 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 
 void CBasePlayer::PlayerUse ( void )
 {
-	if ( IsObserver() )
-		return;
-
 	// Was use pressed or released?
 	if ( ! ((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
 		return;
@@ -2031,15 +2022,6 @@ void CBasePlayer::PreThink(void)
 
 	CheckSuitUpdate();
 
-	// Observer Button Handling
-	if ( IsObserver() )
-	{
-		Observer_HandleButtons();
-		Observer_CheckTarget();
-		Observer_CheckProperties();
-		pev->impulse = 0;
-		return;
-	}
 
 	if (pev->deadflag >= DEAD_DYING)
 	{
@@ -4329,8 +4311,6 @@ void CBasePlayer :: UpdateClientData( void )
 
 			g_pGameRules->InitHUD( this );
 			m_fGameHUDInitialized = TRUE;
-			
-			m_iObserverLastMode = OBS_ROAMING;
 			
 			if ( g_pGameRules->IsMultiplayer() )
 			{

@@ -179,7 +179,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\multiplay_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\nihilanth.cpp" />
     <ClCompile Include="..\..\dlls\nodes.cpp" />
-    <ClCompile Include="..\..\dlls\observer.cpp" />
     <ClCompile Include="..\..\dlls\osprey.cpp" />
     <ClCompile Include="..\..\dlls\pathcorner.cpp" />
     <ClCompile Include="..\..\dlls\plane.cpp" />
@@ -199,7 +198,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\skill.cpp" />
     <ClCompile Include="..\..\dlls\sound.cpp" />
     <ClCompile Include="..\..\dlls\soundent.cpp" />
-    <ClCompile Include="..\..\dlls\spectator.cpp" />
     <ClCompile Include="..\..\dlls\squadmonster.cpp" />
     <ClCompile Include="..\..\dlls\squeakgrenade.cpp" />
     <ClCompile Include="..\..\dlls\subs.cpp" />
@@ -258,7 +256,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\dlls\scriptevent.h" />
     <ClInclude Include="..\..\dlls\skill.h" />
     <ClInclude Include="..\..\dlls\soundent.h" />
-    <ClInclude Include="..\..\dlls\spectator.h" />
     <ClInclude Include="..\..\dlls\squadmonster.h" />
     <ClInclude Include="..\..\dlls\talkmonster.h" />
     <ClInclude Include="..\..\dlls\teamplay_gamerules.h" />

@@ -29,7 +29,7 @@
 #include "vgui_helpers.h"
 #include "vgui_loadtga.h"
 #include "voice_status.h"
-#include "vgui_SpectatorPanel.h"
+#include "Exports.h"
 
 extern hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extern extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
@@ -72,6 +72,20 @@ SBColumnInfo g_ColumnInfo[NUM_COLUMNS] =
 #define TEAM_YES			1
 #define TEAM_SPECTATORS		2
 #define TEAM_BLANK			3
+
+/*
+==========================
+HUD_ChatInputPosition
+
+Sets the location of the input for chat text
+==========================
+*/
+
+void DLLEXPORT HUD_ChatInputPosition(int* x, int* y)
+{
+	//	RecClChatInputPosition( x, y );
+	return;
+}
 
 
 //-----------------------------------------------------------------------------
@@ -295,14 +309,7 @@ void ScorePanel::Update()
 
 	FillGrid();
 
-	if ( gViewPort->m_pSpectatorPanel->m_menuVisible )
-	{
-		 m_pCloseButton->setVisible ( true );
-	}
-	else 
-	{
-		 m_pCloseButton->setVisible ( false );
-	}
+	m_pCloseButton->setVisible ( false );
 }
 
 //-----------------------------------------------------------------------------

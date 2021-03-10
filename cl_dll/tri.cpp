@@ -82,8 +82,6 @@ void DLLEXPORT HUD_DrawNormalTriangles( void )
 	//2012-02-25
 	R_DrawNormalTriangles();
 	//RENDERERS END
-	
-	gHUD.m_Spectator.DrawOverview();
 }
 
 #if defined( _TFC )

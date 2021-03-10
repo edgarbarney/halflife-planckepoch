@@ -142,7 +142,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\hud_msg.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_redraw.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_servers.cpp" />
-    <ClCompile Include="..\..\cl_dll\hud_spectator.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_update.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
     <ClCompile Include="..\..\cl_dll\inputw32.cpp" />
@@ -173,7 +172,6 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\vgui_SchemeManager.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_ScorePanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_ServerBrowser.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_SpectatorPanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_TeamFortressViewport.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_teammenu.cpp" />
     <ClCompile Include="..\..\cl_dll\view.cpp" />
@@ -230,7 +228,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_servers.h" />
     <ClInclude Include="..\..\cl_dll\hud_servers_priv.h" />
-    <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
     <ClInclude Include="..\..\cl_dll\interpolation.h" />
     <ClInclude Include="..\..\cl_dll\in_defs.h" />
     <ClInclude Include="..\..\cl_dll\kbutton.h" />
@@ -248,7 +245,6 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\vgui_SchemeManager.h" />
     <ClInclude Include="..\..\cl_dll\vgui_ScorePanel.h" />
     <ClInclude Include="..\..\cl_dll\vgui_ServerBrowser.h" />
-    <ClInclude Include="..\..\cl_dll\vgui_SpectatorPanel.h" />
     <ClInclude Include="..\..\cl_dll\view.h" />
     <ClInclude Include="..\..\cl_dll\watershader.h" />
     <ClInclude Include="..\..\cl_dll\wrect.h" />

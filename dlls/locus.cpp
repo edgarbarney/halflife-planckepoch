@@ -949,12 +949,7 @@ bool CCalcNumFromEnt::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 		{
 			if ( pev->impulse == 1 )
 			{
-				if ( FStrEq( STRING(target->pev->classname), "watcher_count" ) )
-				{
-					*OUTresult = target->pev->iuser1/target->pev->impulse;
-					return true;
-				}
-				else if ( target->IsPlayer() )
+				if ( target->IsPlayer() )
 				{
 					*OUTresult = ((CBasePlayer*)target)->HasWeapons()? 1: 0;
 					return true;

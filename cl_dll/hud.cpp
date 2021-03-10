@@ -347,20 +347,6 @@ int __MsgFunc_TeamInfo(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
-int __MsgFunc_Spectator(const char *pszName, int iSize, void *pbuf)
-{
-	if (gViewPort)
-		return gViewPort->MsgFunc_Spectator( pszName, iSize, pbuf );
-	return 0;
-}
-
-int __MsgFunc_SpecFade(const char *pszName, int iSize, void *pbuf)
-{
-	if (gViewPort)
-		return gViewPort->MsgFunc_SpecFade( pszName, iSize, pbuf );
-	return 0;
-}
-
 int __MsgFunc_ResetFade(const char *pszName, int iSize, void *pbuf)
 {
 	if (gViewPort)
@@ -368,12 +354,6 @@ int __MsgFunc_ResetFade(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
-int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
-{
-	if (gViewPort)
-		return gViewPort->MsgFunc_AllowSpec( pszName, iSize, pbuf );
-	return 0;
-}
 //RENDERERS START
 int MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf )
 {
@@ -462,10 +442,6 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( TeamScore );
 	HOOK_MESSAGE( TeamInfo );
 
-	HOOK_MESSAGE( Spectator );
-	HOOK_MESSAGE( AllowSpec );
-	
-	HOOK_MESSAGE( SpecFade );
 	HOOK_MESSAGE( ResetFade );
 
 	// VGUI Menus
@@ -538,7 +514,6 @@ void CHud :: Init( void )
 	m_Ammo.Init();
 	m_Health.Init();
 	m_SayText.Init();
-	m_Spectator.Init();
 	m_Geiger.Init();
 	m_Train.Init();
 	m_Battery.Init();
@@ -698,7 +673,6 @@ void CHud :: VidInit( void )
 
 	m_Ammo.VidInit();
 	m_Health.VidInit();
-	m_Spectator.VidInit();
 	m_Geiger.VidInit();
 	m_Train.VidInit();
 	m_Battery.VidInit();

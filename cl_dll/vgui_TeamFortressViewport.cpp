@@ -53,7 +53,6 @@
 #include "vgui_TeamFortressViewport.h"
 #include "vgui_ServerBrowser.h"
 #include "vgui_ScorePanel.h"
-#include "vgui_SpectatorPanel.h"
 
 #include "shake.h"
 #include "screenfade.h"
@@ -63,9 +62,6 @@ class CCommandMenu;
 int g_iPlayerClass;
 int g_iTeamNumber;
 int g_iInventory[MAX_ITEMS];	//AJH Inventory system
-int g_iUser1 = 0;
-int g_iUser2 = 0;
-int g_iUser3 = 0;
 
 // Scoreboard positions
 #define SBOARD_INDENT_X			XRES(104)
@@ -77,6 +73,11 @@ int g_iUser3 = 0;
 
 #define SBOARD_INDENT_X_400		0
 #define SBOARD_INDENT_Y_400		20
+
+// Bugger off, spectator!
+#define CAMOPTIONS_BUTTON_X		0
+#define OPTIONS_BUTTON_X		0
+#define PANEL_HEIGHT			0
 
 void IN_ResetMouse( void );
 extern CMenuPanel *CMessageWindowPanel_Create( const char *szMOTD, const char *szTitle, int iShadeFullscreen, int iRemoveMe, int x, int y, int wide, int tall );
@@ -576,7 +577,6 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 	m_pTeamMenu = NULL;
 	m_pClassMenu = NULL;
 	m_pScoreBoard = NULL;
-	m_pSpectatorPanel = NULL;
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
 
@@ -635,15 +635,12 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 	// VGUI MENUS
 	CreateTeamMenu();
 	CreateClassMenu();
-	CreateSpectatorMenu();
 	CreateScoreBoard();
 	// Init command menus
 	m_iNumMenus = 0;
-	m_iCurrentTeamNumber = m_iUser1 = m_iUser2 = m_iUser3 = 0;
+	m_iCurrentTeamNumber = 0;
 
 	m_StandardMenu = CreateCommandMenu("commandmenu.txt", 0, CMENU_TOP, false, CMENU_SIZE_X, BUTTON_SIZE_Y, 0 );
-	m_SpectatorOptionsMenu = CreateCommandMenu("spectatormenu.txt", 1, PANEL_HEIGHT, true, CMENU_SIZE_X, BUTTON_SIZE_Y / 2, 0 );	// above bottom bar, flat design
-	m_SpectatorCameraMenu = CreateCommandMenu("spectcammenu.txt", 1, PANEL_HEIGHT, true, XRES( 200 ), BUTTON_SIZE_Y / 2, ScreenWidth - ( XRES ( 200 ) + 15 ) );	// above bottom bar, flat design
 
 	m_PlayerMenu =  m_iNumMenus;
 	m_iNumMenus++;
@@ -683,11 +680,6 @@ void TeamFortressViewport::Initialize( void )
 		m_pScoreBoard->Initialize();
 		HideScoreBoard();
 	}
-	if (m_pSpectatorPanel)
-	{
-		// Spectator menu doesn't need initializing
-		m_pSpectatorPanel->setVisible( false );
-	}
 
 	// Make sure all menus are hidden
 	HideVGUIMenu();
@@ -697,7 +689,6 @@ void TeamFortressViewport::Initialize( void )
 	m_iGotAllMOTD = true;
 	m_iRandomPC = false;
 	m_flScoreBoardLastUpdated = 0;
-	m_flSpectatorPanelLastUpdated = 0;
 
 	// reset player info
 	g_iPlayerClass = 0;
@@ -1435,16 +1426,6 @@ void TeamFortressViewport::HideCommandMenu()
 		m_pCommandMenus[m_StandardMenu]->ClearButtonsOfArmedState();
 	}
 
-	if ( m_pCommandMenus[m_SpectatorOptionsMenu] )
-	{
-		m_pCommandMenus[m_SpectatorOptionsMenu]->ClearButtonsOfArmedState();
-	}
-
-	if ( m_pCommandMenus[m_SpectatorCameraMenu] )
-	{
-		m_pCommandMenus[m_SpectatorCameraMenu]->ClearButtonsOfArmedState();
-	}
-
 	if ( m_pCommandMenus[m_PlayerMenu] )
 	{
 		m_pCommandMenus[m_PlayerMenu]->ClearButtonsOfArmedState();
@@ -1562,182 +1543,11 @@ void TeamFortressViewport::UpdatePlayerMenu(int menuIndex)
 	float flLabelSize = ( (ScreenWidth - (XRES ( CAMOPTIONS_BUTTON_X ) + 15)) - XRES ( 24 + 15 ) ) - XRES( (15 + OPTIONS_BUTTON_X + 15) + 38 );
 	gViewPort->GetAllPlayersInfo();
 
-
-	for (int i = 1; i < MAX_PLAYERS; i++ )
-	{
-		//if ( g_PlayerInfoList[i].name == NULL )
-		//	continue; // empty player slot, skip
-	
-		pEnt = gEngfuncs.GetEntityByIndex( i );
-
-		if ( !gHUD.m_Spectator.IsActivePlayer( pEnt ) )
-			continue;
-
-		//if ( g_PlayerExtraInfo[i].teamname[0] == 0 )
-		//	continue; // skip over players who are not in a team
-	
-		SpectButton *pButton = new SpectButton(1 , g_PlayerInfoList[pEnt->index].name ,
-							 XRES( ( 15 + OPTIONS_BUTTON_X + 15 ) + 31 ),PANEL_HEIGHT+(i-1)*CMENU_SIZE_X, flLabelSize, BUTTON_SIZE_Y /2 );
-
-		pButton->setBoundKey( (char)255  );
-		pButton->setContentAlignment( vgui::Label::a_center );
-		m_pCommandMenus[menuIndex]->AddButton( pButton );
-		pButton->setParentMenu( m_pCommandMenus[menuIndex] );
-
-		// Override font in CommandMenu
-		pButton->setFont( Scheme::sf_primary3 );
-
-		pButton->addActionSignal(new CMenuHandler_SpectateFollow( g_PlayerInfoList[pEnt->index].name));
-		// Create an input signal that'll popup the current menu
-		pButton->addInputSignal( new CMenuHandler_PopupSubMenuInput(pButton, m_pCommandMenus[menuIndex]) );
-	
-	}
-
 }
 
 
 
 void COM_FileBase ( const char *in, char *out);
-
-void TeamFortressViewport::UpdateSpectatorPanel()
-{
-	m_iUser1 = g_iUser1;
-	m_iUser2 = g_iUser2;
-	m_iUser3 = g_iUser3;
-		
-	if (!m_pSpectatorPanel)
-		return;
-
-	if ( g_iUser1 && gHUD.m_pCvarDraw->value && !gHUD.m_iIntermission)	// don't draw in dev_overview mode
-	{
-		char bottomText[128];
-		char helpString2[128];
-		char tempString[128];
-		char * name;
-		char *pBottomText = NULL;
-		int player = 0;
-
-		// check if spectator combinations are still valid
-		gHUD.m_Spectator.CheckSettings();
-
-		if ( !m_pSpectatorPanel->isVisible() )
-		{
-			m_pSpectatorPanel->setVisible( true );	// show spectator panel, but
-			m_pSpectatorPanel->ShowMenu( false );	// dsiable all menus/buttons
-			
-			_snprintf( tempString, sizeof( tempString ) - 1, "%c%s", HUD_PRINTCENTER, CHudTextMessage::BufferedLocaliseTextString( "#Spec_Duck" ) );
-			tempString[ sizeof( tempString ) - 1 ] = '\0';
-
-			gHUD.m_TextMessage.MsgFunc_TextMsg( NULL, strlen( tempString ) + 1, tempString );
-		}
-		
-		sprintf(bottomText,"#Spec_Mode%d", g_iUser1 );
-		sprintf(helpString2,"#Spec_Mode%d", g_iUser1 );
-
-		if ( gEngfuncs.IsSpectateOnly() )
-			strcat(helpString2, " - HLTV");
-
-		// check if we're locked onto a target, show the player's name
-		if ( (g_iUser2 > 0) && (g_iUser2 <= gEngfuncs.GetMaxClients()) && (g_iUser1 != OBS_ROAMING) )
-		{
-			player = g_iUser2;
-		}
-
-		// special case in free map and inset off, don't show names
-		if ( (g_iUser1 == OBS_MAP_FREE) && !gHUD.m_Spectator.m_pip->value )
-			name = NULL;
-		else
-			name = g_PlayerInfoList[player].name;
-
-		// create player & health string
-		if ( player && name )
-		{
-			strncpy( bottomText, name, sizeof(bottomText) );
-			bottomText[ sizeof(bottomText) - 1 ] = 0;
-			pBottomText = bottomText;
-		}
-		else
-		{
-			pBottomText = CHudTextMessage::BufferedLocaliseTextString( bottomText );
-		}
-
-		// in first person mode colorize player names
-		if ( (g_iUser1 == OBS_IN_EYE) && player )
-		{
-			float * color = GetClientColor( player );
-			int r = color[0]*255;
-			int g = color[1]*255;
-			int b = color[2]*255;
-			
-			// set team color, a bit transparent
-			m_pSpectatorPanel->m_BottomMainLabel->setFgColor(r,g,b,0);
-			m_pSpectatorPanel->m_BottomMainButton->setFgColor(r,g,b,0);
-		}
-		else
-		{	// restore GUI color
-			m_pSpectatorPanel->m_BottomMainLabel->setFgColor( 143, 143, 54, 0 );
-			m_pSpectatorPanel->m_BottomMainButton->setFgColor( 143, 143, 54, 0 );
-		}
-
-		// add sting auto if we are in auto directed mode
-		if ( gHUD.m_Spectator.m_autoDirector->value )
-		{
-			char tempString[128];
-			sprintf(tempString, "#Spec_Auto %s", helpString2);
-			strcpy( helpString2, tempString );
-		}
-
-		m_pSpectatorPanel->m_BottomMainLabel->setText( "%s", pBottomText );
-		m_pSpectatorPanel->m_BottomMainButton->setText( pBottomText );
-
-		
-		// update extra info field
-		char szText[64];
-
-		if ( gEngfuncs.IsSpectateOnly() )
-		{
-			// in HLTV mode show number of spectators
-			_snprintf( szText, 63, "%s: %d", CHudTextMessage::BufferedLocaliseTextString( "#Spectators" ), gHUD.m_Spectator.m_iSpectatorNumber );
-		}
-		else
-		{
-			// otherwise show map name
-			char szMapName[64];
-			COM_FileBase( gEngfuncs.pfnGetLevelName(), szMapName );
-
-			_snprintf ( szText, 63, "%s: %s",CHudTextMessage::BufferedLocaliseTextString( "#Spec_Map" ), szMapName );
-		}
-
-		szText[63] = 0;
-
-		m_pSpectatorPanel->m_ExtraInfo->setText ( szText );
-		
-		/*
-		int timer = (int)( gHUD.m_roundTimer.m_flTimeEnd - gHUD.m_flTime );
-
-		if ( timer < 0 )
-			 timer	= 0;
-
-		_snprintf ( szText, 63, "%d:%02d\n", (timer / 60), (timer % 60) );
-		
-		szText[63] = 0;
-				
-		m_pSpectatorPanel->m_CurrentTime->setText( szText ); */
-
-		// update spectator panel
-		gViewPort->m_pSpectatorPanel->Update();
-	}
-	else
-	{
-		if ( m_pSpectatorPanel->isVisible() )
-		{
-			m_pSpectatorPanel->setVisible( false );
-			m_pSpectatorPanel->ShowMenu( false );	// dsiable all menus/buttons
-		}
-	}
-
-	m_flSpectatorPanelLastUpdated = gHUD.m_flTime + 1.0; // update every second
-}
 
 //======================================================================
 void TeamFortressViewport::CreateScoreBoard( void )
@@ -2122,20 +1932,6 @@ void TeamFortressViewport::CreateClassMenu()
 }
 
 //======================================================================================
-//======================================================================================
-// SPECTATOR MENU
-//======================================================================================
-// Spectator "Menu" explaining the Spectator buttons
-void TeamFortressViewport::CreateSpectatorMenu()
-{
-	// Create the Panel
-	m_pSpectatorPanel = new SpectatorPanel(0, 0, ScreenWidth, ScreenHeight);
-	m_pSpectatorPanel->setParent(this);
-	m_pSpectatorPanel->setVisible(false);
-	m_pSpectatorPanel->Initialize();
-}
-
-//======================================================================================
 // UPDATE HUD SECTIONS
 //======================================================================================
 // We've got an update on player info
@@ -2153,7 +1949,7 @@ void TeamFortressViewport::UpdateOnPlayerInfo()
 void TeamFortressViewport::UpdateCursorState()
 {
 	// Need cursor if any VGUI window is up
-	if ( m_pSpectatorPanel->m_menuVisible || m_pCurrentMenu || m_pTeamMenu->isVisible() || m_pServerBrowser->isVisible() || GetClientVoiceMgr()->IsInSquelchMode() )
+	if ( m_pCurrentMenu || m_pTeamMenu->isVisible() || m_pServerBrowser->isVisible() || GetClientVoiceMgr()->IsInSquelchMode() )
 	{
 		g_iVisibleMouse = true;
 		App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow) );
@@ -2229,13 +2025,6 @@ void TeamFortressViewport::paintBackground()
 		m_iCurrentPlayerClass = g_iPlayerClass;
 	}
 
-	// See if the Spectator Menu needs to be update
-	if (	( g_iUser1 != m_iUser1 || g_iUser2 != m_iUser2 ) ||
-			( m_flSpectatorPanelLastUpdated < gHUD.m_flTime ) )
-	{
-		UpdateSpectatorPanel();
-	}
-
 	// Update the Scoreboard, if it's visible
 	if ( m_pScoreBoard->isVisible() && (m_flScoreBoardLastUpdated < gHUD.m_flTime) )
 	{
@@ -2299,8 +2088,7 @@ bool TeamFortressViewport::SlotInput( int iSlot )
 // Direct Key Input
 int	TeamFortressViewport::KeyInput( int down, int keynum, const char *pszCurrentBinding )
 {
-	// Enter gets out of Spectator Mode by bringing up the Team Menu
-	if (m_iUser1 && gEngfuncs.Con_IsVisible() == false )
+	if ( gEngfuncs.Con_IsVisible() == false )
 	{
 		if ( down && (keynum == K_ENTER || keynum == K_KP_ENTER) )
 			ShowVGUIMenu( MENU_TEAM );
@@ -2611,35 +2399,6 @@ void TeamFortressViewport::DeathMsg( int killer, int victim )
 	m_pScoreBoard->DeathMsg(killer,victim);
 }
 
-int TeamFortressViewport::MsgFunc_Spectator( const char *pszName, int iSize, void *pbuf )
-{
-	BEGIN_READ( pbuf, iSize );
-
-	short cl = READ_BYTE();
-	if ( cl > 0 && cl <= MAX_PLAYERS )
-	{
-		g_IsSpectator[cl] = READ_BYTE();
-	}
-
-	return 1;
-}
-
-int TeamFortressViewport::MsgFunc_AllowSpec( const char *pszName, int iSize, void *pbuf )
-{
-	BEGIN_READ( pbuf, iSize );
-
-	m_iAllowSpectators = READ_BYTE();
-
-	// Force the menu to update
-	UpdateCommandMenu( m_StandardMenu );
-
-	// If the team menu is up, update it too
-	if (m_pTeamMenu)
-		m_pTeamMenu->Update();
-
-	return 1;
-}
-
 #if defined( _TFC )
 const Vector& GetTeamColor( int team_no );
 extern globalvars_t *gpGlobals;
@@ -2670,69 +2429,6 @@ int TeamFortressViewport::MsgFunc_ResetFade( const char *pszName, int iSize, voi
 	sf.fadeEnd += sf.fadeReset;
 
 	gEngfuncs.pfnSetScreenFade( &sf );
-#endif
-
-	return 1;
-}
-
-// used to fade a player's screen out/in when they're spectating someone who is teleported
-int TeamFortressViewport::MsgFunc_SpecFade( const char *pszName, int iSize, void *pbuf )
-{
-#if defined( _TFC )
-	BEGIN_READ( pbuf, iSize );
-
-	int iIndex = READ_BYTE();
-
-	// we're in first-person spectator mode (...not first-person in the PIP)
-	if ( g_iUser1 == OBS_IN_EYE )
-	{
-		// this is the person we're watching
-		if ( g_iUser2 == iIndex )
-		{
-			int iFade = READ_BYTE();
-			int iTeam = READ_BYTE();
-			float flTime = ( (float)READ_SHORT() / 100.0 );
-			int iAlpha = READ_BYTE();
-
-			Vector team = GetTeamColor( iTeam );
-
-			screenfade_t sf;
-			gEngfuncs.pfnGetScreenFade( &sf );
-
-			sf.fader = team[0];
-			sf.fadeg = team[1];
-			sf.fadeb = team[2];
-			sf.fadealpha = iAlpha;
-
-			sf.fadeEnd = flTime;
-			sf.fadeReset = 0.0;
-			sf.fadeSpeed = 0.0;
-
-			if ( iFade == BUILD_TELEPORTER_FADE_OUT )
-			{
-				sf.fadeFlags = FFADE_OUT;
-				sf.fadeReset = flTime;
-
-				if ( sf.fadeEnd )
-					sf.fadeSpeed = -(float)sf.fadealpha / sf.fadeEnd;
-
-				sf.fadeTotalEnd = sf.fadeEnd += gpGlobals->time;
-				sf.fadeReset += sf.fadeEnd;
-			}
-			else
-			{
-				sf.fadeFlags = FFADE_IN;
-
-				if ( sf.fadeEnd )
-					sf.fadeSpeed = (float)sf.fadealpha / sf.fadeEnd;
-
-				sf.fadeReset += gpGlobals->time;
-				sf.fadeEnd += sf.fadeReset;
-			}
-
-			gEngfuncs.pfnSetScreenFade( &sf );
-		}
-	}
 #endif
 
 	return 1;

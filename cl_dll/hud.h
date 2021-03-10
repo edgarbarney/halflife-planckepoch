@@ -325,7 +325,6 @@ public:
 	int MsgFunc_SayText( const char *pszName, int iSize, void *pbuf );
 	void SayTextPrint( const char *pszBuf, int iBufSize, int clientIndex = -1 );
 	void EnsureTextFitsInOneLineAndWrapIfHaveTo( int line );
-friend class CHudSpectator;
 
 private:
 
@@ -559,7 +558,7 @@ class CHud
 {
 private:
 	HUDLIST						*m_pHudList;
-	HL_HSPRITE						m_hsprLogo;
+	HL_HSPRITE					m_hsprLogo;
 	int							m_iLogo;
 	client_sprite_t				*m_pSpriteList;
 	int							m_iSpriteCount;
@@ -624,7 +623,6 @@ public:
 
 	CHudAmmo		m_Ammo;
 	CHudHealth		m_Health;
-	CHudSpectator		m_Spectator;
 	CHudGeiger		m_Geiger;
 	CHudBattery		m_Battery;
 	CHudTrain		m_Train;
@@ -705,9 +703,6 @@ extern CHud gHUD;
 extern int g_iPlayerClass;
 extern int g_iTeamNumber;
 extern int g_iInventory[MAX_ITEMS];	//AJH Inventory system
-extern int g_iUser1;
-extern int g_iUser2;
-extern int g_iUser3;
 
 struct FogSettings
 {

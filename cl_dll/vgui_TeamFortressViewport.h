@@ -47,7 +47,6 @@ using namespace vgui;
 
 class Cursor;
 class ScorePanel;
-class SpectatorPanel;
 class CCommandMenu;
 class CommandLabel;
 class CommandButton;
@@ -504,7 +503,6 @@ private:
 	CCommandMenu *m_pCurrentCommandMenu;
 	float		 m_flMenuOpenTime;
 	float		 m_flScoreBoardLastUpdated;
-	float		 m_flSpectatorPanelLastUpdated;
 	int			 m_iNumMenus;
 	int			 m_iCurrentTeamNumber;
 	int			 m_iCurrentPlayerClass;
@@ -517,7 +515,6 @@ private:
 	CMenuPanel*	 ShowTeamMenu( void );
 	void		 CreateClassMenu( void );
 	CMenuPanel*	 ShowClassMenu( void );
-	void		 CreateSpectatorMenu( void );
 	CMenuPanel*	 ShowCustomMenu( void );		//AJH new customizable menu system
 	void		 CreateCustomMenu( void );		//AJH new customizable menu system
 	
@@ -536,8 +533,6 @@ private:
 
 	// Server Browser
 	ServerBrowser *m_pServerBrowser;
-
-	int					m_iAllowSpectators;
 
 	// Data for specific sections of the Command Menu
 	int			m_iValidClasses[5];
@@ -570,7 +565,6 @@ public:
 	void UpdateCommandMenu(int menuIndex);
 	void UpdateOnPlayerInfo( void );
 	void UpdateHighlights( void );
-	void UpdateSpectatorPanel( void );
 
 	int	 KeyInput( int down, int keynum, const char *pszCurrentBinding );
 	void InputPlayerSpecial( void );
@@ -607,7 +601,6 @@ public:
 	int GetBuildState() { return m_iBuildState; };
 	int IsRandomPC() { return m_iRandomPC; };
 	char *GetTeamName( int iTeam ) { return m_sTeamNames[iTeam]; };
-	int GetAllowSpectators() { return m_iAllowSpectators; };
 
 	// Message Handlers
 	int MsgFunc_ValClass(const char *pszName, int iSize, void *pbuf );
@@ -622,7 +615,6 @@ public:
 	int MsgFunc_ScoreInfo( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_TeamScore( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_TeamInfo( const char *pszName, int iSize, void *pbuf );
-	int MsgFunc_Spectator( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_AllowSpec( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_SpecFade( const char *pszName, int iSize, void *pbuf );	
 	int MsgFunc_ResetFade( const char *pszName, int iSize, void *pbuf );	
@@ -643,12 +635,9 @@ public:
 	CTeamMenuPanel	*m_pTeamMenu;
 	CCustomMenu		*m_pCustomMenu;		//AJH new customizable menu system
 	int				m_StandardMenu;		// indexs in m_pCommandMenus
-	int				m_SpectatorOptionsMenu;
-	int				m_SpectatorCameraMenu;
-	int						m_PlayerMenu; // a list of current player
+	int				m_PlayerMenu; // a list of current player
 	CClassMenuPanel	*m_pClassMenu;
 	ScorePanel		*m_pScoreBoard;
-	SpectatorPanel	*m_pSpectatorPanel;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
 
@@ -846,8 +835,6 @@ public:
 
 		// hide the menu 
 		gViewPort->HideCommandMenu();
-
-		gViewPort->UpdateSpectatorPanel();
 	}
 
 	
@@ -868,7 +855,6 @@ public:
 
 	virtual void actionPerformed(Panel* panel)
 	{
-		gHUD.m_Spectator.FindPlayer(m_szplayer);
 		gViewPort->HideCommandMenu();
 	}
 };
@@ -1061,10 +1047,6 @@ public:
 
 	virtual int IsNotValid()
 	{
-		// Only visible if the server allows it
-		if ( gViewPort->GetAllowSpectators() != 0 )
-			return false;
-
 		return true;
 	}
 };

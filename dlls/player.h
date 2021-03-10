@@ -92,18 +92,6 @@ class CBasePlayer : public CBaseMonster
 {
 public:
 	
-	// Spectator camera
-	void	Observer_FindNextPlayer( bool bReverse );
-	void	Observer_HandleButtons();
-	void	Observer_SetMode( int iMode );
-	void	Observer_CheckTarget();
-	void	Observer_CheckProperties();
-	EHANDLE	m_hObserverTarget;
-	float	m_flNextObserverInput;
-	int		m_iObserverWeapon;	// weapon of current tracked target
-	int		m_iObserverLastMode;// last used observer mode
-	int		IsObserver() { return pev->iuser1; };
-	
 	entvars_t*			m_pevInflictor; //AJH used for time based damage to remember inflictor
 										//m_hActivator remembers activator
 	CItemCamera*		m_pItemCamera;//AJH Remember that we have a camera
@@ -254,7 +242,7 @@ public:
 	BOOL			FlashlightIsOn( void );
 	void			FlashlightTurnOn( void );
 	void			FlashlightTurnOff( void );
-	
+
 	void UpdatePlayerSound ( void );
 	void DeathSound ( void );
 

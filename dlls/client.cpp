@@ -28,7 +28,6 @@
 #include "cbase.h"
 #include "saverestore.h"
 #include "player.h"
-#include "spectator.h"
 #include "client.h"
 #include "soundent.h"
 #include "gamerules.h"
@@ -352,9 +351,6 @@ void ClientPutInServer( edict_t *pEntity )
 
 	// Reset interpolation during first frame
 	pPlayer->pev->effects |= EF_NOINTERP;
-
-	pPlayer->pev->iuser1 = 0;	// disable any spec modes
-	pPlayer->pev->iuser2 = 0; 
 }
 
 #include "voice_gamemgr.h"
@@ -543,9 +539,7 @@ void Host_Say( edict_t *pEntity, int teamonly )
 
 // turn on color set 2  (color on,  no sound)
 	// turn on color set 2  (color on,  no sound)
-	if ( player->IsObserver() && ( teamonly ) )
-		sprintf( text, "%c(SPEC) %s: ", 2, STRING( pEntity->v.netname ) );
-	else if ( teamonly )
+	if ( teamonly )
 		sprintf( text, "%c(TEAM) %s: ", 2, STRING( pEntity->v.netname ) );
 	else
 		sprintf( text, "%c%s: ", 2, STRING( pEntity->v.netname ) );
@@ -580,14 +574,6 @@ void Host_Say( edict_t *pEntity, int teamonly )
 		// can the receiver hear the sender? or has he muted him?
 		if ( g_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
 			continue;
-
-		if ( !player->IsObserver() && teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
-			continue;
-
-		// Spectators can only talk to other specs
-		if ( player->IsObserver() && teamonly )
-			if ( !client->IsObserver() )
-				continue;
 
 		MESSAGE_BEGIN( MSG_ONE, gmsgSayText, NULL, client->pev );
 			WRITE_BYTE( ENTINDEX(pEntity) );
@@ -827,41 +813,9 @@ void ClientCommand( edict_t *pEntity )
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
 	}
-	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
-	{
-			// always allow proxies to become a spectator
-		if ( (pev->flags & FL_PROXY) || allow_spectators.value  )
-		{
-			CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( pPlayer );
-			pPlayer->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
-
-			// notify other clients of player switching to spectator mode
-			UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s switched to spectator mode\n", 
-			 	( pev->netname && STRING(pev->netname)[0] != 0 ) ? STRING(pev->netname) : "unconnected" ) );
-		}
-		else
-			ClientPrint( pev, HUD_PRINTCONSOLE, "Spectator mode is disabled.\n" );
-			
-	}	
-	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
-	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
-	}
 	else if ( FStrEq(pcmd, "closemenus" ) )
 	{
 		// just ignore it
-	}
-	else if ( FStrEq( pcmd, "follownext" )  )	// follow next player
-	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_FindNextPlayer( atoi( CMD_ARGV(1) )?true:false );
 	}
 	else if ( g_pGameRules->ClientCommand( GetClassPtr((CBasePlayer *)pev), pcmd ) )
 	{
@@ -1281,58 +1235,6 @@ void PlayerCustomization( edict_t *pEntity, customization_t *pCust )
 		break;
 	}
 }
-
-/*
-================
-SpectatorConnect
-
-A spectator has joined the game
-================
-*/
-void SpectatorConnect( edict_t *pEntity )
-{
-	entvars_t *pev = &pEntity->v;
-	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
-
-	if (pPlayer)
-		pPlayer->SpectatorConnect( );
-}
-
-/*
-================
-SpectatorConnect
-
-A spectator has left the game
-================
-*/
-void SpectatorDisconnect( edict_t *pEntity )
-{
-	entvars_t *pev = &pEntity->v;
-	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
-
-	if (pPlayer)
-		pPlayer->SpectatorDisconnect( );
-}
-
-/*
-================
-SpectatorConnect
-
-A spectator has sent a usercmd
-================
-*/
-void SpectatorThink( edict_t *pEntity )
-{
-	entvars_t *pev = &pEntity->v;
-	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
-
-	if (pPlayer)
-		pPlayer->SpectatorThink( );
-}
-
-////////////////////////////////////////////////////////
-// PAS and PVS routines for client messaging
-//
 
 /*
 ================
@@ -1978,17 +1880,6 @@ void UpdateClientData ( const edict_t *ent, int sendweapons, struct clientdata_s
 	CBasePlayer *	pl	= dynamic_cast< CBasePlayer *>(CBasePlayer::Instance( pev ));
 	entvars_t *		pevOrg = NULL;
 
-	// if user is spectating different player in First person, override some vars
-	if ( pl && pl->pev->iuser1 == OBS_IN_EYE )
-	{
-		if ( pl->m_hObserverTarget )
-		{
-			pevOrg = pev;
-			pev = pl->m_hObserverTarget->pev;
-			pl = dynamic_cast< CBasePlayer *>(CBasePlayer::Instance( pev ) );
-		}
-	}
-
 	cd->flags			= pev->flags;
 	cd->health			= pev->health;
 
@@ -2017,21 +1908,6 @@ void UpdateClientData ( const edict_t *ent, int sendweapons, struct clientdata_s
 	cd->weaponanim		= pev->weaponanim;
 
 	cd->pushmsec		= pev->pushmsec;
-
-	//Spectator mode
-	if ( pevOrg != NULL )
-	{
-		// don't use spec vars from chased player
-		cd->iuser1			= pevOrg->iuser1;
-		cd->iuser2			= pevOrg->iuser2;
-	}
-	else
-	{
-		cd->iuser1			= pev->iuser1;
-		cd->iuser2			= pev->iuser2;
-	}
-
-	
 
 #if defined( CLIENT_WEAPONS )
 	if ( sendweapons )

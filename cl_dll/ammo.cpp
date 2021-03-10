@@ -595,18 +595,6 @@ int CHudAmmo::MsgFunc_CurWeapon(const char *pszName, int iSize, void *pbuf )
 		return 0;
 	}
 
-	if ( g_iUser1 != OBS_IN_EYE )
-	{
-		// Is player dead???
-		if ((iId == -1) && (iClip == -1))
-		{
-			gHUD.m_fPlayerDead = TRUE;
-			gpActiveSel = NULL;
-			return 1;
-		}
-		gHUD.m_fPlayerDead = FALSE;
-	}
-
 	WEAPON *pWeapon = gWR.GetWeapon( iId );
 
 	if ( !pWeapon )

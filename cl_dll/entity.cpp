@@ -64,15 +64,6 @@ int DLLEXPORT HUD_AddEntity( int type, struct cl_entity_s *ent, const char *mode
 	if (!gBSPRenderer.FilterEntities(type, ent, modelname))
 		return 0;
 	//RENDERERS END
-	if ( g_iUser1 )
-	{
-		gHUD.m_Spectator.AddOverviewEntity( type, ent, modelname );
-
-		if ( (	g_iUser1 == OBS_IN_EYE || gHUD.m_Spectator.m_pip->value == INSET_IN_EYE ) &&
-				ent->index == g_iUser2 )
-			return 0;	// don't draw the player we are following in eye
-
-	}
 
 	return 1;
 }
@@ -91,16 +82,6 @@ void DLLEXPORT HUD_TxferLocalOverrides( struct entity_state_s *state, const stru
 //	RecClTxferLocalOverrides(state, client);
 
 	VectorCopy( client->origin, state->origin );
-
-	// Spectator
-	state->iuser1 = client->iuser1;
-	state->iuser2 = client->iuser2;
-
-	// Duck prevention
-	state->iuser3 = client->iuser3;
-
-	// Fire prevention
-	state->iuser4 = client->iuser4;
 }
 
 /*
@@ -173,10 +154,6 @@ void DLLEXPORT HUD_ProcessPlayerState( struct entity_state_s *dst, const struct 
 	{
 		g_iPlayerClass = dst->playerclass;
 		g_iTeamNumber = dst->team;
-
-		g_iUser1 = src->iuser1;
-		g_iUser2 = src->iuser2;
-		g_iUser3 = src->iuser3;
 	}
 }
 
@@ -214,26 +191,7 @@ void DLLEXPORT HUD_TxferPredictionData ( struct entity_state_s *ps, const struct
 	pcd->deadflag				= ppcd->deadflag;
 
 	// Spectating or not dead == get control over view angles.
-	g_iAlive = ( ppcd->iuser1 || ( pcd->deadflag == DEAD_NO ) ) ? 1 : 0;
-
-	// Spectator
-	pcd->iuser1					= ppcd->iuser1;
-	pcd->iuser2					= ppcd->iuser2;
-
-	// Duck prevention
-	pcd->iuser3 = ppcd->iuser3;
-
-	if ( gEngfuncs.IsSpectateOnly() )
-	{
-		// in specator mode we tell the engine who we want to spectate and how
-		// iuser3 is not used for duck prevention (since the spectator can't duck at all)
-		pcd->iuser1 = g_iUser1;	// observer mode
-		pcd->iuser2 = g_iUser2; // first target
-		pcd->iuser3 = g_iUser3; // second target
-	}
-
-	// Fire prevention
-	pcd->iuser4 = ppcd->iuser4;
+	g_iAlive = (  pcd->deadflag == DEAD_NO  ) ? 1 : 0;
 
 	pcd->fuser2					= ppcd->fuser2;
 	pcd->fuser3					= ppcd->fuser3;

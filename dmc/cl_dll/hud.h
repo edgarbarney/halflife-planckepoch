@@ -653,7 +653,3 @@ class TeamFortressViewport;
 extern CHud gHUD;
 extern TeamFortressViewport *gViewPort;
 
-extern int g_iUser1;
-extern int g_iUser2;
-extern int g_iUser3;
-

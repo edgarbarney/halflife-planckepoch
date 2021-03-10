@@ -84,10 +84,6 @@ void CHud::Think(void)
 		m_iFOV = V_max( default_fov->value, 90 );  
 	}
 	
-	if ( gEngfuncs.IsSpectateOnly() )
-	{
-		m_iFOV = gHUD.m_Spectator.GetFOV();	// default_fov->value;
-	}
 
 	Bench_CheckStart();
 }
@@ -142,7 +138,6 @@ int CHud :: Redraw( float flTime, int intermission )
 			m_iIntermission = intermission;
 			gViewPort->HideCommandMenu();
 			gViewPort->HideScoreBoard();
-			gViewPort->UpdateSpectatorPanel();
 		}
 		else if ( !m_iIntermission && intermission )
 		{
@@ -150,7 +145,6 @@ int CHud :: Redraw( float flTime, int intermission )
 			gViewPort->HideCommandMenu();
 			gViewPort->HideVGUIMenu();
 			gViewPort->ShowScoreBoard();
-			gViewPort->UpdateSpectatorPanel();
 
 			// Take a screenshot if the client's got the cvar set
 			if ( CVAR_GET_FLOAT( "hud_takesshots" ) != 0 )

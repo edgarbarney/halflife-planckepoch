@@ -29,7 +29,7 @@ void CAM_Init( void )
 
 int DLLEXPORT CL_IsThirdPerson( void )
 {
-	return (gHUD.m_iCameraMode ? 1 : 0) || (g_iUser1 && (g_iUser2 == gEngfuncs.GetLocalPlayer()->index) );
+	return (gHUD.m_iCameraMode ? 1 : 0);
 }
 
 void DLLEXPORT CL_CameraOffset( float *ofs )

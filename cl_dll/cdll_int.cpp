@@ -332,7 +332,7 @@ void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
 {
 //	RecClDirectorMessage(iSize, pbuf);
 
-	gHUD.m_Spectator.DirectorMessage( iSize, pbuf );
+	return;
 }
 
 //RENDERERS_START

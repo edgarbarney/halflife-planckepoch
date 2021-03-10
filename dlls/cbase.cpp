@@ -72,9 +72,9 @@ static DLL_FUNCTIONS gFunctionTable =
 	GetGameDescription,         //pfnGetGameDescription    Returns string describing current .dll game.
 	PlayerCustomization,        //pfnPlayerCustomization   Notifies .dll of new customization for player.
 
-	SpectatorConnect,			//pfnSpectatorConnect      Called when spectator joins server
-	SpectatorDisconnect,        //pfnSpectatorDisconnect   Called when spectator leaves the server
-	SpectatorThink,				//pfnSpectatorThink        Called when spectator sends a command packet (usercmd_t)
+	NULL,						//SpectatorConnect,			//pfnSpectatorConnect      Called when spectator joins server
+	NULL,						//SpectatorDisconnect,      //pfnSpectatorDisconnect   Called when spectator leaves the server
+	NULL,						//SpectatorThink,			//pfnSpectatorThink        Called when spectator sends a command packet (usercmd_t)
 
 	Sys_Error,					//pfnSys_Error				Called when engine has encountered an error
 
