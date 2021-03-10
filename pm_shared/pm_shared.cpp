@@ -1145,7 +1145,7 @@ void PM_WalkMove ()
 		if(!isBoosting)
 		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
 		else
-		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+		wishvel[i] = pmove->forward[i] * (fmove * 1.5) + pmove->right[i] * (smove * 1.5);
 	
 	wishvel[2] = 0;             // Zero out z part of velocity
 
@@ -1155,10 +1155,14 @@ void PM_WalkMove ()
 //
 // Clamp to server defined max speed
 //
-	if (wishspeed > pmove->maxspeed)
+	// HACK HACK - TODO: INITAILIZE THIS VAR AND SAVE IT
+	if (pmove->fuser1 < 320) // sv_maxspeed replacement)
+		pmove->fuser1 = 320; // sv_maxspeed replacement
+
+	if (wishspeed > pmove->fuser1)
 	{
-		VectorScale (wishvel, pmove->maxspeed/wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		VectorScale (wishvel, pmove->fuser1/wishspeed, wishvel);
+		wishspeed = pmove->fuser1;
 	}
 
 	// Set pmove velocity

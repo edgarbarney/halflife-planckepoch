@@ -651,8 +651,8 @@ public:
 	void ApplyHealth(void);
 
 	bool m_isUsed;
-	
-	float m_healthToAdd;
+
+	const float m_healthToAdd = 50.0f;
 
 	virtual BOOL UseDecrement(void)
 	{

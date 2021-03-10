@@ -48,7 +48,7 @@ void CHealthShot::Spawn()
 	m_iId = WEAPON_HEALTHSHOT;
 	
 	m_isUsed = false;
-	m_healthToAdd = 50;
+	//m_healthToAdd = 50;
 
 	m_iDefaultAmmo = HEALTHSHOT_DEFAULT_GIVE;
 
@@ -124,9 +124,10 @@ void CHealthShot::ApplyHealth(void)
 {
 #ifndef CLIENT_DLL
 	UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 0.1, 128, FFADE_IN);
-	m_pPlayer->SetSpeed(1800);
-	m_pPlayer->pev->iuser1 = TRUE;
 #endif
+	m_pPlayer->pev->iuser1 = TRUE;
+	m_pPlayer->pev->fuser1 = 600; //def 320. sv_maxspeed replacement
+
 	if (m_pPlayer->pev->health + m_healthToAdd > 100)
 		m_pPlayer->pev->health = 100;
 	else
