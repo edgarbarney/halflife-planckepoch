@@ -72,6 +72,12 @@ typedef enum
 	PLAYER_ATTACK1,
 } PLAYER_ANIM;
 
+typedef enum
+{
+	MOVTYPE_DEFAULT = 0,
+	MOVTYPE_HSBOOST = 1,
+} PLAYER_MOVTYPE;
+
 #define MAX_ID_RANGE 2048
 #define SBAR_STRING_SIZE 128
 
@@ -344,7 +350,12 @@ public:
 	int	Rain_needsUpdate;
 	BOOL m_bHasIntroPlayed; // not my job to clean up this mess of a class definition
 
-	//BOOL m_isGlockAuto;		// Glock's firemode
+	// Healthshot
+	//float m_hsBoostMaxTime;		// Healthshot - Max time of boost. It'll reset after that
+	BOOL  m_hsIsBoosting;			// Healthshot - Is boosting now?
+	float m_hsBoostIdleTime;		// Healthshot - Total Time (globaltime + maxtime)
+	float m_hsBoostStartTime;		// Healthshot - The globaltime when boosting started
+
 	//RENDERERS START
 	BOOL m_bUpdateEffects;
 	void ClearEffects( void );

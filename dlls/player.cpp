@@ -191,8 +191,12 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	//DEFINE_FIELD( CBasePlayer, m_fOnTarget, FIELD_BOOLEAN ), // Don't need to restore
 	//DEFINE_FIELD( CBasePlayer, m_nCustomSprayFrames, FIELD_INTEGER ), // Don't need to restore
 	DEFINE_FIELD( CBasePlayer, m_bHasIntroPlayed, FIELD_BOOLEAN ),
-
-	DEFINE_FIELD( CBasePlayer, m_isGlockAuto, FIELD_BOOLEAN),
+	
+	//Guns
+	DEFINE_FIELD( CBasePlayer, m_isGlockAuto,		FIELD_BOOLEAN	),		//Glock
+	DEFINE_FIELD( CBasePlayer, m_hsBoostIdleTime,	FIELD_TIME		),		//HeatlhShot
+	DEFINE_FIELD( CBasePlayer, m_hsBoostStartTime,	FIELD_TIME		),		//HeatlhShot
+	DEFINE_FIELD( CBasePlayer, m_hsIsBoosting,		FIELD_BOOLEAN	),		//HeatlhShot
 };
 
 
@@ -2116,6 +2120,15 @@ void CBasePlayer::PreThink(void)
 	if ( m_afPhysicsFlags & PFLAG_ONBARNACLE )
 	{
 		pev->velocity = g_vecZero;
+	}
+
+	if (m_hsIsBoosting && m_hsBoostIdleTime <= gpGlobals->time)
+	{
+		m_hsIsBoosting = FALSE;
+		m_hsBoostIdleTime = 0;
+		m_hsBoostStartTime = 0;
+		pev->iuser1 = FALSE;
+		pev->fuser1 = 320;
 	}
 }
 /* Time based Damage works as follows:

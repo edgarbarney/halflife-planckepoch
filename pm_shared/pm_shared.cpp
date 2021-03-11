@@ -50,6 +50,12 @@ typedef enum {mod_brush, mod_sprite, mod_alias, mod_studio} modtype_t;
 
 playermove_t *pmove = NULL;
 
+typedef enum
+{
+	MOVTYPE_DEFAULT = 0,
+	MOVTYPE_HSBOOST = 1,
+}PLAYER_MOVTYPE;
+
 typedef struct
 {
 	int			planenum;
@@ -1125,8 +1131,6 @@ void PM_WalkMove ()
 	float downdist, updist;
 
 	pmtrace_t trace;
-	
-	BOOL isBoosting = pmove->iuser1;
 
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
@@ -1142,10 +1146,11 @@ void PM_WalkMove ()
 	
 
 	for (i=0 ; i<2 ; i++)       // Determine x and y parts of velocity
-		if(!isBoosting)
-		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
-		else
+		if(pmove->iuser1 == MOVTYPE_HSBOOST)
 		wishvel[i] = pmove->forward[i] * (fmove * 1.5) + pmove->right[i] * (smove * 1.5);
+		else
+		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+		
 	
 	wishvel[2] = 0;             // Zero out z part of velocity
 
@@ -1434,10 +1439,10 @@ void PM_WaterMove (void)
 	wishspeed = VectorNormalize(wishdir);
 
 	// Cap speed.
-	if (wishspeed > pmove->maxspeed)
+	if (wishspeed > pmove->fuser1)
 	{
-		VectorScale (wishvel, pmove->maxspeed/wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		VectorScale (wishvel, pmove->fuser1/wishspeed, wishvel);
+		wishspeed = pmove->fuser1;
 	}
 	// Slow us down a bit.
 	wishspeed *= 0.8;
@@ -1533,10 +1538,10 @@ void PM_AirMove (void)
 	wishspeed = VectorNormalize(wishdir);
 
 	// Clamp to server defined max speed
-	if (wishspeed > pmove->maxspeed)
+	if (wishspeed > pmove->fuser1)
 	{
-		VectorScale (wishvel, pmove->maxspeed/wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		VectorScale (wishvel, pmove->fuser1/wishspeed, wishvel);
+		wishspeed = pmove->fuser1;
 	}
 	
 	PM_AirAccelerate (wishdir, wishspeed, pmove->movevars->airaccelerate);
@@ -2031,7 +2036,7 @@ void PM_LadderMove( physent_t *pLadder )
 	
 #if defined( _TFC )
 	// this is how TFC freezes players, so we don't want them climbing ladders
-	if ( pmove->maxspeed <= 1.0 )
+	if ( pmove->fuser1 <= 1.0 )
 		return;
 #endif
 
@@ -2064,9 +2069,9 @@ void PM_LadderMove( physent_t *pLadder )
 		float flSpeed = MAX_CLIMB_SPEED;
 
 		// they shouldn't be able to move faster than their maxspeed
-		if ( flSpeed > pmove->maxspeed )
+		if ( flSpeed > pmove->fuser1 )
 		{
-			flSpeed = pmove->maxspeed;
+			flSpeed = pmove->fuser1;
 		}
 
 		AngleVectors( pmove->angles, vpn, v_right, NULL );
@@ -2419,7 +2424,7 @@ void PM_PreventMegaBunnyJumping( void )
 	// Speed at which bunny jumping is limited
 	float maxscaledspeed;
 
-	maxscaledspeed = BUNNYJUMP_MAX_SPEED_FACTOR * pmove->maxspeed;
+	maxscaledspeed = BUNNYJUMP_MAX_SPEED_FACTOR * pmove->fuser1;
 
 	// Don't divide by zero
 	if ( maxscaledspeed <= 0.0f )
@@ -2817,13 +2822,13 @@ void PM_CheckParamters( void )
 	maxspeed = pmove->clientmaxspeed; //atof( pmove->PM_Info_ValueForKey( pmove->physinfo, "maxspd" ) );
 	if ( maxspeed != 0.0 )
 	{
-		pmove->maxspeed = V_min( maxspeed, pmove->maxspeed );
+		pmove->fuser1 = V_min( maxspeed, pmove->fuser1 );
 	}
 
 	if ( ( spd != 0.0 ) &&
-		 ( spd > pmove->maxspeed ) )
+		 ( spd > pmove->fuser1 ) )
 	{
-		float fRatio = pmove->maxspeed / spd;
+		float fRatio = pmove->fuser1 / spd;
 		pmove->cmd.forwardmove *= fRatio;
 		pmove->cmd.sidemove    *= fRatio;
 		pmove->cmd.upmove      *= fRatio;

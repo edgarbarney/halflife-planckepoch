@@ -109,12 +109,15 @@ void CHealthShot::PrimaryAttack()
 		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
 		{
 			m_flStartThrow = gpGlobals->time;
+			m_pPlayer->m_hsBoostStartTime = gpGlobals->time;
 			m_flReleaseThrow = 0;
 
 			SendWeaponAnim(HEALTHSHOT_USE);
 			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 			// Time Before Heal
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;  // GlobalTime + Time Before Heal
+			m_pPlayer->m_hsBoostIdleTime = gpGlobals->time + 4.5f; // GlobalTime + Time Before Heal + Wait Time
+			m_pPlayer->m_hsIsBoosting = TRUE;
 			m_isUsed = true;
 		}
 	}
@@ -156,8 +159,8 @@ void CHealthShot::WeaponIdle(void)
 
 		m_flReleaseThrow = 0;
 		m_flStartThrow = 0;
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5f);
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
 
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
@@ -193,16 +196,16 @@ void CHealthShot::WeaponIdle(void)
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		int iAnim;
-		float flRand = UTIL_SharedRandomFloat(m_pPlayer->random_seed, 0, 1);
-		if (flRand <= 0.75)
+		float flRand = UTIL_SharedRandomFloat(m_pPlayer->random_seed, 0.0f, 1.0f);
+		if (flRand <= 0.75f)
 		{
 			iAnim = HEALTHSHOT_IDLE;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);// how long till we do this again.
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10.0f, 15.0f);// how long till we do this again.
 		}
 		else
 		{
 			iAnim = HEALTHSHOT_FIDGET;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0 / 30.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0f / 30.0f;
 		}
 
 		SendWeaponAnim(iAnim);
