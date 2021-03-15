@@ -345,6 +345,9 @@
     <ClCompile Include="..\..\dlls\healthshot.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\effects\postprocessing.cpp">
+      <Filter>Source Files\cl_dll\effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -502,6 +505,9 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\watershader.h">
       <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\effects\postprocessing.h">
+      <Filter>Header Files\cl_dll\effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
