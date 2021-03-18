@@ -428,7 +428,6 @@ void CCineMonster::PossessEntity()
 			pTarget->pev->avelocity = Vector(0, 0, 0);
 			pTarget->pev->velocity = Vector(0, 0, 0);
 			pTarget->pev->effects |= EF_NOINTERP;
-			pTarget->pev->angles.y = pev->angles.y;
 			pTarget->m_scriptState = SCRIPT_WAIT;
 			//m_startTime = gpGlobals->time + 1E6;
 			break;
@@ -437,6 +436,13 @@ void CCineMonster::PossessEntity()
 			pTarget->m_scriptState = SCRIPT_WAIT;
 			break;
 		}
+
+		/* handle instant turn */
+		if (m_fMoveTo == 4 || m_fMoveTo == 6)
+		{
+			pTarget->pev->angles.y = pev->angles.y;
+		}
+
 		//		ALERT( at_aiconsole, "\"%s\" found and used (INT: %s)\n", STRING( pTarget->pev->targetname ), FBitSet(pev->spawnflags, SF_SCRIPT_NOINTERRUPT)?"No":"Yes" );
 
 		pTarget->m_IdealMonsterState = MONSTERSTATE_SCRIPT;
@@ -642,8 +648,11 @@ void ScriptEntityCancel(edict_t* pentCine)
 	// make sure they are a scripted_sequence
 	if (FClassnameIs(pentCine, "scripted_sequence") || FClassnameIs(pentCine, "scripted_action"))
 	{
-		((CCineMonster*)VARS(pentCine))->m_iState = STATE_OFF;
 		CCineMonster* pCineTarget = GetClassPtr((CCineMonster*)VARS(pentCine));
+		if (!pCineTarget->pev)
+			return;
+		pCineTarget->m_iState = STATE_OFF;
+
 		// make sure they have a monster in mind for the script
 		CBaseEntity* pEntity = pCineTarget->m_hTargetEnt;
 		CBaseMonster* pTarget = NULL;
