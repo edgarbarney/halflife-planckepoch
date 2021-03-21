@@ -76,13 +76,13 @@ float CalcLocus_Ratio( CBaseEntity *pLocus, const char *szText )
 class CLocusAlias : public CBaseAlias
 {
 public:
-	void	PostSpawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	CBaseEntity		*FollowAlias( CBaseEntity *pFrom );
-	void	FlushChanges( void );
+	void	PostSpawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	CBaseEntity		*FollowAlias( CBaseEntity *pFrom ) override;
+	void	FlushChanges() override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE	m_hValue;
@@ -98,7 +98,7 @@ TYPEDESCRIPTION	CLocusAlias::m_SaveData[] =
 LINK_ENTITY_TO_CLASS( locus_alias, CLocusAlias );
 IMPLEMENT_SAVERESTORE( CLocusAlias, CBaseAlias );
 
-void CLocusAlias::PostSpawn( void )
+void CLocusAlias::PostSpawn()
 {
 	m_hValue = UTIL_FindEntityByTargetname( NULL, STRING(pev->netname) );
 }
@@ -109,7 +109,7 @@ void CLocusAlias::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	UTIL_AddToAliasList( this );
 }
 
-void CLocusAlias::FlushChanges( void )
+void CLocusAlias::FlushChanges()
 {
 	m_hValue = m_hChangeTo;
 	m_hChangeTo = NULL;
@@ -144,13 +144,13 @@ CBaseEntity *CLocusAlias::FollowAlias( CBaseEntity *pFrom )
 class CLocusBeam : public CPointEntity
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Spawn() override;
+	void	Precache() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	void KeyValue( KeyValueData *pkvd );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void KeyValue( KeyValueData *pkvd ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -248,7 +248,7 @@ void CLocusBeam :: KeyValue( KeyValueData *pkvd )
 		CBaseEntity::KeyValue( pkvd );
 }
 
-void CLocusBeam :: Precache ( void )
+void CLocusBeam :: Precache ()
 {
 	PRECACHE_MODEL ( (char*)STRING(m_iszSprite) );
 }
@@ -320,7 +320,7 @@ void CLocusBeam::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	}
 }
 
-void CLocusBeam::Spawn( void )
+void CLocusBeam::Spawn()
 {
 	Precache();
 	m_iFlags = 0;
@@ -342,7 +342,7 @@ void CLocusBeam::Spawn( void )
 class CCalcPosition : public CPointEntity
 {
 public:
-	Vector CalcPosition( CBaseEntity *pLocus );
+	Vector CalcPosition( CBaseEntity *pLocus ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_position, CCalcPosition );
@@ -412,7 +412,7 @@ Vector CCalcPosition::CalcPosition( CBaseEntity *pLocus )
 class CCalcRatio : public CPointEntity
 {
 public:
-	float CalcRatio( CBaseEntity *pLocus );
+	float CalcRatio( CBaseEntity *pLocus ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_ratio, CCalcRatio );
@@ -493,7 +493,7 @@ class CCalcSubVelocity : public CPointEntity
 	Vector Convert( CBaseEntity *pLocus, Vector vecVel );
 	Vector ConvertAngles( CBaseEntity *pLocus, Vector vecAngles );
 public:
-	Vector CalcVelocity( CBaseEntity *pLocus );
+	Vector CalcVelocity( CBaseEntity *pLocus ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_subvelocity, CCalcSubVelocity );
@@ -558,7 +558,7 @@ Vector CCalcSubVelocity::ConvertAngles( CBaseEntity *pLocus, Vector vecAngles )
 class CCalcVelocityPath : public CPointEntity
 {
 public:
-	Vector CalcVelocity( CBaseEntity *pLocus );
+	Vector CalcVelocity( CBaseEntity *pLocus ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_velocity_path, CCalcVelocityPath );
@@ -635,7 +635,7 @@ Vector CCalcVelocityPath::CalcVelocity( CBaseEntity *pLocus )
 class CCalcVelocityPolar : public CPointEntity
 {
 public:
-	Vector CalcVelocity( CBaseEntity *pLocus );
+	Vector CalcVelocity( CBaseEntity *pLocus ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_velocity_polar, CCalcVelocityPolar );
@@ -661,22 +661,22 @@ Vector CCalcVelocityPolar::CalcVelocity( CBaseEntity *pLocus )
 class CMark : public CPointEntity
 {
 public:
-	Vector	CalcVelocity(CBaseEntity *pLocus) { return pev->movedir; }
-	float	CalcRatio(CBaseEntity *pLocus) { return pev->frags; }
-	void	Think( void ) { SUB_Remove(); }
+	Vector	CalcVelocity(CBaseEntity *pLocus) override { return pev->movedir; }
+	float	CalcRatio(CBaseEntity *pLocus) override { return pev->frags; }
+	void	Think() override { SUB_Remove(); }
 };
 
 class CLocusVariable : public CPointEntity
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	Vector	CalcVelocity(CBaseEntity *pLocus) { return pev->movedir; }
-	float	CalcRatio(CBaseEntity *pLocus) { return pev->frags; }
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	Vector	CalcVelocity(CBaseEntity *pLocus) override { return pev->movedir; }
+	float	CalcRatio(CBaseEntity *pLocus) override { return pev->frags; }
 
-	void KeyValue( KeyValueData *pkvd );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void KeyValue( KeyValueData *pkvd ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -737,7 +737,7 @@ void CLocusVariable :: KeyValue( KeyValueData *pkvd )
 		CPointEntity::KeyValue( pkvd );
 }
 
-void CLocusVariable::Spawn( void )
+void CLocusVariable::Spawn()
 {
 	SetMovedir(pev);
 }

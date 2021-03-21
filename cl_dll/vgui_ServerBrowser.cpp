@@ -52,19 +52,19 @@ public:
 		m_pBrowser = pBrowser;
 	}
 
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
-	virtual void cursorEntered(Panel* panel){};
-	virtual void cursorExited(Panel* Panel) {};
+    void cursorMoved(int x,int y,Panel* panel) override {};
+    void cursorEntered(Panel* panel) override {};
+    void cursorExited(Panel* Panel) override {};
 
-	virtual void mousePressed(MouseCode code,Panel* panel);
+    void mousePressed(MouseCode code,Panel* panel) override;
 
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel);
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+    void mouseDoublePressed(MouseCode code,Panel* panel) override;
+    void mouseReleased(MouseCode code,Panel* panel) override {};
+    void mouseWheeled(int delta,Panel* panel) override {};
+    void keyPressed(KeyCode code,Panel* panel) override {};
+    void keyTyped(KeyCode code,Panel* panel) override {};
+    void keyReleased(KeyCode code,Panel* panel) override {};
+    void keyFocusTicked(Panel* panel) override {};
 };
 
 class ServerBrowserTablePanel : public TablePanel
@@ -94,31 +94,31 @@ public:
 		SortServers( sortkey );
 	}
 
-	void DoRefresh( void )
+	void DoRefresh()
 	{
 		// Request server list and refresh servers...
 		ServersList();
 		BroadcastServersList( 0 );
 	}
 	
-	void DoBroadcastRefresh( void )
+	void DoBroadcastRefresh()
 	{
 		// Request server list and refresh servers...
 		BroadcastServersList( 1 );
 	}
 
-	void DoStop( void )
+	void DoStop()
 	{
 		// Stop requesting
 		ServersCancel();
 	}
 
-	void DoCancel( void )
+	void DoCancel()
 	{
 		EngineClientCmd( "togglebrowser\n" );
 	}
 
-	void DoConnect( void )
+	void DoConnect()
 	{
 		const char *info;
 		const char *address;
@@ -138,15 +138,15 @@ public:
 		DoCancel();
 	}
 
-	void DoPing( void )
+	void DoPing()
 	{
 		ServerPing( 0 );
 		ServerRules( 0 );
 		ServerPlayers( 0 );
 	}
 
-	virtual int getRowCount()
-	{
+    int getRowCount() override
+    {
 		int rowcount;
 		int height, width;
 
@@ -161,13 +161,13 @@ public:
 		return rowcount;
 	}
 
-	virtual int getCellTall(int row)
-	{
+    int getCellTall(int row) override
+    {
 		return CELL_HEIGHT - 2;
 	}
-	
-	virtual Panel* getCellRenderer(int column,int row,bool columnSelected,bool rowSelected,bool cellSelected)
-	{
+
+    Panel* getCellRenderer(int column,int row,bool columnSelected,bool rowSelected,bool cellSelected) override
+    {
 		const char *info;
 		const char *val, *val2;
 		char sz[ 32 ];
@@ -268,8 +268,8 @@ public:
 		return m_pLabel;
 	}
 
-	virtual Panel* startCellEditing(int column,int row)
-	{
+    Panel* startCellEditing(int column,int row) override
+    {
 		return null;
 	}
 
@@ -286,8 +286,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoConnect();
 	}
 };
@@ -303,8 +303,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoRefresh();
 	}
 };
@@ -320,8 +320,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoBroadcastRefresh();
 	}
 };
@@ -337,8 +337,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoStop();
 	}
 };
@@ -354,8 +354,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoCancel();
 	}
 };
@@ -371,8 +371,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoPing();
 	}
 };
@@ -388,8 +388,8 @@ public:
 		m_pBrowser = browser;	
 	}
 
-	virtual void actionPerformed( Panel *panel )
-	{
+    void actionPerformed( Panel *panel ) override
+    {
 		m_pBrowser->DoSort( "map" );
 	}
 };
@@ -409,26 +409,26 @@ public:
 		strcpy( m_szSortKey, name );
 	}
 
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
-	virtual void cursorEntered(Panel* panel){};
-	virtual void cursorExited(Panel* Panel) {};
+    void cursorMoved(int x,int y,Panel* panel) override {};
+    void cursorEntered(Panel* panel) override {};
+    void cursorExited(Panel* Panel) override {};
 
-	virtual void mousePressed(MouseCode code,Panel* panel)
-	{
+    void mousePressed(MouseCode code,Panel* panel) override
+    {
 		m_pBrowser->DoSort( m_szSortKey );
 	}
 
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)
-	{
+    void mouseDoublePressed(MouseCode code,Panel* panel) override
+    {
 		m_pBrowser->DoSort( m_szSortKey );
 	}
 
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+    void mouseReleased(MouseCode code,Panel* panel) override {};
+    void mouseWheeled(int delta,Panel* panel) override {};
+    void keyPressed(KeyCode code,Panel* panel) override {};
+    void keyTyped(KeyCode code,Panel* panel) override {};
+    void keyReleased(KeyCode code,Panel* panel) override {};
+    void keyFocusTicked(Panel* panel) override {};
 };
 
 class CSBLabel : public Label

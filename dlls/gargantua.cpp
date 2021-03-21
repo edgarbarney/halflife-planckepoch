@@ -69,9 +69,9 @@ class CSmoker;
 class CSpiral : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void Think( void );
-	int ObjectCaps( void ) { return FCAP_DONT_SAVE; }
+	void Spawn() override;
+	void Think() override;
+	int ObjectCaps() override { return FCAP_DONT_SAVE; }
 	static CSpiral *Create( const Vector &origin, float height, float radius, float duration );
 };
 LINK_ENTITY_TO_CLASS( streak_spiral, CSpiral );
@@ -80,8 +80,8 @@ LINK_ENTITY_TO_CLASS( streak_spiral, CSpiral );
 class CStomp : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void Think( void );
+	void Spawn() override;
+	void Think() override;
 	static CStomp *StompCreate( const Vector &origin, const Vector &end, float speed );
 
 private:
@@ -104,7 +104,7 @@ CStomp *CStomp::StompCreate( const Vector &origin, const Vector &end, float spee
 	return pStomp;
 }
 
-void CStomp::Spawn( void )
+void CStomp::Spawn()
 {
 	SetNextThink( 0 );
 	pev->classname = MAKE_STRING("garg_stomp");
@@ -120,7 +120,7 @@ void CStomp::Spawn( void )
 
 #define	STOMP_INTERVAL		0.025
 
-void CStomp::Think( void )
+void CStomp::Think()
 {
 	TraceResult tr;
 
@@ -201,47 +201,47 @@ void StreakSplash( const Vector &origin, const Vector &direction, int color, int
 class CGargantua : public CBaseMonster
 {
 public:
-	void Spawn( void );
-	void Precache( void );
-	void SetYawSpeed( void );
-	int  Classify ( void );
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
-	void HandleAnimEvent( MonsterEvent_t *pEvent );
+	void Spawn() override;
+	void Precache() override;
+	void SetYawSpeed() override;
+	int  Classify () override;
+	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType ) override;
+	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 
-	BOOL CheckMeleeAttack1( float flDot, float flDist );		// Swipe
-	BOOL CheckMeleeAttack2( float flDot, float flDist );		// Flames
-	BOOL CheckRangeAttack1( float flDot, float flDist );		// Stomp attack
-	void SetObjectCollisionBox( void )
-	{
+	BOOL CheckMeleeAttack1( float flDot, float flDist ) override;		// Swipe
+	BOOL CheckMeleeAttack2( float flDot, float flDist ) override;		// Flames
+	BOOL CheckRangeAttack1( float flDot, float flDist ) override;		// Stomp attack
+	void SetObjectCollisionBox() override
+    {
 		pev->absmin = pev->origin + Vector( -80, -80, 0 );
 		pev->absmax = pev->origin + Vector( 80, 80, 214 );
 	}
 
-	Schedule_t *GetScheduleOfType( int Type );
-	void StartTask( Task_t *pTask );
-	void RunTask( Task_t *pTask );
+	Schedule_t *GetScheduleOfType( int Type ) override;
+	void StartTask( Task_t *pTask ) override;
+	void RunTask( Task_t *pTask ) override;
 
-	void PrescheduleThink( void );
+	void PrescheduleThink() override;
 
-	void Killed( entvars_t *pevAttacker, int iGib );
-	void DeathEffect( void );
+	void Killed( entvars_t *pevAttacker, int iGib ) override;
+	void DeathEffect();
 
-	void EyeOff( void );
+	void EyeOff();
 	void EyeOn( int level );
-	void EyeUpdate( void );
-	void Leap( void );
-	void StompAttack( void );
-	void FlameCreate( void );
-	void FlameUpdate( void );
+	void EyeUpdate();
+	void Leap();
+	void StompAttack();
+	void FlameCreate();
+	void FlameUpdate();
 	void FlameControls( float angleX, float angleY );
-	void FlameDestroy( void );
-	inline BOOL FlameIsOn( void ) { return m_pFlame[0] != NULL; }
+	void FlameDestroy();
+	inline BOOL FlameIsOn() { return m_pFlame[0] != NULL; }
 
 	void FlameDamage( Vector vecStart, Vector vecEnd, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CUSTOM_SCHEDULES;
@@ -450,13 +450,13 @@ void CGargantua::EyeOn( int level )
 }
 
 
-void CGargantua::EyeOff( void )
+void CGargantua::EyeOff()
 {
 	m_eyeBrightness = 0;
 }
 
 
-void CGargantua::EyeUpdate( void )
+void CGargantua::EyeUpdate()
 {
 	if ( m_pEyeGlow )
 	{
@@ -470,7 +470,7 @@ void CGargantua::EyeUpdate( void )
 }
 
 
-void CGargantua::StompAttack( void )
+void CGargantua::StompAttack()
 {
 	TraceResult trace;
 
@@ -490,7 +490,7 @@ void CGargantua::StompAttack( void )
 }
 
 
-void CGargantua :: FlameCreate( void )
+void CGargantua :: FlameCreate()
 {
 	int			i;
 	Vector		posGun, angleGun;
@@ -550,7 +550,7 @@ void CGargantua :: FlameControls( float angleX, float angleY )
 }
 
 
-void CGargantua :: FlameUpdate( void )
+void CGargantua :: FlameUpdate()
 {
 	int				i;
 	static float	offset[2] = { 60, -60 };
@@ -675,7 +675,7 @@ void CGargantua :: FlameDamage( Vector vecStart, Vector vecEnd, entvars_t *pevIn
 }
 
 
-void CGargantua :: FlameDestroy( void )
+void CGargantua :: FlameDestroy()
 {
 	int i;
 
@@ -691,7 +691,7 @@ void CGargantua :: FlameDestroy( void )
 }
 
 
-void CGargantua :: PrescheduleThink( void )
+void CGargantua :: PrescheduleThink()
 {
 	if ( !HasConditions( bits_COND_SEE_ENEMY ) )
 	{
@@ -709,7 +709,7 @@ void CGargantua :: PrescheduleThink( void )
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CGargantua :: Classify ( void )
+int	CGargantua :: Classify ()
 {
 	return m_iClass?m_iClass:CLASS_ALIEN_MONSTER;
 }
@@ -718,7 +718,7 @@ int	CGargantua :: Classify ( void )
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CGargantua :: SetYawSpeed ( void )
+void CGargantua :: SetYawSpeed ()
 {
 	int ys;
 
@@ -887,7 +887,7 @@ int CGargantua::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 }
 
 
-void CGargantua::DeathEffect( void )
+void CGargantua::DeathEffect()
 {
 	int i;
 	UTIL_MakeVectors(pev->angles);
@@ -1290,13 +1290,13 @@ void CGargantua::RunTask( Task_t *pTask )
 class CSmoker : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void Think( void );
+	void Spawn() override;
+	void Think() override;
 };
 
 LINK_ENTITY_TO_CLASS( env_smoker, CSmoker );
 
-void CSmoker::Spawn( void )
+void CSmoker::Spawn()
 {
 	pev->movetype = MOVETYPE_NONE;
 	SetNextThink( 0 );
@@ -1307,7 +1307,7 @@ void CSmoker::Spawn( void )
 }
 
 
-void CSmoker::Think( void )
+void CSmoker::Think()
 {
 	// lots of smoke
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
@@ -1328,7 +1328,7 @@ void CSmoker::Think( void )
 }
 
 
-void CSpiral::Spawn( void )
+void CSpiral::Spawn()
 {
 	pev->movetype = MOVETYPE_NONE;
 	SetNextThink( 0 );
@@ -1359,7 +1359,7 @@ CSpiral *CSpiral::Create( const Vector &origin, float height, float radius, floa
 
 #define SPIRAL_INTERVAL		0.1 //025
 
-void CSpiral::Think( void )
+void CSpiral::Think()
 {
 	float time = gpGlobals->time - pev->dmgtime;
 

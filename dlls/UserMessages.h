@@ -56,4 +56,4 @@ extern int gmsgStatusIcon; //LRC
 extern int gmsgStatusText;
 extern int gmsgStatusValue;
 
-void LinkUserMessages(void);
+void LinkUserMessages();

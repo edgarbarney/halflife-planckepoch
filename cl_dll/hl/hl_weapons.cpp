@@ -91,7 +91,7 @@ void AlertMessage( ALERT_TYPE atype, const char *szFmt, ... )
 
 //Returns if it's multiplayer.
 //Mostly used by the client side weapons.
-bool bIsMultiplayer ( void )
+bool bIsMultiplayer ()
 {
 	return gEngfuncs.GetMaxClients() == 1 ? 0 : 1;
 }
@@ -173,7 +173,7 @@ BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay,
 CBasePlayerWeapon :: CanDeploy
 =====================
 */
-BOOL CBasePlayerWeapon :: CanDeploy( void ) 
+BOOL CBasePlayerWeapon :: CanDeploy() 
 {
 	BOOL bHasAmmo = 0;
 
@@ -237,7 +237,7 @@ CBasePlayerWeapon :: PlayEmptySound
 
 =====================
 */
-BOOL CBasePlayerWeapon :: PlayEmptySound( void )
+BOOL CBasePlayerWeapon :: PlayEmptySound()
 {
 	if (m_iPlayEmptySound)
 	{
@@ -254,7 +254,7 @@ CBasePlayerWeapon :: ResetEmptySound
 
 =====================
 */
-void CBasePlayerWeapon :: ResetEmptySound( void )
+void CBasePlayerWeapon :: ResetEmptySound()
 {
 	m_iPlayEmptySound = 1;
 }
@@ -330,7 +330,7 @@ CBasePlayerWeapon::ItemPostFrame
 Handles weapon firing, reloading, etc.
 =====================
 */
-void CBasePlayerWeapon::ItemPostFrame( void )
+void CBasePlayerWeapon::ItemPostFrame()
 {
 	if ((m_fInReload) && (m_pPlayer->m_flNextAttack <= 0.0))
 	{
@@ -440,7 +440,7 @@ CBasePlayer::SelectLastItem
 
 =====================
 */
-void CBasePlayer::SelectLastItem(void)
+void CBasePlayer::SelectLastItem()
 {
 	if (!m_pLastItem)
 	{
@@ -482,7 +482,7 @@ CBasePlayer::Spawn
 
 =====================
 */
-void CBasePlayer::Spawn( void )
+void CBasePlayer::Spawn()
 {
 	if (m_pActiveItem)
 		m_pActiveItem->Deploy( );
@@ -531,7 +531,7 @@ UTIL_ParticleBoxes
 For debugging, draw boxes for other collidable players
 =====================
 */
-void UTIL_ParticleBoxes( void )
+void UTIL_ParticleBoxes()
 {
 	int idx;
 	physent_t *pe;
@@ -584,7 +584,7 @@ HUD_InitClientWeapons
 Set up weapons, player and functions needed to run weapons code client-side.
 =====================
 */
-void HUD_InitClientWeapons( void )
+void HUD_InitClientWeapons()
 {
 	static int initialized = 0;
 	if ( initialized )
@@ -660,7 +660,7 @@ HUD_SetLastOrg
 Remember our exact predicted origin so we can draw the egon to the right position.
 =====================
 */
-void HUD_SetLastOrg( void )
+void HUD_SetLastOrg()
 {
 	int i;
 	

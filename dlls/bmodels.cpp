@@ -53,20 +53,20 @@ This is just a solid wall if not inhibited
 class CFuncWall : public CBaseEntity
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	
-	virtual STATE GetState( void ) { return pev->frame?STATE_ON:STATE_OFF; };
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+
+    STATE GetState() override { return pev->frame?STATE_ON:STATE_OFF; };
 
 	// Bmodels don't go across transitions
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	
 	int m_iStyle;
 };
 
 LINK_ENTITY_TO_CLASS( func_wall, CFuncWall );
 
-void CFuncWall :: Spawn( void )
+void CFuncWall :: Spawn()
 {
 	pev->angles		= g_vecZero;
 	pev->movetype	= MOVETYPE_PUSH;  // so it doesn't get pushed by anything
@@ -111,16 +111,16 @@ void CFuncWall :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 class CFuncWallToggle : public CFuncWall
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	TurnOff( void );
-	void	TurnOn( void );
-	virtual STATE GetState( void ) { return (pev->solid == SOLID_NOT)?STATE_OFF:STATE_ON; };
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void	TurnOff();
+	void	TurnOn();
+    STATE GetState() override { return (pev->solid == SOLID_NOT)?STATE_OFF:STATE_ON; };
 };
 
 LINK_ENTITY_TO_CLASS( func_wall_toggle, CFuncWallToggle );
 
-void CFuncWallToggle :: Spawn( void )
+void CFuncWallToggle :: Spawn()
 {
 	CFuncWall::Spawn();
 	if ( pev->spawnflags & SF_WALL_START_OFF )
@@ -128,7 +128,7 @@ void CFuncWallToggle :: Spawn( void )
 }
 
 
-void CFuncWallToggle :: TurnOff( void )
+void CFuncWallToggle :: TurnOff()
 {
 	pev->solid = SOLID_NOT;
 	pev->effects |= EF_NODRAW;
@@ -136,7 +136,7 @@ void CFuncWallToggle :: TurnOff( void )
 }
 
 
-void CFuncWallToggle :: TurnOn( void )
+void CFuncWallToggle :: TurnOn()
 {
 	pev->solid = SOLID_BSP;
 	pev->effects &= ~EF_NODRAW;
@@ -164,13 +164,13 @@ void CFuncWallToggle :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 class CFuncConveyor : public CFuncWall
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void	UpdateSpeed( float speed );
 };
 
 LINK_ENTITY_TO_CLASS( func_conveyor, CFuncConveyor );
-void CFuncConveyor :: Spawn( void )
+void CFuncConveyor :: Spawn()
 {
 	SetMovedir( pev );
 	CFuncWall::Spawn();
@@ -225,10 +225,10 @@ A simple entity that looks solid but lets you walk through it.
 class CFuncIllusionary : public CBaseToggle 
 {
 public:
-	void Spawn( void );
+	void Spawn() override;
 	void EXPORT SloshTouch( CBaseEntity *pOther );
-	void KeyValue( KeyValueData *pkvd );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void KeyValue( KeyValueData *pkvd ) override;
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 };
 
 LINK_ENTITY_TO_CLASS( func_illusionary, CFuncIllusionary );
@@ -245,7 +245,7 @@ void CFuncIllusionary :: KeyValue( KeyValueData *pkvd )
 		CBaseToggle::KeyValue( pkvd );
 }
 
-void CFuncIllusionary :: Spawn( void )
+void CFuncIllusionary :: Spawn()
 {
 	pev->angles = g_vecZero;
 	pev->movetype = MOVETYPE_NONE;  
@@ -273,13 +273,13 @@ void CFuncIllusionary :: Spawn( void )
 class CFuncMonsterClip : public CFuncWall
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) {}		// Clear out func_wall's use function
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override {}		// Clear out func_wall's use function
 };
 
 LINK_ENTITY_TO_CLASS( func_monsterclip, CFuncMonsterClip );
 
-void CFuncMonsterClip::Spawn( void )
+void CFuncMonsterClip::Spawn()
 {
 	CFuncWall::Spawn();
 	if ( CVAR_GET_FLOAT("showtriggers") == 0 )
@@ -293,20 +293,20 @@ class CFuncRotating : public CBaseEntity
 {
 public:
 	// basic functions
-	void Spawn( void  );
-	void Precache( void  );
-	void EXPORT SpinUp ( void );
-	void EXPORT SpinDown ( void );
-	void KeyValue( KeyValueData* pkvd);
+	void Spawn() override;
+	void Precache() override;
+	void EXPORT SpinUp ();
+	void EXPORT SpinDown ();
+	void KeyValue( KeyValueData* pkvd) override;
 	void EXPORT HurtTouch ( CBaseEntity *pOther );
 	void EXPORT RotatingUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT WaitForStart (); //LRC - get round 1.1.0.8's bizarre behaviour on startup
-	void EXPORT Rotate ( void );
+	void EXPORT Rotate ();
 	void RampPitchVol (int fUp );
-	void Blocked( CBaseEntity *pOther );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void Blocked( CBaseEntity *pOther ) override;
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -322,7 +322,7 @@ public:
 		// from pev->avelocity.
 
 	STATE m_iState; //LRC
-	virtual STATE GetState( void ) { return m_iState; }; //LRC
+    STATE GetState() override { return m_iState; }; //LRC
 };
 
 TYPEDESCRIPTION	CFuncRotating::m_SaveData[] = 
@@ -484,7 +484,7 @@ void CFuncRotating :: Spawn( )
 	Precache( );
 }
 
-void CFuncRotating :: Precache( void )
+void CFuncRotating :: Precache()
 {
 	char* szSoundFile = (char*) STRING(pev->message);
 
@@ -615,7 +615,7 @@ void CFuncRotating :: RampPitchVol (int fUp)
 //
 // SpinUp - accelerates a non-moving func_rotating up to it's speed
 //
-void CFuncRotating :: SpinUp( void )
+void CFuncRotating :: SpinUp()
 {
 	//Vector	vecAVel;//rotational velocity
 	
@@ -648,7 +648,7 @@ void CFuncRotating :: SpinUp( void )
 //
 // SpinDown - decelerates a moving func_rotating to a standstill.
 //
-void CFuncRotating :: SpinDown( void )
+void CFuncRotating :: SpinDown()
 {
 	SetNextThink( 0.1 );
 
@@ -677,7 +677,7 @@ void CFuncRotating :: SpinDown( void )
 	}
 }
 
-void CFuncRotating :: Rotate( void )
+void CFuncRotating :: Rotate()
 {
 	SetNextThink( 10 );
 }
@@ -764,18 +764,18 @@ void CFuncRotating :: Blocked( CBaseEntity *pOther )
 class CPendulum : public CBaseEntity
 {
 public:
-	void	Spawn ( void );
-	void	KeyValue( KeyValueData *pkvd );
-	void	EXPORT SwingThink( void );
+	void	Spawn () override;
+	void	KeyValue( KeyValueData *pkvd ) override;
+	void	EXPORT SwingThink();
 	void	EXPORT PendulumUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	EXPORT StopThink( void );
-	void	Touch( CBaseEntity *pOther );
+	void	EXPORT StopThink();
+	void	Touch( CBaseEntity *pOther ) override;
 	void	EXPORT RopeTouch ( CBaseEntity *pOther );// this touch func makes the pendulum a rope
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	void	Blocked( CBaseEntity *pOther );
-	virtual STATE GetState( void ) { return (pev->speed)?STATE_ON:STATE_OFF; }
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
+	void	Blocked( CBaseEntity *pOther ) override;
+    STATE GetState() override { return (pev->speed)?STATE_ON:STATE_OFF; }
 
 	static	TYPEDESCRIPTION m_SaveData[];
 	
@@ -829,7 +829,7 @@ void CPendulum :: KeyValue( KeyValueData *pkvd )
 }
 
 
-void CPendulum :: Spawn( void )
+void CPendulum :: Spawn()
 {
 	// set the axis of rotation
 	CBaseToggle :: AxisDir( pev );
@@ -895,7 +895,7 @@ void CPendulum :: PendulumUse( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	}
 }
 
-void CPendulum :: StopThink( void )
+void CPendulum :: StopThink()
 {
 	UTIL_SetAngles(this, m_start); //LRC
 	//pev->angles = m_start;
@@ -912,7 +912,7 @@ void CPendulum::Blocked( CBaseEntity *pOther )
 }
 
 
-void CPendulum :: SwingThink( void )
+void CPendulum :: SwingThink()
 {
 	float delta, dt;
 	

@@ -36,7 +36,7 @@ extern BOOL FEntIsVisible(entvars_t* pev, entvars_t* pevTarget);
 extern DLL_GLOBAL int g_iSkillLevel;
 
 // Landmark class
-void CPointEntity :: Spawn( void )
+void CPointEntity :: Spawn()
 {
 	pev->solid = SOLID_NOT;
 }
@@ -44,12 +44,12 @@ void CPointEntity :: Spawn( void )
 class CNullEntity : public CBaseEntity
 {
 public:
-	void Spawn( void );
+	void Spawn() override;
 };
 
 
 // Null Entity, remove on startup
-void CNullEntity :: Spawn( void )
+void CNullEntity :: Spawn()
 {
 	REMOVE_ENTITY(ENT(pev));
 }
@@ -60,8 +60,8 @@ LINK_ENTITY_TO_CLASS(info_compile_parameters,CNullEntity);
 class CBaseDMStart : public CPointEntity
 {
 public:
-	void		KeyValue( KeyValueData *pkvd );
-	STATE		GetState( CBaseEntity *pEntity );
+	void		KeyValue( KeyValueData *pkvd ) override;
+	STATE		GetState( CBaseEntity *pEntity ) override;
 
 private:
 };
@@ -91,7 +91,7 @@ STATE CBaseDMStart::GetState( CBaseEntity *pEntity )
 }
 
 // This updates global tables that need to know about entities being removed
-void CBaseEntity::UpdateOnRemove( void )
+void CBaseEntity::UpdateOnRemove()
 {
 	int	i;
 	CBaseEntity* pTemp;
@@ -174,7 +174,7 @@ void CBaseEntity::UpdateOnRemove( void )
 }
 
 // Convenient way to delay removing oneself
-void CBaseEntity :: SUB_Remove( void )
+void CBaseEntity :: SUB_Remove()
 {
 	UpdateOnRemove();
 	if (pev->health > 0)
@@ -189,7 +189,7 @@ void CBaseEntity :: SUB_Remove( void )
 
 
 // Convenient way to explicitly do nothing (passed to functions that require a method)
-void CBaseEntity :: SUB_DoNothing( void )
+void CBaseEntity :: SUB_DoNothing()
 {
 //	if (pev->ltime)
 //		ALERT(at_console, "Doing Nothing %f\n", pev->ltime);
@@ -405,7 +405,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 
 
 /*
-void CBaseDelay :: SUB_UseTargetsEntMethod( void )
+void CBaseDelay :: SUB_UseTargetsEntMethod()
 {
 	SUB_UseTargets(pev);
 }
@@ -440,7 +440,7 @@ Vector GetMovedir( Vector vecAngles )
 
 
 
-void CBaseDelay::DelayThink( void )
+void CBaseDelay::DelayThink()
 {
 	CBaseEntity *pActivator = NULL;
 
@@ -540,7 +540,7 @@ void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed )//, BOOL bNow )
 //	}
 }
 
-void CBaseToggle :: LinearMoveNow( void )
+void CBaseToggle :: LinearMoveNow()
 {
 //	ALERT(at_console, "LMNow %s\n", STRING(pev->targetname));
 
@@ -590,7 +590,7 @@ void CBaseToggle :: LinearMoveNow( void )
 After moving, set origin to exact final destination, call "move done" function
 ============
 */
-/*void CBaseToggle :: LinearMoveDone( void )
+/*void CBaseToggle :: LinearMoveDone()
 {
 	Vector vecDiff;
 	if (m_pMoveWith)
@@ -610,14 +610,14 @@ After moving, set origin to exact final destination, call "move done" function
 	}
 }*/
 
-void CBaseToggle :: LinearMoveDone( void )
+void CBaseToggle :: LinearMoveDone()
 {
 	SetThink(&CBaseToggle::LinearMoveDoneNow);
 //	ALERT(at_console, "LMD: desiredThink %s\n", STRING(pev->targetname));
 	UTIL_DesiredThink( this );
 }
 
-void CBaseToggle :: LinearMoveDoneNow( void )
+void CBaseToggle :: LinearMoveDoneNow()
 {
 	Vector vecDest;
 
@@ -642,7 +642,7 @@ void CBaseToggle :: LinearMoveDoneNow( void )
 		(this->*m_pfnCallWhenMoveDone)();
 }
 
-BOOL CBaseToggle :: IsLockedByMaster( void )
+BOOL CBaseToggle :: IsLockedByMaster()
 {
 	if (UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 		return FALSE;
@@ -651,7 +651,7 @@ BOOL CBaseToggle :: IsLockedByMaster( void )
 }
 
 //LRC- mapping toggle-states to global states
-STATE CBaseToggle :: GetState ( void )
+STATE CBaseToggle :: GetState ()
 {
 	switch (m_toggle_state)
 	{
@@ -725,7 +725,7 @@ void CBaseToggle :: AngularMoveNow()
 	UTIL_SetAvelocity(this, vecDestDelta / flTravelTime );
 }
  
-void CBaseToggle :: AngularMoveDone( void )
+void CBaseToggle :: AngularMoveDone()
 {
 	SetThink(&CBaseToggle::AngularMoveDoneNow);
 //	ALERT(at_console, "LMD: desiredThink %s\n", STRING(pev->targetname));
@@ -737,7 +737,7 @@ void CBaseToggle :: AngularMoveDone( void )
 After rotating, set angle to exact final angle, call "move done" function
 ============
 */
-void CBaseToggle :: AngularMoveDoneNow( void )
+void CBaseToggle :: AngularMoveDoneNow()
 {
 //	ALERT(at_console, "AngularMoveDone %f\n", pev->ltime);
 	UTIL_SetAvelocity(this, g_vecZero);
@@ -830,16 +830,16 @@ FEntIsVisible(
 class CInfoMoveWith : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void Spawn() override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	STATE GetState() { return (pev->spawnflags & SF_IMW_INACTIVE)?STATE_OFF:STATE_ON; }
+	STATE GetState() override { return (pev->spawnflags & SF_IMW_INACTIVE)?STATE_OFF:STATE_ON; }
 };
 
 LINK_ENTITY_TO_CLASS(info_movewith, CInfoMoveWith);
 
-void CInfoMoveWith :: Spawn( void )
+void CInfoMoveWith :: Spawn()
 {
 	if (pev->spawnflags & SF_IMW_INACTIVE)
 		m_MoveWith = pev->netname;

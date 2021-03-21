@@ -165,7 +165,7 @@ TYPEDESCRIPTION CBreakable::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CBreakable, CBaseEntity );
 
-void CBreakable::Spawn( void )
+void CBreakable::Spawn()
 {
     Precache( );    
 
@@ -217,7 +217,7 @@ void CBreakable::Spawn( void )
 		LIGHT_STYLE(-m_iStyle, "a");
 }
 
-STATE CBreakable::GetState( void )
+STATE CBreakable::GetState()
 {
 	if (m_iRespawnTime)
 	{
@@ -336,7 +336,7 @@ void CBreakable::MaterialSoundRandom( edict_t *pEdict, Materials soundMaterial, 
 }
 
 
-void CBreakable::Precache( void )
+void CBreakable::Precache()
 {
 	const char *pGibName;
 
@@ -410,7 +410,7 @@ void CBreakable::Precache( void )
 // the more damage, the louder the shard sound.
 
 
-void CBreakable::DamageSound( void )
+void CBreakable::DamageSound()
 {
 	int pitch;
 	float fvol;
@@ -570,7 +570,7 @@ void CBreakable::RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 }
 
 //LRC
-void CBreakable::RespawnThink( void )
+void CBreakable::RespawnThink()
 {
 //	ALERT(at_debug,"RespawnThink: ");
 	CBaseEntity *pList[2];
@@ -609,7 +609,7 @@ void CBreakable::RespawnThink( void )
 	}
 }
 
-void CBreakable::RespawnFadeThink ( void )
+void CBreakable::RespawnFadeThink ()
 {
 	int newamt = min( pev->renderamt + 50, m_iInitialRenderAmt);
 //	ALERT(at_debug, "FadeThink: %d changed to %d\n",pev->renderamt,newamt);
@@ -723,7 +723,7 @@ int CBreakable :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 }
 
 
-void CBreakable::Die( void )
+void CBreakable::Die()
 {
 	Vector vecSpot;// shard origin
 	Vector vecVelocity;// shard velocity
@@ -935,7 +935,7 @@ void CBreakable::Die( void )
 
 
 
-BOOL CBreakable :: IsBreakable( void ) 
+BOOL CBreakable :: IsBreakable() 
 { 
 	return m_Material != matUnbreakableGlass;
 }
@@ -956,23 +956,23 @@ int	CBreakable :: DamageDecal( int bitsDamageType )
 class CPushable : public CBreakable
 {
 public:
-	void	Spawn ( void );
-	void	Precache( void );
-	void	Touch ( CBaseEntity *pOther );
+	void	Spawn () override;
+	void	Precache() override;
+	void	Touch ( CBaseEntity *pOther ) override;
 	void	Move( CBaseEntity *pMover, int push );
-	void	KeyValue( KeyValueData *pkvd );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void	EXPORT StopSound( void );
+	void	KeyValue( KeyValueData *pkvd ) override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void	EXPORT StopSound();
 //	virtual void	SetActivator( CBaseEntity *pActivator ) { m_pPusher = pActivator; }
 
-	virtual int	ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE; }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int	ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE; }
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 
-	inline float MaxSpeed( void ) { return m_maxSpeed; }
+	inline float MaxSpeed() { return m_maxSpeed; }
 	
 	// breakables use an overridden takedamage
-	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
+    int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -995,7 +995,7 @@ LINK_ENTITY_TO_CLASS( func_pushable, CPushable );
 const char *CPushable :: m_soundNames[3] = { "debris/pushbox1.wav", "debris/pushbox2.wav", "debris/pushbox3.wav" };
 
 
-void CPushable :: Spawn( void )
+void CPushable :: Spawn()
 {
 	Vector vecMins = pev->mins;
 	Vector vecMaxs = pev->maxs;
@@ -1027,7 +1027,7 @@ void CPushable :: Spawn( void )
 }
 
 
-void CPushable :: Precache( void )
+void CPushable :: Precache()
 {
 	for ( int i = 0; i < 3; i++ )
 		PRECACHE_SOUND( m_soundNames[i] );
@@ -1174,7 +1174,7 @@ void CPushable :: Move( CBaseEntity *pOther, int push )
 }
 
 #if 0
-void CPushable::StopSound( void )
+void CPushable::StopSound()
 {
 	Vector dist = pev->oldorigin - pev->origin;
 	if ( dist.Length() <= 0 )

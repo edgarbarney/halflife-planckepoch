@@ -37,18 +37,18 @@ IMPLEMENT_SAVERESTORE( CBaseAlias, CPointEntity );
 class CInfoAlias : public CBaseAlias
 {
 public:
-	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void Spawn( void );
-	STATE GetState() { return (pev->spawnflags & SF_ALIAS_OFF)?STATE_OFF:STATE_ON; }
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+	void Spawn() override;
+	STATE GetState() override { return (pev->spawnflags & SF_ALIAS_OFF)?STATE_OFF:STATE_ON; }
 
-	CBaseEntity *FollowAlias( CBaseEntity *pFrom );
-	void ChangeValue( int iszValue );
-	void FlushChanges( void );
+	CBaseEntity *FollowAlias( CBaseEntity *pFrom ) override;
+	void ChangeValue( int iszValue ) override;
+	void FlushChanges() override;
 };
 
 LINK_ENTITY_TO_CLASS( info_alias, CInfoAlias );
 
-void CInfoAlias::Spawn( void )
+void CInfoAlias::Spawn()
 {
 	if (pev->spawnflags & SF_ALIAS_OFF)
 		pev->message = pev->netname;
@@ -86,7 +86,7 @@ void CInfoAlias::ChangeValue( int iszValue )
 	UTIL_AddToAliasList( this );
 }
 
-void CInfoAlias::FlushChanges( void )
+void CInfoAlias::FlushChanges()
 {
 	pev->message = pev->noise;
 	if (pev->spawnflags & SF_ALIAS_DEBUG)
@@ -315,14 +315,14 @@ CBaseEntity *CMultiAlias::FollowAlias( CBaseEntity *pStartEntity )
 class CTriggerChangeAlias : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Spawn() override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 };
 LINK_ENTITY_TO_CLASS( trigger_changealias, CTriggerChangeAlias );
 
-void CTriggerChangeAlias::Spawn( void )
+void CTriggerChangeAlias::Spawn()
 {
 }
 

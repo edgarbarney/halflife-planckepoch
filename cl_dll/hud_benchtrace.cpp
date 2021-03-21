@@ -144,7 +144,7 @@ Trace_Cleanup
 Destroys thread and event handle when trace is done, or when restarting a new trace
 ==============
 */
-void Trace_Cleanup( void )
+void Trace_Cleanup()
 {
 #ifdef _WIN32
 	if ( tp.hThread )
@@ -221,7 +221,7 @@ Trace_Think
 Invoked by general frame loop on client to periodically check if the traceroute thread has completed.
 ==============
 */
-void Trace_Think( void )
+void Trace_Think()
 {
 #ifdef _WIN32
 	if ( !tp.hEventDone )

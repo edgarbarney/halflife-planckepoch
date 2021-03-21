@@ -60,7 +60,7 @@ int gmsgStatusIcon = 0; //LRC
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0;
 
-void LinkUserMessages(void)
+void LinkUserMessages()
 {
 	// Already taken care of?
 	if (gmsgSelAmmo)
