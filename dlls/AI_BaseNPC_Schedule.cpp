@@ -921,8 +921,8 @@ void CBaseMonster :: StartTask ( Task_t *pTask )
 						vecDest = m_pGoalEnt->pev->origin;
 
 						if ( !MoveToLocation( newActivity, 2, vecDest ) )
-					{
-						TaskFail();
+						{
+							TaskFail();
 							ALERT( at_aiconsole, "%s Failed to reach script!!!\n", STRING(pev->classname) );
 							RouteClear();
 						}
@@ -1328,8 +1328,8 @@ case TASK_GET_PATH_TO_BESTSCENT:
 					m_IdealActivity = ACT_HOP; break;
 				}
 				pev->framerate = 1.0; // shouldn't be needed, but just in case
-			pev->movetype = MOVETYPE_FLY;
-			ClearBits(pev->flags, FL_ONGROUND);
+				pev->movetype = MOVETYPE_FLY;
+				ClearBits(pev->flags, FL_ONGROUND);
 			}
 			else
 			{
