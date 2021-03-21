@@ -35,21 +35,21 @@
 // speed - the ideal magnitude of my velocity
 class CCrossbowBolt : public CBaseEntity
 {
-	void Spawn( void );
-	void Precache( void );
-	int  Classify ( void );
-	void EXPORT BubbleThink( void );
+	void Spawn() override;
+	void Precache() override;
+	int  Classify () override;
+	void EXPORT BubbleThink();
 	void EXPORT BoltTouch( CBaseEntity *pOther );
-	void EXPORT ExplodeThink( void );
+	void EXPORT ExplodeThink();
 
 	int m_iTrail;
 
 public:
-	static CCrossbowBolt *BoltCreate( void );
+	static CCrossbowBolt *BoltCreate();
 };
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
 
-CCrossbowBolt *CCrossbowBolt::BoltCreate( void )
+CCrossbowBolt *CCrossbowBolt::BoltCreate()
 {
 	// Create a new entity with CCrossbowBolt private data
 	CCrossbowBolt *pBolt = GetClassPtr( (CCrossbowBolt *)NULL );
@@ -90,7 +90,7 @@ void CCrossbowBolt::Precache( )
 }
 
 
-int	CCrossbowBolt :: Classify ( void )
+int	CCrossbowBolt :: Classify ()
 {
 	return	CLASS_NONE;
 }
@@ -170,7 +170,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 	}
 }
 
-void CCrossbowBolt::BubbleThink( void )
+void CCrossbowBolt::BubbleThink()
 {
 	pev->nextthink = gpGlobals->time + 0.1;
 
@@ -180,7 +180,7 @@ void CCrossbowBolt::BubbleThink( void )
 	UTIL_BubbleTrail( pev->origin - pev->velocity * 0.1, pev->origin, 1 );
 }
 
-void CCrossbowBolt::ExplodeThink( void )
+void CCrossbowBolt::ExplodeThink()
 {
 	int iContents = UTIL_PointContents ( pev->origin );
 	int iScale;
@@ -221,21 +221,6 @@ void CCrossbowBolt::ExplodeThink( void )
 }
 #endif
 
-enum crossbow_e {
-	CROSSBOW_IDLE1 = 0,	// full
-	CROSSBOW_IDLE2,		// empty
-	CROSSBOW_FIDGET1,	// full
-	CROSSBOW_FIDGET2,	// empty
-	CROSSBOW_FIRE1,		// full
-	CROSSBOW_FIRE2,		// reload
-	CROSSBOW_FIRE3,		// empty
-	CROSSBOW_RELOAD,	// from empty
-	CROSSBOW_DRAW1,		// full
-	CROSSBOW_DRAW2,		// empty
-	CROSSBOW_HOLSTER1,	// full
-	CROSSBOW_HOLSTER2,	// empty
-};
-
 LINK_ENTITY_TO_CLASS( weapon_crossbow, CCrossbow );
 
 void CCrossbow::Spawn( )
@@ -261,7 +246,7 @@ int CCrossbow::AddToPlayer( CBasePlayer *pPlayer )
 	return FALSE;
 }
 
-void CCrossbow::Precache( void )
+void CCrossbow::Precache()
 {
 	PRECACHE_MODEL("models/w_crossbow.mdl");
 	PRECACHE_MODEL("models/v_crossbow.mdl");
@@ -317,7 +302,7 @@ void CCrossbow::Holster( int skiplocal /* = 0 */ )
 		SendWeaponAnim( CROSSBOW_HOLSTER2 );
 }
 
-void CCrossbow::PrimaryAttack( void )
+void CCrossbow::PrimaryAttack()
 {
 
 #ifdef CLIENT_DLL
@@ -461,7 +446,7 @@ void CCrossbow::SecondaryAttack()
 }
 
 
-void CCrossbow::Reload( void )
+void CCrossbow::Reload()
 {
 	if ( m_pPlayer->ammo_bolts <= 0 )
 		return;
@@ -478,7 +463,7 @@ void CCrossbow::Reload( void )
 }
 
 
-void CCrossbow::WeaponIdle( void )
+void CCrossbow::WeaponIdle()
 {
 	m_pPlayer->GetAutoaimVector( AUTOAIM_2DEGREES );  // get the autoaim vector but ignore it;  used for autoaim crosshair in DM
 
@@ -519,18 +504,18 @@ void CCrossbow::WeaponIdle( void )
 
 class CCrossbowAmmo : public CBasePlayerAmmo
 {
-	void Spawn( void )
+	void Spawn() override
 	{ 
 		Precache( );
 		SET_MODEL(ENT(pev), "models/w_crossbow_clip.mdl");
 		CBasePlayerAmmo::Spawn( );
 	}
-	void Precache( void )
+	void Precache() override
 	{
 		PRECACHE_MODEL ("models/w_crossbow_clip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo( CBaseEntity *pOther ) 
+	BOOL AddAmmo( CBaseEntity *pOther ) override
 	{ 
 		if (pOther->GiveAmmo( AMMO_CROSSBOWCLIP_GIVE, "bolts", BOLT_MAX_CARRY ) != -1)
 		{

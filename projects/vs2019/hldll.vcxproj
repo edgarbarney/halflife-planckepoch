@@ -14,7 +14,7 @@
     <ProjectGuid>{69DDADC0-97F4-419E-86EB-C91781A0D2E0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>hldll</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -42,13 +42,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>C:\Program Files (x86)\Steam\steamapps\common\Half-Life\updated\dlls\</OutDir>
+    <OutDir>C:\Program Files (x86)\Steam\steamapps\common\Half-Life\halflife_updated\dlls\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\int\</IntDir>
     <TargetName>hl</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>C:\Program Files (x86)\Steam\steamapps\common\Half-Life\updated\dlls\</OutDir>
+    <OutDir>C:\Program Files (x86)\Steam\steamapps\common\Half-Life\halflife_updated\dlls\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\int\</IntDir>
     <TargetName>hl</TargetName>
   </PropertyGroup>
@@ -106,6 +106,7 @@ EXIT /B 0</Command>
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\mathlib.cpp" />
     <ClCompile Include="..\..\dlls\aflock.cpp" />
     <ClCompile Include="..\..\dlls\agrunt.cpp" />
     <ClCompile Include="..\..\dlls\airtank.cpp" />
@@ -201,6 +202,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\UserMessages.cpp" />
     <ClCompile Include="..\..\dlls\util.cpp" />
     <ClCompile Include="..\..\dlls\weapons.cpp" />
+    <ClCompile Include="..\..\dlls\weapons_shared.cpp" />
     <ClCompile Include="..\..\dlls\world.cpp" />
     <ClCompile Include="..\..\dlls\wpn_shared\hl_wpn_glock.cpp" />
     <ClCompile Include="..\..\dlls\xen.cpp" />
@@ -211,7 +213,39 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\beamdef.h" />
+    <ClInclude Include="..\..\common\com_model.h" />
+    <ClInclude Include="..\..\common\const.h" />
+    <ClInclude Include="..\..\common\con_nprint.h" />
+    <ClInclude Include="..\..\common\crc.h" />
+    <ClInclude Include="..\..\common\cvardef.h" />
+    <ClInclude Include="..\..\common\director_cmds.h" />
+    <ClInclude Include="..\..\common\dlight.h" />
+    <ClInclude Include="..\..\common\dll_state.h" />
+    <ClInclude Include="..\..\common\entity_state.h" />
+    <ClInclude Include="..\..\common\entity_types.h" />
+    <ClInclude Include="..\..\common\enums.h" />
+    <ClInclude Include="..\..\common\event_api.h" />
+    <ClInclude Include="..\..\common\event_args.h" />
+    <ClInclude Include="..\..\common\event_flags.h" />
+    <ClInclude Include="..\..\common\hltv.h" />
+    <ClInclude Include="..\..\common\interface.h" />
+    <ClInclude Include="..\..\common\in_buttons.h" />
+    <ClInclude Include="..\..\common\mathlib.h" />
+    <ClInclude Include="..\..\common\netadr.h" />
+    <ClInclude Include="..\..\common\nowin.h" />
+    <ClInclude Include="..\..\common\particledef.h" />
     <ClInclude Include="..\..\common\Platform.h" />
+    <ClInclude Include="..\..\common\port.h" />
+    <ClInclude Include="..\..\common\r_efx.h" />
+    <ClInclude Include="..\..\common\r_studioint.h" />
+    <ClInclude Include="..\..\common\screenfade.h" />
+    <ClInclude Include="..\..\common\Sequence.h" />
+    <ClInclude Include="..\..\common\studio_event.h" />
+    <ClInclude Include="..\..\common\usercmd.h" />
+    <ClInclude Include="..\..\common\weaponinfo.h" />
+    <ClInclude Include="..\..\common\winsani_in.h" />
+    <ClInclude Include="..\..\common\winsani_out.h" />
     <ClInclude Include="..\..\dlls\activity.h" />
     <ClInclude Include="..\..\dlls\activitymap.h" />
     <ClInclude Include="..\..\dlls\animation.h" />
@@ -251,7 +285,14 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\dlls\util.h" />
     <ClInclude Include="..\..\dlls\vector.h" />
     <ClInclude Include="..\..\dlls\weapons.h" />
+    <ClInclude Include="..\..\engine\custom.h" />
+    <ClInclude Include="..\..\engine\customentity.h" />
+    <ClInclude Include="..\..\engine\edict.h" />
     <ClInclude Include="..\..\engine\eiface.h" />
+    <ClInclude Include="..\..\engine\progdefs.h" />
+    <ClInclude Include="..\..\engine\progs.h" />
+    <ClInclude Include="..\..\engine\shake.h" />
+    <ClInclude Include="..\..\engine\studio.h" />
     <ClInclude Include="..\..\pm_shared\pm_debug.h" />
     <ClInclude Include="..\..\pm_shared\pm_defs.h" />
     <ClInclude Include="..\..\pm_shared\pm_info.h" />
