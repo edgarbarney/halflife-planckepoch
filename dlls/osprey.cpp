@@ -44,10 +44,10 @@ public:
 	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	int		ObjectCaps() override { return CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-
+	
 	void Spawn() override;
 	void Precache() override;
-	int  Classify() override { return CLASS_MACHINE; };
+	int  Classify() override { return CLASS_MACHINE; }
 	int  BloodColor() override { return DONT_BLEED; }
 	void Killed( entvars_t *pevAttacker, int iGib ) override;
 

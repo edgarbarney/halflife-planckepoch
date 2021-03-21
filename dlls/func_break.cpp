@@ -611,7 +611,7 @@ void CBreakable::RespawnThink()
 
 void CBreakable::RespawnFadeThink ()
 {
-	int newamt = min( pev->renderamt + 50, m_iInitialRenderAmt);
+	int newamt = V_min( pev->renderamt + 50, m_iInitialRenderAmt);
 //	ALERT(at_debug, "FadeThink: %d changed to %d\n",pev->renderamt,newamt);
 	pev->renderamt = newamt;
 	if (pev->renderamt < m_iInitialRenderAmt)

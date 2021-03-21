@@ -74,8 +74,8 @@ public:
 	virtual int Init() {return 0;}
 	virtual int VidInit() {return 0;}
 	virtual int Draw(float flTime) {return 0;}
-	virtual void Think() {return;}
-	virtual void Reset() {return;}
+	virtual void Think() {}
+	virtual void Reset() {}
 	virtual void InitHUDData() {}		// called every time a server is connected to
 
 };
@@ -500,7 +500,7 @@ public:
 
 	void CountFrame( float dt );
 
-	int GetObjects() { return m_nObjects; };
+	int GetObjects() { return m_nObjects; }
 
 	void SetCompositeScore();
 
@@ -573,6 +573,9 @@ public:
 	int DrawHudStringReverse( int xpos, int ypos, int iMinX, char *szString, int r, int g, int b );
 	int DrawHudNumberString( int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b );
 	int GetNumWidth(int iNumber, int iFlags);
+
+	int GetHudNumberWidth(int number, int width, int flags);
+	int DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b);
 
 	int m_iHUDColor; //LRC
 

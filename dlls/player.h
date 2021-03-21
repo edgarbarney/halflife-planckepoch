@@ -112,7 +112,7 @@ public:
 	float	m_flNextObserverInput;
 	int		m_iObserverWeapon;	// weapon of current tracked target
 	int		m_iObserverLastMode;// last used observer mode
-	int		IsObserver() { return pev->iuser1; };
+	int		IsObserver() { return pev->iuser1; }
 
 	int					random_seed;    // See that is shared between client & server for shared weapons code
 
@@ -343,6 +343,8 @@ public:
 	void SetPrefsFromUserinfo(char* infobuffer);
 
 	int m_iAutoWepSwitch;
+
+	bool m_bRestored;
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

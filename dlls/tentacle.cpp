@@ -64,7 +64,7 @@ public:
 
 	void EXPORT HitTouch( CBaseEntity *pOther );
 
-	float HearingSensitivity() override { return 2.0; };
+	float HearingSensitivity() override { return 2.0; }
 
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;

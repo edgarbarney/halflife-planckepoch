@@ -214,6 +214,10 @@ typedef struct
 	int iId;
 } AmmoInfo;
 
+extern int giAmmoIndex;
+
+void AddAmmoNameToAmmoRegistry(const char* szAmmoname);
+
 // Items that the player has in their inventory that they can use
 class CBasePlayerItem : public CBaseAnimating
 {
@@ -238,25 +242,25 @@ public:
 	virtual int GetItemInfo(ItemInfo *p) { return 0; };	// returns 0 if struct not filled out
 	virtual BOOL CanDeploy() { return TRUE; };
 	virtual BOOL Deploy( )								// returns is deploy was successful
-		 { return TRUE; };
+		 { return TRUE; }
 
-	virtual BOOL CanHolster() { return TRUE; };// can this weapon be put away right now?
+	virtual BOOL CanHolster() { return TRUE; }// can this weapon be put away right now?
 	virtual void Holster( int skiplocal = 0 );
-	virtual void UpdateItemInfo() { return; };
+	virtual void UpdateItemInfo() {}
 
-	virtual void ItemPreFrame()	{ return; }		// called each frame by the player PreThink
-	virtual void ItemPostFrame() { return; }		// called each frame by the player PostThink
+	virtual void ItemPreFrame()	{}		// called each frame by the player PreThink
+	virtual void ItemPostFrame() {}		// called each frame by the player PostThink
 
 	virtual void Drop();
 	virtual void Kill();
 	virtual void AttachToPlayer ( CBasePlayer *pPlayer );
 
-	virtual int PrimaryAmmoIndex() { return -1; };
-	virtual int SecondaryAmmoIndex() { return -1; };
+	virtual int PrimaryAmmoIndex() { return -1; }
+	virtual int SecondaryAmmoIndex() { return -1; }
 
 	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
 
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; };
+	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
 
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
@@ -297,17 +301,16 @@ public:
     int AddToPlayer( CBasePlayer *pPlayer ) override;
     int AddDuplicate( CBasePlayerItem *pItem ) override;
 
+	virtual int ExtractAmmo( CBasePlayerWeapon *pWeapon ); //{ return TRUE; }			// Return TRUE if you can add ammo to yourself when picked up
+	virtual int ExtractClipAmmo( CBasePlayerWeapon *pWeapon );// { return TRUE; }			// Return TRUE if you can add ammo to yourself when picked up
 
-	virtual int ExtractAmmo( CBasePlayerWeapon *pWeapon ); //{ return TRUE; };			// Return TRUE if you can add ammo to yourself when picked up
-	virtual int ExtractClipAmmo( CBasePlayerWeapon *pWeapon );// { return TRUE; };			// Return TRUE if you can add ammo to yourself when picked up
-
-	virtual int AddWeapon() { ExtractAmmo( this ); return TRUE; };	// Return TRUE if you want to add yourself to the player
+	virtual int AddWeapon() { ExtractAmmo( this ); return TRUE; }	// Return TRUE if you want to add yourself to the player
 
 	// generic "shared" ammo handlers
 	BOOL AddPrimaryAmmo( int iCount, char *szName, int iMaxClip, int iMaxCarry );
 	BOOL AddSecondaryAmmo( int iCount, char *szName, int iMaxCarry );
 
-    void UpdateItemInfo() override {};	// updates HUD state
+	void UpdateItemInfo() override {}	// updates HUD state
 
 	int m_iPlayEmptySound;
 	int m_fFireOnEmpty;		// True when the gun is empty and the player is still holding down the
@@ -324,25 +327,25 @@ public:
 
     void ItemPostFrame() override;	// called each frame by the player PostThink
 	// called by CBasePlayerWeapons ItemPostFrame()
-	virtual void PrimaryAttack() { return; }				// do "+ATTACK"
-	virtual void SecondaryAttack() { return; }			// do "+ATTACK2"
-	virtual void Reload() { return; }						// do "+RELOAD"
-	virtual void WeaponIdle() { return; }					// called when no buttons pressed
-    int UpdateClientData( CBasePlayer *pPlayer ) override;		// sends hud info to client dll, if things have changed
+	virtual void PrimaryAttack() {}				// do "+ATTACK"
+	virtual void SecondaryAttack() {}			// do "+ATTACK2"
+	virtual void Reload() {}						// do "+RELOAD"
+	virtual void WeaponIdle() {}					// called when no buttons pressed
+	int UpdateClientData( CBasePlayer *pPlayer ) override;		// sends hud info to client dll, if things have changed
 	virtual void RetireWeapon();
-	virtual BOOL ShouldWeaponIdle() {return FALSE; };
-    void Holster( int skiplocal = 0 ) override;
-	virtual BOOL UseDecrement() { return FALSE; };
+	virtual BOOL ShouldWeaponIdle() {return FALSE; }
+	void Holster( int skiplocal = 0 ) override;
+	virtual BOOL UseDecrement() { return FALSE; }
 
 	//LRC - used by weaponstrip
 	void DrainClip(CBasePlayer* pPlayer, BOOL keep, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iUranium, int iSatchel, int iSnark, int iTrip, int iGren );
-	
-	int	PrimaryAmmoIndex() override; 
-	int	SecondaryAmmoIndex() override; 
+		
+	int	PrimaryAmmoIndex() override;
+	int	SecondaryAmmoIndex() override;
 
 	void PrintState();
 
-    CBasePlayerItem *GetWeaponPtr() override { return (CBasePlayerItem *)this; };
+	CBasePlayerItem *GetWeaponPtr() override { return (CBasePlayerItem *)this; }
 	float GetNextAttackDelay( float delay );
 
 	float m_flPumpTime;
@@ -371,7 +374,7 @@ class CBasePlayerAmmo : public CBaseEntity
 public:
     void Spawn() override;
 	void EXPORT DefaultTouch( CBaseEntity *pOther ); // default weapon touch
-	virtual BOOL AddAmmo( CBaseEntity *pOther ) { return TRUE; };
+	virtual BOOL AddAmmo( CBaseEntity *pOther ) { return TRUE; }
 
 	CBaseEntity* Respawn() override;
 	void EXPORT Materialize();
@@ -472,6 +475,20 @@ bool bIsMultiplayer ();
 void LoadVModel ( const char *szViewModel, CBasePlayer *m_pPlayer );
 #endif
 
+enum glock_e
+{
+	GLOCK_IDLE1 = 0,
+	GLOCK_IDLE2,
+	GLOCK_IDLE3,
+	GLOCK_SHOOT,
+	GLOCK_SHOOT_EMPTY,
+	GLOCK_RELOAD,
+	GLOCK_RELOAD_NOT_EMPTY,
+	GLOCK_DRAW,
+	GLOCK_HOLSTER,
+	GLOCK_ADD_SILENCER
+};
+
 class CGlock : public CBasePlayerWeapon
 {
 public:
@@ -504,6 +521,18 @@ private:
 	unsigned short m_usFireGlock2;
 };
 
+enum crowbar_e
+{
+	CROWBAR_IDLE = 0,
+	CROWBAR_DRAW,
+	CROWBAR_HOLSTER,
+	CROWBAR_ATTACK1HIT,
+	CROWBAR_ATTACK1MISS,
+	CROWBAR_ATTACK2MISS,
+	CROWBAR_ATTACK2HIT,
+	CROWBAR_ATTACK3MISS,
+	CROWBAR_ATTACK3HIT
+};
 
 class CCrowbar : public CBasePlayerWeapon
 {
@@ -534,6 +563,18 @@ private:
 	unsigned short m_usCrowbar;
 };
 
+enum python_e
+{
+	PYTHON_IDLE1 = 0,
+	PYTHON_FIDGET,
+	PYTHON_FIRE1,
+	PYTHON_RELOAD,
+	PYTHON_HOLSTER,
+	PYTHON_DRAW,
+	PYTHON_IDLE2,
+	PYTHON_IDLE3
+};
+
 class CPython : public CBasePlayerWeapon
 {
 public:
@@ -560,6 +601,18 @@ public:
 
 private:
 	unsigned short m_usFirePython;
+};
+
+enum mp5_e
+{
+	MP5_LONGIDLE = 0,
+	MP5_IDLE1,
+	MP5_LAUNCH,
+	MP5_RELOAD,
+	MP5_DEPLOY,
+	MP5_FIRE1,
+	MP5_FIRE2,
+	MP5_FIRE3,
 };
 
 class CMP5 : public CBasePlayerWeapon
@@ -593,6 +646,22 @@ private:
 	unsigned short m_usMP52;
 };
 
+enum crossbow_e
+{
+	CROSSBOW_IDLE1 = 0,	// full
+	CROSSBOW_IDLE2,		// empty
+	CROSSBOW_FIDGET1,	// full
+	CROSSBOW_FIDGET2,	// empty
+	CROSSBOW_FIRE1,		// full
+	CROSSBOW_FIRE2,		// reload
+	CROSSBOW_FIRE3,		// empty
+	CROSSBOW_RELOAD,	// from empty
+	CROSSBOW_DRAW1,		// full
+	CROSSBOW_DRAW2,		// empty
+	CROSSBOW_HOLSTER1,	// full
+	CROSSBOW_HOLSTER2,	// empty
+};
+
 class CCrossbow : public CBasePlayerWeapon
 {
 public:
@@ -623,6 +692,20 @@ public:
 private:
 	unsigned short m_usCrossbow;
 	unsigned short m_usCrossbow2;
+};
+
+enum shotgun_e
+{
+	SHOTGUN_IDLE = 0,
+	SHOTGUN_FIRE,
+	SHOTGUN_FIRE2,
+	SHOTGUN_RELOAD,
+	SHOTGUN_PUMP,
+	SHOTGUN_START_RELOAD,
+	SHOTGUN_DRAW,
+	SHOTGUN_HOLSTER,
+	SHOTGUN_IDLE4,
+	SHOTGUN_IDLE_DEEP
 };
 
 class CShotgun : public CBasePlayerWeapon
@@ -681,6 +764,20 @@ public:
 	static CLaserSpot *CreateSpot( const char* spritename );
 };
 
+enum rpg_e
+{
+	RPG_IDLE = 0,
+	RPG_FIDGET,
+	RPG_RELOAD,		// to reload
+	RPG_FIRE2,		// to empty
+	RPG_HOLSTER1,	// loaded
+	RPG_DRAW1,		// loaded
+	RPG_HOLSTER2,	// unloaded
+	RPG_DRAW_UL,	// unloaded
+	RPG_IDLE_UL,	// unloaded idle
+	RPG_FIDGET_UL,	// unloaded fidget
+};
+
 class CRpg : public CBasePlayerWeapon
 {
 public:
@@ -707,7 +804,7 @@ public:
 	void WeaponIdle() override;
 
 	void UpdateSpot();
-	BOOL ShouldWeaponIdle() override { return TRUE; };
+	BOOL ShouldWeaponIdle() override { return TRUE; }
 
 	CLaserSpot *m_pSpot;
 	int m_fSpotActive;
@@ -743,6 +840,22 @@ public:
 	int m_iTrail;
 	float m_flIgniteTime;
 	EHANDLE m_pLauncher;// handle back to the launcher that fired me. 
+};
+
+#define	GAUSS_PRIMARY_CHARGE_VOLUME	256// how loud gauss is while charging
+#define GAUSS_PRIMARY_FIRE_VOLUME	450// how loud gauss is when discharged
+
+enum gauss_e
+{
+	GAUSS_IDLE = 0,
+	GAUSS_IDLE2,
+	GAUSS_FIDGET,
+	GAUSS_SPINUP,
+	GAUSS_SPIN,
+	GAUSS_FIRE,
+	GAUSS_FIRE2,
+	GAUSS_HOLSTER,
+	GAUSS_DRAW
 };
 
 class CGauss : public CBasePlayerWeapon
@@ -794,6 +907,38 @@ private:
 	unsigned short m_usGaussSpin;
 };
 
+enum egon_e
+{
+	EGON_IDLE1 = 0,
+	EGON_FIDGET1,
+	EGON_ALTFIREON,
+	EGON_ALTFIRECYCLE,
+	EGON_ALTFIREOFF,
+	EGON_FIRE1,
+	EGON_FIRE2,
+	EGON_FIRE3,
+	EGON_FIRE4,
+	EGON_DRAW,
+	EGON_HOLSTER
+};
+
+enum EGON_FIRESTATE
+{
+	FIRE_OFF, FIRE_CHARGE
+};
+
+enum EGON_FIREMODE
+{
+	FIRE_NARROW, FIRE_WIDE
+};
+
+#define	EGON_PRIMARY_VOLUME		450
+#define EGON_BEAM_SPRITE		"sprites/xbeam1.spr"
+#define EGON_FLARE_SPRITE		"sprites/XSpark1.spr"
+#define EGON_SOUND_OFF			"weapons/egon_off1.wav"
+#define EGON_SOUND_RUN			"weapons/egon_run3.wav"
+#define EGON_SOUND_STARTUP		"weapons/egon_windup2.wav"
+
 class CEgon : public CBasePlayerWeapon
 {
 public:
@@ -833,8 +978,6 @@ public:
 	BOOL HasAmmo();
 
 	void UseAmmo( int count );
-	
-	enum EGON_FIREMODE { FIRE_NARROW, FIRE_WIDE};
 
 	CBeam				*m_pBeam;
 	CBeam				*m_pNoise;
@@ -858,6 +1001,16 @@ private:
 	BOOL				m_deployed;
 
 	unsigned short m_usEgonFire;
+};
+
+enum hgun_e
+{
+	HGUN_IDLE1 = 0,
+	HGUN_FIDGETSWAY,
+	HGUN_FIDGETSHAKE,
+	HGUN_DOWN,
+	HGUN_UP,
+	HGUN_SHOOT
 };
 
 class CHgun : public CBasePlayerWeapon
@@ -894,7 +1047,17 @@ private:
 	unsigned short m_usHornetFire;
 };
 
-
+enum handgrenade_e
+{
+	HANDGRENADE_IDLE = 0,
+	HANDGRENADE_FIDGET,
+	HANDGRENADE_PINPULL,
+	HANDGRENADE_THROW1,	// toss
+	HANDGRENADE_THROW2,	// medium
+	HANDGRENADE_THROW3,	// hard
+	HANDGRENADE_HOLSTER,
+	HANDGRENADE_DRAW
+};
 
 class CHandGrenade : public CBasePlayerWeapon
 {
@@ -918,6 +1081,23 @@ public:
 		return FALSE;
 #endif
 	}
+};
+
+enum satchel_e
+{
+	SATCHEL_IDLE1 = 0,
+	SATCHEL_FIDGET1,
+	SATCHEL_DRAW,
+	SATCHEL_DROP
+};
+
+enum satchel_radio_e
+{
+	SATCHEL_RADIO_IDLE1 = 0,
+	SATCHEL_RADIO_FIDGET1,
+	SATCHEL_RADIO_DRAW,
+	SATCHEL_RADIO_FIRE,
+	SATCHEL_RADIO_HOLSTER
 };
 
 class CSatchel : public CBasePlayerWeapon
@@ -956,6 +1136,18 @@ public:
 	}
 };
 
+enum tripmine_e
+{
+	TRIPMINE_IDLE1 = 0,
+	TRIPMINE_IDLE2,
+	TRIPMINE_ARM1,
+	TRIPMINE_ARM2,
+	TRIPMINE_FIDGET,
+	TRIPMINE_HOLSTER,
+	TRIPMINE_DRAW,
+	TRIPMINE_WORLD,
+	TRIPMINE_GROUND,
+};
 
 class CTripmine : public CBasePlayerWeapon
 {
@@ -988,6 +1180,16 @@ public:
 private:
 	unsigned short m_usTripFire;
 
+};
+
+enum squeak_e
+{
+	SQUEAK_IDLE1 = 0,
+	SQUEAK_FIDGETFIT,
+	SQUEAK_FIDGETNIP,
+	SQUEAK_DOWN,
+	SQUEAK_UP,
+	SQUEAK_THROW
 };
 
 class CSqueak : public CBasePlayerWeapon

@@ -502,7 +502,8 @@ void ClientCommand( edict_t *pEntity )
 		return;
 
 	entvars_t *pev = &pEntity->v;
-	
+
+	auto player = GetClassPtr<CBasePlayer>(reinterpret_cast<CBasePlayer*>(&pEntity->v));
 
 	if ( FStrEq(pcmd, "VModEnable") ) //LRC - shut up about VModEnable...
 	{
@@ -565,54 +566,52 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq(pcmd, "fullupdate" ) )
 	{
-		GetClassPtr((CBasePlayer *)pev)->ForceClientDllUpdate(); 
+		player->ForceClientDllUpdate();
 	}
 	else if ( FStrEq(pcmd, "give" ) )
 	{
 		if (g_psv_cheats->value)
 		{
 			int iszItem = ALLOC_STRING( CMD_ARGV(1) );	// Make a copy of the classname
-			GetClassPtr((CBasePlayer *)pev)->GiveNamedItem( STRING(iszItem) );
+			player->GiveNamedItem( STRING(iszItem) );
 		}
 	}
 
 	else if ( FStrEq(pcmd, "drop" ) )
 	{
 		// player is dropping an item. 
-		GetClassPtr((CBasePlayer *)pev)->DropPlayerItem((char *)CMD_ARGV(1));
+		player->DropPlayerItem((char *)CMD_ARGV(1));
 	}
 	else if ( FStrEq(pcmd, "fov" ) )
 	{
 		if (g_psv_cheats->value && CMD_ARGC() > 1)
 		{
-			GetClassPtr((CBasePlayer *)pev)->m_iFOV = atoi( CMD_ARGV(1) );
+			player->m_iFOV = atoi( CMD_ARGV(1) );
 		}
 		else
 		{
-			CLIENT_PRINTF( pEntity, print_console, UTIL_VarArgs( "\"fov\" is \"%d\"\n", (int)GetClassPtr((CBasePlayer *)pev)->m_iFOV ) );
+			CLIENT_PRINTF( pEntity, print_console, UTIL_VarArgs( "\"fov\" is \"%d\"\n", (int)player->m_iFOV ) );
 		}
 	}
 	else if ( FStrEq(pcmd, "use" ) )
 	{
-		GetClassPtr((CBasePlayer *)pev)->SelectItem((char *)CMD_ARGV(1));
+		player->SelectItem((char *)CMD_ARGV(1));
 	}
 	else if (((pstr = strstr(pcmd, "weapon_")) != NULL)  && (pstr == pcmd))
 	{
-		GetClassPtr((CBasePlayer *)pev)->SelectItem(pcmd);
+		player->SelectItem(pcmd);
 	}
 	else if (FStrEq(pcmd, "lastinv" ))
 	{
-		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
+		player->SelectLastItem();
 	}
 	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
 	{
 			// always allow proxies to become a spectator
 		if ( (pev->flags & FL_PROXY) || allow_spectators.value  )
 		{
-			CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( pPlayer );
-			pPlayer->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
+			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(player);
+			player->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
 
 			// notify other clients of player switching to spectator mode
 			UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s switched to spectator mode\n", 
@@ -624,10 +623,8 @@ void ClientCommand( edict_t *pEntity )
 	}	
 	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
 	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
+		if (player->IsObserver() )
+			player->Observer_SetMode( atoi( CMD_ARGV(1) ) );
 	}
 	else if ( FStrEq(pcmd, "closemenus" ) )
 	{
@@ -635,12 +632,10 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq( pcmd, "follownext" )  )	// follow next player
 	{
-		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
-
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_FindNextPlayer( atoi( CMD_ARGV(1) )?true:false );
+		if (player->IsObserver() )
+			player->Observer_FindNextPlayer( atoi( CMD_ARGV(1) )?true:false );
 	}
-	else if ( g_pGameRules->ClientCommand( GetClassPtr((CBasePlayer *)pev), pcmd ) )
+	else if ( g_pGameRules->ClientCommand(player, pcmd ) )
 	{
 		// MenuSelect returns true only if the command is properly handled,  so don't print a warning
 	}
@@ -1332,9 +1327,6 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	return 1;
 }
 
-// defaults for clientinfo messages
-#define	DEFAULT_VIEWHEIGHT	28
-
 /*
 ===================
 CreateBaseline
@@ -1342,7 +1334,7 @@ CreateBaseline
 Creates baselines used for network encoding, especially for player data since players are not spawned until connect time.
 ===================
 */
-void CreateBaseline( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs )
+void CreateBaseline( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector* player_mins, Vector* player_maxs )
 {
 	baseline->origin		= entity->v.origin;
 	baseline->angles		= entity->v.angles;
@@ -1359,8 +1351,8 @@ void CreateBaseline( int player, int eindex, struct entity_state_s *baseline, st
 
 	if ( player )
 	{
-		baseline->mins			= player_mins;
-		baseline->maxs			= player_maxs;
+		baseline->mins			= *player_mins;
+		baseline->maxs			= *player_maxs;
 
 		baseline->colormap		= eindex;
 		baseline->modelindex	= playermodelindex;
@@ -1907,18 +1899,18 @@ int GetHullBounds( int hullnumber, float *mins, float *maxs )
 	switch ( hullnumber )
 	{
 	case 0:				// Normal player
-		mins = VEC_HULL_MIN;
-		maxs = VEC_HULL_MAX;
+		memcpy(mins, &VEC_HULL_MIN, sizeof(VEC_HULL_MIN));
+		memcpy(maxs, &VEC_HULL_MAX, sizeof(VEC_HULL_MAX));
 		iret = 1;
 		break;
 	case 1:				// Crouched player
-		mins = VEC_DUCK_HULL_MIN;
-		maxs = VEC_DUCK_HULL_MAX;
+		memcpy(mins, &VEC_DUCK_HULL_MIN, sizeof(VEC_DUCK_HULL_MIN));
+		memcpy(maxs, &VEC_DUCK_HULL_MAX, sizeof(VEC_DUCK_HULL_MAX));
 		iret = 1;
 		break;
 	case 2:				// Point based hull
-		mins = Vector( 0, 0, 0 );
-		maxs = Vector( 0, 0, 0 );
+		memcpy(mins, &g_vecZero, sizeof(g_vecZero));
+		memcpy(maxs, &g_vecZero, sizeof(g_vecZero));
 		iret = 1;
 		break;
 	}

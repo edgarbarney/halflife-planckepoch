@@ -83,9 +83,9 @@ typedef struct
 	int		fInOpen;
 	int		fInWater;
 	float	flFraction;			// time completed, 1.0 = didn't hit anything
-	vec3_t	vecEndPos;			// final position
+	Vector	vecEndPos;			// final position
 	float	flPlaneDist;
-	vec3_t	vecPlaneNormal;		// surface normal at impact
+	Vector	vecPlaneNormal;		// surface normal at impact
 	edict_t	*pHit;				// entity the surface is on
 	int		iHitgroup;			// 0 == generic, non zero is specific body part
 	} TraceResult;
@@ -300,6 +300,7 @@ typedef struct enginefuncs_s
 	void (*pfnQueryClientCvarValue)( const edict_t *player, const char *cvarName );
 	void (*pfnQueryClientCvarValue2)( const edict_t *player, const char *cvarName, int requestID );
 	int (*pfnCheckParm)( const char *pchCmdLineToken, char **ppnext );
+	edict_t* (*pfnPEntityOfEntIndexAllEntities)(int iEntIndex);
 } enginefuncs_t;
 
 
@@ -320,7 +321,7 @@ typedef struct
 	char		mapName[ 32 ];
 	char		landmarkName[ 32 ];
 	edict_t	*pentLandmark;
-	vec3_t		vecLandmarkOrigin;
+	Vector		vecLandmarkOrigin;
 } LEVELLIST;
 #define MAX_LEVEL_CONNECTIONS	16		// These are encoded in the lower 16bits of ENTITYTABLE->flags
 
@@ -364,7 +365,7 @@ struct saverestore_s
 	// smooth transition
 	int			fUseLandmark;
 	char		szLandmarkName[20];// landmark we'll spawn near in next level
-	vec3_t		vecLandmarkOffset;// for landmark transitions
+	Vector		vecLandmarkOffset;// for landmark transitions
 	float		time;
 	char		szCurrentMapName[32];	// To check global entities
 
@@ -402,7 +403,7 @@ typedef enum _fieldtypes
 #define offsetof(s,m)	(size_t)&(((s *)0)->m)
 #endif
 
-#define _FIELD(type,name,fieldtype,count,flags)		{ fieldtype, #name, offsetof(type, name), count, flags }
+#define _FIELD(type,name,fieldtype,count,flags)		{ fieldtype, #name, static_cast<int>(offsetof(type, name)), count, flags }
 #define DEFINE_FIELD(type,name,fieldtype)			_FIELD(type, name, fieldtype, 1, 0)
 #define DEFINE_ARRAY(type,name,fieldtype,count)		_FIELD(type, name, fieldtype, count, 0)
 #define DEFINE_ENTITY_FIELD(name,fieldtype)			_FIELD(entvars_t, name, fieldtype, 1, 0 )
@@ -420,8 +421,6 @@ typedef struct
 	short			fieldSize;
 	short			flags;
 } TYPEDESCRIPTION;
-
-#define ARRAYSIZE(p)		(sizeof(p)/sizeof(p[0]))
 
 typedef struct 
 {
@@ -482,7 +481,7 @@ typedef struct
 	void			(*pfnSetupVisibility)( struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas );
 	void			(*pfnUpdateClientData) ( const struct edict_s *ent, int sendweapons, struct clientdata_s *cd );
 	int				(*pfnAddToFullPack)( struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet );
-	void			(*pfnCreateBaseline) ( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs );
+	void			(*pfnCreateBaseline) ( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, Vector* player_mins, Vector* player_maxs );
 	void			(*pfnRegisterEncoders)	();
 	int				(*pfnGetWeaponData)		( struct edict_s *player, struct weapon_data_s *info );
 

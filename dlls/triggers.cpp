@@ -5287,8 +5287,8 @@ void CTriggerCamera::FollowTarget( )
 	if (dy > 180) 
 		dy = dy - 360;
 
-	pev->avelocity.x = dx * 40 * gpGlobals->frametime;
-	pev->avelocity.y = dy * 40 * gpGlobals->frametime;
+	pev->avelocity.x = dx * 40 * 0.01;
+	pev->avelocity.y = dy * 40 * 0.01;
 
 
 	if (!(FBitSet (pev->spawnflags, SF_CAMERA_PLAYER_TAKECONTROL)))	
@@ -5343,9 +5343,9 @@ void CTriggerCamera::Move()
 	}
 
 	if ( m_flStopTime > gpGlobals->time )
-		pev->speed = UTIL_Approach( 0, pev->speed, m_deceleration * gpGlobals->frametime );
+		pev->speed = UTIL_Approach( 0, pev->speed, m_deceleration * gpGlobals->frametime);
 	else
-		pev->speed = UTIL_Approach( m_targetSpeed, pev->speed, m_acceleration * gpGlobals->frametime );
+		pev->speed = UTIL_Approach( m_targetSpeed, pev->speed, m_acceleration * gpGlobals->frametime);
 
 	float fraction = 2 * gpGlobals->frametime;
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1-fraction));

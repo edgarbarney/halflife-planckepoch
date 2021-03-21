@@ -581,7 +581,8 @@ void CBaseMonster :: MonsterThink ()
 //=========================================================
 void CBaseMonster :: MonsterUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	m_IdealMonsterState = MONSTERSTATE_ALERT;
+	//Don't do this because it can resurrect dying monsters
+	//m_IdealMonsterState = MONSTERSTATE_ALERT;
 }
 
 //=========================================================

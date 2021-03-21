@@ -23,7 +23,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
-#include "hud_servers.h"
 #include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
 
@@ -68,7 +67,7 @@ public:
 		return ScreenHeight - gHUD.m_iFontHeight*3 - 6;
 	}
 
-    bool			CanShowSpeakerLabels() override
+    bool CanShowSpeakerLabels() override
     {
 		if( gViewPort && gViewPort->m_pScoreBoard )
 			return !gViewPort->m_pScoreBoard->isVisible();
@@ -171,14 +170,6 @@ void __CmdFunc_ForceCloseCommandMenu()
 	if ( gViewPort )
 	{
 		gViewPort->HideCommandMenu();
-	}
-}
-
-void __CmdFunc_ToggleServerBrowser()
-{
-	if ( gViewPort )
-	{
-		gViewPort->ToggleServerBrowser();
 	}
 }
 
@@ -313,7 +304,6 @@ void CHud :: Init()
 	HOOK_COMMAND( "-commandmenu", CloseCommandMenu );
 	HOOK_COMMAND( "ForceCloseCommandMenu", ForceCloseCommandMenu );
 	HOOK_COMMAND( "special", InputPlayerSpecial );
-	HOOK_COMMAND( "togglebrowser", ToggleServerBrowser );
 
 	HOOK_MESSAGE( ValClass );
 	HOOK_MESSAGE( TeamNames );
@@ -346,7 +336,7 @@ void CHud :: Init()
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
 	CVAR_CREATE("cl_autowepswitch", "1", FCVAR_ARCHIVE | FCVAR_USERINFO);
-	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
+	default_fov = CVAR_CREATE( "default_fov", "90", FCVAR_ARCHIVE);
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
 	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
 	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
@@ -390,8 +380,6 @@ void CHud :: Init()
 
 	m_Menu.Init();
 	
-	ServersInit();
-
 	MsgFunc_ResetHUD(0, 0, NULL );
 }
 
@@ -414,8 +402,6 @@ CHud :: ~CHud()
 		}
 		m_pHudList = NULL;
 	}
-
-	ServersShutdown();
 }
 
 // GetSpriteIndex()

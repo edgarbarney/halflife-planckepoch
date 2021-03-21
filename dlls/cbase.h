@@ -68,6 +68,7 @@ CBaseEntity
 
 extern "C" DLLEXPORT int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
 extern "C" DLLEXPORT int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
+extern "C" DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS * pFunctionTable, int* interfaceVersion);
 
 extern int DispatchSpawn( edict_t *pent );
 extern void DispatchKeyValue( edict_t *pentKeyvalue, KeyValueData *pkvd );
@@ -226,6 +227,8 @@ public:
 	//LRC - aliases
 	virtual BOOL IsAlias() { return FALSE; }
 
+	virtual ~CBaseEntity() {}
+	
 	// initialization functions
 	virtual void	Spawn() { return; }
 	virtual void	Precache() { return; }
@@ -291,7 +294,7 @@ public:
 	virtual void	AddPointsToTeam( int score, BOOL bAllowNegativeScore ) {}
 	virtual BOOL	AddPlayerItem( CBasePlayerItem *pItem ) { return 0; }
 	virtual BOOL	RemovePlayerItem( CBasePlayerItem *pItem ) { return 0; }
-	virtual int 	GiveAmmo( int iAmount, const char *szName, int iMax ) { return -1; };
+	virtual int 	GiveAmmo( int iAmount, const char *szName, int iMax ) { return -1; }
 	virtual float	GetDelay() { return 0; }
 	virtual int		IsMoving() { return pev->velocity != g_vecZero; }
 	virtual void	OverrideReset() {}
@@ -321,14 +324,14 @@ public:
 	void (CBaseEntity ::*m_pfnUse)( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void (CBaseEntity ::*m_pfnBlocked)( CBaseEntity *pOther );
 
-	virtual void Think() { if (m_pfnThink) (this->*m_pfnThink)(); };
-	virtual void Touch( CBaseEntity *pOther ) { if (m_pfnTouch) (this->*m_pfnTouch)( pOther ); };
+	virtual void Think() { if (m_pfnThink) (this->*m_pfnThink)(); }
+	virtual void Touch( CBaseEntity *pOther ) { if (m_pfnTouch) (this->*m_pfnTouch)( pOther ); }
 	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) 
 	{ 
 		if (m_pfnUse) 
 			(this->*m_pfnUse)( pActivator, pCaller, useType, value );
 	}
-	virtual void Blocked( CBaseEntity *pOther ) { if (m_pfnBlocked) (this->*m_pfnBlocked)( pOther ); };
+	virtual void Blocked( CBaseEntity *pOther ) { if (m_pfnBlocked) (this->*m_pfnBlocked)( pOther ); }
 
 	// allow engine to allocate instance data
     void *operator new( size_t stAllocateBlock, entvars_t *pev )
@@ -375,7 +378,14 @@ public:
 		return pEnt; 
 	}
 
-	static CBaseEntity *Instance( entvars_t *pev ) { return Instance( ENT( pev ) ); }
+	static CBaseEntity* Instance(entvars_t* pev)
+	{
+		if (!pev)
+			return Instance(ENT(0));
+
+		return Instance(ENT(pev));
+	}
+
 	static CBaseEntity *Instance( int eoffset) { return Instance( ENT( eoffset) ); }
 
 	CBaseMonster *GetMonsterPointer( entvars_t *pevMonster ) 
@@ -433,23 +443,23 @@ public:
 	// virtual functions used by a few classes
 	
 	// used by monsters that are created by the MonsterMaker
-	virtual	void UpdateOwner() { return; };
+	virtual	void UpdateOwner() {}
 
 
 	//
 	static CBaseEntity *Create( const char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL );
 
-	virtual BOOL FBecomeProne() {return FALSE;};
-	edict_t *edict() { return ENT( pev ); };
-	EOFFSET eoffset( ) { return OFFSET( pev ); };
-	int	  entindex( ) { return ENTINDEX( edict() ); };
+	virtual BOOL FBecomeProne() {return FALSE;}
+	edict_t *edict() { return ENT( pev ); }
+	EOFFSET eoffset( ) { return OFFSET( pev ); }
+	int	  entindex( ) { return ENTINDEX( edict() ); }
 
-	virtual Vector Center( ) { return (pev->absmax + pev->absmin) * 0.5; }; // center point of entity
-	virtual Vector EyePosition( ) { return pev->origin + pev->view_ofs; };			// position of eyes
-	virtual Vector EarPosition( ) { return pev->origin + pev->view_ofs; };			// position of ears
-	virtual Vector BodyTarget( const Vector &posSrc ) { return Center( ); };		// position to shoot at
+	virtual Vector Center( ) { return (pev->absmax + pev->absmin) * 0.5; } // center point of entity
+	virtual Vector EyePosition( ) { return pev->origin + pev->view_ofs; }			// position of eyes
+	virtual Vector EarPosition( ) { return pev->origin + pev->view_ofs; }			// position of ears
+	virtual Vector BodyTarget( const Vector &posSrc ) { return Center( ); }		// position to shoot at
 
-	virtual int Illumination( ) { return GETENTITYILLUM( ENT( pev ) ); };
+	virtual int Illumination( ) { return GETENTITYILLUM( ENT( pev ) ); }
 
 	virtual	BOOL FVisible ( CBaseEntity *pEntity );
 	virtual	BOOL FVisible ( const Vector &vecOrigin );
@@ -469,12 +479,12 @@ public:
 	int m_chargeReady;
 	int m_fInAttack;
 
-	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };
 	int m_fireState;
 };
 
 //LRC- moved here from player.cpp. I'd put it in util.h with its friends, but it needs CBaseEntity to be declared.
-inline BOOL FNullEnt( CBaseEntity *ent )	{ return ent == NULL || FNullEnt( ent->edict() ); }
+inline bool FNullEnt(CBaseEntity* ent) { return (ent == NULL) || FNullEnt(ent->edict()); }
+
 
 // Ugly technique to override base member functions
 // Normally it's illegal for a pointer to a member function of a base class to be cast to a pointer
@@ -589,7 +599,7 @@ public:
 	int  LookupSequence ( const char *label );
 	void ResetSequenceInfo ( );
 	void DispatchAnimEvents ( float flFutureInterval = 0.1 ); // Handle events that have happend since last time called up until X seconds into the future
-	virtual void HandleAnimEvent( MonsterEvent_t *pEvent ) { return; };
+	virtual void HandleAnimEvent( MonsterEvent_t *pEvent ) {}
 	float SetBoneController ( int iController, float flValue );
 	void InitBoneControllers ();
 	float SetBlending ( int iBlender, float flValue );
@@ -709,78 +719,6 @@ public:
 #define bits_CAP_FLY			( 1 << 15)// can fly, move all around
 
 #define bits_CAP_DOORS_GROUP    (bits_CAP_USE | bits_CAP_AUTO_DOORS | bits_CAP_OPEN_DOORS)
-
-// used by suit voice to indicate damage sustained and repaired type to player
-
-// instant damage
-
-#define DMG_GENERIC			0			// generic damage was done
-#define DMG_CRUSH			(1 << 0)	// crushed by falling or moving object
-#define DMG_BULLET			(1 << 1)	// shot
-#define DMG_SLASH			(1 << 2)	// cut, clawed, stabbed
-#define DMG_BURN			(1 << 3)	// heat burned
-#define DMG_FREEZE			(1 << 4)	// frozen
-#define DMG_FALL			(1 << 5)	// fell too far
-#define DMG_BLAST			(1 << 6)	// explosive blast damage
-#define DMG_CLUB			(1 << 7)	// crowbar, punch, headbutt
-#define DMG_SHOCK			(1 << 8)	// electric shock
-#define DMG_SONIC			(1 << 9)	// sound pulse shockwave
-#define DMG_ENERGYBEAM		(1 << 10)	// laser or other high energy beam 
-#define DMG_NEVERGIB		(1 << 12)	// with this bit OR'd in, no damage type will be able to gib victims upon death
-#define DMG_ALWAYSGIB		(1 << 13)	// with this bit OR'd in, any damage type can be made to gib victims upon death.
-#define DMG_DROWN			(1 << 14)	// Drowning
-// time-based damage
-#define DMG_TIMEBASED		(~(0x3fff))	// mask for time-based damage
-
-#define DMG_PARALYZE		(1 << 15)	// slows affected creature down
-#define DMG_NERVEGAS		(1 << 16)	// nerve toxins, very bad
-#define DMG_POISON			(1 << 17)	// blood poisioning
-#define DMG_RADIATION		(1 << 18)	// radiation exposure
-#define DMG_DROWNRECOVER	(1 << 19)	// drowning recovery
-#define DMG_ACID			(1 << 20)	// toxic chemicals or acid burns
-#define DMG_SLOWBURN		(1 << 21)	// in an oven
-#define DMG_SLOWFREEZE		(1 << 22)	// in a subzero freezer
-#define DMG_MORTAR			(1 << 23)	// Hit by air raid (done to distinguish grenade from mortar)
-
-// these are the damage types that are allowed to gib corpses
-#define DMG_GIB_CORPSE		( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB )
-
-// these are the damage types that have client hud art
-#define DMG_SHOWNHUD		(DMG_POISON | DMG_ACID | DMG_FREEZE | DMG_SLOWFREEZE | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK)
-
-// NOTE: tweak these values based on gameplay feedback:
-
-#define PARALYZE_DURATION	2		// number of 2 second intervals to take damage
-#define PARALYZE_DAMAGE		1.0		// damage to take each 2 second interval
-
-#define NERVEGAS_DURATION	2
-#define NERVEGAS_DAMAGE		5.0
-
-#define POISON_DURATION		5
-#define POISON_DAMAGE		2.0
-
-#define RADIATION_DURATION	2
-#define RADIATION_DAMAGE	1.0
-
-#define ACID_DURATION		2
-#define ACID_DAMAGE			5.0
-
-#define SLOWBURN_DURATION	2
-#define SLOWBURN_DAMAGE		1.0
-
-#define SLOWFREEZE_DURATION	2
-#define SLOWFREEZE_DAMAGE	1.0
-
-
-#define	itbd_Paralyze		0		
-#define	itbd_NerveGas		1
-#define	itbd_Poison			2
-#define	itbd_Radiation		3
-#define	itbd_DrownRecover	4
-#define	itbd_Acid			5
-#define	itbd_SlowBurn		6
-#define	itbd_SlowFreeze		7
-#define CDMG_TIMEBASED		8
 
 // when calling KILLED(), a value that governs gib behavior is expected to be 
 // one of these three values

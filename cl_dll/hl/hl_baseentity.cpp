@@ -31,12 +31,12 @@ This file contains "stubs" of class member implementations so that we can predic
 #include	"skill.h"
 
 // Globals used by game logic
-const Vector g_vecZero = Vector( 0, 0, 0 );
 int gmsgWeapPickup = 0;
 enginefuncs_t g_engfuncs;
 globalvars_t  *gpGlobals;
 
 ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
+AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
 
 void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch) { }
 
@@ -274,7 +274,6 @@ int CBasePlayer::Restore( CRestore &restore ) { return 0; }
 void CBasePlayer::SelectNextItem( int iItem ) { }
 BOOL CBasePlayer::HasWeapons() { return FALSE; }
 void CBasePlayer::SelectPrevItem( int iItem ) { }
-CBaseEntity *FindEntityForward( CBaseEntity *pMe ) { return NULL; }
 BOOL CBasePlayer :: FlashlightIsOn() { return FALSE; }
 void CBasePlayer :: FlashlightTurnOn() { }
 void CBasePlayer :: FlashlightTurnOff() { }
@@ -307,6 +306,7 @@ const char *CBasePlayer::TeamID() { return ""; }
 int CBasePlayer :: GiveAmmo( int iCount, const char *szName, int iMax ) { return 0; }
 void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore ) { } 
 void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore ) { } 
+void CBasePlayer::TabulateAmmo() {}
 
 void ClearMultiDamage() { }
 void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker ) { }
@@ -315,7 +315,6 @@ void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage) { }
 int DamageDecal( CBaseEntity *pEntity, int bitsDamageType ) { return 0; }
 void DecalGunshot( TraceResult *pTrace, int iBulletType ) { }
 void EjectBrass ( const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype ) { }
-void AddAmmoNameToAmmoRegistry( const char *szAmmoname ) { }
 int CBasePlayerItem::Restore( class CRestore & ) { return 1; }
 int CBasePlayerItem::Save( class CSave & ) { return 1; }
 int CBasePlayerWeapon::Restore( class CRestore & ) { return 1; }
@@ -341,8 +340,8 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
 BOOL CBasePlayerWeapon :: AddPrimaryAmmo( int iCount, char *szName, int iMaxClip, int iMaxCarry ) { return TRUE; }
 BOOL CBasePlayerWeapon :: AddSecondaryAmmo( int iCount, char *szName, int iMax ) { return TRUE; }
 BOOL CBasePlayerWeapon :: IsUseable() { return TRUE; }
-int CBasePlayerWeapon::PrimaryAmmoIndex() { return -1; }
-int CBasePlayerWeapon::SecondaryAmmoIndex() {	return -1; }
+int CBasePlayerWeapon::PrimaryAmmoIndex() { return m_iPrimaryAmmoType; }
+int CBasePlayerWeapon::SecondaryAmmoIndex() {	return m_iSecondaryAmmoType; }
 void CBasePlayerAmmo::Spawn() { }
 CBaseEntity* CBasePlayerAmmo::Respawn() { return this; }
 void CBasePlayerAmmo::Materialize() { }

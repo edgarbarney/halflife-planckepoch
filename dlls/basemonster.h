@@ -110,8 +110,8 @@ public:
 
 	float m_flLastYawTime;
 
-        int		Save( CSave &save ) override;
-        int		Restore( CRestore &restore ) override;
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -135,7 +135,7 @@ public:
 	virtual void RunAI ();// core ai function!	
 	void Listen ();
 
-        BOOL	IsAlive() override { return (pev->deadflag != DEAD_DEAD); }
+	BOOL	IsAlive() override { return (pev->deadflag != DEAD_DEAD); }
 	virtual BOOL	ShouldFadeOnDeath();
 
 // Basic Monster AI functions
@@ -159,7 +159,7 @@ public:
 		virtual CBaseEntity* BestVisibleEnemy ();// finds best visible enemy for attack
 		virtual BOOL FInViewCone ( CBaseEntity *pEntity );// see if pEntity is in monster's view cone
 		virtual BOOL FInViewCone ( Vector *pOrigin );// see if given location is in monster's view cone
-        void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
+		void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 
 		virtual int CheckLocalMove ( const Vector &vecStart, const Vector &vecEnd, CBaseEntity *pTarget, float *pflDist );// check validity of a straight move through space
 		virtual void Move( float flInterval = 0.1 );
@@ -231,7 +231,7 @@ public:
 		void AdvanceRoute ( float distance );
 		virtual BOOL FTriangulate ( const Vector &vecStart , const Vector &vecEnd, float flDist, CBaseEntity *pTargetEnt, Vector *pApex );
 		void MakeIdealYaw( Vector vecTarget );
-		virtual void SetYawSpeed () { return; };// allows different yaw_speeds for each activity
+		virtual void SetYawSpeed () {}// allows different yaw_speeds for each activity
 		BOOL BuildRoute ( const Vector &vecGoal, int iMoveFlag, CBaseEntity *pTarget );
 		virtual BOOL BuildNearestRoute ( Vector vecThreat, Vector vecViewOffset, float flMinDist, float flMaxDist );
 		int RouteClassify( int iMoveFlag );
@@ -239,11 +239,11 @@ public:
 		
 		BOOL FindLateralCover ( const Vector &vecThreat, const Vector &vecViewOffset );
 		virtual BOOL FindCover ( Vector vecThreat, Vector vecViewOffset, float flMinDist, float flMaxDist );
-		virtual BOOL FValidateCover ( const Vector &vecCoverLocation ) { return TRUE; };
+		virtual BOOL FValidateCover ( const Vector &vecCoverLocation ) { return TRUE; }
 		virtual float CoverRadius() { return 784; } // Default cover radius
 
 		virtual BOOL FCanCheckAttacks ();
-		virtual void CheckAmmo() { return; };
+		virtual void CheckAmmo() {}
 		virtual int IgnoreConditions ();
 		
 		inline void	SetConditions( int iConditions ) { m_afConditions |= iConditions; }
@@ -268,7 +268,7 @@ public:
 		virtual int ISoundMask();
 		virtual CSound* PBestSound ();
 		virtual CSound* PBestScent ();
-		virtual float HearingSensitivity() { return 1.0; };
+		virtual float HearingSensitivity() { return 1.0; }
 
 		BOOL FBecomeProne () override;
 		virtual void BarnacleVictimBitten( entvars_t *pevBarnacle );
@@ -288,7 +288,7 @@ public:
 		BOOL BBoxFlat();
 
 		// PrescheduleThink 
-		virtual void PrescheduleThink() { return; };
+		virtual void PrescheduleThink() {}
 
 		BOOL GetEnemy ();
 		void MakeDamageBloodDecal ( int cCount, float flNoise, TraceResult *ptr, const Vector &vecDir );
@@ -298,7 +298,7 @@ public:
 	float UpdateTarget ( entvars_t *pevTarget );
 	virtual Activity GetDeathActivity ();
 	Activity GetSmallFlinchActivity();
-        void Killed( entvars_t *pevAttacker, int iGib ) override;
+	void Killed( entvars_t *pevAttacker, int iGib ) override;
 	virtual void GibMonster();
 	BOOL		 ShouldGibMonster( int iGib );
 	void		 CallGibMonster();
@@ -308,12 +308,12 @@ public:
 	virtual void	FadeMonster();	// Called instead of GibMonster() when gibs are disabled
 
 	Vector ShootAtEnemy( const Vector &shootOrigin );
-        Vector BodyTarget( const Vector &posSrc ) override { return Center( ) * 0.75 + EyePosition() * 0.25; };		// position to shoot at
+	Vector BodyTarget( const Vector &posSrc ) override { return Center( ) * 0.75 + EyePosition() * 0.25; }		// position to shoot at
 
 	virtual	Vector  GetGunPosition();
 
-        int TakeHealth( float flHealth, int bitsDamageType ) override;
-        int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
+	int TakeHealth( float flHealth, int bitsDamageType ) override;
+	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	int			DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
 
 	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
@@ -323,10 +323,10 @@ public:
 	void RouteClear();
 	void RouteNew();
 	
-	virtual void DeathSound () { return; };
-	virtual void AlertSound () { return; };
-	virtual void IdleSound () { return; };
-	virtual void PainSound () { return; };
+	virtual void DeathSound () {}
+	virtual void AlertSound () {}
+	virtual void IdleSound () {}
+	virtual void PainSound () {}
 	
 	virtual void StopFollowing( BOOL clearSchedule ) {}
 

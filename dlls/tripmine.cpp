@@ -24,21 +24,6 @@
 
 #define	TRIPMINE_PRIMARY_VOLUME		450
 
-
-
-enum tripmine_e {
-	TRIPMINE_IDLE1 = 0,
-	TRIPMINE_IDLE2,
-	TRIPMINE_ARM1,
-	TRIPMINE_ARM2,
-	TRIPMINE_FIDGET,
-	TRIPMINE_HOLSTER,
-	TRIPMINE_DRAW,
-	TRIPMINE_WORLD,
-	TRIPMINE_GROUND,
-};
-
-
 #ifndef CLIENT_DLL
 
 class CTripmineGrenade : public CGrenade
@@ -487,6 +472,9 @@ void CTripmine::PrimaryAttack()
 
 void CTripmine::WeaponIdle()
 {
+	//If we're here then we're in a player's inventory, and need to use this body
+	pev->body = 0;
+
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 

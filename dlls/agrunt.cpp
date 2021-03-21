@@ -105,7 +105,7 @@ public:
 	BOOL ShouldSpeak();
     void Killed( entvars_t *pevAttacker, int iGib ) override;
 
-	
+
 	CUSTOM_SCHEDULES;
 
     int		Save( CSave &save ) override;

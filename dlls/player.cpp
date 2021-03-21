@@ -20,6 +20,8 @@
 
 */
 
+#include <limits>
+
 #include "extdll.h"
 #include "util.h"
 
@@ -39,6 +41,7 @@
 #include "pm_shared.h"
 #include "hltv.h"
 #include "UserMessages.h"
+#include "client.h"
 
 // #define DUCKFIX
 
@@ -53,8 +56,6 @@ extern DLL_GLOBAL int		g_iSkillLevel, gDisplayTitle;
 BOOL gInitHUD = TRUE;
 
 extern void CopyToBodyQue(entvars_t* pev);
-extern void respawn(entvars_t *pev, BOOL fCopyCorpse);
-extern Vector VecBModelOrigin(entvars_t *pevBModel );
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
 // the world node graph
@@ -779,12 +780,6 @@ void CBasePlayer::RemoveAllItems( BOOL removeSuit )
 		m_rgAmmo[i] = 0;
 
 	UpdateClientData();
-	// send Selected Weapon Message to our client
-	MESSAGE_BEGIN( MSG_ONE, gmsgCurWeapon, NULL, pev );
-		WRITE_BYTE(0);
-		WRITE_BYTE(0);
-		WRITE_BYTE(0);
-	MESSAGE_END();
 }
 
 //LRC
@@ -970,7 +965,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	// send "health" update message to zero
 	m_iClientHealth = 0;
 	MESSAGE_BEGIN( MSG_ONE, gmsgHealth, NULL, pev );
-		WRITE_BYTE( m_iClientHealth );
+		WRITE_SHORT( m_iClientHealth );
 	MESSAGE_END();
 
 	// Tell Ammo Hud that the player is dead
@@ -3085,7 +3080,7 @@ void CBasePlayer :: Precache()
 
 	m_iClientBattery = -1;
 
-	m_iTrain = TRAIN_NEW;
+	m_iTrain |= TRAIN_NEW;
 
 	// Make sure any necessary user messages have been registered
 	LinkUserMessages();
@@ -3187,6 +3182,8 @@ int CBasePlayer::Restore( CRestore &restore )
 
 	m_bResetViewEntity = true;
 
+	m_bRestored = true;
+
 	return status;
 }
 
@@ -3284,32 +3281,6 @@ void CBasePlayer::SelectItem(const char *pstr)
 		m_pActiveItem->Deploy( );
 		m_pActiveItem->UpdateItemInfo( );
 	}
-}
-
-
-void CBasePlayer::SelectLastItem()
-{
-	if (!m_pLastItem)
-	{
-		return;
-	}
-
-	if ( m_pActiveItem && !m_pActiveItem->CanHolster() )
-	{
-		return;
-	}
-
-	ResetAutoaim( );
-
-	// FIX, this needs to queue them up and delay
-	if (m_pActiveItem)
-		m_pActiveItem->Holster( );
-	
-	CBasePlayerItem *pTemp = m_pActiveItem;
-	m_pActiveItem = m_pLastItem;
-	m_pLastItem = pTemp;
-	m_pActiveItem->Deploy( );
-	m_pActiveItem->UpdateItemInfo( );
 }
 
 //==============================================
@@ -3461,23 +3432,6 @@ void CBasePlayer::GiveNamedItem( const char *pszName )
 	DispatchSpawn( pent );
 	DispatchTouch( pent, ENT( pev ) );
 }
-
-
-
-CBaseEntity *FindEntityForward( CBaseEntity *pMe )
-{
-	TraceResult tr;
-
-	UTIL_MakeVectors(pMe->pev->v_angle);
-	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs,pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192,dont_ignore_monsters, pMe->edict(), &tr );
-	if ( tr.flFraction != 1.0 && !FNullEnt( tr.pHit) )
-	{
-		CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-		return pHit;
-	}
-	return NULL;
-}
-
 
 BOOL CBasePlayer :: FlashlightIsOn()
 {
@@ -3739,7 +3693,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 103:
 		// What the hell are you doing?
-		pEntity = FindEntityForward( this );
+		pEntity = UTIL_FindEntityForward( this );
 		if ( pEntity )
 		{
 			CBaseMonster *pMonster = pEntity->MyMonsterPointer();
@@ -3770,7 +3724,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 	case 106:
 		// Give me the classname and targetname of this entity.
-		pEntity = FindEntityForward( this );
+		pEntity = UTIL_FindEntityForward( this );
 		if ( pEntity )
 		{
 			ALERT ( at_debug, "Classname: %s", STRING( pEntity->pev->classname ) );
@@ -3839,7 +3793,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		}
 		break;
 	case	203:// remove creature.
-		pEntity = FindEntityForward( this );
+		pEntity = UTIL_FindEntityForward( this );
 		if ( pEntity )
 		{
 			if ( pEntity->pev->takedamage )
@@ -4117,6 +4071,8 @@ reflecting all of the HUD state info.
 */
 void CBasePlayer :: UpdateClientData()
 {
+	const bool fullHUDInitRequired = m_fInitHUD != FALSE;
+
 	if (m_fInitHUD)
 	{
 		m_fInitHUD = FALSE;
@@ -4176,14 +4132,13 @@ void CBasePlayer :: UpdateClientData()
 
 	if (pev->health != m_iClientHealth)
 	{
-#define clamp( val, min, max ) ( ((val) > (max)) ? (max) : ( ((val) < (min)) ? (min) : (val) ) )
-		int iHealth = clamp( pev->health, 0, 255 );  // make sure that no negative health values are sent
+		int iHealth = clamp( pev->health, 0, std::numeric_limits<short>::max() );  // make sure that no negative health values are sent
 		if ( pev->health > 0.0f && pev->health <= 1.0f )
 			iHealth = 1;
 
 		// send "health" update message
 		MESSAGE_BEGIN( MSG_ONE, gmsgHealth, NULL, pev );
-			WRITE_BYTE( iHealth );
+		    WRITE_SHORT( iHealth );
 		MESSAGE_END();
 
 		m_iClientHealth = pev->health;
@@ -4233,6 +4188,23 @@ void CBasePlayer :: UpdateClientData()
 		
 		// Clear off non-time-based damage indicators
 		m_bitsDamageType &= DMG_TIMEBASED;
+	}
+
+	if (m_bRestored)
+	{
+		//Always tell client about battery state
+		MESSAGE_BEGIN(MSG_ONE, gmsgFlashBattery, NULL, pev);
+		    WRITE_BYTE(m_iFlashBattery);
+		MESSAGE_END();
+
+		//Tell client the flashlight is on
+		if (FlashlightIsOn())
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
+			    WRITE_BYTE(1);
+			    WRITE_BYTE(m_iFlashBattery);
+			MESSAGE_END();
+		}
 	}
 
 	// Update Flashlight
@@ -4337,6 +4309,18 @@ void CBasePlayer :: UpdateClientData()
 			m_rgpPlayerItems[i]->UpdateClientData( this );
 	}
 
+	//Active item is becoming null, or we're sending all HUD state to client
+	//Only if we're not in Observer mode, which uses the target player's weapon
+	if (pev->iuser1 == OBS_NONE && !m_pActiveItem && ((m_pClientActiveItem != m_pActiveItem) || fullHUDInitRequired))
+	{
+		//Tell ammo hud that we have no weapon selected
+		MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
+		    WRITE_BYTE(0);
+		    WRITE_BYTE(0);
+		    WRITE_BYTE(0);
+		MESSAGE_END();
+	}
+
 	// Cache and client weapon change
 	m_pClientActiveItem = m_pActiveItem;
 	m_iClientFOV = m_iFOV;
@@ -4347,6 +4331,9 @@ void CBasePlayer :: UpdateClientData()
 		UpdateStatusBar();
 		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
 	}
+
+	//Handled anything that needs resetting
+	m_bRestored = false;
 }
 
 
@@ -4823,7 +4810,7 @@ BOOL CBasePlayer::HasNamedPlayerItem( const char *pszItemName )
 //=========================================================
 BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon ) 
 {
-	if ( !pWeapon->CanDeploy() )
+	if (pWeapon && !pWeapon->CanDeploy() )
 	{
 		return FALSE;
 	}
@@ -4836,7 +4823,11 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 	}
 
 	m_pActiveItem = pWeapon;
-	pWeapon->Deploy( );
+
+	if (pWeapon)
+	{
+		pWeapon->Deploy();
+	}
 
 	return TRUE;
 }

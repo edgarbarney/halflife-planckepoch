@@ -31,15 +31,6 @@ enum w_squeak_e {
 	WSQUEAK_RUN,
 };
 
-enum squeak_e {
-	SQUEAK_IDLE1 = 0,
-	SQUEAK_FIDGETFIT,
-	SQUEAK_FIDGETNIP,
-	SQUEAK_DOWN,
-	SQUEAK_UP,
-	SQUEAK_THROW
-};
-
 #ifndef CLIENT_DLL
 
 class CSqueakGrenade : public CGrenade
@@ -475,7 +466,14 @@ BOOL CSqueak::Deploy( )
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 
-	return DefaultDeploy( "models/v_squeak.mdl", "models/p_squeak.mdl", SQUEAK_UP, "squeak" );
+	const BOOL result = DefaultDeploy( "models/v_squeak.mdl", "models/p_squeak.mdl", SQUEAK_UP, "squeak" );
+
+	if (result)
+	{
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.7;
+	}
+
+	return result;
 }
 
 

@@ -23,18 +23,6 @@
 
 #define	HANDGRENADE_PRIMARY_VOLUME		450
 
-enum handgrenade_e {
-	HANDGRENADE_IDLE = 0,
-	HANDGRENADE_FIDGET,
-	HANDGRENADE_PINPULL,
-	HANDGRENADE_THROW1,	// toss
-	HANDGRENADE_THROW2,	// medium
-	HANDGRENADE_THROW3,	// hard
-	HANDGRENADE_HOLSTER,
-	HANDGRENADE_DRAW
-};
-
-
 LINK_ENTITY_TO_CLASS( weapon_handgrenade, CHandGrenade );
 
 
@@ -173,7 +161,7 @@ void CHandGrenade::WeaponIdle()
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-		m_flReleaseThrow = 0;
+		//m_flReleaseThrow = 0;
 		m_flStartThrow = 0;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;

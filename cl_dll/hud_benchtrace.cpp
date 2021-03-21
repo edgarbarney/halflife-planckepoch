@@ -63,13 +63,13 @@ int Trace_GetHopCount( char *pServer, int nMaxHops )
 	int						c;				// Hop counter
 
 	// Prototypes
-	HANDLE ( WINAPI *pfnICMPCreateFile ) ( VOID );
+	HANDLE ( WINAPI *pfnICMPCreateFile ) ();
 	BOOL ( WINAPI *pfnICMPCloseFile ) ( HANDLE );
 	DWORD (WINAPI *pfnICMPSendEcho) ( HANDLE, DWORD, LPVOID, WORD, LPVOID, LPVOID, DWORD, DWORD );
 
 	hICMP = ::LoadLibrary( "ICMP.DLL" );
 	
-	pfnICMPCreateFile	= ( HANDLE ( WINAPI *)(VOID ) )::GetProcAddress( hICMP,"IcmpCreateFile");
+	pfnICMPCreateFile	= ( HANDLE ( WINAPI *)() )::GetProcAddress( hICMP,"IcmpCreateFile");
 	pfnICMPCloseFile	= ( BOOL ( WINAPI *) ( HANDLE ) )::GetProcAddress( hICMP,"IcmpCloseHandle");
 	pfnICMPSendEcho		= ( DWORD ( WINAPI * ) ( HANDLE, DWORD, LPVOID, WORD, LPVOID, LPVOID, DWORD,DWORD ) )::GetProcAddress( hICMP,"IcmpSendEcho" );
 	

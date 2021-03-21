@@ -29,6 +29,8 @@ void PM_Move ( struct playermove_s *ppmove, int server );
 void PM_Init ( struct playermove_s *ppmove  );
 char PM_FindTextureType( char *name );
 
+void OnFreeEntPrivateData(edict_s* pEdict);
+
 extern Vector VecBModelOrigin( entvars_t* pevBModel );
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 extern DLL_GLOBAL int			g_iSkillLevel;
@@ -97,6 +99,11 @@ static DLL_FUNCTIONS gFunctionTable =
 	AllowLagCompensation,		//pfnAllowLagCompensation
 };
 
+NEW_DLL_FUNCTIONS gNewDLLFunctions =
+{
+	OnFreeEntPrivateData,		//pfnOnFreeEntPrivateData
+};
+
 static void SetObjectCollisionBox( entvars_t *pev );
 
 extern "C" {
@@ -125,6 +132,17 @@ int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion )
 	return TRUE;
 }
 
+int GetNewDLLFunctions(NEW_DLL_FUNCTIONS* pFunctionTable, int* interfaceVersion)
+{
+	if (!pFunctionTable || *interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
+	{
+		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
+		return FALSE;
+	}
+
+	memcpy(pFunctionTable, &gNewDLLFunctions, sizeof(gNewDLLFunctions));
+	return TRUE;
+}
 }
 
 
@@ -259,6 +277,8 @@ void DispatchBlocked( edict_t *pentBlocked, edict_t *pentOther )
 
 void DispatchSave( edict_t *pent, SAVERESTOREDATA *pSaveData )
 {
+	gpGlobals->time = pSaveData->time;
+
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 	
 	if ( pEntity && pSaveData )
@@ -292,6 +312,13 @@ void DispatchSave( edict_t *pent, SAVERESTOREDATA *pSaveData )
 	}
 }
 
+void OnFreeEntPrivateData(edict_s* pEdict)
+{
+	if (pEdict && pEdict->pvPrivateData)
+	{
+		((CBaseEntity*)pEdict->pvPrivateData)->~CBaseEntity();
+	}
+}
 
 // Find the matching global entity.  Spit out an error if the designer made entities of
 // different classes with the same global name
@@ -313,6 +340,8 @@ CBaseEntity *FindGlobalEntity( string_t classname, string_t globalname )
 
 int DispatchRestore( edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity )
 {
+	gpGlobals->time = pSaveData->time;
+
 	CBaseEntity *pEntity = (CBaseEntity *)GET_PRIVATE(pent);
 
 	if ( pEntity && pSaveData )

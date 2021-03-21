@@ -27,9 +27,8 @@ public:
 	{
 		_scrollBar=scrollBar;
 	}
-
-    void intChanged(int value,Panel* panel) override
-    {
+	void intChanged(int value,Panel* panel) override
+	{
 		_scrollBar->fireIntChangeSignal();
 	}
 protected:
@@ -48,8 +47,8 @@ public:
 		_buttonIndex=buttonIndex;
 	}
 public:
-    void actionPerformed(Panel* panel) override
-    {
+	void actionPerformed(Panel* panel) override
+	{
 		_scrollBar->doButtonPressed(_buttonIndex);
 	}
 };
@@ -78,8 +77,8 @@ public:
 		setBorder(&m_Border);
 	}
 
-    void paintBackground() override
-    {
+	void paintBackground() override
+	{
 		int wide,tall;
 		getPaintSize(wide,tall);
 

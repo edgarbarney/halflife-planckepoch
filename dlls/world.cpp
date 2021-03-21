@@ -201,7 +201,7 @@ void CDecal :: KeyValue( KeyValueData *pkvd )
 // Body queue class here.... It's really just CBaseEntity
 class CCorpse : public CBaseEntity
 {
-    int ObjectCaps() override { return FCAP_DONT_SAVE; }	
+	int ObjectCaps() override { return FCAP_DONT_SAVE; }
 };
 
 LINK_ENTITY_TO_CLASS( bodyque, CCorpse );

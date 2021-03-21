@@ -665,7 +665,7 @@ void ScriptEntityCancel( edict_t *pentCine )
 
 // find all the cinematic entities with my targetname and stop them from playing
 void CCineMonster :: CancelScript()
-{	
+{
 	ALERT( at_aiconsole, "Cancelling script: %s\n", STRING(m_iszPlay) );
 	
 	if ( !pev->targetname )
