@@ -34,6 +34,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/aflock.o \
 	$(HLDLL_OBJ_DIR)/agrunt.o \
 	$(HLDLL_OBJ_DIR)/airtank.o \
+	$(HLDLL_OBJ_DIR)/alias.o \
 	$(HLDLL_OBJ_DIR)/animating.o \
 	$(HLDLL_OBJ_DIR)/animation.o \
 	$(HLDLL_OBJ_DIR)/apache.o \
@@ -84,11 +85,13 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/items.o \
 	$(HLDLL_OBJ_DIR)/leech.o \
 	$(HLDLL_OBJ_DIR)/lights.o \
+	$(HLDLL_OBJ_DIR)/locus.o \
 	$(HLDLL_OBJ_DIR)/maprules.o \
 	$(HLDLL_OBJ_DIR)/monstermaker.o \
 	$(HLDLL_OBJ_DIR)/monsters.o \
 	$(HLDLL_OBJ_DIR)/monsterstate.o \
 	$(HLDLL_OBJ_DIR)/mortar.o \
+	$(HLDLL_OBJ_DIR)/movewith.o \
 	$(HLDLL_OBJ_DIR)/mp5.o \
 	$(HLDLL_OBJ_DIR)/nihilanth.o \
 	$(HLDLL_OBJ_DIR)/nodes.o \

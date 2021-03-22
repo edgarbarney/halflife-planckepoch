@@ -34,6 +34,8 @@
 //#include "hgrunt.h"
 //#include "islave.h"
 
+#include <cctype>
+
 #define	SF_TRIGGER_PUSH_START_OFF	2//spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE	1// Only fire hurt target once
 #define	SF_TRIGGER_HURT_START_OFF	2//spawnflag that makes trigger_hurt spawn turned OFF
