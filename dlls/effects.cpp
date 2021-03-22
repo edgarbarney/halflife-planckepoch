@@ -1706,6 +1706,7 @@ void CSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 	}
 }
 
+#pragma region CEnvModel
 //=================================================================
 // env_model: like env_sprite, except you can specify a sequence.
 //=================================================================
@@ -1713,34 +1714,51 @@ void CSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTy
 #define SF_ENVMODEL_DROPTOFLOOR	2
 #define SF_ENVMODEL_SOLID		4
 
+// Stickto System
+#define STICKTO_DEFTIME			0.1f			// Default Think Time
+#define STICKTO_STCTIME			1.0f			// Think Time if Sticked
+
 class CEnvModel : public CBaseAnimating
 {
-	void Spawn( void );
-	void Precache( void );
-	void EXPORT Think( void );
-	void KeyValue( KeyValueData *pkvd );
-	STATE GetState( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void Spawn(void);
+	void Precache(void);
+	void EXPORT Think(void);
+	void KeyValue(KeyValueData* pkvd);
+	STATE GetState(void);
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	virtual int	ObjectCaps(void) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	virtual int		Save(CSave& save);
+	virtual int		Restore(CRestore& restore);
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	void SetSequence( void );
+	void SetSequence(void);
+	void StickToThink(void);
 
 	string_t m_iszSequence_On;
 	string_t m_iszSequence_Off;
 	int m_iAction_On;
 	int m_iAction_Off;
+
+	// Stickto System
+	string_t m_stickToKV;
+	CBaseEntity* m_stickTo;
+	float m_thinkTime;
+	float m_spawnTime;
+	float m_precisionTime;
 };
 
 TYPEDESCRIPTION CEnvModel::m_SaveData[] =
 {
-	DEFINE_FIELD( CEnvModel, m_iszSequence_On, FIELD_STRING ),
-	DEFINE_FIELD( CEnvModel, m_iszSequence_Off, FIELD_STRING ),
-	DEFINE_FIELD( CEnvModel, m_iAction_On, FIELD_INTEGER ),
-	DEFINE_FIELD( CEnvModel, m_iAction_Off, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvModel, m_iszSequence_On,	FIELD_STRING	),
+	DEFINE_FIELD( CEnvModel, m_iszSequence_Off,	FIELD_STRING	),
+	DEFINE_FIELD( CEnvModel, m_iAction_On,		FIELD_INTEGER	),
+	DEFINE_FIELD( CEnvModel, m_iAction_Off,		FIELD_INTEGER	),
+	DEFINE_FIELD( CEnvModel, m_stickToKV,		FIELD_STRING	),
+	DEFINE_FIELD( CEnvModel, m_stickTo,			FIELD_CLASSPTR	),
+	DEFINE_FIELD( CEnvModel, m_thinkTime,		FIELD_TIME		),
+	DEFINE_FIELD( CEnvModel, m_spawnTime,		FIELD_TIME		),
+	DEFINE_FIELD( CEnvModel, m_precisionTime,	FIELD_TIME		),
 };
 
 IMPLEMENT_SAVERESTORE( CEnvModel, CBaseAnimating );
@@ -1766,6 +1784,11 @@ void CEnvModel::KeyValue( KeyValueData *pkvd )
 	else if (FStrEq(pkvd->szKeyName, "m_iAction_Off"))
 	{
 		m_iAction_Off = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "stickto"))
+	{
+		m_stickToKV = ALLOC_STRING(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -1796,8 +1819,12 @@ void CEnvModel :: Spawn( void )
 	SetBoneController( 0, 0 );
 	SetBoneController( 1, 0 );
 
+	m_spawnTime = gpGlobals->time;
+	m_precisionTime = 2.0f;
+	m_thinkTime = STICKTO_DEFTIME;
+
 	SetSequence();
-	
+
 	SetNextThink( 0.1 );
 }
 
@@ -1831,6 +1858,9 @@ void CEnvModel::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 void CEnvModel::Think( void )
 {
 	int iTemp;
+	
+	if (m_stickToKV != NULL)
+		StickToThink();
 
 //	ALERT(at_console, "env_model Think fr=%f\n", pev->framerate);
 
@@ -1867,7 +1897,7 @@ void CEnvModel::Think( void )
 			return;
 		}
 	}
-	SetNextThink( 0.1 );
+	SetNextThink(m_thinkTime);
 }
 
 void CEnvModel :: SetSequence( void )
@@ -1910,6 +1940,24 @@ void CEnvModel :: SetSequence( void )
 			m_fSequenceLoops = 0;
 	}
 }
+
+void CEnvModel :: StickToThink( void )
+{
+		if (gpGlobals->time < m_spawnTime + m_precisionTime)
+		{
+			m_stickTo = UTIL_FindEntityByTargetname(nullptr, STRING(m_stickToKV));
+			//ALERT(at_console, "\n\n --- THINKIN --- \n");
+		}
+
+		if (m_stickTo != nullptr)
+		{
+			UTIL_SetOrigin(this, m_stickTo->pev->origin);
+			UTIL_SetAngles(this, m_stickTo->pev->angles);
+			m_thinkTime = STICKTO_STCTIME;
+		}
+}
+
+#pragma endregion
 
 
 #define	SF_GIBSHOOTER_REPEATABLE	1 // allows a gibshooter to be refired
