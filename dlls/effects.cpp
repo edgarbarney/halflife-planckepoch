@@ -4826,8 +4826,6 @@ void CEnvFog :: Precache ( void )
 	}
 }
 
-extern int gmsgSetFog;
-
 void CEnvFog :: TurnOn ( void )
 {
 //	ALERT(at_console, "Fog turnon %f\n", gpGlobals->time);
@@ -4963,8 +4961,6 @@ void CEnvSky :: Activate ( void )
 	pev->effects |= EF_NODRAW;
 	pev->nextthink = gpGlobals->time + 1.0;
 }
-
-extern int gmsgSetSky;
 
 void CEnvSky :: DesiredAction ()
 {

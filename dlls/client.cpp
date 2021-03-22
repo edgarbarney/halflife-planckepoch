@@ -60,11 +60,14 @@ extern DLL_GLOBAL ULONG		g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 extern int giPrecacheGrunt;
+
+/*
 extern int gmsgSayText;
 extern int gmsgHUDColor;
 extern int gmsgCamData; // for trigger_viewset
 extern int gmsgWeather;
 extern int gmsgServerState; // used for pause/menu detection
+*/
 
 extern cvar_t allow_spectators;
 
@@ -628,7 +631,7 @@ called each time a player uses a "cmd" command
 ============
 */
 extern float g_flWeaponCheat;
-extern int gmsgPlayMP3; //AJH - Killars MP3player
+//extern int gmsgPlayMP3; //AJH - Killars MP3player
 
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
 void ClientCommand( edict_t *pEntity )

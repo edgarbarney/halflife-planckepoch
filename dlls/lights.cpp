@@ -23,6 +23,7 @@
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+#include "UserMessages.h"
 //RENDERERS START
 #include "player.h"
 
@@ -130,7 +131,6 @@ IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
 //
 // Cache user-entity-field values until spawn is called.
 //
-extern int gmsgLightStyle;
 void CLight :: SendInitMessage( CBasePlayer *player )
 {
 	char szPattern[64];
