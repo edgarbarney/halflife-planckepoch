@@ -410,9 +410,9 @@ Vector UTIL_VecToAngles( const Vector &vec )
 
 //LRC - pass in a normalised axis vector and a number of degrees, and this returns the corresponding
 // angles value for an entity.
-inline Vector UTIL_AxisRotationToAngles( const Vector &vecAxis, float flDegs )
+Vector UTIL_AxisRotationToAngles( const Vector &vec, float angle )
 {
-	Vector vecTemp = UTIL_AxisRotationToVec( vecAxis, flDegs );
+	Vector vecTemp = UTIL_AxisRotationToVec( vec, angle );
 	float rgflVecOut[3];
 	//ugh, mathsy.
 	rgflVecOut[0] = asin(vecTemp.z) * (-180.0 / M_PI);
@@ -424,17 +424,17 @@ inline Vector UTIL_AxisRotationToAngles( const Vector &vecAxis, float flDegs )
 }
 
 //LRC - as above, but returns the position of point 1 0 0 under the given rotation
-Vector UTIL_AxisRotationToVec( const Vector &vecAxis, float flDegs )
+Vector UTIL_AxisRotationToVec( const Vector &vec, float angle )
 {
 	float rgflVecOut[3];
-	float flRads = flDegs * (M_PI / 180.0);
+	float flRads = angle * (M_PI / 180.0);
 	float c = cos(flRads);
 	float s = sin(flRads);
-	float v = vecAxis.x * (1-c);
+	float v = vec.x * (1-c);
 	//ugh, more maths. Thank goodness for internet geometry sites...
-	rgflVecOut[0] = vecAxis.x*v + c;
-	rgflVecOut[1] = vecAxis.y*v + vecAxis.z*s;
-	rgflVecOut[2] = vecAxis.z*v - vecAxis.y*s;
+	rgflVecOut[0] = vec.x*v + c;
+	rgflVecOut[1] = vec.y*v + vec.z*s;
+	rgflVecOut[2] = vec.z*v - vec.y*s;
 	return Vector(rgflVecOut);
 }
 	
