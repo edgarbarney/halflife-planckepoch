@@ -309,7 +309,7 @@ void CLocusBeam::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 			SF_BEAM_SPARKSTART | SF_BEAM_SPARKEND | SF_BEAM_DECALS);
 	if (m_fDuration)
 	{
-		pBeam->SetThink( &CLocusBeam::SUB_Remove );
+		pBeam->SetThink( &CBeam::SUB_Remove );
 		pBeam->SetNextThink( m_fDuration );
 	}
 	pBeam->pev->targetname = m_iszTargetName;

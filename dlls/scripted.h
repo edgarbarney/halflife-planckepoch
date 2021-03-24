@@ -71,7 +71,6 @@ public:
 	void Die();
 	void DelayStart( int state );
 	CBaseMonster* FindEntity( const char* sName, CBaseEntity *pActivator );
-	BOOL FindEntity();
 	virtual void PossessEntity();
 
 	inline BOOL IsAction() { return FClassnameIs(pev,"scripted_action"); }; //LRC

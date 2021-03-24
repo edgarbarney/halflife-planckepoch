@@ -231,7 +231,7 @@ void CPathTrack :: Spawn()
 	m_pprevious = NULL;
 // DEBUGGING CODE
 #if PATH_SPARKLE_DEBUG
-	SetThink( Sparkle );
+	SetThink( &CPathTrack::Sparkle );
 	SetNextThink( 0.5 );
 #endif
 }
