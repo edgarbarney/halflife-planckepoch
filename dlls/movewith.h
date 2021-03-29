@@ -20,8 +20,8 @@
 // an entity must have one of these flags set in order to be in the AssistList
 #define LF_ASSISTLIST  (LF_DOASSIST|LF_DODESIRED)
 
-extern void			CheckDesiredList( void );
-extern void			CheckAssistList ( void );
+extern void			CheckDesiredList();
+extern void			CheckAssistList ();
 
 extern void			UTIL_DesiredAction ( CBaseEntity *pEnt );
 extern void			UTIL_DesiredThink ( CBaseEntity *pEnt );

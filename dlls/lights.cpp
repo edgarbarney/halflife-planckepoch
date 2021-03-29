@@ -102,6 +102,7 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
+// TODO - Modernize
 	virtual void	KeyValue( KeyValueData* pkvd ); 
 	virtual void	SendInitMessage( CBasePlayer *player );
 	void EXPORT	LightStyleThink( void );
@@ -220,8 +221,8 @@ LINK_ENTITY_TO_CLASS( light_spot, CLight );
 class CEnvLight : public CLight
 {
 public:
-	void	KeyValue( KeyValueData* pkvd ); 
-	void	Spawn( void );
+	void	KeyValue( KeyValueData* pkvd ) override; 
+	void	Spawn() override;
 };
 
 LINK_ENTITY_TO_CLASS( light_environment, CEnvLight );
@@ -264,7 +265,7 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 }
 
 
-void CEnvLight :: Spawn( void )
+void CEnvLight :: Spawn()
 {
 	char szVector[64];
 	UTIL_MakeAimVectors( pev->angles );

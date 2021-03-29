@@ -41,30 +41,11 @@ IMPLEMENT_SAVERESTORE(CCrowbar, CCrowbar::BaseClass);
 
 LINK_ENTITY_TO_CLASS(weapon_crowbar, CCrowbar);
 
-enum crowbar_e
-{
-	CROWBAR_IDLE1 = 0,
-	CROWBAR_IDLE2,
-	CROWBAR_IDLE3,
-	CROWBAR_DRAW,
-	CROWBAR_HOLSTER,
-	CROWBAR_ATTACK1HIT,
-	CROWBAR_ATTACK1MISS,
-	CROWBAR_ATTACK2HIT,
-	CROWBAR_ATTACK2MISS,
-	CROWBAR_ATTACK3HIT,
-	CROWBAR_ATTACK3MISS,
-	CROWBAR_BIG_SWING_START,
-	CROWBAR_BIG_SWING_HIT,
-	CROWBAR_BIG_SWING_MISS,
-	CROWBAR_BIG_SWING_IDLE
-};
-
 void FindHullIntersection( const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity )
 {
 	int			i, j, k;
 	float		distance;
-	float		*minmaxs[2] = {mins, maxs};
+	const Vector* minmaxs[2] = {&mins, &maxs};
 	TraceResult tmpTrace;
 	Vector		vecHullEnd = tr.vecEndPos;
 	Vector		vecEnd;
@@ -85,9 +66,9 @@ void FindHullIntersection( const Vector &vecSrc, TraceResult &tr, float *mins, f
 		{
 			for ( k = 0; k < 2; k++ )
 			{
-				vecEnd.x = vecHullEnd.x + minmaxs[i][0];
-				vecEnd.y = vecHullEnd.y + minmaxs[j][1];
-				vecEnd.z = vecHullEnd.z + minmaxs[k][2];
+				vecEnd.x = vecHullEnd.x + minmaxs[i]->x;
+				vecEnd.y = vecHullEnd.y + minmaxs[j]->y;
+				vecEnd.z = vecHullEnd.z + minmaxs[k]->z;
 
 				UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, pEntity, &tmpTrace );
 				if ( tmpTrace.flFraction < 1.0 )

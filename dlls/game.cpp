@@ -555,7 +555,7 @@ cvar_t	sk_plr_max_healthkit3 = { "sk_plr_max_healthkit3","0" };
 
 // Register your console variables here
 // This gets called one time when the game is initialied
-void GameDLLInit( void )
+void GameDLLInit()
 {
 	// Register cvars here:
 
@@ -587,6 +587,7 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&allowmonsters);
 	CVAR_REGISTER (&impulsetarget); //LRC
 	CVAR_REGISTER (&mw_debug); //LRC
+	CVAR_REGISTER (&maxmedkit); //AJH The maximum portable medkit charge a player may have
 	CVAR_REGISTER (&cvar_user1); //LRC
 	CVAR_REGISTER (&cvar_user2); //LRC
 	CVAR_REGISTER (&cvar_user3); //LRC
@@ -595,14 +596,15 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&cvar_user6); //LRC
 	CVAR_REGISTER (&cvar_user7); //LRC
 	CVAR_REGISTER (&cvar_user8); //LRC
-	CVAR_REGISTER (&holidaycvar); //EDMD
 	//CVAR_REGISTER (&mp3player); //G-Cont. Stuff for Mp3 player	//AJH - Too late, I've already added mp3/ogg
     //CVAR_REGISTER (&mp3volume); //G-Cont. Stuff for Mp3 player	//AJH
 	CVAR_REGISTER (&timeddamage); //AJH Time based damage (nervegas/rad, not poison) on/off
 	CVAR_REGISTER (&maxcameras); //AJH the maximum number of inventory cameras a player may carry
 	CVAR_REGISTER (&maxmedkit); //AJH The maximum portable medkit charge a player may have
+	
+    CVAR_REGISTER (&holidaycvar); //EDMD
 
-	CVAR_REGISTER (&mp_chattime);
+    CVAR_REGISTER (&mp_chattime);
 
 // REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

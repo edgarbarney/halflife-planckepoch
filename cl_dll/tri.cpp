@@ -37,7 +37,7 @@ extern CGameStudioModelRenderer g_StudioRenderer;
 #include "glInclude.h"
 
 extern int g_iWaterLevel;
-extern vec3_t v_origin;
+extern Vector v_origin;
 
 int UseTexture(HL_HSPRITE &hsprSpr, char * str)
 {
@@ -57,7 +57,7 @@ int UseTexture(HL_HSPRITE &hsprSpr, char * str)
 
 void SetPoint( float x, float y, float z, float (*matrix)[4])
 {
-	vec3_t point, result;
+	Vector point, result;
 	point[0] = x;
 	point[1] = y;
 	point[2] = z;
@@ -74,7 +74,7 @@ HUD_DrawNormalTriangles
 Non-transparent triangles-- add them here
 =================
 */
-void DLLEXPORT HUD_DrawNormalTriangles( void )
+void DLLEXPORT HUD_DrawNormalTriangles()
 {
 //	RecClDrawNormalTriangles();
 
@@ -85,7 +85,7 @@ void DLLEXPORT HUD_DrawNormalTriangles( void )
 }
 
 #if defined( _TFC )
-void RunEventList( void );
+void RunEventList();
 #endif
 
 /*

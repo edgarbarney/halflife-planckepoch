@@ -12,22 +12,6 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
-enum ar16_e
-{
-	AR16_LONGIDLE = 0,
-	AR16_IDLE1,
-	AR16_LAUNCH,
-	AR16_RELOAD,
-	AR16_DEPLOY,
-	AR16_FIRE1,
-	AR16_FIRE2,
-	AR16_FIRE3,
-	AR16_HOLSTER,
-	AR16_DEPLOY_NORELOAD,
-};
-
-
-
 LINK_ENTITY_TO_CLASS(weapon_ar16, CAR16);
 LINK_ENTITY_TO_CLASS(weapon_556AR, CAR16);
 

@@ -734,22 +734,7 @@ enum
 	kRenderFxEntInPVS,			//G-Cont - this style for entity, which draw always
 };
 
-
-typedef unsigned int	func_t;
-typedef unsigned int	string_t;
-
-typedef unsigned char 		byte;
-typedef unsigned short 		word;
 #define _DEF_BYTE_
-
-#undef true
-#undef false
-
-#ifndef __cplusplus
-typedef enum {false, true}	qboolean;
-#else 
-typedef int qboolean;
-#endif
 
 typedef struct
 {
@@ -782,7 +767,7 @@ typedef struct edict_s edict_t;
 
 typedef struct
 {
-	vec3_t	normal;
+	Vector	normal;
 	float	dist;
 } plane_t;
 
@@ -792,7 +777,7 @@ typedef struct
 	qboolean	startsolid;	// if true, the initial point was in a solid area
 	qboolean	inopen, inwater;
 	float	fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t	endpos;			// final position
+	Vector	endpos;			// final position
 	plane_t	plane;			// surface normal at impact
 	edict_t	*ent;			// entity the surface is on
 	int		hitgroup;		// 0 == generic, non zero is specific body part

@@ -76,14 +76,21 @@ namespace BarneySkin
 class CBarney : public CTalkMonster
 {
 public:
-	void Spawn( void );
-	void Precache( void );
-	void SetYawSpeed( void );
-	int  ISoundMask( void );
-	void BarneyFirePistol( void );
-	void AlertSound( void );
-	int  Classify ( void );
-	void HandleAnimEvent( MonsterEvent_t *pEvent );
+	void Spawn() override;
+	void Precache() override;
+	void SetYawSpeed() override;
+	int  ISoundMask() override;
+	void BarneyFirePistol();
+	void AlertSound() override;
+	int  Classify () override;
+	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
+	
+	void RunTask( Task_t *pTask ) override;
+	void StartTask( Task_t *pTask ) override;
+    int	ObjectCaps() override { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
+	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
+	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
+    // TODO - Modernize
 	void CheckAmmo(void); // For Reload
 
 	//For Multiple Weapons
@@ -94,30 +101,24 @@ public:
 	void BarneyFireAR16(void);
 
 	void KeyValue(KeyValueData* pkvd);
-
-	void RunTask( Task_t *pTask );
-	void StartTask( Task_t *pTask );
-	virtual int	ObjectCaps( void ) { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
-	BOOL CheckRangeAttack1 ( float flDot, float flDist );
 	
-	void DeclineFollowing( void );
+	void DeclineFollowing() override;
 
 	// Override these to set behavior
-	Schedule_t *GetScheduleOfType ( int Type );
-	Schedule_t *GetSchedule ( void );
-	MONSTERSTATE GetIdealState ( void );
+	Schedule_t *GetScheduleOfType ( int Type ) override;
+	Schedule_t *GetSchedule () override;
+	MONSTERSTATE GetIdealState () override;
 
-	void DeathSound( void );
-	void PainSound( void );
+	void DeathSound() override;
+	void PainSound() override;
 	
-	void TalkInit( void );
+	void TalkInit();
 
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	void Killed( entvars_t *pevAttacker, int iGib );
-	
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
+	void Killed( entvars_t *pevAttacker, int iGib ) override;
+
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	
 	int		m_iBaseBody; //LRC - for barneys with different bodies
@@ -397,7 +398,7 @@ void CBarney :: RunTask( Task_t *pTask )
 // ISoundMask - returns a bit mask indicating which types
 // of sounds this monster regards. 
 //=========================================================
-int CBarney :: ISoundMask ( void) 
+int CBarney :: ISoundMask () 
 {
 	return	bits_SOUND_WORLD	|
 			bits_SOUND_COMBAT	|
@@ -412,7 +413,7 @@ int CBarney :: ISoundMask ( void)
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CBarney :: Classify ( void )
+int	CBarney :: Classify ()
 {
 	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
 }
@@ -420,7 +421,7 @@ int	CBarney :: Classify ( void )
 //=========================================================
 // ALertSound - barney says "Freeze!"
 //=========================================================
-void CBarney :: AlertSound( void )
+void CBarney :: AlertSound()
 {
 	if ( m_hEnemy != NULL )
 	{
@@ -445,7 +446,7 @@ void CBarney :: AlertSound( void )
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CBarney :: SetYawSpeed ( void )
+void CBarney :: SetYawSpeed ()
 {
 	int ys;
 
@@ -617,7 +618,7 @@ void CBarney::BarneyFireMP5(void)
 // BarneyFirePistol - shoots one round from the pistol at
 // the enemy barney is facing.
 //=========================================================
-void CBarney :: BarneyFirePistol ( void )
+void CBarney :: BarneyFirePistol ()
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -1049,7 +1050,7 @@ int CBarney :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 //=========================================================
 // PainSound
 //=========================================================
-void CBarney :: PainSound ( void )
+void CBarney :: PainSound ()
 {
 	if (gpGlobals->time < m_painTime)
 		return;
@@ -1067,7 +1068,7 @@ void CBarney :: PainSound ( void )
 //=========================================================
 // DeathSound 
 //=========================================================
-void CBarney :: DeathSound ( void )
+void CBarney :: DeathSound ()
 {
 	switch (RANDOM_LONG(0,2))
 	{
@@ -1313,7 +1314,7 @@ Schedule_t* CBarney :: GetScheduleOfType ( int Type )
 // monster's member function to get a pointer to a schedule
 // of the proper type.
 //=========================================================
-Schedule_t *CBarney :: GetSchedule ( void )
+Schedule_t *CBarney :: GetSchedule ()
 {
 	if (HasConditions(bits_COND_NO_AMMO_LOADED))
 	{
@@ -1411,14 +1412,14 @@ Schedule_t *CBarney :: GetSchedule ( void )
 	return CTalkMonster::GetSchedule();
 }
 
-MONSTERSTATE CBarney :: GetIdealState ( void )
+MONSTERSTATE CBarney :: GetIdealState ()
 {
 	return CTalkMonster::GetIdealState();
 }
 
 
 
-void CBarney::DeclineFollowing( void )
+void CBarney::DeclineFollowing()
 {
 	PlaySentence( m_szGrp[TLK_DECLINE], 2, VOL_NORM, ATTN_NORM ); //LRC
 }
@@ -1440,10 +1441,10 @@ void CBarney::DeclineFollowing( void )
 class CDeadBarney : public CBaseMonster
 {
 public:
-	void Spawn( void );
-	int	Classify ( void ) { return	CLASS_PLAYER_ALLY; }
+	void Spawn() override;
+	int	Classify () override { return	CLASS_PLAYER_ALLY; }
 
-	void KeyValue( KeyValueData *pkvd );
+	void KeyValue( KeyValueData *pkvd ) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static const char *m_szPoses[3];

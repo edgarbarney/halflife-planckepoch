@@ -20,10 +20,10 @@
 class CMark : public CPointEntity
 {
 public:
-	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult) { *OUTresult = pev->movedir; return true; }
+	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult) override { *OUTresult = pev->movedir; return true; }
 //	bool	CalcAngles( CBaseEntity *pLocus, Vector* OUTresult ) { return UTIL_VecToAngles( CalcVelocity(pLocus) ); }
-	bool	CalcNumber(CBaseEntity *pLocus, float* OUTresult ) { *OUTresult = pev->frags; return true; }
-	void	Think( void ) { SUB_Remove(); }
+	bool	CalcNumber(CBaseEntity *pLocus, float* OUTresult ) override { *OUTresult = pev->frags; return true; }
+	void	Think() override { SUB_Remove(); }
 };
 
 
@@ -442,13 +442,13 @@ bool TryCalcLocus_NumberNonRandom( CBaseEntity *pLocus, const char *szText, floa
 class CLocusAlias : public CBaseMutableAlias
 {
 public:
-	void	PostSpawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	CBaseEntity		*FollowAlias( CBaseEntity *pFrom );
-	void	FlushChanges( void );
+	void	PostSpawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	CBaseEntity		*FollowAlias( CBaseEntity *pFrom ) override;
+	void	FlushChanges() override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE	m_hValue;
@@ -464,7 +464,7 @@ TYPEDESCRIPTION	CLocusAlias::m_SaveData[] =
 LINK_ENTITY_TO_CLASS( locus_alias, CLocusAlias );
 IMPLEMENT_SAVERESTORE( CLocusAlias, CBaseMutableAlias );
 
-void CLocusAlias::PostSpawn( void )
+void CLocusAlias::PostSpawn()
 {
 	m_hValue = UTIL_FindEntityByTargetname( NULL, STRING(pev->netname) );
 }
@@ -475,7 +475,7 @@ void CLocusAlias::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	UTIL_AddToAliasList( this );
 }
 
-void CLocusAlias::FlushChanges( void )
+void CLocusAlias::FlushChanges()
 {
 	m_hValue = m_hChangeTo;
 	m_hChangeTo = NULL;
@@ -510,13 +510,13 @@ CBaseEntity *CLocusAlias::FollowAlias( CBaseEntity *pFrom )
 class CLocusBeam : public CPointEntity
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Spawn() override;
+	void	Precache() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	void KeyValue( KeyValueData *pkvd );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void KeyValue( KeyValueData *pkvd ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -614,7 +614,7 @@ void CLocusBeam :: KeyValue( KeyValueData *pkvd )
 		CBaseEntity::KeyValue( pkvd );
 }
 
-void CLocusBeam :: Precache ( void )
+void CLocusBeam :: Precache ()
 {
 	PRECACHE_MODEL ( (char*)STRING(m_iszSprite) );
 }
@@ -675,7 +675,7 @@ void CLocusBeam::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 			SF_BEAM_SPARKSTART | SF_BEAM_SPARKEND | SF_BEAM_DECALS);
 	if (m_fDuration)
 	{
-		pBeam->SetThink( &CBeam::SUB_Remove );
+		pBeam->SetThink( &CBeam:: SUB_Remove );
 		pBeam->SetNextThink( m_fDuration );
 	}
 	pBeam->pev->targetname = m_iszTargetName;
@@ -686,7 +686,7 @@ void CLocusBeam::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	}
 }
 
-void CLocusBeam::Spawn( void )
+void CLocusBeam::Spawn()
 {
 	Precache();
 	m_iFlags = 0;
@@ -708,7 +708,7 @@ void CLocusBeam::Spawn( void )
 class CCalcPosition : public CPointEntity
 {
 public:
-	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult );
+	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_position, CCalcPosition );
@@ -803,7 +803,7 @@ bool CCalcPosition::CalcPosition( CBaseEntity *pLocus, Vector* OUTresult )
 class CCalcNumFromNum : public CPointEntity
 {
 public:
-	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult );
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_numfromnum, CCalcNumFromNum ); //LRC 1.8: new name for this entity
@@ -924,7 +924,7 @@ bool CCalcNumFromNum::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 class CCalcNumFromEnt : public CPointEntity
 {
 public:
-	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult );
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_numfroment, CCalcNumFromEnt ); //LRC 1.8: new name for this entity
@@ -949,7 +949,12 @@ bool CCalcNumFromEnt::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 		{
 			if ( pev->impulse == 1 )
 			{
-				if ( target->IsPlayer() )
+				if ( FStrEq( STRING(target->pev->classname), "watcher_count" ) )
+				{
+					*OUTresult = target->pev->iuser1/target->pev->impulse;
+					return true;
+				}
+				else if ( target->IsPlayer() )
 				{
 					*OUTresult = ((CBasePlayer*)target)->HasWeapons()? 1: 0;
 					return true;
@@ -972,7 +977,7 @@ bool CCalcNumFromEnt::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 class CCalcNumFromVec : public CPointEntity
 {
 public:
-	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult );
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_numfromvec, CCalcNumFromVec );
@@ -1035,27 +1040,27 @@ bool CCalcNumFromVec::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 		}
 	case 6: // Min X
 		if (!gotB) return false;
-		*OUTresult = min(vecA.x, vecB.x);
+		*OUTresult = V_min(vecA.x, vecB.x);
 		return true;
 	case 7: // Max X
 		if (!gotB) return false;
-		*OUTresult = max(vecA.x, vecB.x);
+		*OUTresult = V_max(vecA.x, vecB.x);
 		return true;
 	case 8: // Min Y
 		if (!gotB) return false;
-		*OUTresult = min(vecA.y, vecB.y);
+		*OUTresult = V_min(vecA.y, vecB.y);
 		return true;
 	case 9: // Max Y
 		if (!gotB) return false;
-		*OUTresult = max(vecA.y, vecB.y);
+		*OUTresult = V_max(vecA.y, vecB.y);
 		return true;
 	case 10: // Min Z
 		if (!gotB) return false;
-		*OUTresult = min(vecA.z, vecB.z);
+		*OUTresult = V_min(vecA.z, vecB.z);
 		return true;
 	case 11: // Max Z
 		if (!gotB) return false;
-		*OUTresult = max(vecA.z, vecB.z);
+		*OUTresult = V_max(vecA.z, vecB.z);
 		return true;
 	case 20: // Component in B
 		{
@@ -1150,9 +1155,9 @@ Vector CCalcAngleTransform::CalcVelocity( CBaseEntity *pLocus ) {
 		case 5:transformation=basis1*sin(basis2*pi/180);break;							// basis1 * sin(basis2)
 		case 6:transformation=basis1*cos(basis2*pi/180);break;							// basis1 * cos(basis2)
 		case 7:transformation=basis1*tan(basis2*pi/180);break;							// basis1 * tan(basis2)
-		case 8:transformation=basis1*(transformation=sin(basis2*pi/180))*transformation;break;	// basis1 * sin�(basis2)
-		case 9:transformation=basis1*(transformation=cos(basis2*pi/180))*transformation;break;	// basis1 * cos�(basis2)
-		case 10:transformation=basis1*(transformation=tan(basis2*pi/180))*transformation;break;	// basis1 * tan�(basis2)
+		case 8:transformation=basis1*(transformation=sin(basis2*pi/180))*transformation;break;	// basis1 * sin²(basis2)
+		case 9:transformation=basis1*(transformation=cos(basis2*pi/180))*transformation;break;	// basis1 * cos²(basis2)
+		case 10:transformation=basis1*(transformation=tan(basis2*pi/180))*transformation;break;	// basis1 * tan²(basis2)
 		default:ALERT(at_debug,"Invalid transformation\n");break;
 	}
 	
@@ -1187,17 +1192,17 @@ class CCalcFallback : public CPointEntity
 public:
 	EHANDLE m_hActivator; // don't need to save this, we only keep it for one frame
 
-	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult )
+	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult ) override
 	{
 		return CalcWithFallback<Vector, &g_vecZero>( pLocus, OUTresult, TryCalcLocus_Position );
 	}
 
-	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )
+	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult ) override
 	{
 		return CalcWithFallback<Vector, &g_vecZero>( pLocus, OUTresult, TryCalcLocus_VelocityNoSwizzle );
 	}
 
-	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult )
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override
 	{
 		return CalcWithFallback<float, &s_Zero>( pLocus, OUTresult, TryCalcLocus_NumberNoSwizzle );
 	}
@@ -1237,7 +1242,7 @@ public:
 		}
 	}
 
-	void Think ( void )
+	void Think () override
 	{
 		FireTargets( STRING(pev->message), m_hActivator, this, USE_TOGGLE, 0 );
 	}
@@ -1252,17 +1257,17 @@ LINK_ENTITY_TO_CLASS( calc_fallback, CCalcFallback );
 class CCalcFromCVar : public CPointEntity
 {
 public:
-	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult )
+	bool CalcPosition( CBaseEntity *pLocus, Vector* OUTresult ) override
 	{
 		return TryCalcLocus_Position( this, pLocus, CVAR_GET_STRING(STRING(pev->target)), OUTresult );
 	}
 
-	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )
+	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult ) override
 	{
 		return TryCalcLocus_Velocity( this, pLocus, CVAR_GET_STRING(STRING(pev->target)), OUTresult );
 	}
 
-	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult )
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override
 	{
 		if ( pev->spawnflags & SF_CALCFROMCVAR_PARSEASLR )
 		{
@@ -1295,7 +1300,7 @@ class CCalcSubVelocity : public CPointEntity
 	bool Convert( CBaseEntity *pLocus, Vector vecVel, Vector* OUTresult );
 	bool ConvertAngles( CBaseEntity *pLocus, Vector vecAngles, Vector* OUTresult );
 public:
-	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult);
+	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_subvelocity, CCalcSubVelocity );
@@ -1393,7 +1398,7 @@ bool CCalcSubVelocity::ConvertAngles( CBaseEntity *pLocus, Vector vecAngles, Vec
 class CCalcAngles : public CPointEntity
 {
 public:
-	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )
+	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult ) override
 	{
 		Vector angles;
 		if ( CalcPYR(pLocus, &angles) )
@@ -1407,7 +1412,7 @@ public:
 			return false;
 		}
 	}
-	bool CalcPYR( CBaseEntity *pLocus, Vector* OUTresult );
+	bool CalcPYR( CBaseEntity *pLocus, Vector* OUTresult ) override;
 };
 LINK_ENTITY_TO_CLASS( calc_angles, CCalcAngles );
 
@@ -1456,7 +1461,7 @@ bool CCalcAngles::CalcPYR( CBaseEntity *pLocus, Vector* OUTresult )
 class CCalcVelocityPath : public CPointEntity
 {
 public:
-	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult );
+	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_velocity_path, CCalcVelocityPath );
@@ -1580,7 +1585,7 @@ bool CCalcVelocityPath::CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )
 class CCalcVelocityPolar : public CPointEntity
 {
 public:
-	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult );
+	bool CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult ) override;
 };
 
 LINK_ENTITY_TO_CLASS( calc_velocity_polar, CCalcVelocityPolar );
@@ -1668,15 +1673,15 @@ bool CCalcVelocityPolar::CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult )
 class CLocusVariable : public CPointEntity
 {
 public:
-	void	Spawn( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult ) { *OUTresult = pev->movedir; return true; }
+	void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	bool	CalcVelocity(CBaseEntity *pLocus, Vector* OUTresult ) override { *OUTresult = pev->movedir; return true; }
 //	Vector	CalcAngles( CBaseEntity *pLocus ) { return UTIL_VecToAngles( CalcVelocity(pLocus) ); }
-	bool	CalcNumber(CBaseEntity *pLocus, float* OUTresult ) { *OUTresult = pev->frags; return true; }
+	bool	CalcNumber(CBaseEntity *pLocus, float* OUTresult ) override { *OUTresult = pev->frags; return true; }
 
-	void KeyValue( KeyValueData *pkvd );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void KeyValue( KeyValueData *pkvd ) override;
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -1737,7 +1742,7 @@ void CLocusVariable :: KeyValue( KeyValueData *pkvd )
 		CPointEntity::KeyValue( pkvd );
 }
 
-void CLocusVariable::Spawn( void )
+void CLocusVariable::Spawn()
 {
 	SetMovedir(pev);
 }

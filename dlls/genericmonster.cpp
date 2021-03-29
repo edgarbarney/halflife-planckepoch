@@ -49,23 +49,23 @@
 class CGenericMonster : public CTalkMonster
 {
 public:
-	void Spawn( void );
-	void Precache( void );
-	void SetYawSpeed( void );
-	int  Classify ( void );
-	void HandleAnimEvent( MonsterEvent_t *pEvent );
-	int ISoundMask ( void );
-	void KeyValue( KeyValueData *pkvd );
-	void Torch ( void );
-	void MakeGas( void );
-	void UpdateGas( void );
-	void KillGas( void );
+	void Spawn() override;
+	void Precache() override;
+	void SetYawSpeed() override;
+	int  Classify () override;
+	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
+	int ISoundMask () override;
+	void KeyValue( KeyValueData *pkvd ) override;
+	void Torch ();
+	void MakeGas();
+	void UpdateGas();
+	void KillGas();
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	virtual int HasCustomGibs( void ) { return m_iszGibModel; }
+    int HasCustomGibs() override { return m_iszGibModel; }
 
     CBeam *m_pBeam;
 	int m_iszGibModel;
@@ -99,7 +99,7 @@ void CGenericMonster::KeyValue( KeyValueData *pkvd )
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CGenericMonster :: Classify ( void )
+int	CGenericMonster :: Classify ()
 {
 	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
 }
@@ -108,7 +108,7 @@ int	CGenericMonster :: Classify ( void )
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CGenericMonster :: SetYawSpeed ( void )
+void CGenericMonster :: SetYawSpeed ()
 {
 	int ys;
 
@@ -171,7 +171,7 @@ void CGenericMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 //=========================================================
 // ISoundMask - generic monster can't hear.
 //=========================================================
-int CGenericMonster :: ISoundMask ( void )
+int CGenericMonster :: ISoundMask ()
 {
 	return	bits_SOUND_NONE;
 }
@@ -341,16 +341,16 @@ void CGenericMonster :: KillGas( void )
 class CDeadGenericMonster : public CBaseMonster
 {
 public:
-	void Spawn( void );
-	void Precache( void );
-	int	Classify ( void ) { return CLASS_PLAYER_ALLY; }
-	void KeyValue( KeyValueData *pkvd );
+	void Spawn() override;
+	void Precache() override;
+	int	Classify () override { return CLASS_PLAYER_ALLY; }
+	void KeyValue( KeyValueData *pkvd ) override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	virtual int HasCustomGibs( void ) { return m_iszGibModel; }
+    int HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };
@@ -383,7 +383,7 @@ void CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
 //=========================================================
 // ********** DeadGenericMonster SPAWN **********
 //=========================================================
-void CDeadGenericMonster :: Spawn( void )
+void CDeadGenericMonster :: Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));

@@ -29,8 +29,9 @@ void CAM_Init( void )
 
 int DLLEXPORT CL_IsThirdPerson( void )
 {
-	return (gHUD.m_iCameraMode ? 1 : 0);
+    	return (gHUD.m_iCameraMode ? 1 : 0);
 }
+
 
 void DLLEXPORT CL_CameraOffset( float *ofs )
 {

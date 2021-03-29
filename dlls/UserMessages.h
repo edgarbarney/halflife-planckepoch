@@ -78,4 +78,4 @@ extern int gmsgCreateSystem;
 
 //RENDERERS END
 
-void LinkUserMessages(void);
+void LinkUserMessages();

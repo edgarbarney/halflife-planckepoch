@@ -23,22 +23,8 @@
 #include "UserMessages.h"
 //#include "animation.h"
 
-enum glock_e {
-	GLOCK_IDLE1 = 0,
-	GLOCK_IDLE2,
-	GLOCK_IDLE3,
-	GLOCK_SHOOT,
-	GLOCK_SHOOT_EMPTY,
-	GLOCK_RELOAD,
-	GLOCK_RELOAD_NOT_EMPTY,
-	GLOCK_DRAW,
-	GLOCK_HOLSTER,
-	GLOCK_ADD_SILENCER
-};
-
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
 LINK_ENTITY_TO_CLASS( weapon_9mmhandgun, CGlock );
-
 
 void CGlock::Spawn( )
 {
@@ -71,7 +57,7 @@ void CGlock::Holster( int skiplocal )
 }
 
 
-void CGlock::Precache( void )
+void CGlock::Precache()
 {
 	PRECACHE_MODEL("models/v_9mmhandgun.mdl");
 	PRECACHE_MODEL("models/w_9mmhandgun.mdl");
@@ -115,7 +101,7 @@ BOOL CGlock::Deploy( )
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
 }
 
-void CGlock::SecondaryAttack( void )
+void CGlock::SecondaryAttack()
 {
 	m_pPlayer->m_isGlockAuto = !m_pPlayer->m_isGlockAuto;
 	SetBodygroup(2, m_pPlayer->m_isGlockAuto);
@@ -124,7 +110,7 @@ void CGlock::SecondaryAttack( void )
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 
-void CGlock::PrimaryAttack( void )
+void CGlock::PrimaryAttack()
 {
 	if (m_pPlayer->m_isGlockAuto)
 		GlockFire( 0.05, 0.07, FALSE ); //Full auto modification!
@@ -215,7 +201,7 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 }
 
 
-void CGlock::Reload( void )
+void CGlock::Reload()
 {
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		 return;
@@ -235,7 +221,7 @@ void CGlock::Reload( void )
 
 
 
-void CGlock::WeaponIdle( void )
+void CGlock::WeaponIdle()
 {
 	ResetEmptySound( );
 
@@ -278,19 +264,19 @@ void CGlock::WeaponIdle( void )
 
 class CGlockAmmo : public CBasePlayerAmmo
 {
-	void Spawn( void )
-	{ 
+	void Spawn() override
+    { 
 		Precache( );
 		SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
 		CBasePlayerAmmo::Spawn( );
 	}
-	void Precache( void )
-	{
+	void Precache() override
+    {
 		PRECACHE_MODEL ("models/w_9mmclip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo( CBaseEntity *pOther ) 
-	{ 
+	BOOL AddAmmo( CBaseEntity *pOther ) override
+    { 
 		if (pOther->GiveAmmo( AMMO_GLOCKCLIP_GIVE, "9mm", _9MM_MAX_CARRY ) != -1)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);

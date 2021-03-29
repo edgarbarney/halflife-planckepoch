@@ -204,10 +204,10 @@ public:
 	virtual qboolean	StudioCheckBBox( void );
 
 	virtual void	StudioEntityLight( void );
-	virtual bool	StudioCullBBox( const vec3_t &mins, const vec3_t &maxs );
+	virtual bool	StudioCullBBox( const Vector &mins, const Vector &maxs );
 
 	virtual void	StudioSetupLighting( void );
-	virtual int		StudioRecursiveLightPoint( entextrainfo_t *ext, mnode_t *node, const vec3_t &start, const vec3_t &end, vec3_t &color );
+	virtual int		StudioRecursiveLightPoint( entextrainfo_t *ext, mnode_t *node, const Vector &start, const Vector &end, Vector &color );
 	
 	virtual void	StudioSetTextureFlags( void );
 	virtual void	StudioSetChromeVectors( void );
@@ -222,19 +222,19 @@ public:
 	virtual void	StudioDrawPointsSolid( void );
 
 	float			m_fChrome[MAXSTUDIOVERTS][2];
-	vec3_t			m_vChromeUp[MAXSTUDIOBONES];
-	vec3_t			m_vChromeRight[MAXSTUDIOBONES];
+	Vector			m_vChromeUp[MAXSTUDIOBONES];
+	Vector			m_vChromeRight[MAXSTUDIOBONES];
 
 	studiohdr_t		*m_pTextureHeader;
 
-	vec3_t			m_vMins;
-	vec3_t			m_vMaxs;
+	Vector			m_vMins;
+	Vector			m_vMaxs;
 
-	vec3_t			m_vVertexTransform[MAXSTUDIOVERTS];	// transformed vertices
-	vec3_t			m_vNormalTransform[MAXSTUDIOVERTS]; // transformed normals
+	Vector			m_vVertexTransform[MAXSTUDIOVERTS];	// transformed vertices
+	Vector			m_vNormalTransform[MAXSTUDIOVERTS]; // transformed normals
 
-	vec3_t			*m_pVertexTransform; // pointer to vertex transform
-	vec3_t			*m_pNormalTransform; // pointer to normal transform
+	Vector			*m_pVertexTransform; // pointer to vertex transform
+	Vector			*m_pNormalTransform; // pointer to normal transform
 
 	lighting_ext	m_pLighting; // buz
 
@@ -311,10 +311,10 @@ public:
 	virtual studiodecal_t *StudioAllocDecal( void );
 	virtual studiodecal_t *StudioAllocDecalSlot( void );
 
-	virtual void	StudioDecalExternal( vec3_t vpos, vec3_t vnorm, const char *name );
-	virtual void	StudioDecalForEntity( vec3_t position, vec3_t normal, const char *szName, cl_entity_t *pEntity );
-	virtual void	StudioDecalForSubModel( vec3_t position, vec3_t normal, studiodecal_t *decal );
-	virtual void	StudioDecalTriangle( studiotri_t *tri, vec3_t position, vec3_t normal, studiodecal_t *decal );
+	virtual void	StudioDecalExternal( Vector vpos, Vector vnorm, const char *name );
+	virtual void	StudioDecalForEntity( Vector position, Vector normal, const char *szName, cl_entity_t *pEntity );
+	virtual void	StudioDecalForSubModel( Vector position, Vector normal, studiodecal_t *decal );
+	virtual void	StudioDecalTriangle( studiotri_t *tri, Vector position, Vector normal, studiodecal_t *decal );
 
 	studiodecal_t	m_pStudioDecals[MAX_CUSTOMDECALS];
 	int				m_iNumStudioDecals;

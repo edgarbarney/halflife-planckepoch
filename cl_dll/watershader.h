@@ -61,7 +61,7 @@ public:
 
 public:
 	bool			m_bViewInWater;
-	vec3_t			m_vViewOrigin;
+	Vector			m_vViewOrigin;
 
 	cl_water_t		m_pWaterEntities[MAX_WATER_ENTITIES];
 	int				m_iNumWaterEntities;
@@ -75,11 +75,11 @@ public:
 	ref_params_t	*m_pViewParams;
 	ref_params_t	m_pWaterParams;
 
-	vec3_t			m_vWaterOrigin;
-	vec3_t			m_vWaterPlaneMins;
-	vec3_t			m_vWaterPlaneMaxs;
-	vec3_t			m_vWaterEntMins;
-	vec3_t			m_vWaterEntMaxs;
+	Vector			m_vWaterOrigin;
+	Vector			m_vWaterPlaneMins;
+	Vector			m_vWaterPlaneMaxs;
+	Vector			m_vWaterEntMins;
+	Vector			m_vWaterEntMaxs;
 
 	int				m_iNumPasses;
 public:

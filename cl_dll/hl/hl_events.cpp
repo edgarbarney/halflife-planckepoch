@@ -15,6 +15,8 @@
 #include "../hud.h"
 #include "../cl_util.h"
 #include "event_api.h"
+#include "pmtrace.h"
+#include "ev_hldm.h"
 
 extern "C"
 {
@@ -61,7 +63,7 @@ Associate script file name with callback functions.  Callback's must be extern "
 That was what we were going to do, but we ran out of time...oh well.
 ======================
 */
-void Game_HookEvents( void )
+void Game_HookEvents()
 {
 	gEngfuncs.pfnHookEvent( "events/crowbar.sc",				EV_Crowbar );
 	gEngfuncs.pfnHookEvent( "events/glock1.sc",					EV_FireGlock1 );

@@ -845,12 +845,12 @@ SetupCable
 bool CPropManager::SetupCable ( cabledata_t *cable, entity_t *entity )
 {
 	char sz[64];
-	vec3_t vdroppoint;
-	vec3_t vposition1;
-	vec3_t vposition2;
-	vec3_t vdirection;
-	vec3_t vmidpoint;
-	vec3_t vendpoint;
+	Vector vdroppoint;
+	Vector vposition1;
+	Vector vposition2;
+	Vector vdirection;
+	Vector vmidpoint;
+	Vector vendpoint;
 
 	// Get our origin
 	char *pValue = ValueForKey(entity, "origin");
@@ -962,10 +962,10 @@ DrawCables
 */
 void CPropManager::DrawCables( void )
 {
-	vec3_t vVertex;
-	vec3_t vTangent;
-	vec3_t vDir;
-	vec3_t vRight;
+	Vector vVertex;
+	Vector vTangent;
+	Vector vDir;
+	Vector vRight;
 
 	if(m_pCvarDrawClientEntities->value < 1)
 		return;

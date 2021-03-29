@@ -145,7 +145,7 @@ CreateCluster
 
 ====================
 */
-void CParticleEngine::CreateCluster( char *szPath, vec3_t origin, vec3_t dir, int iId ) 
+void CParticleEngine::CreateCluster( char *szPath, Vector origin, Vector dir, int iId ) 
 {
 	char szFilePath[64];
 	strcpy(szFilePath, "/scripts/particles/");
@@ -180,7 +180,7 @@ CreateSystem
 
 ====================
 */
-particle_system_t *CParticleEngine::CreateSystem( char *szPath, vec3_t origin, vec3_t dir, int iId, particle_system_t *parent ) 
+particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent ) 
 {
 	if(!strlen(szPath))
 		return NULL;
@@ -410,9 +410,9 @@ EnvironmentCreateFirst
 */
 void CParticleEngine::EnvironmentCreateFirst( particle_system_t *pSystem ) 
 {
-	vec3_t vOrigin;
+	Vector vOrigin;
 	int iNumParticles = pSystem->particlefreq*4;
-	vec3_t vPlayer = gEngfuncs.GetLocalPlayer()->origin;
+	Vector vPlayer = gEngfuncs.GetLocalPlayer()->origin;
 
 	// Spawn particles inbetween the view origin and maxheight
 	for(int i = 0; i < iNumParticles; i++)
@@ -453,8 +453,8 @@ CreateParticle
 */
 void CParticleEngine::CreateParticle( particle_system_t *pSystem, float *flOrigin, float *flNormal ) 
 {
-	vec3_t vBaseOrigin;
-	vec3_t vForward, vUp, vRight;
+	Vector vBaseOrigin;
+	Vector vForward, vUp, vRight;
 	cl_particle_t *pParticle = AllocParticle(pSystem);
 
 	if(!pParticle)
@@ -546,7 +546,7 @@ void CParticleEngine::CreateParticle( particle_system_t *pSystem, float *flOrigi
 	{
 		if(!flOrigin)
 		{
-			vec3_t vPlayer = gEngfuncs.GetLocalPlayer()->origin;
+			Vector vPlayer = gEngfuncs.GetLocalPlayer()->origin;
 			pParticle->origin[0] = vPlayer[0] + gEngfuncs.pfnRandomLong(-pSystem->systemsize, pSystem->systemsize);
 			pParticle->origin[1] = vPlayer[1] + gEngfuncs.pfnRandomLong(-pSystem->systemsize, pSystem->systemsize);
 			
@@ -881,21 +881,21 @@ LightForParticle
 
 ====================
 */
-vec3_t CParticleEngine::LightForParticle( cl_particle_t *pParticle ) 
+Vector CParticleEngine::LightForParticle( cl_particle_t *pParticle ) 
 {
 	float flRad;
 	float flDist;
 	float flAtten;
 	float flCos;
 
-	vec3_t vDir;
-	vec3_t vNorm;
-	vec3_t vForward;
+	Vector vDir;
+	Vector vNorm;
+	Vector vForward;
 
 	float flTime = gEngfuncs.GetClientTime();
 	model_t *pWorld = IEngineStudio.GetModelByIndex(1);
-	vec3_t vEndPos = pParticle->origin - Vector(0, 0, 8964);
-	vec3_t vColor = Vector(0, 0, 0);
+	Vector vEndPos = pParticle->origin - Vector(0, 0, 8964);
+	Vector vColor = Vector(0, 0, 0);
 
 	g_StudioRenderer.StudioRecursiveLightPoint(NULL, pWorld->nodes, pParticle->origin, vEndPos, vColor);
 	cl_dlight_t *pLight = gBSPRenderer.m_pDynLights;
@@ -910,7 +910,7 @@ vec3_t CParticleEngine::LightForParticle( cl_particle_t *pParticle )
 			if(pLight->frustum.CullBox(pParticle->origin, pParticle->origin))
 				continue;
 
-			vec3_t vAngles = pLight->angles;
+			Vector vAngles = pLight->angles;
 			FixVectorForSpotlight(vAngles);
 			AngleVectors(vAngles, vForward, NULL, NULL);
 		}
@@ -958,7 +958,7 @@ bool CParticleEngine::UpdateParticle( cl_particle_t *pParticle )
 	bool bColWater = false;
 
 	float flTime = gEngfuncs.GetClientTime();
-	vec3_t vFinalVelocity = pParticle->velocity;
+	Vector vFinalVelocity = pParticle->velocity;
 	particle_system_t *pSystem = pParticle->pSystem;
 
 	//
@@ -1265,18 +1265,18 @@ bool CParticleEngine::UpdateParticle( cl_particle_t *pParticle )
 	//
 	if(pSystem->tracerdist)
 	{
-		vec3_t vDistance;
+		Vector vDistance;
 		VectorSubtract(pParticle->origin, pParticle->lastspawn, vDistance);
 
 		if(vDistance.Length() > pSystem->tracerdist)
 		{
-			vec3_t vDirection = pParticle->origin - pParticle->lastspawn;
+			Vector vDirection = pParticle->origin - pParticle->lastspawn;
 			int iNumTraces = vDistance.Length()/pSystem->tracerdist;
 
 			for(int i = 0; i < iNumTraces; i++)
 			{
 				float flFraction = (i+1)/(float)iNumTraces;
-				vec3_t vOrigin = pParticle->lastspawn + vDirection*flFraction;
+				Vector vOrigin = pParticle->lastspawn + vDirection*flFraction;
 				CreateParticle(pSystem->createsystem, vOrigin, pParticle->velocity.Normalize());
 			}
 
@@ -1342,10 +1342,10 @@ RenderParticle
 void CParticleEngine::RenderParticle( cl_particle_t *pParticle, float flUp, float flRight ) 
 {
 	float flDot;
-	vec3_t vTemp;
-	vec3_t vPoint;
-	vec3_t vDir;
-	vec3_t vAngles;
+	Vector vTemp;
+	Vector vPoint;
+	Vector vDir;
+	Vector vAngles;
 
 	if(pParticle->alpha == 0)
 		return;
@@ -1699,12 +1699,12 @@ int CParticleEngine::MsgCreateSystem( const char *pszName, int iSize, void *pbuf
 {
 	BEGIN_READ(pbuf, iSize);
 
-	vec3_t pos;
+	Vector pos;
 	pos.x = READ_COORD();
 	pos.y = READ_COORD();
 	pos.z = READ_COORD();
 
-	vec3_t ang;
+	Vector ang;
 	ang.x = READ_COORD();
 	ang.y = READ_COORD();
 	ang.z = READ_COORD();

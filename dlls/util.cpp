@@ -34,13 +34,27 @@
 #include "movewith.h"
 #include "locus.h"
 
-float UTIL_WeaponTimeBase( void )
+float UTIL_WeaponTimeBase()
 {
 #if defined( CLIENT_WEAPONS )
 	return 0.0;
 #else
 	return gpGlobals->time;
 #endif
+}
+
+CBaseEntity* UTIL_FindEntityForward(CBaseEntity* pMe)
+{
+	TraceResult tr;
+
+	UTIL_MakeVectors(pMe->pev->v_angle);
+	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs, pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192, dont_ignore_monsters, pMe->edict(), &tr);
+	if (tr.flFraction != 1.0 && !FNullEnt(tr.pHit))
+	{
+		CBaseEntity* pHit = CBaseEntity::Instance(tr.pHit);
+		return pHit;
+	}
+	return NULL;
 }
 
 static unsigned int glSeed = 0; 
@@ -65,7 +79,7 @@ unsigned int seed_table[ 256 ] =
 	25678, 18555, 13256, 23316, 22407, 16727, 991, 9236, 5373, 29402, 6117, 15241, 27715, 19291, 19888, 19847
 };
 
-unsigned int U_Random( void ) 
+unsigned int U_Random() 
 { 
 	glSeed *= 69069; 
 	glSeed += seed_table[ glSeed & 0xff ];
@@ -172,7 +186,7 @@ void UTIL_SetGroupTrace( int groupmask, int op )
 	ENGINE_SETGROUPMASK( g_groupmask, g_groupop );
 }
 
-void UTIL_UnsetGroupTrace( void )
+void UTIL_UnsetGroupTrace()
 {
 	g_groupmask		= 0;
 	g_groupop		= 0;
@@ -192,7 +206,7 @@ UTIL_GroupTrace::UTIL_GroupTrace( int groupmask, int op )
 	ENGINE_SETGROUPMASK( g_groupmask, g_groupop );
 }
 
-UTIL_GroupTrace::~UTIL_GroupTrace( void )
+UTIL_GroupTrace::~UTIL_GroupTrace()
 {
 	g_groupmask		=	m_oldgroupmask;
 	g_groupop		=	m_oldgroupop;
@@ -396,9 +410,9 @@ Vector UTIL_VecToAngles( const Vector &vec )
 
 //LRC - pass in a normalised axis vector and a number of degrees, and this returns the corresponding
 // angles value for an entity.
-inline Vector UTIL_AxisRotationToAngles( const Vector &vecAxis, float flDegs )
+Vector UTIL_AxisRotationToAngles( const Vector &vec, float angle )
 {
-	Vector vecTemp = UTIL_AxisRotationToVec( vecAxis, flDegs );
+	Vector vecTemp = UTIL_AxisRotationToVec( vec, angle );
 	float rgflVecOut[3];
 	//ugh, mathsy.
 	rgflVecOut[0] = asin(vecTemp.z) * (-180.0 / M_PI);
@@ -410,17 +424,17 @@ inline Vector UTIL_AxisRotationToAngles( const Vector &vecAxis, float flDegs )
 }
 
 //LRC - as above, but returns the position of point 1 0 0 under the given rotation
-Vector UTIL_AxisRotationToVec( const Vector &vecAxis, float flDegs )
+Vector UTIL_AxisRotationToVec( const Vector &vec, float angle )
 {
 	float rgflVecOut[3];
-	float flRads = flDegs * (M_PI / 180.0);
+	float flRads = angle * (M_PI / 180.0);
 	float c = cos(flRads);
 	float s = sin(flRads);
-	float v = vecAxis.x * (1-c);
+	float v = vec.x * (1-c);
 	//ugh, more maths. Thank goodness for internet geometry sites...
-	rgflVecOut[0] = vecAxis.x*v + c;
-	rgflVecOut[1] = vecAxis.y*v + vecAxis.z*s;
-	rgflVecOut[2] = vecAxis.z*v - vecAxis.y*s;
+	rgflVecOut[0] = vec.x*v + c;
+	rgflVecOut[1] = vec.y*v + vec.z*s;
+	rgflVecOut[2] = vec.z*v - vec.y*s;
 	return Vector(rgflVecOut);
 }
 	
@@ -595,7 +609,7 @@ CBaseEntity *UTIL_FindEntityByClassname( CBaseEntity *pStartEntity, const char *
 //LRC - things get messed up if aliases change in the middle of an entity traversal.
 // so instead, they record what changes should be made, and wait until this function gets
 // called.
-void UTIL_FlushAliases( void )
+void UTIL_FlushAliases()
 {
 //	ALERT(at_console, "Flushing alias list\n");
 	if (!g_pWorld)
@@ -1498,7 +1512,9 @@ void UTIL_BloodStream( const Vector &origin, const Vector &direction, int color,
 			WRITE_COORD( direction.y );
 			WRITE_COORD( direction.z );
 			WRITE_BYTE( color );
-			WRITE_BYTE( min( amount, 255 ) );
+			//HACKHACK -  WHAT IN THE HOLY FUCK MATE?	
+			WRITE_BYTE((((amount) < (255)) ? (amount) : (255)));
+			//WRITE_BYTE( min( amount, 255 ) );
 		MESSAGE_END();
 	}
 	//RENDERERS END
@@ -1543,13 +1559,15 @@ void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, 
 			WRITE_COORD( direction.y );
 			WRITE_COORD( direction.z );
 			WRITE_BYTE( color );
-			WRITE_BYTE( min( amount, 255 ) );
+			//HACKHACK -  WHAT IN THE HOLY FUCK MATE?	
+			WRITE_BYTE((((amount) < (255)) ? (amount) : (255)));
+			//WRITE_BYTE( min( amount, 255 ) );
 		MESSAGE_END();
 	}
 //RENDERERS END
 }				
 
-Vector UTIL_RandomBloodVector( void )
+Vector UTIL_RandomBloodVector()
 {
 	Vector direction;
 
@@ -2132,7 +2150,7 @@ static int gSizes[FIELD_TYPECOUNT] =
 
 
 // Base class includes common SAVERESTOREDATA pointer, and manages the entity table
-CSaveRestoreBuffer :: CSaveRestoreBuffer( void )
+CSaveRestoreBuffer :: CSaveRestoreBuffer()
 {
 	m_pdata = NULL;
 }
@@ -2144,7 +2162,7 @@ CSaveRestoreBuffer :: CSaveRestoreBuffer( SAVERESTOREDATA *pdata )
 }
 
 
-CSaveRestoreBuffer :: ~CSaveRestoreBuffer( void )
+CSaveRestoreBuffer :: ~CSaveRestoreBuffer()
 {
 }
 
@@ -2903,7 +2921,7 @@ void CRestore::BufferReadHeader( HEADER *pheader )
 }
 
 
-short	CRestore::ReadShort( void )
+short	CRestore::ReadShort()
 {
 	short tmp = 0;
 
@@ -2912,7 +2930,7 @@ short	CRestore::ReadShort( void )
 	return tmp;
 }
 
-int	CRestore::ReadInt( void )
+int	CRestore::ReadInt()
 {
 	int tmp = 0;
 
@@ -2942,7 +2960,7 @@ char *CRestore::ReadNamedString( const char *pName )
 }
 
 
-char *CRestore::BufferPointer( void )
+char *CRestore::BufferPointer()
 {
 	if ( !m_pdata )
 		return NULL;
@@ -2976,7 +2994,7 @@ void CRestore::BufferSkipBytes( int bytes )
 	BufferReadBytes( NULL, bytes );
 }
 
-int CRestore::BufferSkipZString( void )
+int CRestore::BufferSkipZString()
 {
 	char *pszSearch;
 	int	 len;
@@ -3064,7 +3082,7 @@ void UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent )
 	MESSAGE_END();
 }
 
-void UTIL_StudioDecal( vec3_t normal, vec3_t position, const char *name, int entindex )
+void UTIL_StudioDecal( Vector normal, Vector position, const char *name, int entindex )
 {
 	MESSAGE_BEGIN( MSG_BROADCAST, gmsgStudioDecal );
 		WRITE_COORD( position.x );

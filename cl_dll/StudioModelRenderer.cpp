@@ -2022,7 +2022,7 @@ void CStudioModelRenderer::StudioCalcBoneQuaterion( int frame, float s, mstudiob
 {
 	int					j, k;
 	vec4_t				q1, q2;
-	vec3_t				angle1, angle2;
+	Vector				angle1, angle2;
 	mstudioanimvalue_t	*panimvalue;
 
 	for (j = 0; j < 3; j++)
@@ -2269,8 +2269,8 @@ StudioSetUpTransform
 void CStudioModelRenderer::StudioSetUpTransform (int trivial_accept)
 {
 	int				i;
-	vec3_t			angles;
-	vec3_t			modelpos;
+	Vector			angles;
+	Vector			modelpos;
 
 
 	VectorCopy( m_pCurrentEntity->origin, modelpos );
@@ -2920,7 +2920,7 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 		if ( m_pCurrentEntity->index > 0 )
 		{
 			cl_entity_t *ent = gEngfuncs.GetEntityByIndex( m_pCurrentEntity->index );
-			memcpy( ent->attachment, m_pCurrentEntity->attachment, sizeof( vec3_t ) * 4 );
+			memcpy( ent->attachment, m_pCurrentEntity->attachment, sizeof( Vector ) * 4 );
 		}
 	}
 
@@ -2944,7 +2944,7 @@ StudioEstimateGait
 void CStudioModelRenderer::StudioEstimateGait( entity_state_t *pplayer )
 {
 	float dt;
-	vec3_t est_velocity;
+	Vector est_velocity;
 
 	dt = (m_clTime - m_clOldTime);
 	if (dt < 0)
@@ -3140,7 +3140,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 
 	if (pplayer->gaitsequence)
 	{
-		vec3_t orig_angles;
+		Vector orig_angles;
 		m_pPlayerInfo = IEngineStudio.PlayerInfo( m_nPlayerIndex );
 
 		VectorCopy( m_pCurrentEntity->angles, orig_angles );
@@ -3186,7 +3186,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		{
 			cl_entity_t *ent = gEngfuncs.GetEntityByIndex( m_pCurrentEntity->index );
 
-			memcpy( ent->attachment, m_pCurrentEntity->attachment, sizeof( vec3_t ) * 4 );
+			memcpy( ent->attachment, m_pCurrentEntity->attachment, sizeof( Vector ) * 4 );
 		}
 	}
 
@@ -3680,7 +3680,7 @@ void CStudioModelRenderer::StudioSetupRenderer( int rendermode )
 
 			if(m_bExternalEntity)
 			{
-				vec3_t vTemp, vVector;
+				Vector vTemp, vVector;
 				VectorSubtract(flPosition, m_pCurrentEntity->origin, flPosition);
 
 				// Transform position
@@ -3782,13 +3782,13 @@ StudioSetupLighting
 void CStudioModelRenderer::StudioSetupLighting ( void )
 {
 	int iret = 0;
-	vec3_t color;
-	vec3_t end;
-	vec3_t point;
+	Vector color;
+	Vector end;
+	Vector point;
 
 	entextrainfo_t *pInfo = (entextrainfo_t *)m_pCurrentEntity->topnode;
 
-	vec3_t eorigin;
+	Vector eorigin;
 	eorigin[0] = (*m_protationmatrix)[0][3];
 	eorigin[1] = (*m_protationmatrix)[1][3];
 	eorigin[2] = (*m_protationmatrix)[2][3];
@@ -3884,12 +3884,12 @@ StudioRecursiveLightPoint
 
 ====================
 */
-int CStudioModelRenderer::StudioRecursiveLightPoint( entextrainfo_t *ext, mnode_t *node, const vec3_t &start, const vec3_t &end, vec3_t &color )
+int CStudioModelRenderer::StudioRecursiveLightPoint( entextrainfo_t *ext, mnode_t *node, const Vector &start, const Vector &end, Vector &color )
 {
 	float		front, back, frac;
 	int			side;
 	mplane_t	*plane;
-	vec3_t		mid;
+	Vector		mid;
 	msurface_t	*surf;
 	int			s, t, ds, dt;
 	int			i;
@@ -4001,7 +4001,7 @@ StudioCullBBox
 
 ====================
 */
-bool CStudioModelRenderer::StudioCullBBox( const vec3_t &mins, const vec3_t &maxs )
+bool CStudioModelRenderer::StudioCullBBox( const Vector &mins, const Vector &maxs )
 {
 	if (m_vMins[0] > maxs[0]) 
 		return true;
@@ -4035,7 +4035,7 @@ void CStudioModelRenderer::StudioEntityLight( void )
 	pmtrace_t pmtrace;
 	gEngfuncs.pEventAPI->EV_SetTraceHull(2);
 
-	vec3_t vCenter;
+	Vector vCenter;
 	VectorAdd(m_vMins, m_vMaxs, vCenter);
 	VectorScale(vCenter, 0.5, vCenter);
 
@@ -4239,9 +4239,9 @@ StudioSetChromeVectors
 */
 void CStudioModelRenderer::StudioSetChromeVectors( void )
 {
-	vec3_t tmp;
-	vec3_t chromeupvec;
-	vec3_t chromerightvec;
+	Vector tmp;
+	Vector chromeupvec;
+	Vector chromerightvec;
 	float flSin = 0;
 
 	if(m_bChromeShell)
@@ -4278,7 +4278,7 @@ StudioChromeForMesh
 void CStudioModelRenderer::StudioChromeForMesh( int j, mstudiomesh_t *pmesh )
 {
 	byte *pnormbone = ((byte *)m_pStudioHeader + m_pSubModel->norminfoindex);
-	vec3_t *pstudionorms = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel->normindex);
+	Vector *pstudionorms = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->normindex);
 	
 	float n;
 	for(int i = 0, k = j; i < pmesh->numnorms; i++, k++)
@@ -4305,8 +4305,8 @@ void CStudioModelRenderer::StudioDrawPoints ( void )
 	mstudiotexture_t *ptexture = (mstudiotexture_t *)((byte *)m_pTextureHeader + m_pTextureHeader->textureindex);
 	mstudiomesh_t *pmeshes = (mstudiomesh_t *)((byte *)m_pStudioHeader + m_pSubModel->meshindex);
 
-	vec3_t *pstudioverts = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
-	vec3_t *pstudionorms = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel->normindex);
+	Vector *pstudioverts = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
+	Vector *pstudionorms = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->normindex);
 
 	byte *pvertbone = ((byte *)m_pStudioHeader + m_pSubModel->vertinfoindex);
 	byte *pnormbone = ((byte *)m_pStudioHeader + m_pSubModel->norminfoindex);
@@ -4333,7 +4333,7 @@ void CStudioModelRenderer::StudioDrawPoints ( void )
 	}
 	else
 	{
-		vec3_t vTemp;
+		Vector vTemp;
 		float flScale = 1.0+((float)m_pCurrentEntity->curstate.renderamt/255);
 
 		for (int i = 0; i < m_pSubModel->numverts; i++)
@@ -4535,12 +4535,12 @@ qboolean CStudioModelRenderer::StudioCheckBBox( void )
 	// Build full bounding box
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)m_pStudioHeader + m_pStudioHeader->seqindex) + m_pCurrentEntity->curstate.sequence;
 
-	vec3_t vTemp;
-	static vec3_t vBounds[8];
+	Vector vTemp;
+	static Vector vBounds[8];
 
 	for (int i = 0; i < 8; i++)
 	{
-		vec3_t vTemp;
+		Vector vTemp;
 
 		if ( i & 1 )
 			vTemp[0] = pseqdesc->bbmin[0];
@@ -4588,8 +4588,8 @@ qboolean CStudioModelRenderer::StudioCheckBBox( void )
 	}
 
 	// Set the bounding box
-	vec3_t vMins(9999, 9999, 9999);
-	vec3_t vMaxs(-9999, -9999, -9999);
+	Vector vMins(9999, 9999, 9999);
+	Vector vMaxs(-9999, -9999, -9999);
 	for(int i = 0; i < 8; i++)
 	{
 		// Mins
@@ -4652,7 +4652,7 @@ StudioDrawBBox
 */
 void CStudioModelRenderer::StudioDrawBBox( void )
 {
-	vec3_t v[8];
+	Vector v[8];
 
 	v[0][0] = m_vMins[0]; v[0][1] = m_vMaxs[1]; v[0][2] = m_vMins[2];
 	v[1][0] = m_vMins[0]; v[1][1] = m_vMins[1]; v[1][2] = m_vMins[2];
@@ -4711,8 +4711,8 @@ StudioDrawExternalEntity
 */
 void CStudioModelRenderer::StudioDrawExternalEntity( cl_entity_t *pEntity )
 {
-	vec3_t vRealOrigin;
-	vec3_t vTransOrigin;
+	Vector vRealOrigin;
+	Vector vTransOrigin;
 
 	m_pCurrentEntity = pEntity;
 	IEngineStudio.GetTimes( &m_nFrameCount, &m_clTime, &m_clOldTime );
@@ -4815,8 +4815,8 @@ void CStudioModelRenderer::StudioSaveModelData( modeldata_t *pExtraData )
 			byte *pvertbone = ((byte *)m_pStudioHeader + m_pSubModel[k].vertinfoindex);
 			byte *pnormbone = ((byte *)m_pStudioHeader + m_pSubModel[k].norminfoindex);
 
-			vec3_t *pstudionorms = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel[k].normindex);
-			vec3_t *pstudioverts = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel[k].vertindex);
+			Vector *pstudionorms = (Vector *)((byte *)m_pStudioHeader + m_pSubModel[k].normindex);
+			Vector *pstudioverts = (Vector *)((byte *)m_pStudioHeader + m_pSubModel[k].vertindex);
 
 			for(int j = 0; j < m_pSubModel[k].numnorms; j++)
 				VectorRotateSSE((float *)pstudionorms[j], (*m_pbonetransform)[pnormbone[j]], m_pNormalTransform[j]);
@@ -4970,11 +4970,11 @@ StudioSaveUniqueData
 */
 void CStudioModelRenderer::StudioSaveUniqueData( entextradata_t *pExtraData )
 {
-	vec3_t vBounds[8];
+	Vector vBounds[8];
 
-	vec3_t vTemp;
-	vec3_t vMins(9999, 9999, 9999);
-	vec3_t vMaxs(-9999, -9999, -9999);
+	Vector vTemp;
+	Vector vMins(9999, 9999, 9999);
+	Vector vMaxs(-9999, -9999, -9999);
 
 	m_pVBOHeader = &pExtraData->pModelData->pVBOHeader;
 	m_pStudioHeader = pExtraData->pModelData->pHdr;
@@ -5380,7 +5380,7 @@ StudioDecalForEntity
 
 ====================
 */
-void CStudioModelRenderer::StudioDecalForEntity( vec3_t position, vec3_t normal, const char *szName, cl_entity_t *pEntity )
+void CStudioModelRenderer::StudioDecalForEntity( Vector position, Vector normal, const char *szName, cl_entity_t *pEntity )
 {
 	if(!pEntity->model)
 		return;
@@ -5430,12 +5430,12 @@ StudioDecalTriangle
 
 ====================
 */
-void CStudioModelRenderer::StudioDecalTriangle( studiotri_t *tri, vec3_t position, vec3_t normal, studiodecal_t *decal )
+void CStudioModelRenderer::StudioDecalTriangle( studiotri_t *tri, Vector position, Vector normal, studiodecal_t *decal )
 {
-	vec3_t dverts1[10];
-	vec3_t dverts2[10];
+	Vector dverts1[10];
+	Vector dverts2[10];
 
-	vec3_t norm, v1, v2, v3;
+	Vector norm, v1, v2, v3;
 	VectorSubtract(m_vVertexTransform[tri->verts[1].vertindex], m_vVertexTransform[tri->verts[0].vertindex], v1);
 	VectorSubtract(m_vVertexTransform[tri->verts[2].vertindex], m_vVertexTransform[tri->verts[1].vertindex], v2);
 	CrossProduct(v2, v1, norm);
@@ -5443,7 +5443,7 @@ void CStudioModelRenderer::StudioDecalTriangle( studiotri_t *tri, vec3_t positio
 	if (DotProduct(normal, norm) < 0.0)
 		return;
 
-	vec3_t  right, up;
+	Vector  right, up;
 	gBSPRenderer.GetUpRight(normal, up, right);
 	float texc_orig_x = DotProduct(position, right);
 	float texc_orig_y = DotProduct(position, up);
@@ -5455,7 +5455,7 @@ void CStudioModelRenderer::StudioDecalTriangle( studiotri_t *tri, vec3_t positio
 		VectorCopy(m_vVertexTransform[tri->verts[i].vertindex], dverts1[i]);
 
 	int nv;
-	vec3_t planepoint;
+	Vector planepoint;
 	VectorMASSE(position, -xsize, right, planepoint);
 	nv = gBSPRenderer.ClipPolygonByPlane(dverts1, 3, right, planepoint, dverts2);
 
@@ -5523,7 +5523,7 @@ void CStudioModelRenderer::StudioDecalTriangle( studiotri_t *tri, vec3_t positio
 		polygon->verts[i].texcoord[0] = ((texc_x + 1)/2);
 		polygon->verts[i].texcoord[1] = ((texc_y + 1)/2);
 
-		vec3_t temp, fpos; //PINGAS
+		Vector temp, fpos; //PINGAS
 		temp[0] = dverts1[i][0]-(*m_pbonetransform)[indexes[i]][0][3];
 		temp[1] = dverts1[i][1]-(*m_pbonetransform)[indexes[i]][1][3];
 		temp[2] = dverts1[i][2]-(*m_pbonetransform)[indexes[i]][2][3];
@@ -5557,10 +5557,10 @@ StudioDecalForSubModel
 
 ====================
 */
-void CStudioModelRenderer::StudioDecalForSubModel( vec3_t position, vec3_t normal, studiodecal_t *decal )
+void CStudioModelRenderer::StudioDecalForSubModel( Vector position, Vector normal, studiodecal_t *decal )
 {
 	byte *pvertbone = ((byte *)m_pStudioHeader + m_pSubModel->vertinfoindex);
-	vec3_t *pstudioverts = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
+	Vector *pstudioverts = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
 
 	for (int i = 0; i < m_pSubModel->numverts; i++)
 		VectorTransformSSE(pstudioverts[i], (*m_pbonetransform)[pvertbone[i]], m_vVertexTransform[i]);
@@ -5768,18 +5768,18 @@ StudioDecalExternal
 
 ====================
 */
-void CStudioModelRenderer::StudioDecalExternal( vec3_t vpos, vec3_t vnorm, const char *name )
+void CStudioModelRenderer::StudioDecalExternal( Vector vpos, Vector vnorm, const char *name )
 {
 	int nv;
 
-	vec3_t vtemp;
-	vec3_t planepoint, right, up;
-	vec3_t norm, v1, v2, v3;
-	vec3_t vdecalmins, vdecalmaxs;
-	vec3_t vtranspos, vtransnorm;
+	Vector vtemp;
+	Vector planepoint, right, up;
+	Vector norm, v1, v2, v3;
+	Vector vdecalmins, vdecalmaxs;
+	Vector vtranspos, vtransnorm;
 
-	vec3_t dverts1[10];
-	vec3_t dverts2[10];
+	Vector dverts1[10];
+	Vector dverts2[10];
 
 	decalgroup_t *group = gBSPRenderer.FindGroup(name);
 
@@ -6199,7 +6199,7 @@ StudioDrawPointsSolid
 void CStudioModelRenderer::StudioDrawPointsSolid ( void )
 {
 	mstudiomesh_t *pmeshes = (mstudiomesh_t *)((byte *)m_pStudioHeader + m_pSubModel->meshindex);
-	vec3_t *pstudioverts = (vec3_t *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
+	Vector *pstudioverts = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
 	byte *pvertbone = ((byte *)m_pStudioHeader + m_pSubModel->vertinfoindex);
 	mstudiotexture_t *ptexture = (mstudiotexture_t *)((byte *)m_pTextureHeader + m_pTextureHeader->textureindex);
 

@@ -36,7 +36,7 @@
 
 float Distance(const float* v1, const float* v2);
 
-enum mp5_e
+enum nadedir
 {
 	NADEDIR_WTF = -1,
 	NADEDIR_NOPE = 0,
@@ -193,11 +193,11 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	}
 }
 
-int CGrenade::CalcDamageDirection(vec3_t vecFrom, CBasePlayer* playaPtr)
+int CGrenade::CalcDamageDirection(Vector vecFrom, CBasePlayer* playaPtr)
 {
-	vec3_t	forward, right, up;
+	Vector	forward, right, up;
 	float	side, front;
-	vec3_t vecOrigin, vecAngles;
+	Vector vecOrigin, vecAngles;
 
 	if (!vecFrom[0] && !vecFrom[1] && !vecFrom[2])
 	{
@@ -206,8 +206,8 @@ int CGrenade::CalcDamageDirection(vec3_t vecFrom, CBasePlayer* playaPtr)
 	}
 
 
-	memcpy(vecOrigin, playaPtr->pev->origin, sizeof(vec3_t));
-	memcpy(vecAngles, playaPtr->pev->angles, sizeof(vec3_t));
+	memcpy(vecOrigin, playaPtr->pev->origin, sizeof(Vector));
+	memcpy(vecAngles, playaPtr->pev->angles, sizeof(Vector));
 
 
 	NadeVectorSubtract(vecFrom, vecOrigin, vecFrom);
@@ -273,7 +273,7 @@ int CGrenade::EmitDir()
 	return 0;
 }
 
-void CGrenade::Smoke( void )
+void CGrenade::Smoke()
 {
 	if (UTIL_PointContents ( pev->origin ) == CONTENTS_WATER)
 	{
@@ -308,7 +308,7 @@ void CGrenade::DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	SetNextThink( 0 );
 }
 
-void CGrenade::PreDetonate( void )
+void CGrenade::PreDetonate()
 {
 	CSoundEnt::InsertSound ( bits_SOUND_DANGER, pev->origin, 400, 0.3 );
 
@@ -317,7 +317,7 @@ void CGrenade::PreDetonate( void )
 }
 
 
-void CGrenade::Detonate( void )
+void CGrenade::Detonate()
 {
 	TraceResult tr;
 	Vector		vecSpot;// trace starts here!
@@ -346,7 +346,7 @@ void CGrenade::ExplodeTouch( CBaseEntity *pOther )
 }
 
 
-void CGrenade::DangerSoundThink( void )
+void CGrenade::DangerSoundThink()
 {
 	if (!IsInWorld())
 	{
@@ -451,7 +451,7 @@ void CGrenade::SlideTouch( CBaseEntity *pOther )
 	}
 }
 
-void CGrenade :: BounceSound( void )
+void CGrenade :: BounceSound()
 {
 	switch ( RANDOM_LONG( 0, 2 ) )
 	{
@@ -461,7 +461,7 @@ void CGrenade :: BounceSound( void )
 	}
 }
 
-void CGrenade :: TumbleThink( void )
+void CGrenade :: TumbleThink()
 {
 	if (!IsInWorld())
 	{
@@ -489,7 +489,7 @@ void CGrenade :: TumbleThink( void )
 }
 
 
-void CGrenade:: Spawn( void )
+void CGrenade:: Spawn()
 {
 	pev->movetype = MOVETYPE_BOUNCE;
 	pev->classname = MAKE_STRING( "grenade" );

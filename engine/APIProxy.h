@@ -234,7 +234,7 @@ typedef int							(*pfnEngSrc_pfnGetScreenInfo_t ) 		( struct SCREENINFO_s *pscr
 typedef void						(*pfnEngSrc_pfnSetCrosshair_t )		( HL_HSPRITE hspr, wrect_t rc, int r, int g, int b );
 typedef struct cvar_s *				(*pfnEngSrc_pfnRegisterVariable_t )	( const char *szName, const char *szValue, int flags );
 typedef float						(*pfnEngSrc_pfnGetCvarFloat_t )		( const char *szName );
-typedef char*						(*pfnEngSrc_pfnGetCvarString_t )		( const char *szName );
+typedef const char*						(*pfnEngSrc_pfnGetCvarString_t )	( const char *szName );
 typedef int							(*pfnEngSrc_pfnAddCommand_t )			( const char *cmd_name, void (*pfnEngSrc_function)(void) );
 typedef int							(*pfnEngSrc_pfnHookUserMsg_t )			( const char *szMsgName, pfnUserMsgHook pfn );
 typedef int							(*pfnEngSrc_pfnServerCmd_t )			( const char *szCmdString );
@@ -353,6 +353,7 @@ typedef void						(*pfnEngSrc_pfnFillRGBABlend_t )			( int x, int y, int width, 
 typedef int						(*pfnEngSrc_pfnGetAppID_t)			( void );
 typedef cmdalias_t*				(*pfnEngSrc_pfnGetAliases_t)		( void );
 typedef void					(*pfnEngSrc_pfnVguiWrap2_GetMouseDelta_t) ( int *x, int *y );
+typedef int (*pfnEngSrc_pfnFilteredClientCmd_t)(const char* szCmdString);
 
 // Pointers to the exported engine functions themselves
 typedef struct cl_enginefuncs_s
@@ -491,6 +492,7 @@ typedef struct cl_enginefuncs_s
 	pfnEngSrc_pfnGetAppID_t					pfnGetAppID;
 	pfnEngSrc_pfnGetAliases_t				pfnGetAliasList;
 	pfnEngSrc_pfnVguiWrap2_GetMouseDelta_t pfnVguiWrap2_GetMouseDelta;
+	pfnEngSrc_pfnFilteredClientCmd_t pfnFilteredClientCmd;
 } cl_enginefunc_t;
 
 // Function type declarations for engine destination functions

@@ -47,23 +47,23 @@ enum class zombieTypeEnum { scientist, barney, hgrunt, blops };
 class CZombie : public CBaseMonster
 {
 public:
-	void Spawn(void);
-	void Precache(void);
-	void SetYawSpeed(void);
-	int  Classify(void);
-	void HandleAnimEvent(MonsterEvent_t* pEvent);
-	int IgnoreConditions(void);
+	void Spawn() override;
+	void Precache() override;
+	void SetYawSpeed() override;
+	int  Classify () override;
+	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
+	int IgnoreConditions () override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
-	void SpawnCrab(void);
-	void RemoveKrabby(void);
+	void SpawnCrab();
+	void RemoveKrabby();
 	zombieTypeEnum m_zombieType;
 
 	float m_flNextFlinch;
 
-	void PainSound(void);
-	void AlertSound(void);
-	void IdleSound(void);
-	void AttackSound(void);
+	void PainSound() override;
+	void AlertSound() override;
+	void IdleSound() override;
+	void AttackSound();
 
 	static const char* pAttackSounds[];
 	static const char* pIdleSounds[];
@@ -75,9 +75,9 @@ public:
 	static const char* pAttackMissSounds[];
 
 	// No range attacks
-	BOOL CheckRangeAttack1(float flDot, float flDist) { return FALSE; }
-	BOOL CheckRangeAttack2(float flDot, float flDist) { return FALSE; }
-	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
+	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override { return FALSE; }
+	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override { return FALSE; }
+	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 };
 
 LINK_ENTITY_TO_CLASS(monster_zombie, CZombie);
@@ -141,7 +141,7 @@ const char* CZombie::pPainSounds[] =
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CZombie::Classify(void)
+int	CZombie :: Classify ()
 {
 	return m_iClass?m_iClass:CLASS_ALIEN_MONSTER;
 }
@@ -150,7 +150,7 @@ int	CZombie::Classify(void)
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CZombie::SetYawSpeed(void)
+void CZombie :: SetYawSpeed ()
 {
 	int ys;
 
@@ -183,7 +183,7 @@ int CZombie::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float f
 	return CBaseMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
 
-void CZombie::PainSound(void)
+void CZombie :: PainSound()
 {
 	int pitch = 0;
 	if (RANDOM_LONG(0, 5) < 2) {
@@ -203,7 +203,7 @@ void CZombie::PainSound(void)
 	}
 }
 
-void CZombie::AlertSound(void)
+void CZombie :: AlertSound()
 {
 	int pitch = 0;
 	switch (m_zombieType)
@@ -224,7 +224,7 @@ void CZombie::AlertSound(void)
 	}
 }
 
-void CZombie::IdleSound(void)
+void CZombie :: IdleSound()
 {
 	int pitch = 0;
 	switch (m_zombieType)
@@ -245,7 +245,7 @@ void CZombie::IdleSound(void)
 	}
 }
 
-void CZombie::AttackSound(void)
+void CZombie :: AttackSound()
 {
 	int pitch = 0;
 	switch (m_zombieType)
@@ -503,7 +503,7 @@ void CZombie::Precache()
 
 
 
-int CZombie::IgnoreConditions(void)
+int CZombie::IgnoreConditions ()
 {
 	int iIgnore = CBaseMonster::IgnoreConditions();
 
@@ -549,7 +549,7 @@ void CZombie::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir,
 //=========================================================
 // Spawn Headcrab - headcrab jumps from zombie
 //=========================================================
-void CZombie::SpawnCrab(void)
+void CZombie::SpawnCrab()
 {
 	CBaseEntity* pCrab = CBaseEntity::Create(ZOMBIE_CRAB, pev->origin, pev->angles, edict()); // Spawn the crab
 

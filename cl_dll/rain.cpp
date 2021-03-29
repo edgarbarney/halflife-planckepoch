@@ -139,7 +139,7 @@ void ProcessRain( void )
 		if (dripcounter < MAXDRIPS) // check for overflow
 		{
 			float deathHeight;
-			vec3_t vecStart, vecEnd;
+			Vector vecStart, vecEnd;
 
 			vecStart[0] = gEngfuncs.pfnRandomFloat(player->origin.x - Rain.distFromPlayer, player->origin.x + Rain.distFromPlayer);
 			vecStart[1] = gEngfuncs.pfnRandomFloat(player->origin.y - Rain.distFromPlayer, player->origin.y + Rain.distFromPlayer);

@@ -3053,6 +3053,14 @@
 	dmg(integer) : "Damage inflicted when blocked" : 0
 ]
 
+//NEW 1.1
+@SolidClass base(Targetname) = func_shine : "Shiny Surface" 
+[
+	message(sprite) : "Shine sprite" : "sprites/bgspr.spr"
+	scale(integer) : "Shine scale" : 10
+	renderamt(integer) : "Shine brightness (0-255)" : 50
+]
+
 @SolidClass base(BaseTank, ZHLTLightKeys) = func_tank : "Brush Gun Turret" 
 [
 	bullet(choices) : "Bullets" : 0 = 

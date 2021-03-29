@@ -39,8 +39,8 @@ public:
 	void Init( void );
 	void VidInit( void );
 
-	void CreateCluster( char *szPath, vec3_t origin, vec3_t dir, int iId );
-	particle_system_t *CreateSystem( char *szPath, vec3_t origin, vec3_t dir, int iId, particle_system_t *parent = NULL );
+	void CreateCluster( char *szPath, Vector origin, Vector dir, int iId );
+	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = NULL );
 	void RemoveSystem( int iId );
 
 	particle_system_t *AllocSystem( void );
@@ -51,7 +51,7 @@ public:
 	void CullSystems( void );
 	void UpdateSystems( void );
 
-	vec3_t LightForParticle( cl_particle_t *pParticle );
+	Vector LightForParticle( cl_particle_t *pParticle );
 	bool CheckLightBBox( cl_particle_t *pParticle, cl_dlight_t *pLight );
 
 	void EnvironmentCreateFirst( particle_system_t *pSystem );
@@ -80,12 +80,12 @@ public:
 	int m_iNumFreedSystems;
 	int	m_iNumCreatedSystems;
 
-	vec3_t m_vForward;
-	vec3_t m_vRight;
-	vec3_t m_vUp;
+	Vector m_vForward;
+	Vector m_vRight;
+	Vector m_vUp;
 
-	vec3_t m_vRRight;
-	vec3_t m_vRUp;
+	Vector m_vRRight;
+	Vector m_vRUp;
 };
 extern CParticleEngine gParticleEngine;
 #endif

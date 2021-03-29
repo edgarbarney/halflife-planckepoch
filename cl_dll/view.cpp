@@ -33,7 +33,7 @@
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
 #endif
 
-	int CL_IsThirdPerson( void );
+	int CL_IsThirdPerson();
 	void CL_CameraOffset( float *ofs );
 
 	void DLLEXPORT V_CalcRefdef( struct ref_params_s *pparams );
@@ -79,14 +79,15 @@ extern cvar_t* cl_bobtilt;
 #define	CAM_MODE_RELAX		1
 #define CAM_MODE_FOCUS		2
 
-vec3_t		v_origin, v_angles, v_cl_angles, v_sim_org, v_lastAngles;
+Vector		v_origin, v_angles, v_cl_angles, v_sim_org, v_lastAngles;
 float		v_frametime, v_lastDistance;	
 float		v_cameraRelaxAngle	= 5.0f;
 float		v_cameraFocusAngle	= 35.0f;
 int			v_cameraMode = CAM_MODE_FOCUS;
 qboolean	v_resetCamera = 1;
 
-vec3_t ev_punchangle;
+Vector v_client_aimangles;
+Vector ev_punchangle;
 
 cvar_t	*scr_ofsx;
 cvar_t	*scr_ofsy;
@@ -114,7 +115,7 @@ float	v_idlescale;  // used by TFC for concussion grenade effect
 
 //=============================================================================
 /*
-void V_NormalizeAngles( vec3_t angles )
+void V_NormalizeAngles( Vector& angles )
 {
 	int i;
 	// Normalize angles
@@ -177,7 +178,7 @@ float V_CalcBob ( struct ref_params_s *pparams )
 	static float	bob;
 	float	cycle;
 	static float	lasttime;
-	vec3_t	vel;
+	Vector	vel;
 	
 
 	if ( pparams->onground == -1 ||
@@ -221,12 +222,12 @@ V_CalcRoll
 Used by view and sv_user
 ===============
 */
-float V_CalcRoll (vec3_t angles, vec3_t velocity, float rollangle, float rollspeed )
+float V_CalcRoll (Vector angles, Vector velocity, float rollangle, float rollspeed )
 {
     float   sign;
     float   side;
     float   value;
-	vec3_t  forward, right, up;
+	Vector  forward, right, up;
     
 	AngleVectors ( angles, forward, right, up );
     
@@ -256,7 +257,7 @@ typedef struct pitchdrift_s
 
 static pitchdrift_t pd;
 
-void V_StartPitchDrift( void )
+void V_StartPitchDrift()
 {
 	if ( pd.laststop == gEngfuncs.GetClientTime() )
 	{
@@ -271,7 +272,7 @@ void V_StartPitchDrift( void )
 	}
 }
 
-void V_StopPitchDrift ( void )
+void V_StopPitchDrift ()
 {
 	pd.laststop = gEngfuncs.GetClientTime();
 	pd.nodrift = 1;
@@ -495,21 +496,21 @@ V_CalcRefdef
 
 ==================
 */
-extern void RenderFog( void ); //LRC
-extern void ClearToFogColor( void ); //LRC
+extern void RenderFog(); //LRC
+extern void ClearToFogColor(); //LRC
 
 void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 {
 	cl_entity_t		*ent, *view;
 	int				i;
-	vec3_t			angles;
+	Vector			angles;
 	float			bob, waterOffset;
 	static viewinterp_t		ViewInterp;
 
 	static float oldz = 0;
 	static float lasttime;
 
-	vec3_t camAngles, camForward, camRight, camUp;
+	Vector camAngles, camForward, camRight, camUp;
 	cl_entity_t *pwater;
 
 	static struct model_s *savedviewmodel;
@@ -614,7 +615,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	if ( pparams->waterlevel >= 2 )
 	{
 		int		i, contents, waterDist, waterEntity;
-		vec3_t	point;
+		Vector	point;
 		waterDist = cl_waterdist->value;
 
 		if ( pparams->hardware )
@@ -774,7 +775,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 	{
 		static float lastorg[3];
-		vec3_t delta;
+		Vector delta;
 
 		VectorSubtract( pparams->simorg, lastorg, delta );
 
@@ -813,10 +814,10 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		if ( i < ORIGIN_MASK &&  ViewInterp.OriginTime[ foundidx & ORIGIN_MASK ] != 0.0 )
 		{
 			// Interpolate
-			vec3_t delta;
+			Vector delta;
 			double frac;
 			double dt;
-			vec3_t neworg;
+			Vector neworg;
 
 			dt = ViewInterp.OriginTime[ (foundidx + 1) & ORIGIN_MASK ] - ViewInterp.OriginTime[ foundidx & ORIGIN_MASK ];
 			if ( dt > 0.0 )
@@ -842,6 +843,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 	// Store off v_angles before munging for third person
 	v_angles = pparams->viewangles;
+	v_client_aimangles = pparams->cl_viewangles;
 	v_lastAngles = pparams->viewangles;
 //	v_cl_angles = pparams->cl_viewangles;	// keep old user mouse angles !
 	
@@ -999,9 +1001,9 @@ void V_SmoothInterpolateAngles( float * startAngle, float * endAngle, float * fi
 // Get the origin of the Observer based around the target's position and angles
 void V_GetChaseOrigin( float * angles, float * origin, float distance, float * returnvec )
 {
-	vec3_t	vecEnd;
-	vec3_t	forward;
-	vec3_t	vecStart;
+	Vector	vecEnd;
+	Vector	forward;
+	Vector	vecStart;
 	pmtrace_t * trace;
 	int maxLoops = 8;
 
@@ -1299,7 +1301,7 @@ void V_GetChasePos(cl_entity_t *ent, float *cl_angles, float *origin, float *ang
 
 	VectorCopy ( ent->origin, origin);
 		
-	origin[2]+= 28; // DEFAULT_VIEWHEIGHT - some offset
+		VectorAdd(origin, VEC_VIEW, origin); // some offset
 
 	V_GetChaseOrigin( angles, origin, cl_chasedist->value, origin );
 
@@ -1336,20 +1338,22 @@ void V_GetInEyePos(int target, float * origin, float * angles )
 	if ( ent->curstate.solid == SOLID_NOT )
 	{
 		angles[ROLL] = 80;	// dead view angle
-		origin[2]+= -8 ; // PM_DEAD_VIEWHEIGHT
+		VectorAdd(origin, VEC_DEAD_VIEW, origin);
 	}
-	else if (ent->curstate.usehull == 1 )
-		origin[2]+= 12; // VEC_DUCK_VIEW;
+	else if (ent->curstate.usehull == 1)
+	{
+		VectorAdd(origin, VEC_DUCK_VIEW, origin);
+	}
 	else
 		// exacty eye position can't be caluculated since it depends on
 		// client values like cl_bobcycle, this offset matches the default values
-		origin[2]+= 28; // DEFAULT_VIEWHEIGHT
+		VectorAdd(origin, VEC_VIEW, origin);
 }
 
 void V_GetMapFreePosition( float * cl_angles, float * origin, float * angles )
 {
-	vec3_t forward;
-	vec3_t zScaledTarget;
+	Vector forward;
+	Vector zScaledTarget;
 
 	VectorCopy(cl_angles, angles);
 
@@ -1365,7 +1369,7 @@ void V_GetMapFreePosition( float * cl_angles, float * origin, float * angles )
 
 void V_GetMapChasePosition(int target, float * cl_angles, float * origin, float * angles)
 {
-	vec3_t forward;
+	Vector forward;
 
 	if ( target )
 	{
@@ -1627,7 +1631,7 @@ void CMD_HidePlayer(void) //AJH Draw player in firstperson mode
 V_Init
 =============
 */
-void V_Init (void)
+void V_Init ()
 {
 	gEngfuncs.pfnAddCommand ("centerview", V_StartPitchDrift );
 
@@ -1686,10 +1690,10 @@ void V_Move( int mx, int my )
 	float dx, dy;
 	float c_x, c_y;
 	float dX, dY;
-	vec3_t forward, up, right;
-	vec3_t newangles;
+	Vector forward, up, right;
+	Vector newangles;
 
-	vec3_t farpoint;
+	Vector farpoint;
 	pmtrace_t tr;
 
 	fov = CalcFov( in_fov, (float)ScreenWidth, (float)ScreenHeight );

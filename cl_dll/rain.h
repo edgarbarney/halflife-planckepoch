@@ -47,7 +47,7 @@ typedef struct cl_drip
 {
 	float		birthTime;
 	float		minHeight;	// minimal height to kill raindrop
-	vec3_t		origin;
+	Vector		origin;
 	float		alpha;
 
 	float		xDelta;		// side speed
@@ -62,7 +62,7 @@ typedef struct cl_rainfx
 {
 	float		birthTime;
 	float		life;
-	vec3_t		origin;
+	Vector		origin;
 	float		alpha;
 	
 	cl_rainfx*		p_Next;		// next fx in chain
