@@ -41,7 +41,7 @@ IMPLEMENT_SAVERESTORE(CCrowbar, CCrowbar::BaseClass);
 
 LINK_ENTITY_TO_CLASS(weapon_crowbar, CCrowbar);
 
-void FindHullIntersection( const Vector &vecSrc, TraceResult &tr, float *mins, float *maxs, edict_t *pEntity )
+void FindHullIntersection( const Vector &vecSrc, TraceResult &tr, const Vector& mins, const Vector& maxs, edict_t *pEntity )
 {
 	int			i, j, k;
 	float		distance;

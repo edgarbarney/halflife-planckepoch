@@ -10,19 +10,19 @@
 class CSoundScape : public CBaseEntity
 {
 public:
-	void KeyValue(KeyValueData* pkvd);
-	void Spawn(void);
+	void KeyValue(KeyValueData* pkvd) override;
+	void Spawn() override;
 	//	void PostSpawn( void );
-	void Precache(void);
+	void Precache() override;
 	//void EXPORT ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void EXPORT StartPlayFrom(void);
+	void EXPORT StartPlayFrom();
 	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void ForceStopSound(void);
-	void RefreshPlayerVar(void);
+	void ForceStopSound();
+	void RefreshPlayerVar();
 	char* GetSoundFileDir();
 
-	virtual int		Save(CSave& save);
-	virtual int		Restore(CRestore& restore);
+	int		Save(CSave& save) override;
+	int		Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float m_flAttenuation;		// attenuation value
@@ -65,7 +65,7 @@ IMPLEMENT_SAVERESTORE(CSoundScape, CBaseEntity);
 // env_soundscape - user-defined environment sound
 //
 
-void CSoundScape::RefreshPlayerVar(void)
+void CSoundScape::RefreshPlayerVar()
 {
 	//Shephard's Code for player
 	if (!m_pPlayFrom) {
@@ -119,7 +119,7 @@ void CSoundScape::Spawn(void)
 
 // this function needs to be called when the game is loaded, not just when the entity spawns.
 // Don't make this a PostSpawn function.
-void CSoundScape::Precache(void)
+void CSoundScape::Precache()
 {
 	char* szSoundFile = (char*)STRING(pev->message);
 
@@ -155,7 +155,7 @@ void CSoundScape::Precache(void)
 	}
 }
 
-void CSoundScape::ForceStopSound(void)
+void CSoundScape::ForceStopSound()
 {
 	char* szSoundFile = (char*)STRING(pev->message);
 	if (m_fActive)
@@ -180,7 +180,7 @@ void CSoundScape::ForceStopSound(void)
 
 //LRC - for some reason, I can't get other entities to start playing sounds during Activate;
 // this function is used to delay the effect until the first Think, which seems to fix the problem.
-void CSoundScape::StartPlayFrom(void)
+void CSoundScape::StartPlayFrom()
 {
 	if (!m_fActive){
 		char* szSoundFile = (char*)STRING(pev->message);

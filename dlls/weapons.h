@@ -760,7 +760,7 @@ public:
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	void PrimaryAttack() override;
-	void SecondaryAttack() override;
+	//void SecondaryAttack() override;
 	BOOL Deploy() override;
 	void Holster( int skiplocal = 0 ) override;
 	void Reload() override;
@@ -877,12 +877,12 @@ private:
 	unsigned short m_usCrossbow2;
 };
 
-enum shotgun_e
+enum shotgun_e 
 {
 	SHOTGUN_IDLE = 0,
-	SHOTGUN_FIRE,
-	SHOTGUN_FIRE2,
-	SHOTGUN_RELOAD,
+	SHOTGUN_FIRE = 2,
+	SHOTGUN_FIRE2 = 2,
+	SHOTGUN_RELOAD = 3,
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
 	SHOTGUN_DRAW,

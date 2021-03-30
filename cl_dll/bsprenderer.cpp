@@ -856,11 +856,11 @@ void CBSPRenderer::SetupPreFrame ( ref_params_t *pparams )
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_uiBufferIndex);
 
 	// Set pointers up at start of frame
-	glVertexPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, pos));
-	glNormalPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, normal));
+	glVertexPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, pos));
+	glNormalPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, normal));
 
 	if(m_bSpecialFog)
-		glFogCoordPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, fogcoord));
+		glFogCoordPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, fogcoord));
 }
 
 /*
@@ -1889,22 +1889,22 @@ void CBSPRenderer::SetTexPointer(int unitnum, int tc)
 		break;
 
 	case TC_TEXTURE:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, texcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, texcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_DETAIL_TEXTURE:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, detailtexcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, detailtexcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_LIGHTMAP:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, lightmaptexcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, lightmaptexcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_VERTEX_POSITION:
-		glTexCoordPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, pos));
+		glTexCoordPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, pos));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 	}

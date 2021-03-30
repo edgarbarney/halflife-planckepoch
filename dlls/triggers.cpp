@@ -5893,21 +5893,21 @@ void CTriggerCamera::Move()
 class CTriggerSoundscape : public CBaseTrigger
 {
 public:
-	void Spawn(void);
-	void Precache(void)
+	void Spawn() override;
+	void Precache() override
 	{
 		if (!FStringNull(pev->noise))
 			PRECACHE_SOUND((char*)STRING(pev->noise));
 	}
 	void EXPORT MultiTouch(CBaseEntity* pOther);
-	void EXPORT MultiWaitOver(void);
+	void EXPORT MultiWaitOver();
 	void ActivateMultiTrigger(CBaseEntity* pActivator);
 };
 
 LINK_ENTITY_TO_CLASS(trigger_soundscape, CTriggerSoundscape);
 
 
-void CTriggerSoundscape::Spawn(void)
+void CTriggerSoundscape::Spawn()
 {
 	if (m_flWait == 0)
 		m_flWait = 0.2;
@@ -5970,7 +5970,7 @@ void CTriggerSoundscape::ActivateMultiTrigger(CBaseEntity* pActivator)
 }
 
 // the wait time has passed, so set back up for another activation
-void CTriggerSoundscape::MultiWaitOver(void)
+void CTriggerSoundscape::MultiWaitOver()
 {
 	//	if (pev->max_health)
 	//		{

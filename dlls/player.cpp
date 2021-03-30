@@ -3332,23 +3332,6 @@ void CBasePlayer::SelectNextItem( int iItem )
 	}
 }
 
-void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
-{
-#ifdef USE_QUEUEITEM
-	if(!m_pActiveItem)// no active weapon
-	{
-		m_pActiveItem = pItem;
-		return;// just set this item as active
-	}
-    	else
-	{
-		m_pLastItem = m_pActiveItem;
-		m_pActiveItem = NULL;// clear current
-	}
-	m_pNextItem = pItem;// add item to queue
-#endif
-}
-
 void CBasePlayer::SelectItem(const char *pstr)
 {
 	if (!pstr)

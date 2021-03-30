@@ -823,6 +823,8 @@ public:
 
 	inline BOOL	UseOnly() { return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) ? TRUE : FALSE; }
 
+	virtual int		Save(CSave& save);
+	virtual int		Restore(CRestore& restore);
 	static	TYPEDESCRIPTION m_SaveData[];
 
 private:
@@ -841,7 +843,7 @@ TYPEDESCRIPTION	CGamePlayerEquip::m_SaveData[] =
 	DEFINE_ARRAY( CGamePlayerEquip, m_weaponCount, FIELD_INTEGER, MAX_EQUIP ),
 };
 
-IMPLEMENT_SAVERESTORE(CGamePlayerEquip,CRulePointEntity);
+IMPLEMENT_SAVERESTORE( CGamePlayerEquip, CRulePointEntity );
 
 void CGamePlayerEquip::KeyValue( KeyValueData *pkvd )
 {

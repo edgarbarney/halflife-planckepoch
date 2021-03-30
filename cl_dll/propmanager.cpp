@@ -709,7 +709,7 @@ void CPropManager::RenderProps( void )
 
 	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE0_ARB);
 	gBSPRenderer.glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_uiIndexBuffer);
-	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, texcoord) );
+	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, texcoord) );
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -1033,7 +1033,7 @@ void CPropManager::RenderPropsSolid( void )
 	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE0_ARB);
 	gBSPRenderer.glActiveTextureARB(GL_TEXTURE0_ARB);
 	gBSPRenderer.glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_uiIndexBuffer);
-	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, texcoord) );
+	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, texcoord) );
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -1087,7 +1087,7 @@ void CPropManager::RenderSkyProps( void )
 	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE0_ARB);
 	gBSPRenderer.glActiveTextureARB(GL_TEXTURE0_ARB);
 	gBSPRenderer.glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_uiIndexBuffer);
-	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, texcoord) );
+	glTexCoordPointer( 2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, texcoord) );
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);

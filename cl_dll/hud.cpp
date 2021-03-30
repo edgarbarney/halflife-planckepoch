@@ -515,7 +515,6 @@ void CHud :: Init()
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
-	m_Particle.Init(); // (LRC) -- 30/08/02 November235: Particles to Order
 
 	m_Menu.Init();
 

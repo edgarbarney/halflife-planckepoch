@@ -294,7 +294,7 @@ struct cl_particle_t
 #define	PLANE_Y				1
 #define	PLANE_Z				2
 
-#define OFFSET(type, variable) ((const void*)&(((type*)NULL)->variable))
+#define OFFSET_TRINITY(type, variable) ((const void*)&(((type*)NULL)->variable))
 
 // Texture pointer settings
 enum {
