@@ -282,6 +282,11 @@ int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rai
 	return 1;
 }
 
+int CHud::MsgFunc_RainData(const char* pszName, int iSize, void* pbuf)
+{
+	return 1;
+}
+
 void CHud::MsgFunc_ServerState(const char* pszName, int iSize, void* pBuf)
 {
 	BEGIN_READ(pBuf, iSize);
