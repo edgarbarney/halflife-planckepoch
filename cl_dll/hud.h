@@ -39,7 +39,7 @@
 
 struct fog_settings_t
 {
-	vec3_t color;
+	Vector color;
 	int start;
 	int end;
 	
@@ -355,18 +355,6 @@ private:
 	int	  m_iHeight;		// width of the battery innards
 };
 
-//
-//-----------------------------------------------------
-//
-// (LRC) -- 30/08/02 November235: Particles to Order
-class CHudParticle: public CHudBase
-{
-public:
-	int Init(void) override;
-	int VidInit(void) override;
-	int Draw(float flTime) override;
-	int MsgFunc_Particle(const char *pszName, int iSize, void *pbuf );
-};
 
 //
 //-----------------------------------------------------
@@ -571,7 +559,7 @@ class CShinySurface
 	float m_fMinX, m_fMinY, m_fMaxX, m_fMaxY, m_fZ;
 	char m_fScale;
 	float m_fAlpha; // texture scale and brighness
-	HSPRITE m_hsprSprite;
+	HL_HSPRITE m_hsprSprite;
 	char m_szSprite[128];
 
 public:
@@ -595,16 +583,6 @@ public:
 #define SKY_OFF 0
 #define SKY_ON_DRAWING  2
 #define SKY_ON  1
-
-typedef struct cl_mirror_s
-{
-	Vector origin;
-	int enabled;
-	float radius;
-	int type;
-} cl_mirror_t;
-
-
 
 class CHud
 {
@@ -692,7 +670,6 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
-	CHudParticle	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
 	void Init();
 	void VidInit();

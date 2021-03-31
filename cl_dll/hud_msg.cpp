@@ -53,7 +53,6 @@ extern TEMPENTITY* pFlare;	// Vit_amiN
 void ClearEventList();
 #endif
 
-extern rain_properties Rain;
 extern float g_clampMinYaw, g_clampMaxYaw, g_clampMinPitch, g_clampMaxPitch;
 extern float g_clampTurnSpeed;
 
@@ -281,15 +280,6 @@ int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rai
 
 int CHud :: MsgFunc_RainData( const char *pszName, int iSize, void *pbuf )
 {
-	BEGIN_READ( pbuf, iSize );
-		Rain.dripsPerSecond =	READ_SHORT();
-		Rain.distFromPlayer =	READ_COORD();
-		Rain.windX =			READ_COORD();
-		Rain.windY =			READ_COORD();
-		Rain.randX =			READ_COORD();
-		Rain.randY =			READ_COORD();
-		Rain.weatherMode =		READ_SHORT();
-		Rain.globalHeight =		READ_COORD();
 	return 1;
 }
 
@@ -342,7 +332,7 @@ int CHud ::MsgFunc_StudioDecal(const char *pszName, int iSize, void *pbuf)
 {
 	BEGIN_READ( pbuf, iSize );
 
-	vec3_t pos, normal;
+	Vector pos, normal;
 	pos.x = READ_COORD();
 	pos.y = READ_COORD();
 	pos.z = READ_COORD();

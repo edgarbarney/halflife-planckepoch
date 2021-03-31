@@ -30,7 +30,7 @@ int grgLogoFrame[MAX_LOGO_FRAMES] =
 	29, 29, 29, 29, 29, 28, 27, 26, 25, 24, 30, 31 
 };
 
-inline float		UTIL_Lerp( float lerpfactor, float A, float B ) { return A + lerpfactor*(B-A); }
+inline float UTIL_Lerp( float lerpfactor, float A, float B ) { return A + lerpfactor*(B-A); }
 
 extern int g_iVisibleMouse;
 
@@ -175,7 +175,7 @@ int CHud :: Redraw( float flTime, int intermission )
 	
 		int r, g, b, x, y, a;
 		//wrect_t rc;
-		HSPRITE m_hCam1;
+		HL_HSPRITE m_hCam1;
 		int HUD_camera_active;
 		int HUD_camera_rect;
 

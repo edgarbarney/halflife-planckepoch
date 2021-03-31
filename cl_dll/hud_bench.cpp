@@ -595,23 +595,6 @@ void Bench_SpotPosition(Vector dot, Vector target )
 	gHUD.m_Benchmark.SetScore( delta.Length() );
 }
 
-typedef struct model_s
-{
-	char		name[64];
-	qboolean	needload;		// bmodels and sprites don't cache normally
-
-	int			type;
-	int			numframes;
-	int			synctype;
-	
-	int			flags;
-
-//
-// volume occupied by the model
-//		
-	Vector		mins, maxs;
-} model_t;
-
 static Vector g_dotorg;
 Vector g_aimorg;
 float g_fZAdjust = 0.0;
@@ -660,7 +643,7 @@ void Bench_CheckEntity( int type, struct cl_entity_s *ent, const char *modelname
 	}
 }
 
-//TODO: since vec3_t was aliased to Vector this does nothing (vec3_t decays to pointer, Vector does not)
+//TODO: since Vector was aliased to Vector this does nothing (Vector decays to pointer, Vector does not)
 void NormalizeVector(Vector v )
 {
 	int i;

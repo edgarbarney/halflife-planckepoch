@@ -138,16 +138,6 @@ int __MsgFunc_Test(const char *pszName, int iSize, void *pbuf)
 { return 1; }
 
 //LRC
-int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
-{
-	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
-	return 1;
-}
-
-int __MsgFunc_Test(const char *pszName, int iSize, void *pbuf)
-{ return 1; }
-
-//LRC
 int __MsgFunc_SetSky(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_SetSky( pszName, iSize, pbuf );
@@ -255,11 +245,6 @@ void __CmdFunc_ForceCloseCommandMenu()
 	{
 		gViewPort->HideCommandMenu();
 	}
-}
-
-void __CmdFunc_StopMP3()
-{
-	gMP3.StopMP3();
 }
 
 void __CmdFunc_StopMP3( void )
@@ -434,7 +419,6 @@ void CHud :: Init()
 	HOOK_MESSAGE( HUDColor ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
-	HOOK_MESSAGE( AddShine ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
 	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
@@ -525,7 +509,6 @@ void CHud :: Init()
 
 	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
 	m_pSpriteList = NULL;
-	m_pShinySurface = NULL; //LRC
 
 	// Clear any old HUD list
 	if ( m_pHudList )
@@ -558,10 +541,8 @@ void CHud :: Init()
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
-	m_Particle.Init(); // (LRC) -- 30/08/02 November235: Particles to Order
 
 	m_Menu.Init();
-	InitRain();
 
 	MsgFunc_ResetHUD(0, 0, NULL );
 }
@@ -577,7 +558,6 @@ CHud :: ~CHud()
 	delete [] m_rgrcRects;
 	delete [] m_rgszSpriteNames;
 	gMP3.Shutdown();
-	ResetRain();
 
 	if ( m_pHudList )
 	{
@@ -595,7 +575,6 @@ CHud :: ~CHud()
 	gTextureLoader.Shutdown();
 	gBSPRenderer.Shutdown();
 	//RENDERERS END
-	ServersShutdown();
 }
 
 // GetSpriteIndex()
@@ -630,14 +609,6 @@ void CHud :: VidInit()
 	m_hsprLogo = 0;	
 	m_hsprCursor = 0;
 	numMirrors = 0;
-	ResetRain();
-
-	//LRC - clear all shiny surfaces
-	if (m_pShinySurface)
-	{
-		delete m_pShinySurface;
-		m_pShinySurface = NULL;
-	}
 
 	if (ScreenWidth < 640)
 		m_iRes = 320;

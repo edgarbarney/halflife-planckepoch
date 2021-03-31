@@ -48,7 +48,7 @@ public:
 
 	STATE GetState() override;
 
-	int	 DamageDecal( int bitsDamageType ) override;
+	char  *DamageDecal( int bitsDamageType ) override;
 
 	void EXPORT		Die();
     int		ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }

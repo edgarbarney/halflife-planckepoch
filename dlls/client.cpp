@@ -162,8 +162,8 @@ void ExportDetails( void )
 		if(pModel->type != mod_brush)
 			continue;
 
-		memcpy(&pWriteData[iOffset], &pModel->mins, sizeof(vec3_t)); iOffset += sizeof(vec3_t);
-		memcpy(&pWriteData[iOffset], &pModel->maxs, sizeof(vec3_t)); iOffset += sizeof(vec3_t);
+		memcpy(&pWriteData[iOffset], &pModel->mins, sizeof(Vector)); iOffset += sizeof(Vector);
+		memcpy(&pWriteData[iOffset], &pModel->maxs, sizeof(Vector)); iOffset += sizeof(Vector);
 		memcpy(&pWriteData[iOffset], &pModel->nummodelsurfaces, sizeof(int)); iOffset += sizeof(int);
 
 		msurface_t *psurf = &pModel->surfaces[pModel->firstmodelsurface];
@@ -172,7 +172,7 @@ void ExportDetails( void )
 			memcpy(&pWriteData[iOffset], &psurf[j].texinfo->texture->name, sizeof(char)*16); iOffset += sizeof(char)*16;
 			memcpy(&pWriteData[iOffset], &psurf[j].lightmaptexturenum, sizeof(int)); iOffset += sizeof(int);
 			memcpy(&pWriteData[iOffset], &psurf[j].polys->numverts, sizeof(int)); iOffset += sizeof(int);
-			memcpy(&pWriteData[iOffset], &psurf[j].plane->normal, sizeof(vec3_t)); iOffset += sizeof(vec3_t);
+			memcpy(&pWriteData[iOffset], &psurf[j].plane->normal, sizeof(Vector)); iOffset += sizeof(Vector);
 			memcpy(&pWriteData[iOffset], &psurf[j].plane->dist, sizeof(float)); iOffset += sizeof(float);
 
 			memcpy(&pWriteData[iOffset], &psurf[j].texinfo->flags, sizeof(int)); iOffset += sizeof(int);

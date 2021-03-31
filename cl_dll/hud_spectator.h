@@ -48,7 +48,7 @@ typedef struct overviewInfo_s {
 
 typedef struct overviewEntity_s {
 
-	HL_HSPRITE					hSprite;
+	HL_HSPRITE					HL_HSPRITE;
 	struct cl_entity_s *	entity;
 	double					killTime;
 } overviewEntity_t;
@@ -72,7 +72,7 @@ public:
 	int  ToggleInset(bool allowOff);
 	void CheckSettings();
 	void InitHUDData() override;
-	bool AddOverviewEntityToList( HSPRITE sprite, cl_entity_t * ent, double killTime);
+	bool AddOverviewEntityToList( HL_HSPRITE sprite, cl_entity_t * ent, double killTime);
 	void DeathMessage(int victim);
 	bool AddOverviewEntity( int type, struct cl_entity_s *ent, const char *modelname );
 	void CheckOverviewEntities();

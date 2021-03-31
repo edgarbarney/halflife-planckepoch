@@ -23,6 +23,7 @@
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+#include "UserMessages.h"
 //RENDERERS START
 #include "player.h"
 
@@ -97,47 +98,40 @@ int GetStdLightStyle (int iStyle)
 	}
 }
 
-
 class CLight : public CPointEntity
 {
 public:
-    void	KeyValue( KeyValueData* pkvd ) override;
-    void	Spawn() override;
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	Think() override;
+	// TODO - Modernize
+	virtual void	KeyValue(KeyValueData* pkvd);
+	virtual void	SendInitMessage(CBasePlayer* player);
+	void EXPORT	LightStyleThink(void);
+	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
-    STATE	GetState() override { return m_iState; }; //LRC
-	
+	virtual int		Save(CSave& save);
+	virtual int		Restore(CRestore& restore);
+
 	static	TYPEDESCRIPTION m_SaveData[];
-
-	int		GetStyle() { return m_iszCurrentStyle; }; //LRC
-	void	SetStyle( int iszPattern ); //LRC
-
-	void	SetCorrectStyle(); //LRC
 
 private:
 	int		m_iStyle;
 	int		m_iszPattern;
 	BOOL	m_bAlreadySent;
 };
-LINK_ENTITY_TO_CLASS( light, CLight );
+LINK_ENTITY_TO_CLASS(light, CLight);
 
-TYPEDESCRIPTION	CLight::m_SaveData[] = 
+TYPEDESCRIPTION	CLight::m_SaveData[] =
 {
-	DEFINE_FIELD( CLight, m_iStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_bAlreadySent, FIELD_BOOLEAN ),
+	DEFINE_FIELD(CLight, m_iStyle, FIELD_INTEGER),
+	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
+	DEFINE_FIELD(CLight, m_bAlreadySent, FIELD_BOOLEAN),
 };
 
-IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
+IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
 
 //
 // Cache user-entity-field values until spawn is called.
 //
-extern int gmsgLightStyle;
-void CLight :: SendInitMessage( CBasePlayer *player )
+void CLight::SendInitMessage(CBasePlayer* player)
 {
 	char szPattern[64];
 	memset(szPattern, 0, sizeof(szPattern));
@@ -145,25 +139,25 @@ void CLight :: SendInitMessage( CBasePlayer *player )
 	if (m_iStyle >= 32)
 	{
 		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
-			strcpy(szPattern,"a");
+			strcpy(szPattern, "a");
 		else if (m_iszPattern)
-			strcpy(szPattern,(char *)STRING( m_iszPattern ));
+			strcpy(szPattern, (char*)STRING(m_iszPattern));
 		else
-			strcpy(szPattern,"m");
+			strcpy(szPattern, "m");
 
-		if(player)
+		if (player)
 			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, NULL, player->pev);
 		else
 			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
 
-			WRITE_BYTE( m_iStyle );
-			WRITE_STRING( szPattern );
+		WRITE_BYTE(m_iStyle);
+		WRITE_STRING(szPattern);
 		MESSAGE_END();
 	}
 
 	m_bAlreadySent = TRUE;
 }
-void CLight :: KeyValue( KeyValueData* pkvd)
+void CLight::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
 	{
@@ -177,126 +171,44 @@ void CLight :: KeyValue( KeyValueData* pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
-		m_iszPattern = ALLOC_STRING( pkvd->szValue );
+		m_iszPattern = ALLOC_STRING(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
 	{
-		CPointEntity::KeyValue( pkvd );
+		CPointEntity::KeyValue(pkvd);
 	}
 }
-void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	char szPattern[64];
 	memset(szPattern, 0, sizeof(szPattern));
 
-// regardless of what's been set by trigger_lightstyle ents, set the style I think I need
-void CLight :: SetCorrectStyle ()
-{
 	if (m_iStyle >= 32)
 	{
-		switch (m_iState)
-		{
-		case STATE_ON:
-			if (m_iszPattern) // custom styles have priority over standard ones
-				SetStyle( m_iszPattern );
-			else if (m_iOnStyle)
-				SetStyle(GetStdLightStyle(m_iOnStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		case STATE_OFF:
-			if (m_iOffStyle)
-				SetStyle(GetStdLightStyle(m_iOffStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_ON:
-			if (m_iTurnOnStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOnStyle));
-			else
-				SetStyle(MAKE_STRING("a"));
-			break;
-		case STATE_TURN_OFF:
-			if (m_iTurnOffStyle)
-				SetStyle(GetStdLightStyle(m_iTurnOffStyle));
-			else
-				SetStyle(MAKE_STRING("m"));
-			break;
-		}
-	}
-	else
-	{
-		m_iszCurrentStyle = GetStdLightStyle( m_iStyle );
-	}
-}
-
-void CLight :: Think()
-{
-	switch (GetState())
-	{
-	case STATE_TURN_ON:
-		m_iState = STATE_ON;
-		FireTargets(STRING(pev->target),this,this,USE_ON,0);
-		break;
-	case STATE_TURN_OFF:
-		m_iState = STATE_OFF;
-		FireTargets(STRING(pev->target),this,this,USE_OFF,0);
-		break;
-	}
-	SetCorrectStyle();
-}
-
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LIGHT_START_OFF
-Non-displayed light.
-Default light value is 300
-Default style is 0
-If targeted, it will toggle between on or off.
-*/
-
-void CLight :: Spawn()
-{
-	if (FStringNull(pev->targetname))
-	{       // inert light
-		REMOVE_ENTITY(ENT(pev));
-		return;
-	}
-
-	if (FBitSet(pev->spawnflags,SF_LIGHT_START_OFF))
-		m_iState = STATE_OFF;
-	else
-		m_iState = STATE_ON;
-	SetCorrectStyle();
-}
-
-
-void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-{
-	if (m_iStyle >= 32)
-	{
-		if ( !ShouldToggle( useType ) )
+		if (!ShouldToggle(useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF)))
 			return;
 
 		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
 		{
 			if (m_iszPattern)
-				strcpy(szPattern,(char *)STRING( m_iszPattern ));
+				strcpy(szPattern, (char*)STRING(m_iszPattern));
 			else
-				strcpy(szPattern,"m");
+				strcpy(szPattern, "m");
 			ClearBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
 		else
 		{
-			strcpy(szPattern,"a");
+			strcpy(szPattern, "a");
 			SetBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
 	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
-			WRITE_BYTE(m_iStyle);
-			WRITE_STRING(szPattern);
+	WRITE_BYTE(m_iStyle);
+	WRITE_STRING(szPattern);
 	MESSAGE_END();
-	LIGHT_STYLE(m_iStyle,szPattern); 
+	LIGHT_STYLE(m_iStyle, szPattern);
 }
 //RENDERERS END
 //
