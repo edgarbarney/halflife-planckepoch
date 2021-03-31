@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
-#include "hud_servers.h"
 #include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
 #include "mp3.h"
@@ -57,8 +56,8 @@ extern engine_studio_api_t IEngineStudio;
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
 public:
-	virtual void GetPlayerTextColor(int entindex, int color[3])
-	{
+    void GetPlayerTextColor(int entindex, int color[3]) override
+    {
 		color[0] = color[1] = color[2] = 255;
 
 		if( entindex >= 0 && entindex < sizeof(g_PlayerExtraInfo)/sizeof(g_PlayerExtraInfo[0]) )
@@ -78,18 +77,18 @@ public:
 		}
 	}
 
-	virtual void UpdateCursorState()
-	{
+    void UpdateCursorState() override
+    {
 		gViewPort->UpdateCursorState();
 	}
 
-	virtual int	GetAckIconHeight()
-	{
+    int	GetAckIconHeight() override
+    {
 		return ScreenHeight - gHUD.m_iFontHeight*3 - 6;
 	}
 
-	virtual bool			CanShowSpeakerLabels()
-	{
+    bool CanShowSpeakerLabels() override
+    {
 		if( gViewPort && gViewPort->m_pScoreBoard )
 			return !gViewPort->m_pScoreBoard->isVisible();
 		else
@@ -107,7 +106,7 @@ cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
 
-void ShutdownInput (void);
+void ShutdownInput ();
 
 //DECLARE_MESSAGE(m_Logo, Logo)
 int __MsgFunc_Logo(const char *pszName, int iSize, void *pbuf)
@@ -132,6 +131,16 @@ int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
 int __MsgFunc_KeyedDLight(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_KeyedDLight( pszName, iSize, pbuf );
+	return 1;
+}
+
+int __MsgFunc_Test(const char *pszName, int iSize, void *pbuf)
+{ return 1; }
+
+//LRC
+int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
 	return 1;
 }
 
@@ -215,7 +224,7 @@ int __MsgFunc_Inventory(const char *pszName, int iSize, void *pbuf)
 }
 
 // TFFree Command Menu
-void __CmdFunc_OpenCommandMenu(void)
+void __CmdFunc_OpenCommandMenu()
 {
 	if ( gViewPort )
 	{
@@ -224,7 +233,7 @@ void __CmdFunc_OpenCommandMenu(void)
 }
 
 // TFC "special" command
-void __CmdFunc_InputPlayerSpecial(void)
+void __CmdFunc_InputPlayerSpecial()
 {
 	if ( gViewPort )
 	{
@@ -232,7 +241,7 @@ void __CmdFunc_InputPlayerSpecial(void)
 	}
 }
 
-void __CmdFunc_CloseCommandMenu(void)
+void __CmdFunc_CloseCommandMenu()
 {
 	if ( gViewPort )
 	{
@@ -240,7 +249,7 @@ void __CmdFunc_CloseCommandMenu(void)
 	}
 }
 
-void __CmdFunc_ForceCloseCommandMenu( void )
+void __CmdFunc_ForceCloseCommandMenu()
 {
 	if ( gViewPort )
 	{
@@ -248,12 +257,9 @@ void __CmdFunc_ForceCloseCommandMenu( void )
 	}
 }
 
-void __CmdFunc_ToggleServerBrowser( void )
+void __CmdFunc_StopMP3()
 {
-	if ( gViewPort )
-	{
-		gViewPort->ToggleServerBrowser();
-	}
+	gMP3.StopMP3();
 }
 
 void __CmdFunc_StopMP3( void )
@@ -413,7 +419,7 @@ int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
 //RENDERERS END
 
 // This is called every time the DLL is loaded
-void CHud :: Init( void )
+void CHud :: Init()
 {
 #ifdef ENGINE_DEBUG
 	CONPRINT("## CHud::Init\n");
@@ -428,6 +434,7 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( HUDColor ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
+	HOOK_MESSAGE( AddShine ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
 	HOOK_MESSAGE( CamData );//G-Cont. for new camera style 	
@@ -447,7 +454,6 @@ void CHud :: Init( void )
 	HOOK_COMMAND( "-commandmenu", CloseCommandMenu );
 	HOOK_COMMAND( "ForceCloseCommandMenu", ForceCloseCommandMenu );
 	HOOK_COMMAND( "special", InputPlayerSpecial );
-	HOOK_COMMAND( "togglebrowser", ToggleServerBrowser );
 
 	HOOK_MESSAGE( ValClass );
 	HOOK_MESSAGE( TeamNames );
@@ -509,7 +515,7 @@ void CHud :: Init( void )
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
 	CVAR_CREATE("cl_autowepswitch", "1", FCVAR_ARCHIVE | FCVAR_USERINFO);
-	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
+	default_fov = CVAR_CREATE( "default_fov", "90", FCVAR_ARCHIVE);
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
 	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
 	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
@@ -519,6 +525,7 @@ void CHud :: Init( void )
 
 	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
 	m_pSpriteList = NULL;
+	m_pShinySurface = NULL; //LRC
 
 	// Clear any old HUD list
 	if ( m_pHudList )
@@ -551,10 +558,10 @@ void CHud :: Init( void )
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+	m_Particle.Init(); // (LRC) -- 30/08/02 November235: Particles to Order
 
 	m_Menu.Init();
-	InitRain();	
-	ServersInit();
+	InitRain();
 
 	MsgFunc_ResetHUD(0, 0, NULL );
 }
@@ -607,7 +614,7 @@ int CHud :: GetSpriteIndex( const char *SpriteName )
 	return -1; // invalid sprite
 }
 
-void CHud :: VidInit( void )
+void CHud :: VidInit()
 {
 #ifdef ENGINE_DEBUG
 	CONPRINT("## CHud::VidInit (hi from me)\n");
@@ -624,6 +631,13 @@ void CHud :: VidInit( void )
 	m_hsprCursor = 0;
 	numMirrors = 0;
 	ResetRain();
+
+	//LRC - clear all shiny surfaces
+	if (m_pShinySurface)
+	{
+		delete m_pShinySurface;
+		m_pShinySurface = NULL;
+	}
 
 	if (ScreenWidth < 640)
 		m_iRes = 320;
@@ -816,7 +830,7 @@ HUD_GetFOV
 Returns last FOV
 =====================
 */
-float HUD_GetFOV( void )
+float HUD_GetFOV()
 {
 	if ( gEngfuncs.pDemoAPI->IsRecording() )
 	{
@@ -911,7 +925,7 @@ void CHud::AddHudElem(CHudBase *phudelem)
 	ptemp->pNext = pdl;
 }
 
-float CHud::GetSensitivity( void )
+float CHud::GetSensitivity()
 {
 	return m_flMouseSensitivity;
 }

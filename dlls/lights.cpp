@@ -101,15 +101,21 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
-	virtual void	KeyValue( KeyValueData* pkvd ); 
-	virtual void	SendInitMessage( CBasePlayer *player );
-	void EXPORT	LightStyleThink( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+    void	KeyValue( KeyValueData* pkvd ) override;
+    void	Spawn() override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void	Think() override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
+    STATE	GetState() override { return m_iState; }; //LRC
 	
 	static	TYPEDESCRIPTION m_SaveData[];
+
+	int		GetStyle() { return m_iszCurrentStyle; }; //LRC
+	void	SetStyle( int iszPattern ); //LRC
+
+	void	SetCorrectStyle(); //LRC
 
 private:
 	int		m_iStyle;
@@ -184,9 +190,91 @@ void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	char szPattern[64];
 	memset(szPattern, 0, sizeof(szPattern));
 
+// regardless of what's been set by trigger_lightstyle ents, set the style I think I need
+void CLight :: SetCorrectStyle ()
+{
 	if (m_iStyle >= 32)
 	{
-		if ( !ShouldToggle( useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF) ) )
+		switch (m_iState)
+		{
+		case STATE_ON:
+			if (m_iszPattern) // custom styles have priority over standard ones
+				SetStyle( m_iszPattern );
+			else if (m_iOnStyle)
+				SetStyle(GetStdLightStyle(m_iOnStyle));
+			else
+				SetStyle(MAKE_STRING("m"));
+			break;
+		case STATE_OFF:
+			if (m_iOffStyle)
+				SetStyle(GetStdLightStyle(m_iOffStyle));
+			else
+				SetStyle(MAKE_STRING("a"));
+			break;
+		case STATE_TURN_ON:
+			if (m_iTurnOnStyle)
+				SetStyle(GetStdLightStyle(m_iTurnOnStyle));
+			else
+				SetStyle(MAKE_STRING("a"));
+			break;
+		case STATE_TURN_OFF:
+			if (m_iTurnOffStyle)
+				SetStyle(GetStdLightStyle(m_iTurnOffStyle));
+			else
+				SetStyle(MAKE_STRING("m"));
+			break;
+		}
+	}
+	else
+	{
+		m_iszCurrentStyle = GetStdLightStyle( m_iStyle );
+	}
+}
+
+void CLight :: Think()
+{
+	switch (GetState())
+	{
+	case STATE_TURN_ON:
+		m_iState = STATE_ON;
+		FireTargets(STRING(pev->target),this,this,USE_ON,0);
+		break;
+	case STATE_TURN_OFF:
+		m_iState = STATE_OFF;
+		FireTargets(STRING(pev->target),this,this,USE_OFF,0);
+		break;
+	}
+	SetCorrectStyle();
+}
+
+/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LIGHT_START_OFF
+Non-displayed light.
+Default light value is 300
+Default style is 0
+If targeted, it will toggle between on or off.
+*/
+
+void CLight :: Spawn()
+{
+	if (FStringNull(pev->targetname))
+	{       // inert light
+		REMOVE_ENTITY(ENT(pev));
+		return;
+	}
+
+	if (FBitSet(pev->spawnflags,SF_LIGHT_START_OFF))
+		m_iState = STATE_OFF;
+	else
+		m_iState = STATE_ON;
+	SetCorrectStyle();
+}
+
+
+void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if (m_iStyle >= 32)
+	{
+		if ( !ShouldToggle( useType ) )
 			return;
 
 		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
@@ -220,8 +308,8 @@ LINK_ENTITY_TO_CLASS( light_spot, CLight );
 class CEnvLight : public CLight
 {
 public:
-	void	KeyValue( KeyValueData* pkvd ); 
-	void	Spawn( void );
+	void	KeyValue( KeyValueData* pkvd ) override; 
+	void	Spawn() override;
 };
 
 LINK_ENTITY_TO_CLASS( light_environment, CEnvLight );
@@ -264,7 +352,7 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 }
 
 
-void CEnvLight :: Spawn( void )
+void CEnvLight :: Spawn()
 {
 	char szVector[64];
 	UTIL_MakeAimVectors( pev->angles );

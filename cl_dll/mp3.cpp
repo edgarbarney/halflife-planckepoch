@@ -10,36 +10,37 @@ int CMP3::Initialize()
 	char fmodlib[256];
 	
 	m_iIsPlaying = 0;
-	sprintf( fmodlib, "%s/fmod.dll", gEngfuncs.pfnGetGameDirectory());
+	sprintf( fmodlib, "%s/fmod.%s", gEngfuncs.pfnGetGameDirectory(), LIBRARY_EXTENSION);
+	#ifdef _WIN32
 	// replace forward slashes with backslashes
 	for( int i=0; i < 256; i++ )
 		if( fmodlib[i] == '/' ) fmodlib[i] = '\\';
+	#endif
 	
-	m_hFMod = LoadLibrary( fmodlib );
+	m_hFMod = LOAD_LIBRARY( fmodlib );
 
 	if( m_hFMod != NULL )
 	{
 		// fill in the function pointers
-	//	(FARPROC&)VER = GetProcAddress(m_hFMod, "_FSOUND_GetVersion@0");
-		(FARPROC&)SCL = GetProcAddress(m_hFMod, "_FSOUND_Stream_Close@4");
-		(FARPROC&)SOP = GetProcAddress(m_hFMod, "_FSOUND_SetOutput@4");
-		(FARPROC&)SBS = GetProcAddress(m_hFMod, "_FSOUND_SetBufferSize@4");
-		(FARPROC&)SDRV = GetProcAddress(m_hFMod, "_FSOUND_SetDriver@4");
-		(FARPROC&)INIT = GetProcAddress(m_hFMod, "_FSOUND_Init@12");
-		(FARPROC&)SOF = GetProcAddress(m_hFMod, "_FSOUND_Stream_OpenFile@12");		//
-	//	(FARPROC&)LNGTH = GetProcAddress(m_hFMod, "_FSOUND_Stream_GetLength@4");	//
-		(FARPROC&)SO = GetProcAddress(m_hFMod, "_FSOUND_Stream_Open@16");			//AJH Use new version of fmod
-		(FARPROC&)SPLAY = GetProcAddress(m_hFMod, "_FSOUND_Stream_Play@8");
-		(FARPROC&)CLOSE = GetProcAddress(m_hFMod, "_FSOUND_Close@0");
+	//	GET_FUNCTION(VER, m_hFMod, FSOUND_GetVersion, 0);
+        GET_FUNCTION(SCL, m_hFMod, FSOUND_Stream_Close, 4);
+        GET_FUNCTION(SOP, m_hFMod, FSOUND_SetOutput, 4);
+        GET_FUNCTION(SBS, m_hFMod, FSOUND_SetBufferSize, 4);
+        GET_FUNCTION(SDRV, m_hFMod, FSOUND_SetDriver, 4);
+        GET_FUNCTION(INIT, m_hFMod, FSOUND_Init, 12);
+		GET_FUNCTION(SOF, m_hFMod, FSOUND_Stream_OpenFile, 12);		//
+	//	GET_FUNCTION(LNGTH, m_hFMod, FSOUND_Stream_GetLength, 4);	//
+        GET_FUNCTION(SO, m_hFMod, FSOUND_Stream_Open, 16);			//AJH Use new version of fmod
+        GET_FUNCTION(SPLAY, m_hFMod, FSOUND_Stream_Play, 8);
+        GET_FUNCTION(CLOSE, m_hFMod, FSOUND_Close, 0);
 		
 		if( !(SCL && SOP && SBS && SDRV && INIT && (SOF||SO) && SPLAY && CLOSE) )
 		{
-			FreeLibrary( m_hFMod );
+			UNLOAD_LIBRARY( m_hFMod );
 			gEngfuncs.Con_Printf("Fatal Error: FMOD functions couldn't be loaded!\n");
 			return 0;
 		}
 	}
-
 	else
 	{
 		gEngfuncs.Con_Printf("Fatal Error: FMOD library couldn't be loaded!\n");
@@ -54,8 +55,9 @@ int CMP3::Shutdown()
 	if( m_hFMod )
 	{
 		CLOSE();
+		fmodInit = false;
 
-		FreeLibrary( m_hFMod );
+		UNLOAD_LIBRARY( m_hFMod );
 		m_hFMod = NULL;
 		m_iIsPlaying = 0;
 		return 1;
@@ -77,10 +79,11 @@ int CMP3::PlayMP3( const char *pszSong )
 	{
 	// sound system is already initialized
 		SCL( m_Stream );
-	} 
-	else
+	}
+	else if (!fmodInit)
 	{
-		SOP( FSOUND_OUTPUT_DSOUND );
+		fmodInit = true; // These functions must only be run once!
+		SOP( OUTPUT_DRIVER );
 		SBS( 200 );
 		SDRV( 0 );
 		INIT( 44100, 1, 0 ); // we need just one channel, multiple mp3s at a time would be, erm, strange...	

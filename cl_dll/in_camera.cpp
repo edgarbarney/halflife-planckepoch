@@ -19,15 +19,15 @@ extern "C"
 
 int iMouseInUse = 0;
 
-void DLLEXPORT CAM_Think( void )
+void DLLEXPORT CAM_Think()
 {
 }
 
-void CAM_Init( void )
+void CAM_Init()
 {
 }
 
-int DLLEXPORT CL_IsThirdPerson( void )
+int DLLEXPORT CL_IsThirdPerson()
 {
 	return (gHUD.m_iCameraMode ? 1 : 0) || (g_iUser1 && (g_iUser2 == gEngfuncs.GetLocalPlayer()->index) );
 }

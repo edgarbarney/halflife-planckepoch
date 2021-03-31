@@ -11,15 +11,19 @@ HLDLL_OBJ_DIR=$(BUILD_OBJ_DIR)/hldll
 HLWPN_OBJ_DIR=$(HLDLL_OBJ_DIR)/wpn_shared
 PM_OBJ_DIR=$(HLDLL_OBJ_DIR)/pm_shared
 GAME_SHARED_OBJ_DIR=$(HLDLL_OBJ_DIR)/game_shared
+COMMON_OBJ_DIR=$(HLDLL_OBJ_DIR)/common
+
+HLDLL_LIB_NAME=spirit
 
 #CFLAGS=$(BASE_CFLAGS) $(ARCH_CFLAGS) $(SHLIBCFLAGS) -DCLIENT_WEAPONS
 CFLAGS=$(BASE_CFLAGS)  $(ARCH_CFLAGS)  -DCLIENT_WEAPONS
 #-O3 -ffast-math -fno-strength-reduce
 
-HLDLL_INCLUDEDIRS=-I$(ENGINE_SRC_DIR) -I$(COMMON_SRC_DIR) -I$(PM_SRC_DIR) -I$(GAME_SHARED_SRC_DIR) -I$(PUBLIC_SRC_DIR)
+HLDLL_INCLUDEDIRS=-I$(HLDLL_SRC_DIR) -I$(ENGINE_SRC_DIR) -I$(COMMON_SRC_DIR) -I$(PM_SRC_DIR) -I$(GAME_SHARED_SRC_DIR) -I$(PUBLIC_SRC_DIR)
 HLWPN_INCLUDEDIRS=-I$(HLDLL_SRC_DIR) -I$(ENGINE_SRC_DIR) -I$(COMMON_SRC_DIR) -I$(PM_SRC_DIR) -I$(PUBLIC_SRC_DIR)
-PM_INCLUDEDIRS=-I$(COMMON_SRC_DIR)  -I$(PUBLIC_SRC_DIR)
+PM_INCLUDEDIRS=-I$(HLDLL_SRC_DIR) -I$(COMMON_SRC_DIR)  -I$(PUBLIC_SRC_DIR)
 GAME_SHARED_INCLUDEDIRS=-I$(HLDLL_SRC_DIR) -I$(ENGINE_SRC_DIR) -I$(COMMON_SRC_DIR) -I$(PM_SRC_DIR) -I$(PUBLIC_SRC_DIR)
+COMMON_INCLUDEDIRS=-I$(HLDLL_SRC_DIR) -I$(ENGINE_SRC_DIR) -I$(COMMON_SRC_DIR) -I$(PM_SRC_DIR) -I$(PUBLIC_SRC_DIR)
 
 LDFLAGS= -lm -lstdc++
 
@@ -27,6 +31,7 @@ DO_HLDLL_CC=$(CC) $(HLDLL_INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
 DO_HLWPN_CC=$(CC) $(HLWPN_INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
 DO_PM_CC=$(CC) $(PM_INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
 DO_GAME_SHARED_CC=$(CC) $(GAME_SHARED_INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
+DO_COMMON_CC=$(CC) $(COMMON_INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
 
 #####################################################################
 
@@ -34,6 +39,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/aflock.o \
 	$(HLDLL_OBJ_DIR)/agrunt.o \
 	$(HLDLL_OBJ_DIR)/airtank.o \
+	$(HLDLL_OBJ_DIR)/alias.o \
 	$(HLDLL_OBJ_DIR)/animating.o \
 	$(HLDLL_OBJ_DIR)/animation.o \
 	$(HLDLL_OBJ_DIR)/apache.o \
@@ -51,6 +57,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/crossbow.o \
 	$(HLDLL_OBJ_DIR)/crowbar.o \
 	$(HLDLL_OBJ_DIR)/defaultai.o \
+	$(HLDLL_OBJ_DIR)/debugger.o \
 	$(HLDLL_OBJ_DIR)/doors.o \
 	$(HLDLL_OBJ_DIR)/effects.o \
 	$(HLDLL_OBJ_DIR)/egon.o \
@@ -84,11 +91,13 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/items.o \
 	$(HLDLL_OBJ_DIR)/leech.o \
 	$(HLDLL_OBJ_DIR)/lights.o \
+	$(HLDLL_OBJ_DIR)/locus.o \
 	$(HLDLL_OBJ_DIR)/maprules.o \
 	$(HLDLL_OBJ_DIR)/monstermaker.o \
 	$(HLDLL_OBJ_DIR)/monsters.o \
 	$(HLDLL_OBJ_DIR)/monsterstate.o \
 	$(HLDLL_OBJ_DIR)/mortar.o \
+	$(HLDLL_OBJ_DIR)/movewith.o \
 	$(HLDLL_OBJ_DIR)/mp5.o \
 	$(HLDLL_OBJ_DIR)/nihilanth.o \
 	$(HLDLL_OBJ_DIR)/nodes.o \
@@ -123,8 +132,10 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/triggers.o \
 	$(HLDLL_OBJ_DIR)/tripmine.o \
 	$(HLDLL_OBJ_DIR)/turret.o \
+	$(HLDLL_OBJ_DIR)/UserMessages.o \
 	$(HLDLL_OBJ_DIR)/util.o \
 	$(HLDLL_OBJ_DIR)/weapons.o \
+	$(HLDLL_OBJ_DIR)/weapons_shared.o \
 	$(HLDLL_OBJ_DIR)/world.o \
 	$(HLDLL_OBJ_DIR)/xen.o \
 	$(HLDLL_OBJ_DIR)/zombie.o
@@ -140,7 +151,10 @@ PM_OBJS = \
 GAME_SHARED_OBJS = \
 	$(GAME_SHARED_OBJ_DIR)/voice_gamemgr.o
 
-all: dirs hl.$(SHLIBEXT)
+COMMON_OBJS = \
+	$(COMMON_OBJ_DIR)/mathlib.o
+
+all: dirs $(HLDLL_LIB_NAME).$(SHLIBEXT)
 
 dirs:
 	-mkdir $(BUILD_OBJ_DIR)
@@ -148,11 +162,12 @@ dirs:
 	-mkdir $(HLWPN_OBJ_DIR)
 	-mkdir $(PM_OBJ_DIR)
 	-mkdir $(GAME_SHARED_OBJ_DIR)
+	-mkdir $(COMMON_OBJ_DIR)
 
-hl.$(SHLIBEXT): $(HLDLL_OBJS) $(HLWPN_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS)
-	$(CC) $(LDFLAGS) $(SHLIBLDFLAGS) -o $(BUILD_DIR)/$@ $(HLDLL_OBJS) $(HLWPN_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS)
-	./gendbg.sh $(BUILD_DIR)/hl.$(SHLIBEXT)
-	
+$(HLDLL_LIB_NAME).$(SHLIBEXT): $(HLDLL_OBJS) $(HLWPN_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS) $(COMMON_OBJS)
+	$(CC) $(LDFLAGS) $(SHLIBLDFLAGS) -o $(BUILD_DIR)/$@ $(HLDLL_OBJS) $(HLWPN_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS) $(COMMON_OBJS)
+	./gendbg.sh $(BUILD_DIR)/$(HLDLL_LIB_NAME).$(SHLIBEXT)
+
 $(HLWPN_OBJ_DIR)/%.o : $(HLWPN_SRC_DIR)/%.cpp
 	$(DO_HLWPN_CC)
 
@@ -165,7 +180,11 @@ $(PM_OBJ_DIR)/%.o : $(PM_SRC_DIR)/%.cpp
 $(GAME_SHARED_OBJ_DIR)/%.o : $(GAME_SHARED_SRC_DIR)/%.cpp
 	$(DO_GAME_SHARED_CC)
 
+$(COMMON_OBJ_DIR)/%.o : $(COMMON_SRC_DIR)/%.cpp
+	$(DO_COMMON_CC)
+
 clean:
+	-rm -rf $(COMMON_OBJ_DIR)
 	-rm -rf $(GAME_SHARED_OBJ_DIR)
 	-rm -rf $(PM_OBJ_DIR)
 	-rm -rf $(HLWPN_OBJ_DIR)

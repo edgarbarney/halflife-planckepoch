@@ -29,7 +29,6 @@
 #include "pm_shared.h"
 
 #include <string.h>
-#include "hud_servers.h"
 #include "vgui_int.h"
 #include "interface.h"
 
@@ -92,21 +91,21 @@ int DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs )
 
 	int iret = 0;
 
-	switch ( hullnumber )
+	switch (hullnumber)
 	{
 	case 0:				// Normal player
-		mins = Vector(-16, -16, -36);
-		maxs = Vector(16, 16, 36);
+		memcpy(mins, &VEC_HULL_MIN, sizeof(VEC_HULL_MIN));
+		memcpy(maxs, &VEC_HULL_MAX, sizeof(VEC_HULL_MAX));
 		iret = 1;
 		break;
 	case 1:				// Crouched player
-		mins = Vector(-16, -16, -18 );
-		maxs = Vector(16, 16, 18 );
+		memcpy(mins, &VEC_DUCK_HULL_MIN, sizeof(VEC_DUCK_HULL_MIN));
+		memcpy(maxs, &VEC_DUCK_HULL_MAX, sizeof(VEC_DUCK_HULL_MAX));
 		iret = 1;
 		break;
 	case 2:				// Point based hull
-		mins = Vector( 0, 0, 0 );
-		maxs = Vector( 0, 0, 0 );
+		memcpy(mins, &g_vecZero, sizeof(g_vecZero));
+		memcpy(maxs, &g_vecZero, sizeof(g_vecZero));
 		iret = 1;
 		break;
 	}
@@ -187,7 +186,7 @@ so the HUD can reinitialize itself.
 ==========================
 */
 
-int DLLEXPORT HUD_VidInit( void )
+int DLLEXPORT HUD_VidInit()
 {
 //	RecClHudVidInit();
 	gHUD.VidInit();
@@ -210,7 +209,7 @@ the hud variables.
 ==========================
 */
 
-void DLLEXPORT HUD_Init( void )
+void DLLEXPORT HUD_Init()
 {
 //	RecClHudInit();
 	InitInput();
@@ -276,7 +275,7 @@ Called at start and end of demos to restore to "non"HUD state.
 ==========================
 */
 
-void DLLEXPORT HUD_Reset( void )
+void DLLEXPORT HUD_Reset()
 {
 //	RecClHudReset();
 
@@ -294,8 +293,6 @@ Called by engine every frame that client .dll is loaded
 void DLLEXPORT HUD_Frame( double time )
 {
 //	RecClHudFrame(time);
-
-	ServersThink( time );
 
 	GetClientVoiceMgr()->Frame(time);
 }
@@ -412,8 +409,8 @@ class CClientExports : public IGameClientExports
 {
 public:
 	// returns the name of the server the user is connected to, if any
-	virtual const char *GetServerHostName()
-	{
+    const char *GetServerHostName() override
+    {
 		/*if (gViewPortInterface)
 		{
 			return gViewPortInterface->GetServerName();
@@ -422,23 +419,23 @@ public:
 	}
 
 	// ingame voice manipulation
-	virtual bool IsPlayerGameVoiceMuted(int playerIndex)
-	{
+    bool IsPlayerGameVoiceMuted(int playerIndex) override
+    {
 		if (GetClientVoiceMgr())
 			return GetClientVoiceMgr()->IsPlayerBlocked(playerIndex);
 		return false;
 	}
 
-	virtual void MutePlayerGameVoice(int playerIndex)
-	{
+    void MutePlayerGameVoice(int playerIndex) override
+    {
 		if (GetClientVoiceMgr())
 		{
 			GetClientVoiceMgr()->SetPlayerBlockedState(playerIndex, true);
 		}
 	}
 
-	virtual void UnmutePlayerGameVoice(int playerIndex)
-	{
+    void UnmutePlayerGameVoice(int playerIndex) override
+    {
 		if (GetClientVoiceMgr())
 		{
 			GetClientVoiceMgr()->SetPlayerBlockedState(playerIndex, false);

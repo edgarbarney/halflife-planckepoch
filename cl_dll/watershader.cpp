@@ -735,12 +735,12 @@ void CWaterShader::SetupClipping( ref_params_t *pparams, bool negative )
 	float	eq2[4];
 	float	projection[16];
 
-	vec3_t	vDist;
-	vec3_t	vNorm;
+	Vector	vDist;
+	Vector	vNorm;
 
-	vec3_t	vForward;
-	vec3_t	vRight;
-	vec3_t	vUp;
+	Vector	vForward;
+	Vector	vRight;
+	Vector	vUp;
 
 	AngleVectors(pparams->viewangles, vForward, vRight, vUp );
 	VectorSubtract(m_pCurWater->origin, pparams->vieworg, vDist);
@@ -990,7 +990,7 @@ void CWaterShader::SetupRefract( void )
 	}
 	else
 	{
-		vec3_t vMins, vMaxs;
+		Vector vMins, vMaxs;
 		VectorCopy(gBSPRenderer.m_pWorld->maxs, vMaxs);
 		VectorCopy(gBSPRenderer.m_pWorld->mins, vMins); 
 		vMins.z = m_pCurWater->origin.z;
@@ -1039,8 +1039,8 @@ SetupReflect
 */
 void CWaterShader::SetupReflect( void ) 
 {
-	vec3_t vForward;
-	vec3_t vMins, vMaxs;
+	Vector vForward;
+	Vector vMins, vMaxs;
 	AngleVectors(m_pViewParams->viewangles, vForward, NULL, NULL);
 
 	float flDist = abs(m_pCurWater->origin[2] - m_vViewOrigin[2]);

@@ -82,9 +82,8 @@ typedef int BOOL;
 #define M_PI			3.14159265358979323846
 
 // Keeps clutter down a bit, when declaring external entity/global method prototypes
-#define DECLARE_GLOBAL_METHOD(MethodName) \
-		extern void DLLEXPORT MethodName( void )
-#define GLOBAL_METHOD(funcname)					void DLLEXPORT funcname(void)
+#define DECLARE_GLOBAL_METHOD(MethodName)  extern void DLLEXPORT MethodName()
+#define GLOBAL_METHOD(funcname)					void DLLEXPORT funcname()
 
 // This is the glue that hooks .MAP entity class names to our CPP classes
 // The _declspec forces them to be exported by name so we can do a lookup with GetProcAddress()
@@ -222,7 +221,7 @@ extern Vector		UTIL_AxisRotationToVec	(const Vector &vec, float angle); //LRC
 //LRC 1.8 - renamed CBaseAlias
 class CBaseMutableAlias;
 extern void			UTIL_AddToAliasList(CBaseMutableAlias* pAlias);
-extern void			UTIL_FlushAliases( void );
+extern void			UTIL_FlushAliases();
 
 extern CBaseEntity	*UTIL_FindEntityInSphere(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius);
 extern CBaseEntity	*UTIL_FindEntityByString(CBaseEntity *pStartEntity, const char *szKeyword, const char *szValue );
@@ -252,7 +251,7 @@ inline void UTIL_MakeVectorsPrivate( const Vector &vecAngles, float *p_vForward,
 //RENDERERS START
 extern void			UTIL_Particle( char *szName, Vector vecOrigin, Vector vDirection, int iType );
 extern void			UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent = 0);
-extern void			UTIL_StudioDecal( vec3_t normal, vec3_t position, const char *name, int entindex );
+extern void			UTIL_StudioDecal( Vector normal, Vector position, const char *name, int entindex );
 //RENDERERS END
 extern void			UTIL_MakeAimVectors		( const Vector &vecAngles ); // like MakeVectors, but assumes pitch isn't inverted
 extern void			UTIL_MakeInvVectors		( const Vector &vec, globalvars_t *pgv );
@@ -275,7 +274,7 @@ extern void			UTIL_TraceLine			(const Vector &vecStart, const Vector &vecEnd, IG
 extern void			UTIL_TraceLine			(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
 enum { point_hull=0, human_hull=1, large_hull=2, head_hull=3 };
 extern void			UTIL_TraceHull			(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
-extern TraceResult	UTIL_GetGlobalTrace		(void);
+extern TraceResult	UTIL_GetGlobalTrace		();
 extern void			UTIL_TraceModel			(const Vector &vecStart, const Vector &vecEnd, int hullNumber, edict_t *pentModel, TraceResult *ptr);
 extern Vector		UTIL_GetAimVector		(edict_t* pent, float flSpeed);
 extern int			UTIL_PointContents		(const Vector &vec);
@@ -283,7 +282,7 @@ extern int			UTIL_PointContents		(const Vector &vec);
 extern int			UTIL_IsMasterTriggered	(string_t sMaster, CBaseEntity *pActivator);
 extern void			UTIL_BloodStream( const Vector &origin, const Vector &direction, int color, int amount );
 extern void			UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, int amount );
-extern Vector		UTIL_RandomBloodVector( void );
+extern Vector		UTIL_RandomBloodVector();
 extern BOOL			UTIL_ShouldShowBlood( int bloodColor );
 extern void			UTIL_BloodDecalTrace( TraceResult *pTrace, int bloodColor );
 extern void			UTIL_DecalTrace( TraceResult *pTrace, int decalNumber );
@@ -386,9 +385,6 @@ void DBG_AssertFunction(BOOL fExpr, const char* szExpr, const char* szFile, int 
 #define ASSERTSZ(f, sz)
 #endif	// !DEBUG
 
-
-extern DLL_GLOBAL const Vector g_vecZero;
-
 //
 // Constants that were used only by QC (maybe not used at all now)
 //
@@ -436,18 +432,6 @@ extern DLL_GLOBAL int			g_Language;
 
 #define PUSH_BLOCK_ONLY_X	1
 #define PUSH_BLOCK_ONLY_Y	2
-
-#define VEC_HULL_MIN		Vector(-16, -16, -36)
-#define VEC_HULL_MAX		Vector( 16,  16,  36)
-#define VEC_HUMAN_HULL_MIN	Vector( -16, -16, 0 )
-#define VEC_HUMAN_HULL_MAX	Vector( 16, 16, 72 )
-#define VEC_HUMAN_HULL_DUCK	Vector( 16, 16, 36 )
-
-#define VEC_VIEW			Vector( 0, 0, 28 )
-
-#define VEC_DUCK_HULL_MIN	Vector(-16, -16, -18 )
-#define VEC_DUCK_HULL_MAX	Vector( 16,  16,  18)
-#define VEC_DUCK_VIEW		Vector( 0, 0, 12 )
 
 #define SVC_TEMPENTITY		23
 #define SVC_INTERMISSION	30
@@ -563,19 +547,21 @@ class UTIL_GroupTrace
 {
 public:
 	UTIL_GroupTrace( int groupmask, int op );
-	~UTIL_GroupTrace( void );
+	~UTIL_GroupTrace();
 
 private:
 	int m_oldgroupmask, m_oldgroupop;
 };
 
 void UTIL_SetGroupTrace( int groupmask, int op );
-void UTIL_UnsetGroupTrace( void );
+void UTIL_UnsetGroupTrace();
 
 int UTIL_SharedRandomLong( unsigned int seed, int low, int high );
 float UTIL_SharedRandomFloat( unsigned int seed, float low, float high );
 
-float UTIL_WeaponTimeBase( void );
+float UTIL_WeaponTimeBase();
+
+CBaseEntity* UTIL_FindEntityForward(CBaseEntity* pMe);
 
 int GetStdLightStyle (int iStyle); //LRC- declared here so it can be used by everything that
 									// needs to deal with the standard lightstyles.

@@ -23,14 +23,13 @@ Merged and given some nicer CVARs by FragBait0, tlevi@tpg.com.au
 #include "entity_state.h"
 #include "cl_entity.h"
 #include "triangleapi.h"
-
+#include "particlemgr.h"
 //End tri.cpp
 
-#include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 #include <gl/glext.h>
-#include <cg/cg.h>
-#include <cg/cgGL.h>
+#include <Cg/cg.h>
+#include <Cg/cgGL.h>
 #include "r_studioint.h"
 
 #define DLLEXPORT __declspec( dllexport )
@@ -42,8 +41,9 @@ extern engine_studio_api_t IEngineStudio;
 bool bGlowShaderInitialised = false;
 bool bGlowLowEndInitialised = false;
 
+#ifdef _WIN32
 PFNGLACTIVETEXTUREARBPROC glActiveTextureARB = NULL;
-PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB = NULL;
+#endif
 
 CGcontext g_cgContext;
 CGprofile g_cgVertProfile;
@@ -100,7 +100,7 @@ void DrawQuad(int width, int height, int ofsX = 0, int ofsY = 0)
 void RenderScreenGlow()
 {
  	if (IEngineStudio.IsHardware() != 1)
-		return;
+	    return;
 
 	if (CVAR_GET_FLOAT("r_glow") == 0)	 //check the cvar for the glow is on.
 		return;
@@ -141,7 +141,8 @@ inline bool LoadProgram(CGprogram* pDest, CGprofile profile, const char* szFile)
 
      *pDest = cgCreateProgramFromFile(g_cgContext, CG_SOURCE, file, profile, "main", 0);
      if (!(*pDest)) {
-          MessageBox(NULL, cgGetErrorString(cgGetError()), NULL, NULL);
+          CONPRINT(cgGetErrorString(cgGetError()));
+          CONPRINT("\n");
           return false;
      }
 
@@ -153,8 +154,11 @@ inline bool LoadProgram(CGprogram* pDest, CGprofile profile, const char* szFile)
 void InitScreenGlowShader(void)
 {
 	 bGlowShaderInitialised = false;
+    
+#ifdef _WIN32
      // OPENGL EXTENSION LOADING
      glActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)wglGetProcAddress("glActiveTextureARB");
+#endif
 
      // TEXTURE CREATION
      unsigned char* pBlankTex = new unsigned char[ScreenWidth*ScreenHeight*3];
@@ -177,14 +181,14 @@ void InitScreenGlowShader(void)
      // CG INITIALISATION
      g_cgContext = cgCreateContext();
      if (!g_cgContext) {
-          MessageBox(NULL, "Couldn't make Cg context", NULL, NULL);
+          CONPRINT("Couldn't make Cg context\n");
           return;
      }
 
      // VERTEX PROFILE
      g_cgVertProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
      if (g_cgVertProfile == CG_PROFILE_UNKNOWN) {
-          MessageBox(NULL, "Couldn't fetch valid VP profile", NULL, NULL);
+          CONPRINT("Couldn't fetch valid VP profile\n");
           return;
      }
 
@@ -212,7 +216,7 @@ void InitScreenGlowShader(void)
      // FRAGMENT PROFILE
      g_cgFragProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
      if (g_cgFragProfile == CG_PROFILE_UNKNOWN) {
-          MessageBox(NULL, "Couldn't fetch valid FP profile", NULL, NULL);
+          CONPRINT("Couldn't fetch valid FP profile\n");
           return;
      }
 

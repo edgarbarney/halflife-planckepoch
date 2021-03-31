@@ -15,7 +15,6 @@
 //
 // hud_redraw.cpp
 //
-#include <math.h>
 #include "hud.h"
 #include "cl_util.h"
 #include "bench.h"
@@ -31,15 +30,16 @@ int grgLogoFrame[MAX_LOGO_FRAMES] =
 	29, 29, 29, 29, 29, 28, 27, 26, 25, 24, 30, 31 
 };
 
+inline float		UTIL_Lerp( float lerpfactor, float A, float B ) { return A + lerpfactor*(B-A); }
 
 extern int g_iVisibleMouse;
 
-float HUD_GetFOV( void );
+float HUD_GetFOV();
 
 extern cvar_t *sensitivity;
 
 // Think
-void CHud::Think(void)
+void CHud::Think()
 {
 	m_scrinfo.iSize = sizeof(m_scrinfo);
 	GetScreenInfo(&m_scrinfo);
@@ -175,7 +175,7 @@ int CHud :: Redraw( float flTime, int intermission )
 	
 		int r, g, b, x, y, a;
 		//wrect_t rc;
-		HL_HSPRITE m_hCam1;
+		HSPRITE m_hCam1;
 		int HUD_camera_active;
 		int HUD_camera_rect;
 
@@ -444,4 +444,50 @@ int CHud::GetNumWidth( int iNumber, int iFlags )
 
 }	
 
+int CHud::GetHudNumberWidth(int number, int width, int flags)
+{
+	const int digitWidth = GetSpriteRect(m_HUD_number_0).right - GetSpriteRect(m_HUD_number_0).left;
+
+	int totalDigits = 0;
+
+	if (number > 0)
+	{
+		totalDigits = static_cast<int>(log10(number)) + 1;
+	}
+	else if (flags & DHN_DRAWZERO)
+	{
+		totalDigits = 1;
+	}
+
+	totalDigits = V_max(totalDigits, width);
+
+	return totalDigits * digitWidth;
+}
+
+int CHud::DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b)
+{
+	if (number > 0 || (flags & DHN_DRAWZERO))
+	{
+		const int digitWidth = GetSpriteRect(m_HUD_number_0).right - GetSpriteRect(m_HUD_number_0).left;
+
+		int remainder = number;
+
+		do
+		{
+			const int digit = remainder % 10;
+			const int digitSpriteIndex = m_HUD_number_0 + digit;
+
+			//This has to happen *before* drawing because we're drawing in reverse
+			x -= digitWidth;
+
+			SPR_Set(GetSprite(digitSpriteIndex), r, g, b);
+			SPR_DrawAdditive(0, x, y, &GetSpriteRect(digitSpriteIndex));
+
+			remainder /= 10;
+		}
+		while (remainder > 0);
+	}
+
+	return x;
+}
 

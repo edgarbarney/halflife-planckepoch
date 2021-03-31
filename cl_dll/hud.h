@@ -84,12 +84,12 @@ public:
 	int   m_type;
 	int	  m_iFlags; // active, moving, 
 	virtual		~CHudBase() {}
-	virtual int Init( void ) {return 0;}
-	virtual int VidInit( void ) {return 0;}
+	virtual int Init() {return 0;}
+	virtual int VidInit() {return 0;}
 	virtual int Draw(float flTime) {return 0;}
-	virtual void Think(void) {return;}
-	virtual void Reset(void) {return;}
-	virtual void InitHUDData( void ) {}		// called every time a server is connected to
+	virtual void Think() {}
+	virtual void Reset() {}
+	virtual void InitHUDData() {}		// called every time a server is connected to
 
 };
 
@@ -113,11 +113,11 @@ struct HUDLIST {
 class CHudAmmo: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
-	void Think(void);
-	void Reset(void);
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
+	void Think() override;
+	void Reset() override;
 	int DrawWList(float flTime);
 	int MsgFunc_CurWeapon(const char *pszName, int iSize, void *pbuf);
 	int MsgFunc_WeaponList(const char *pszName, int iSize, void *pbuf);
@@ -128,19 +128,19 @@ public:
 	int MsgFunc_HideWeapon( const char *pszName, int iSize, void *pbuf );
 
 	void SlotInput( int iSlot );
-	void _cdecl UserCmd_Slot1( void );
-	void _cdecl UserCmd_Slot2( void );
-	void _cdecl UserCmd_Slot3( void );
-	void _cdecl UserCmd_Slot4( void );
-	void _cdecl UserCmd_Slot5( void );
-	void _cdecl UserCmd_Slot6( void );
-	void _cdecl UserCmd_Slot7( void );
-	void _cdecl UserCmd_Slot8( void );
-	void _cdecl UserCmd_Slot9( void );
-	void _cdecl UserCmd_Slot10( void );
-	void _cdecl UserCmd_Close( void );
-	void _cdecl UserCmd_NextWeapon( void );
-	void _cdecl UserCmd_PrevWeapon( void );
+	void _cdecl UserCmd_Slot1();
+	void _cdecl UserCmd_Slot2();
+	void _cdecl UserCmd_Slot3();
+	void _cdecl UserCmd_Slot4();
+	void _cdecl UserCmd_Slot5();
+	void _cdecl UserCmd_Slot6();
+	void _cdecl UserCmd_Slot7();
+	void _cdecl UserCmd_Slot8();
+	void _cdecl UserCmd_Slot9();
+	void _cdecl UserCmd_Slot10();
+	void _cdecl UserCmd_Close();
+	void _cdecl UserCmd_NextWeapon();
+	void _cdecl UserCmd_PrevWeapon();
 
 private:
 	float m_fFade;
@@ -158,10 +158,10 @@ private:
 class CHudAmmoSecondary: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	void Reset( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	void Reset() override;
+	int Draw(float flTime) override;
 
 	int MsgFunc_SecAmmoVal( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_SecAmmoIcon( const char *pszName, int iSize, void *pbuf );
@@ -189,9 +189,9 @@ private:
 class CHudGeiger: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
 	int MsgFunc_Geiger(const char *pszName, int iSize, void *pbuf);
 	
 private:
@@ -205,9 +205,9 @@ private:
 class CHudTrain: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
 	int MsgFunc_Train(const char *pszName, int iSize, void *pbuf);
 
 private:
@@ -222,10 +222,10 @@ private:
 class CHudStatusBar : public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw( float flTime );
-	void Reset( void );
+	int Init() override;
+	int VidInit() override;
+	int Draw( float flTime ) override;
+	void Reset() override;
 	void ParseStatusString( int line_num );
 
 	int MsgFunc_StatusText( const char *pszName, int iSize, void *pbuf );
@@ -281,10 +281,10 @@ struct team_info_t
 class CHudDeathNotice : public CHudBase
 {
 public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	int Draw( float flTime );
+	int Init() override;
+	void InitHUDData() override;
+	int VidInit() override;
+	int Draw( float flTime ) override;
 	int MsgFunc_DeathMsg( const char *pszName, int iSize, void *pbuf );
 
 private:
@@ -297,11 +297,11 @@ private:
 class CHudMenu : public CHudBase
 {
 public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	void Reset( void );
-	int Draw( float flTime );
+	int Init() override;
+	void InitHUDData() override;
+	int VidInit() override;
+	void Reset() override;
+	int Draw( float flTime ) override;
 	int MsgFunc_ShowMenu( const char *pszName, int iSize, void *pbuf );
 
 	void SelectMenuItem( int menu_item );
@@ -318,10 +318,10 @@ public:
 class CHudSayText : public CHudBase
 {
 public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	int Draw( float flTime );
+	int Init() override;
+	void InitHUDData() override;
+	int VidInit() override;
+	int Draw( float flTime ) override;
 	int MsgFunc_SayText( const char *pszName, int iSize, void *pbuf );
 	void SayTextPrint( const char *pszBuf, int iBufSize, int clientIndex = -1 );
 	void EnsureTextFitsInOneLineAndWrapIfHaveTo( int line );
@@ -339,9 +339,9 @@ private:
 class CHudBattery: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
 	int MsgFunc_Battery(const char *pszName,  int iSize, void *pbuf );
 	
 private:
@@ -358,13 +358,26 @@ private:
 //
 //-----------------------------------------------------
 //
+// (LRC) -- 30/08/02 November235: Particles to Order
+class CHudParticle: public CHudBase
+{
+public:
+	int Init(void) override;
+	int VidInit(void) override;
+	int Draw(float flTime) override;
+	int MsgFunc_Particle(const char *pszName, int iSize, void *pbuf );
+};
+
+//
+//-----------------------------------------------------
+//
 class CHudFlashlight: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
-	void Reset( void );
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
+	void Reset() override;
 	int MsgFunc_Flashlight(const char *pszName,  int iSize, void *pbuf );
 	int MsgFunc_FlashBat(const char *pszName,  int iSize, void *pbuf );
 	
@@ -410,7 +423,7 @@ struct message_parms_t
 class CHudTextMessage: public CHudBase
 {
 public:
-	int Init( void );
+	int Init() override;
 	static char *LocaliseTextString( const char *msg, char *dst_buffer, int buffer_size );
 	static char *BufferedLocaliseTextString( const char *msg );
 	const char *LookupString( const char *msg_name, int *msg_dest = NULL );
@@ -424,9 +437,9 @@ public:
 class CHudMessage: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
 	int MsgFunc_HudText(const char *pszName, int iSize, void *pbuf);
 	int MsgFunc_HudTextPro(const char *pszName, int iSize, void *pbuf);
 	int MsgFunc_GameTitle(const char *pszName, int iSize, void *pbuf);
@@ -438,9 +451,9 @@ public:
 	void MessageAdd( const char *pName, float time );
 	void MessageAdd(client_textmessage_t * newMessage );
 	void MessageDrawScan( client_textmessage_t *pMessage, float time );
-	void MessageScanStart( void );
-	void MessageScanNextChar( void );
-	void Reset( void );
+	void MessageScanStart();
+	void MessageScanNextChar();
+	void Reset() override;
 
 private:
 	client_textmessage_t		*m_pMessages[maxHUDMessages];
@@ -461,10 +474,10 @@ private:
 class CHudStatusIcons: public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	void Reset( void );
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	void Reset() override;
+	int Draw(float flTime) override;
 	int MsgFunc_StatusIcon(const char *pszName, int iSize, void *pbuf);
 
 	enum { 
@@ -498,13 +511,13 @@ private:
 class CHudBenchmark : public CHudBase
 {
 public:
-	int Init( void );
-	int VidInit( void );
-	int Draw( float flTime );
+	int Init() override;
+	int VidInit() override;
+	int Draw( float flTime ) override;
 
 	void SetScore( float score );
 
-	void Think( void );
+	void Think() override;
 
 	void StartNextSection( int section );
 
@@ -512,11 +525,11 @@ public:
 
 	void CountFrame( float dt );
 
-	int GetObjects( void ) { return m_nObjects; };
+	int GetObjects() { return m_nObjects; }
 
-	void SetCompositeScore( void );
+	void SetCompositeScore();
 
-	void Restart( void );
+	void Restart();
 
 	int Bench_ScoreForValue( int stage, float raw );
 
@@ -550,10 +563,48 @@ private:
 //-----------------------------------------------------
 //
 
+//LRC
+//methods actually defined in tri.cpp
+
+class CShinySurface
+{
+	float m_fMinX, m_fMinY, m_fMaxX, m_fMaxY, m_fZ;
+	char m_fScale;
+	float m_fAlpha; // texture scale and brighness
+	HSPRITE m_hsprSprite;
+	char m_szSprite[128];
+
+public:
+	CShinySurface *m_pNext;
+
+	CShinySurface( float fScale, float fAlpha, float fMinX, float fMaxX, float fMinY, float fMaxY, float fZ, char *szSprite);
+	~CShinySurface();
+
+	// draw the surface as seen from the given position
+	void Draw(const Vector &org);
+
+	void DrawAll(const Vector &org);
+};
+
+//
+//-----------------------------------------------------
+//
+
+
 //LRC - for the moment, skymode has only two settings
 #define SKY_OFF 0
 #define SKY_ON_DRAWING  2
 #define SKY_ON  1
+
+typedef struct cl_mirror_s
+{
+	Vector origin;
+	int enabled;
+	float radius;
+	int type;
+} cl_mirror_t;
+
+
 
 class CHud
 {
@@ -598,6 +649,9 @@ public:
 	int viewFlags;
 	int numMirrors;
 
+	int GetHudNumberWidth(int number, int width, int flags);
+	int DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b);
+
 	int m_iHUDColor; //LRC
 
 private:
@@ -638,10 +692,11 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
+	CHudParticle	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
-	void Init( void );
-	void VidInit( void );
-	void Think(void);
+	void Init();
+	void VidInit();
+	void Think();
 	int Redraw( float flTime, int intermission );
 	int UpdateClientData( client_data_t *cdata, float time );
 	

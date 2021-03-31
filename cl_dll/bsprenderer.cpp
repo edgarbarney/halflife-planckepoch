@@ -728,7 +728,7 @@ void CBSPRenderer::GetRenderEnts( void )
 
 		if(dl->cone_size)
 		{
-			vec3_t vAngles = dl->angles;
+			Vector vAngles = dl->angles;
 			FixVectorForSpotlight(vAngles);
 			AngleVectors(vAngles, mlight->forward, NULL, NULL);
 			mlight->spotcos = dl->cone_size;
@@ -856,11 +856,11 @@ void CBSPRenderer::SetupPreFrame ( ref_params_t *pparams )
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_uiBufferIndex);
 
 	// Set pointers up at start of frame
-	glVertexPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, pos));
-	glNormalPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, normal));
+	glVertexPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, pos));
+	glNormalPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, normal));
 
 	if(m_bSpecialFog)
-		glFogCoordPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, fogcoord));
+		glFogCoordPointer(GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, fogcoord));
 }
 
 /*
@@ -1020,7 +1020,7 @@ DisableWorldDrawing
 */
 void CBSPRenderer::DisableWorldDrawing( ref_params_t *pparams )
 {
-	vec3_t wcoord;
+	Vector wcoord;
 	AngleVectors ( pparams->viewangles, pparams->forward, pparams->right, pparams->up );
 	VectorMASSE(pparams->vieworg, -100, pparams->forward, wcoord);
 	memcpy(m_fSavedMinsMaxs, m_pWorld->nodes[0].minmaxs, 6*sizeof(float));
@@ -1118,8 +1118,8 @@ void CBSPRenderer::LoadDetailFile( void )
 	memcpy(&m_iNumDetailObjects, &pFile[iOffset], sizeof(int));iOffset+=4;
 	for(int i = 0; i < m_iNumDetailObjects; i++)
 	{
-		memcpy(&m_pDetailObjects[i].mins, &pFile[iOffset], sizeof(vec3_t));iOffset+=12;
-		memcpy(&m_pDetailObjects[i].maxs, &pFile[iOffset], sizeof(vec3_t));iOffset+=12;
+		memcpy(&m_pDetailObjects[i].mins, &pFile[iOffset], sizeof(Vector));iOffset+=12;
+		memcpy(&m_pDetailObjects[i].maxs, &pFile[iOffset], sizeof(Vector));iOffset+=12;
 
 		int iNumSurfaces = 0;
 		memcpy(&iNumSurfaces, &pFile[iOffset], sizeof(int));iOffset+=4;
@@ -1154,7 +1154,7 @@ void CBSPRenderer::LoadDetailFile( void )
 
 			psurfaces[j].plane = new mplane_t;
 			memset(psurfaces[j].plane, 0, sizeof(mplane_t));
-			memcpy(&psurfaces[j].plane->normal, &pFile[iOffset], sizeof(vec3_t)); iOffset += 12;
+			memcpy(&psurfaces[j].plane->normal, &pFile[iOffset], sizeof(Vector)); iOffset += 12;
 			memcpy(&psurfaces[j].plane->dist, &pFile[iOffset], sizeof(float)); iOffset += 4;
 
 			psurfaces[j].texinfo = new mtexinfo_t;
@@ -1337,7 +1337,7 @@ void CBSPRenderer::CreateTextures( void )
 		{
 			for (int z = 0; z < 64; z++)
 			{
-				vec3_t vec;
+				Vector vec;
 				vec[0] = (float)x - (64/2);
 				vec[1] = (float)y - (64/2);
 				vec[2] = (float)z - (64/2);
@@ -1889,22 +1889,22 @@ void CBSPRenderer::SetTexPointer(int unitnum, int tc)
 		break;
 
 	case TC_TEXTURE:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, texcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, texcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_DETAIL_TEXTURE:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, detailtexcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, detailtexcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_LIGHTMAP:
-		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, lightmaptexcoord));
+		glTexCoordPointer(2, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, lightmaptexcoord));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 
 	case TC_VERTEX_POSITION:
-		glTexCoordPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET(brushvertex_t, pos));
+		glTexCoordPointer(3, GL_FLOAT, sizeof(brushvertex_t), OFFSET_TRINITY(brushvertex_t, pos));
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		break;
 	}
@@ -2325,7 +2325,7 @@ void CBSPRenderer::DrawDetails( void )
 
 				if(m_pCurrentDynLight->cone_size)
 				{
-					// Hack. (const vec3_t) DOESN'T WORK
+					// Hack. (const Vector) DOESN'T WORK
 					if(m_pCurrentDynLight->frustum.CullBox( static_cast<float*> (pCurObject->mins), static_cast<float*> (pCurObject->maxs) ))
 						continue;
 				}
@@ -2763,7 +2763,7 @@ MarkBrushFaces
 
 ====================
 */
-void CBSPRenderer::MarkBrushFaces ( vec3_t mins, vec3_t maxs )
+void CBSPRenderer::MarkBrushFaces ( Vector mins, Vector maxs )
 {
 	if(m_bShaderSupport && m_pCvarWorldShaders->value >= 1)
 		return;
@@ -2807,13 +2807,13 @@ DrawBrushModel
 */
 void CBSPRenderer::DrawBrushModel ( cl_entity_t *pEntity, bool bStatic )
 {
-	vec3_t		mins, maxs;
+	Vector		mins, maxs;
 	int			i;
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
-	vec3_t		trans;
-	vec3_t		rorigin;
+	Vector		trans;
+	Vector		rorigin;
 	bool		bRotated = false;
 
 	m_pCurrentEntity = pEntity;
@@ -2851,7 +2851,7 @@ void CBSPRenderer::DrawBrushModel ( cl_entity_t *pEntity, bool bStatic )
 		{
 			trans = (m_pCurrentEntity->origin - m_vSkyOrigin)+m_vRenderOrigin;
 			trans = trans-(m_vRenderOrigin-m_vSkyWorldOrigin)/m_fSkySpeed;
-			vec3_t vSkyOrigin = m_vSkyOrigin+(m_vRenderOrigin-m_vSkyWorldOrigin)/m_fSkySpeed;
+			Vector vSkyOrigin = m_vSkyOrigin+(m_vRenderOrigin-m_vSkyWorldOrigin)/m_fSkySpeed;
 			VectorSubtract (vSkyOrigin, m_pCurrentEntity->origin, m_vVecToEyes);	
 		}
 	}
@@ -2865,8 +2865,8 @@ void CBSPRenderer::DrawBrushModel ( cl_entity_t *pEntity, bool bStatic )
 
 	if (bRotated)
 	{
-		vec3_t	temp;
-		vec3_t	forward, right, up;
+		Vector	temp;
+		Vector	forward, right, up;
 
 		VectorCopy (m_vVecToEyes, temp);
 		AngleVectors (m_pCurrentEntity->angles, forward, right, up);
@@ -3254,7 +3254,7 @@ AddDynamicLights
 */
 void CBSPRenderer::AddDynamicLights( msurface_t *surf )
 {
-	vec3_t		impact, local;
+	Vector		impact, local;
 
 	int smax = (surf->extents[0]>>4)+1;
 	int tmax = (surf->extents[1]>>4)+1;
@@ -3266,7 +3266,7 @@ void CBSPRenderer::AddDynamicLights( msurface_t *surf )
 		if ( !(surf->dlightbits & (1<<i) ) )
 			continue;
 
-		vec3_t origin = dl->origin;
+		Vector origin = dl->origin;
 		if(IsEntityMoved(m_pCurrentEntity))
 		{
 			VectorSubtract(origin, m_pCurrentEntity->origin, origin);
@@ -3274,7 +3274,7 @@ void CBSPRenderer::AddDynamicLights( msurface_t *surf )
 			|| m_pCurrentEntity->angles[1] 
 			|| m_pCurrentEntity->angles[2])
 			{
-				vec3_t forward, right, up, temp;
+				Vector forward, right, up, temp;
 				AngleVectors (m_pCurrentEntity->angles, forward, right, up);
 
 				VectorCopy (origin, temp);
@@ -3842,10 +3842,10 @@ FindIntersectionPoint
 
 ====================
 */
-void CBSPRenderer::FindIntersectionPoint( const vec3_t &p1, const vec3_t &p2, const vec3_t &normal, const vec3_t &planepoint, vec3_t &newpoint )
+void CBSPRenderer::FindIntersectionPoint( const Vector &p1, const Vector &p2, const Vector &normal, const Vector &planepoint, Vector &newpoint )
 {
-	vec3_t planevec;
-	vec3_t linevec;
+	Vector planevec;
+	Vector linevec;
 	float planedist, linedist;
 
 	VectorSubtract( planepoint, p1, planevec );
@@ -3868,7 +3868,7 @@ ClipPolygonByPlane
 
 ====================
 */
-int CBSPRenderer::ClipPolygonByPlane (const vec3_t *arrIn, int numpoints, vec3_t normal, vec3_t planepoint, vec3_t *arrOut)
+int CBSPRenderer::ClipPolygonByPlane (const Vector *arrIn, int numpoints, Vector normal, Vector planepoint, Vector *arrOut)
 {
 	int i, cur, prev;
 	int first = -1;
@@ -3876,7 +3876,7 @@ int CBSPRenderer::ClipPolygonByPlane (const vec3_t *arrIn, int numpoints, vec3_t
 	float dots[64];
 	for (i = 0; i < numpoints; i++)
 	{
-		vec3_t vecDir;
+		Vector vecDir;
 		VectorSubtract( arrIn[i], planepoint, vecDir );
 		DotProductSSE(&dots[i], vecDir, normal);
 		
@@ -3913,7 +3913,7 @@ int CBSPRenderer::ClipPolygonByPlane (const vec3_t *arrIn, int numpoints, vec3_t
 
 	if (dots[cur] < 0)
 	{
-		vec3_t newpoint;
+		Vector newpoint;
 		if (cur > 0) 
 			prev = cur-1;
 		else 
@@ -3946,7 +3946,7 @@ int CBSPRenderer::ClipPolygonByPlane (const vec3_t *arrIn, int numpoints, vec3_t
 
 	if (dots[cur] > 0 && dots[prev] < 0)
 	{
-		vec3_t newpoint;
+		Vector newpoint;
 		FindIntersectionPoint( arrIn[prev], arrIn[cur], normal, planepoint, newpoint );
 		VectorCopy( newpoint, arrOut[outCur] );
 		outCur++;
@@ -3967,7 +3967,7 @@ GetUpRight
 
 ====================
 */
-void CBSPRenderer::GetUpRight(vec3_t forward, vec3_t &up, vec3_t &right)
+void CBSPRenderer::GetUpRight(Vector forward, Vector &up, Vector &right)
 {
 	VectorClear(up);
 
@@ -4218,7 +4218,7 @@ CullDecalBBox
 
 ====================
 */
-bool CBSPRenderer::CullDecalBBox( vec3_t mins, vec3_t maxs )
+bool CBSPRenderer::CullDecalBBox( Vector mins, Vector maxs )
 {
 	if (mins[0] > m_vDecalMaxs[0]) 
 		return true;
@@ -4247,10 +4247,10 @@ CreateDecal
 
 ====================
 */
-void CBSPRenderer::CreateDecal( vec3_t endpos, vec3_t pnormal, const char *name, int persistent )
+void CBSPRenderer::CreateDecal( Vector endpos, Vector pnormal, const char *name, int persistent )
 {
-	vec3_t mins, maxs;
-	vec3_t decalpos, decalnormal;
+	Vector mins, maxs;
+	Vector decalpos, decalnormal;
 	decalgroupentry_t *pDecalTex;
 
 	m_pWorld = IEngineStudio.GetModelByIndex(1);
@@ -4383,7 +4383,7 @@ void CBSPRenderer::CreateDecal( vec3_t endpos, vec3_t pnormal, const char *name,
 			VectorSubtract(endpos, pEntity->origin, decalpos);
 			if(pEntity->angles[0] || pEntity->angles[1] || pEntity->angles[2])
 			{
-				vec3_t temp, forward, right, up;
+				Vector temp, forward, right, up;
 				AngleVectors (pEntity->angles, forward, right, up);
 
 				VectorCopy (decalpos, temp);
@@ -4420,7 +4420,7 @@ void CBSPRenderer::CreateDecal( vec3_t endpos, vec3_t pnormal, const char *name,
 
 			if(dot < radius)
 			{
-				vec3_t normal = pplane->normal;
+				Vector normal = pplane->normal;
 
 				if(surf->flags & SURF_PLANEBACK)
 					VectorInverse(normal);
@@ -4440,7 +4440,7 @@ RecursiveCreateDecal
 
 ====================
 */
-void CBSPRenderer::RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texptr, customdecal_t *pDecal, vec3_t endpos, vec3_t pnormal )
+void CBSPRenderer::RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texptr, customdecal_t *pDecal, Vector endpos, Vector pnormal )
 {
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
@@ -4503,7 +4503,7 @@ void CBSPRenderer::RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texpt
 
 			if(dot < radius)
 			{
-				vec3_t normal = pplane->normal;
+				Vector normal = pplane->normal;
 
 				if(surf->flags & SURF_PLANEBACK)
 					VectorInverse(normal);
@@ -4525,13 +4525,13 @@ DecalSurface
 
 ====================
 */
-void CBSPRenderer::DecalSurface(msurface_t *surf, decalgroupentry_t *texptr, cl_entity_t *pEntity, customdecal_t *pDecal, vec3_t endpos, vec3_t pnormal)
+void CBSPRenderer::DecalSurface(msurface_t *surf, decalgroupentry_t *texptr, cl_entity_t *pEntity, customdecal_t *pDecal, Vector endpos, Vector pnormal)
 {
-	vec3_t norm;
-	vec3_t right, up;
+	Vector norm;
+	Vector right, up;
 
-	vec3_t dverts1[64];
-	vec3_t dverts2[64];
+	Vector dverts1[64];
+	Vector dverts2[64];
 
 	if(pEntity && surf->texinfo->texture->name[0] == '{'
 		&& pEntity->curstate.rendermode == kRenderTransAlpha)
@@ -4559,7 +4559,7 @@ void CBSPRenderer::DecalSurface(msurface_t *surf, decalgroupentry_t *texptr, cl_
 		VectorCopy( v, dverts1[j] );
 
 	int nv;
-	vec3_t planepoint;
+	Vector planepoint;
 	VectorMASSE(endpos, -xsize, right, planepoint);
 	nv = ClipPolygonByPlane (dverts1, p->numverts, right, planepoint, dverts2);
 
@@ -4804,7 +4804,7 @@ int CBSPRenderer::MsgCustomDecal(const char *pszName, int iSize, void *pbuf)
 {
 	BEGIN_READ( pbuf, iSize );
 
-	vec3_t pos, normal;
+	Vector pos, normal;
 	pos.x = READ_COORD();
 	pos.y = READ_COORD();
 	pos.z = READ_COORD();
@@ -4879,7 +4879,7 @@ CullDynLightBBox
 
 ====================
 */
-int CBSPRenderer::CullDynLightBBox (vec3_t mins, vec3_t maxs)
+int CBSPRenderer::CullDynLightBBox (Vector mins, Vector maxs)
 {
 	if (mins[0] > m_vDLightMaxs[0]) 
 		return TRUE;
@@ -5011,7 +5011,7 @@ void CBSPRenderer::SetupSpotLight( void )
 	float flFrustum[] = { 2/(flSize*2), 0, 0, 0, 0, 2/(flSize*2), 0, 0, 0, 0, -1, -1, 0, 0, -2, 0 };
 
 	int bReversed = IsPitchReversed(m_pCurrentDynLight->angles[PITCH]);
-	vec3_t vTarget = m_vCurDLightOrigin + (m_vCurSpotForward * m_pCurrentDynLight->radius);
+	Vector vTarget = m_vCurDLightOrigin + (m_vCurSpotForward * m_pCurrentDynLight->radius);
 
 	// setup texture stages
 	if(m_bLightShadow) SetTexEnvs(ENVSTATE_MUL, ENVSTATE_MUL, ENVSTATE_MUL);
@@ -5181,7 +5181,7 @@ void CBSPRenderer::DrawDynamicLightsForDetails( void )
 
 		if(dl->cone_size)
 		{
-			vec3_t lightangles = m_pCurrentDynLight->angles;
+			Vector lightangles = m_pCurrentDynLight->angles;
 			FixVectorForSpotlight(lightangles);
 			AngleVectors(lightangles, m_vCurSpotForward, NULL, NULL);
 			SetupSpotLight();
@@ -5282,7 +5282,7 @@ void CBSPRenderer::DrawDynamicLightsForWorld( void )
 
 		if(dl->cone_size)
 		{
-			vec3_t lightangles = m_pCurrentDynLight->angles;
+			Vector lightangles = m_pCurrentDynLight->angles;
 			FixVectorForSpotlight(lightangles);
 			AngleVectors(lightangles, m_vCurSpotForward, NULL, NULL);
 			SetupSpotLight();
@@ -5429,7 +5429,7 @@ DynamicLighted
 
 ====================
 */
-bool CBSPRenderer::DynamicLighted( const vec3_t &vmins, const vec3_t &vmaxs )
+bool CBSPRenderer::DynamicLighted( const Vector &vmins, const Vector &vmaxs )
 {
 	if(!m_bSecondPassNeeded)
 		return false;
@@ -5450,7 +5450,7 @@ bool CBSPRenderer::DynamicLighted( const vec3_t &vmins, const vec3_t &vmaxs )
 
 		if(m_pCurrentDynLight->cone_size)
 		{
-			// Hack. (const vec3_t) DOESN'T WORK
+			// Hack. (const Vector) DOESN'T WORK
 			if(m_pCurrentDynLight->frustum.CullBox( ( const_cast <Vector&> (vmins) ), ( const_cast <Vector&> (vmaxs) ) ))
 				continue;
 		}
@@ -5475,7 +5475,7 @@ DrawDynamicLightsForEntity
 */
 void CBSPRenderer::DrawDynamicLightsForEntity (cl_entity_t *pEntity)
 {
-	vec3_t		mins, maxs;
+	Vector		mins, maxs;
 	int			rotated;
 
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
@@ -5515,7 +5515,7 @@ void CBSPRenderer::DrawDynamicLightsForEntity (cl_entity_t *pEntity)
 
 	for (int l = 0; l < MAX_DYNLIGHTS; l++, dl++)
 	{
-		vec3_t temp, forward, right, up;
+		Vector temp, forward, right, up;
 
 		if (dl->die < time || !dl->radius)
 			continue;
@@ -5535,7 +5535,7 @@ void CBSPRenderer::DrawDynamicLightsForEntity (cl_entity_t *pEntity)
 
 		if(m_pCurrentDynLight->cone_size)
 		{
-			vec3_t tmins, tmaxs;
+			Vector tmins, tmaxs;
 			VectorAdd(mins, m_pCurrentEntity->origin, tmins);
 			VectorAdd(maxs, m_pCurrentEntity->origin, tmaxs);
 
@@ -5709,7 +5709,7 @@ void CBSPRenderer::DrawSky( void )
 
 		SetTexEnvs(ENVSTATE_REPLACE, ENVSTATE_OFF, ENVSTATE_OFF, ENVSTATE_OFF);
 
-		vec3_t m_vPoints[8];
+		Vector m_vPoints[8];
 		m_vPoints[0] = m_vRenderOrigin + Vector(0, -10, 0) - Vector(10, 0, 0) + Vector(0, 0, -10);
 		m_vPoints[1] = m_vRenderOrigin + Vector(0, -10, 0) + Vector(10, 0, 0) + Vector(0, 0, -10);
 		m_vPoints[2] = m_vRenderOrigin - Vector(0, -10, 0) + Vector(10, 0, 0) + Vector(0, 0, -10);
@@ -6005,12 +6005,12 @@ void CBSPRenderer::CreateShadowMap( void )
 	glMultMatrixf(flFrustum);
 
 	// Asscawks
-	vec3_t vAngles = m_pCurrentDynLight->angles;
+	Vector vAngles = m_pCurrentDynLight->angles;
 	FixVectorForSpotlight(vAngles);
 	AngleVectors(vAngles, m_vCurSpotForward, NULL, NULL);
 
 	int bReversed = IsPitchReversed(m_pCurrentDynLight->angles[PITCH]);
-	vec3_t vTarget = m_pCurrentDynLight->origin + (m_vCurSpotForward * m_pCurrentDynLight->radius);
+	Vector vTarget = m_pCurrentDynLight->origin + (m_vCurSpotForward * m_pCurrentDynLight->radius);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -6260,7 +6260,7 @@ DrawBrushModelSolid
 */
 void CBSPRenderer::DrawBrushModelSolid ( cl_entity_t *pEntity )
 {
-	vec3_t		mins, maxs;
+	Vector		mins, maxs;
 	int			i;
 	msurface_t	*psurf;
 	float		dot;
@@ -6298,8 +6298,8 @@ void CBSPRenderer::DrawBrushModelSolid ( cl_entity_t *pEntity )
 
 	if (bRotated)
 	{
-		vec3_t	temp;
-		vec3_t	forward, right, up;
+		Vector	temp;
+		Vector	forward, right, up;
 
 		VectorCopy (m_vVecToEyes, temp);
 		AngleVectors (m_pCurrentEntity->angles, forward, right, up);

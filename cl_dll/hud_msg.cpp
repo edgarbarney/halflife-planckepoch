@@ -46,10 +46,11 @@ float g_fFogFadeFraction;
 #if !defined( _TFC )
 extern BEAM *pBeam;
 extern BEAM *pBeam2;
+extern TEMPENTITY* pFlare;	// Vit_amiN
 #endif 
 
 #if defined( _TFC )
-void ClearEventList( void );
+void ClearEventList();
 #endif
 
 extern rain_properties Rain;
@@ -149,6 +150,7 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 #if !defined( _TFC )
 	//Probably not a good place to put this.
 	pBeam = pBeam2 = NULL;
+	pFlare = NULL;	// Vit_amiN: clear egon's beam flare
 #endif
 }
 
@@ -249,7 +251,11 @@ int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
 	BEGIN_READ( pbuf, iSize );
 	m_iConcussionEffect = READ_BYTE();
 	if (m_iConcussionEffect)
-		this->m_StatusIcons.EnableIcon("dmg_concuss",255,160,0);
+	{
+		int r, g, b;
+		UnpackRGB(r, g, b, gHUD.m_iHUDColor);
+		this->m_StatusIcons.EnableIcon("dmg_concuss", r, g, b);
+	}
 	else
 		this->m_StatusIcons.DisableIcon("dmg_concuss");
 	return 1;

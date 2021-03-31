@@ -105,8 +105,8 @@ struct particle_system_t
 	int shapetype;
 	int randomdir;
 
-	vec3_t origin;
-	vec3_t dir;
+	Vector origin;
+	Vector dir;
 
 	float minvel;
 	float maxvel;
@@ -134,8 +134,8 @@ struct particle_system_t
 	float maxlifevar;
 	float systemsize;
 
-	vec3_t primarycolor;
-	vec3_t secondarycolor;
+	Vector primarycolor;
+	Vector secondarycolor;
 	float transitiondelay;
 	float transitiontime;
 	float transitionvar;
@@ -206,12 +206,12 @@ struct particle_system_t
 
 struct cl_particle_t
 {
-	vec3_t velocity;
-	vec3_t origin;
-	vec3_t color;
-	vec3_t scolor;
-	vec3_t lastspawn;
-	vec3_t normal;
+	Vector velocity;
+	Vector origin;
+	Vector color;
+	Vector scolor;
+	Vector lastspawn;
+	Vector normal;
 
 	float spawntime;
 	float life;
@@ -294,7 +294,7 @@ struct cl_particle_t
 #define	PLANE_Y				1
 #define	PLANE_Z				2
 
-#define OFFSET(type, variable) ((const void*)&(((type*)NULL)->variable))
+#define OFFSET_TRINITY(type, variable) ((const void*)&(((type*)NULL)->variable))
 
 // Texture pointer settings
 enum {
@@ -327,8 +327,8 @@ enum {
 //========================================
 struct brushvertex_t
 {
-	vec3_t	pos;
-	vec3_t	normal;
+	Vector	pos;
+	Vector	normal;
 
 	float	fogcoord;
 	float	texcoord[2];
@@ -344,9 +344,9 @@ struct brushface_t
 	int start_vertex;
 	int num_vertexes;
 
-	vec3_t	normal;
-	vec3_t	s_tangent;
-	vec3_t	t_tangent;
+	Vector	normal;
+	Vector	s_tangent;
+	Vector	t_tangent;
 };
 
 typedef struct detailtexentry_s
@@ -373,7 +373,7 @@ struct decalgroup_t
 };
 
 typedef struct customdecalvert_s {
-	vec3_t position;
+	Vector position;
 	float texcoord[2];
 } customdecalvert_t;
 
@@ -391,15 +391,15 @@ typedef struct customdecal_s {
 	
 	const decalgroupentry_t *texinfo;
 
-	vec3_t normal;
-	vec3_t position;
+	Vector normal;
+	Vector position;
 	float life;
 } customdecal_t;
 
 struct decal_msg_cache
 {
-	vec3_t	pos;
-	vec3_t	normal;
+	Vector	pos;
+	Vector	normal;
 	char	name[16];
 	int		persistent;
 };
@@ -423,8 +423,8 @@ typedef struct
 
 struct detailobject_t
 {
-	vec3_t mins;
-	vec3_t maxs;
+	Vector mins;
+	Vector maxs;
 
 	msurface_t *surfaces;
 	int numsurfaces;
@@ -438,9 +438,9 @@ struct detailobject_t
 
 struct cl_dlight_t
 {
-	vec3_t	origin;
-	vec3_t	color;
-	vec3_t	angles;
+	Vector	origin;
+	Vector	color;
+	Vector	angles;
 
 	float	radius;
 	float	die;
@@ -476,9 +476,9 @@ struct cl_water_t
 
 	mplane_t wplane;
 
-	vec3_t mins;
-	vec3_t maxs;
-	vec3_t origin;
+	Vector mins;
+	Vector maxs;
+	Vector origin;
 	bool draw;
 
 	GLuint refract;
@@ -504,10 +504,10 @@ struct cl_mirror_t
 {
 	cl_entity_t *entity;
 
-	vec3_t mins;
-	vec3_t maxs;
+	Vector mins;
+	Vector maxs;
 
-	vec3_t origin;
+	Vector origin;
 	msurface_t *surface;
 
 	bool draw;
@@ -541,7 +541,7 @@ struct decalvert_t
 
 struct decalvertinfo_t
 {
-	vec3_t position;
+	Vector position;
 	byte boneindex;
 };
 
@@ -582,18 +582,18 @@ struct studiotri_t
 
 struct mlight_t
 {
-	vec3_t	origin;
+	Vector	origin;
 	float	radius;
-	vec3_t	color;
+	Vector	color;
 
 	bool flashlight;
-	vec3_t	forward;	
+	Vector	forward;	
 	float	spotcos;
 
 	FrustumCheck *frustum;
 
-	vec3_t mins;
-	vec3_t maxs;
+	Vector mins;
+	Vector maxs;
 };
 
 struct texentry_t
@@ -606,9 +606,9 @@ struct texentry_t
 
 struct lighting_ext
 {
-	vec3_t	ambientlight;
-	vec3_t	diffuselight;
-	vec3_t	lightdir;
+	Vector	ambientlight;
+	Vector	diffuselight;
+	Vector	lightdir;
 };
 
 //========================================
@@ -630,7 +630,7 @@ typedef struct epair_s
 
 typedef struct
 {
-   vec3_t      origin;
+   Vector      origin;
    int         firstbrush;
    int         numbrushes;
    epair_t     *epairs;
@@ -671,9 +671,9 @@ struct modeldata_t
 
 struct entextradata_t
 {
-	vec3_t absmax;
-	vec3_t absmin;
-	vec3_t lightorigin;
+	Vector absmax;
+	Vector absmin;
+	Vector lightorigin;
 
 	int num_leafs;
 	short leafnums[MAX_ENT_LEAFS];
@@ -686,7 +686,7 @@ struct entextrainfo_t
 {
 	int surfindex;
 	int lightstyles[4];
-	vec3_t prevpos;
+	Vector prevpos;
 
 	lighting_ext pLighting;
 	cl_entity_t *pEntity;
@@ -698,10 +698,10 @@ struct cabledata_t
 	int iwidth;
 	int isegments;
 
-	vec3_t vmins;
-	vec3_t vmaxs;
+	Vector vmins;
+	Vector vmaxs;
 
-	vec3_t vpoints[MAX_POINTS];
+	Vector vpoints[MAX_POINTS];
 	int inumpoints;
 
 	int num_leafs;
@@ -718,14 +718,14 @@ extern void		ClampColor( int r, int g, int b, color24 *out );
 extern void		FilenameFromPath( char *szin, char *szout );
 
 extern void		MyLookAt( GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx, GLdouble centery, GLdouble centerz, GLdouble upx, GLdouble upy, GLdouble upz );
-extern mleaf_t	*Mod_PointInLeaf (vec3_t p, model_t *model);
+extern mleaf_t	*Mod_PointInLeaf (Vector p, model_t *model);
 extern byte		*Mod_LeafPVS(mleaf_t *leaf, model_t *model);
 extern void		R_MarkLeaves ( mleaf_t *pLeaf );
 
 extern void		HUD_PrintSpeeds( void );
 extern void		RenderersDumpInfo( void );
 extern void		GenDetail( void );
-extern void		SetupFlashlight( vec3_t origin, vec3_t angles, float time, float frametime );
+extern void		SetupFlashlight( Vector origin, Vector angles, float time, float frametime );
 extern void		ExportWorld( void );
 
 extern unsigned short	ByteToUShort( byte *byte );
@@ -745,7 +745,7 @@ extern void		R_RotateForEntity (cl_entity_t *e);
 extern int		IsEntityMoved(cl_entity_t *e);
 extern int		IsEntityTransparent(cl_entity_t *e);
 extern int		IsPitchReversed(float pitch);
-extern int		BoxOnPlaneSide ( vec3_t emins, vec3_t emaxs, mplane_t *p );
+extern int		BoxOnPlaneSideTrin( Vector emins, Vector emaxs, mplane_t *p );
 
 extern char		*strLower( char *str );
 extern char		*stristr( const char *string, const char *string2 );
@@ -753,7 +753,7 @@ extern char		*stristr( const char *string, const char *string2 );
 extern inline void		DotProductSSE( float* result, const float* v0, const float* v1 );
 extern inline void		SSEDotProductWorld( float* result, const float* v0, const float* v1 );
 extern inline void		SSEDotProductWorldInt( int* result, const float* v0, const float* v1 );
-extern inline void		SSEDotProductSub( float* result, vec3_t *v0, vec3_t *v1, float *subval );
+extern inline void		SSEDotProductSub( float* result, Vector *v0, Vector *v1, float *subval );
 
 extern inline void		VectorAddSSE( const float* v0, const float* v1, const float* result );
 extern inline void		VectorMASSE (const float *veca, float scale, const float *vecb, float *vecc);
@@ -762,13 +762,13 @@ extern inline void		VectorRotateSSE(const float *in1, float in2[3][4], float *ou
 extern inline float		VectorNormalizeFast (float *v);
 
 extern void		VectorRotate (const float *in1, const float in2[3][4], float *out);
-extern void		VectorIRotate(const vec3_t &in1, const float in2[3][4], vec3_t &out);
-extern void		FixVectorForSpotlight( vec3_t &vec );
+extern void		VectorIRotate(const Vector &in1, const float in2[3][4], Vector &out);
+extern void		FixVectorForSpotlight( Vector &vec );
 extern void		SV_FindTouchedLeafs( entextradata_t *ent, mnode_t *node );
 
 extern byte		*ResizeArray( byte *pOriginal, int iSize, int iCount );
 
-extern vec3_t	g_vecFull;
-extern vec3_t	g_vecZero;
+extern Vector	g_vecFull;
+//extern Vector	g_vecZero;
 extern int		current_ext_texture_id;
 #endif

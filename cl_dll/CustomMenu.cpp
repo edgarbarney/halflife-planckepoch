@@ -28,7 +28,6 @@
 
 #include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
-#include "vgui_ServerBrowser.h"
 
 // Custom Menu Dimensions
 #define CUSTOMMENU_TITLE_X				XRES(40)

@@ -54,12 +54,12 @@ typedef struct
 	char				name[64];
 	int					length;
 
-	vec3_t				eyeposition;	// ideal eye position
-	vec3_t				min;			// ideal movement hull size
-	vec3_t				max;			
+	Vector				eyeposition;	// ideal eye position
+	Vector				min;			// ideal movement hull size
+	Vector				max;			
 
-	vec3_t				bbmin;			// clipping bounding box
-	vec3_t				bbmax;		
+	Vector				bbmin;			// clipping bounding box
+	Vector				bbmax;		
 
 	int					flags;
 
@@ -139,8 +139,8 @@ typedef struct
 {
 	int					bone;
 	int					group;			// intersection group
-	vec3_t				bbmin;		// bounding box
-	vec3_t				bbmax;		
+	Vector				bbmin;		// bounding box
+	Vector				bbmax;
 } mstudiobbox_t;
 
 #if !defined( CACHE_USER ) && !defined( QUAKEDEF_H )
@@ -187,12 +187,12 @@ typedef struct
 
 	int					motiontype;	
 	int					motionbone;
-	vec3_t				linearmovement;
+	Vector				linearmovement;
 	int					automoveposindex;
 	int					automoveangleindex;
 
-	vec3_t				bbmin;		// per sequence bounding box
-	vec3_t				bbmax;		
+	Vector				bbmin;		// per sequence bounding box
+	Vector				bbmax;
 
 	int					numblends;
 	int					animindex;		// mstudioanim_t pointer relative to start of sequence group data
@@ -227,7 +227,7 @@ typedef struct
 // pivots
 typedef struct 
 {
-	vec3_t				org;	// pivot point
+	Vector				org;	// pivot point
 	int					start;
 	int					end;
 } mstudiopivot_t;
@@ -238,8 +238,8 @@ typedef struct
 	char				name[32];
 	int					type;
 	int					bone;
-	vec3_t				org;	// attachment point
-	vec3_t				vectors[3];
+	Vector				org;	// attachment point
+	Vector				vectors[3];
 } mstudioattachment_t;
 
 typedef struct
@@ -298,17 +298,17 @@ typedef struct
 
 	int					numverts;		// number of unique vertices
 	int					vertinfoindex;	// vertex bone info
-	int					vertindex;		// vertex vec3_t
+	int					vertindex;		// vertex Vector
 	int					numnorms;		// number of unique surface normals
 	int					norminfoindex;	// normal bone info
-	int					normindex;		// normal vec3_t
+	int					normindex;		// normal Vector
 
 	int					numgroups;		// deformation groups
 	int					groupindex;
 } mstudiomodel_t;
 
 
-// vec3_t	boundingbox[model][bone][2];	// complex intersection info
+// Vector	boundingbox[model][bone][2];	// complex intersection info
 
 
 // meshes
@@ -318,7 +318,7 @@ typedef struct
 	int					triindex;
 	int					skinref;
 	int					numnorms;		// per mesh normals
-	int					normindex;		// normal vec3_t
+	int					normindex;		// normal Vector
 } mstudiomesh_t;
 
 // triangles

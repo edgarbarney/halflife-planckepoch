@@ -38,24 +38,24 @@
 class CSprite : public CPointEntity
 {
 public:
-	void Spawn( void );
-	void Precache( void );
+	void Spawn() override;
+	void Precache() override;
 
-	int		ObjectCaps( void )
-	{ 
+	int		ObjectCaps() override
+    { 
 		int flags = 0;
 		if ( pev->spawnflags & SF_SPRITE_TEMPORARY )
 			flags = FCAP_DONT_SAVE;
 		return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags; 
 	}
-	void EXPORT AnimateThink( void );
-	void EXPORT ExpandThink( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT AnimateThink();
+	void EXPORT ExpandThink();
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void Animate( float frames );
 	void Expand( float scaleSpeed, float fadeSpeed );
 	void SpriteInit( const char *pSpriteName, const Vector &origin );
 
-	virtual STATE GetState( void ) { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
+    STATE GetState() override { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
 	inline void SetAttachment( edict_t *pEntity, int attachment )
 	{
@@ -67,9 +67,9 @@ public:
 			pev->movetype = MOVETYPE_FOLLOW;
 		}
 	}
-	void TurnOff( void );
-	void TurnOn( void );
-	inline float Frames( void ) { return m_maxFrame; }
+	void TurnOff();
+	void TurnOn();
+	inline float Frames() { return m_maxFrame; }
 	inline void SetTransparency( int rendermode, int r, int g, int b, int a, int fx )
 	{
 		pev->rendermode = rendermode;
@@ -92,10 +92,10 @@ public:
 		SetNextThink( 0 );
 	}
 
-	void EXPORT AnimateUntilDead( void );
+	void EXPORT AnimateUntilDead();
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	static CSprite *SpriteCreate( const char *pSpriteName, const Vector &origin, BOOL animate );
 
@@ -107,10 +107,10 @@ public:
 class CBeam : public CBaseEntity
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
-	int		ObjectCaps( void )
-	{ 
+	void	Spawn() override;
+	void	Precache() override;
+	int		ObjectCaps() override
+    { 
 		int flags = 0;
 		if ( pev->spawnflags & SF_BEAM_TEMPORARY )
 			flags = FCAP_DONT_SAVE;
@@ -139,29 +139,29 @@ public:
 	inline void SetFrame( float frame ) { pev->frame = frame; }
 	inline void SetScrollRate( int speed ) { pev->animtime = speed; }
 
-	inline int	GetType( void ) { return pev->rendermode & 0x0F; }
-	inline int	GetFlags( void ) { return pev->rendermode & 0xF0; }
-	inline int	GetStartEntity( void ) { return pev->sequence & 0xFFF; }
-	inline int	GetEndEntity( void ) { return pev->skin & 0xFFF; }
+	inline int	GetType() { return pev->rendermode & 0x0F; }
+	inline int	GetFlags() { return pev->rendermode & 0xF0; }
+	inline int	GetStartEntity() { return pev->sequence & 0xFFF; }
+	inline int	GetEndEntity() { return pev->skin & 0xFFF; }
 
-	const Vector &GetStartPos( void );
-	const Vector &GetEndPos( void );
+	const Vector &GetStartPos();
+	const Vector &GetEndPos();
 
-	Vector Center( void ) { return (GetStartPos() + GetEndPos()) * 0.5; }; // center point of beam
+	Vector Center() override { return (GetStartPos() + GetEndPos()) * 0.5; } // center point of beam
 
-	inline int  GetTexture( void ) { return pev->modelindex; }
-	inline int  GetWidth( void ) { return pev->scale; }
-	inline int  GetNoise( void ) { return pev->body; }
+	inline int  GetTexture() { return pev->modelindex; }
+	inline int  GetWidth() { return pev->scale; }
+	inline int  GetNoise() { return pev->body; }
 	// inline void GetColor( int r, int g, int b ) { pev->rendercolor.x = r; pev->rendercolor.y = g; pev->rendercolor.z = b; }
-	inline int  GetBrightness( void ) { return pev->renderamt; }
-	inline int  GetFrame( void ) { return pev->frame; }
-	inline int  GetScrollRate( void ) { return pev->animtime; }
+	inline int  GetBrightness() { return pev->renderamt; }
+	inline int  GetFrame() { return pev->frame; }
+	inline int  GetScrollRate() { return pev->animtime; }
 
 	CBaseEntity*	GetTripEntity( TraceResult *ptr );	//LRC
 
 	// Call after you change start/end positions
-	void		RelinkBeam( void );
-//	void		SetObjectCollisionBox( void );
+	void		RelinkBeam();
+//	void		SetObjectCollisionBox();
 
 	void		DoSparks( const Vector &start, const Vector &end );
 	CBaseEntity *RandomTargetname( const char *szName );
@@ -192,21 +192,21 @@ public:
 class CLaser : public CBeam
 {
 public:
-	void	Spawn( void );
-	void	PostSpawn( void );
-	void	Precache( void );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn() override;
+	void	PostSpawn() override;
+	void	Precache() override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	void	TurnOn( void );
-	void	TurnOff( void );
-	virtual STATE GetState( void ) { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
+	void	TurnOn();
+	void	TurnOff();
+    STATE GetState() override { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
 	void	FireAtPoint( Vector startpos, TraceResult &point );
 
-	void	EXPORT StrikeThink( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	void	EXPORT StrikeThink();
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE m_hActivator;	//AJH allow *locus start/end positions
@@ -225,13 +225,13 @@ public:
 class CRainSettings : public CBaseEntity
 {
 public:
-	void	Spawn( void );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn() override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	int	ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float Rain_Distance;
@@ -241,14 +241,14 @@ public:
 class CRainModify : public CBaseEntity
 {
 public:
-	void	Spawn( void );
-	void	KeyValue( KeyValueData *pkvd );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Spawn() override;
+	void	KeyValue( KeyValueData *pkvd ) override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	int	ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int Rain_Drips;

@@ -81,11 +81,11 @@ public:
 	void SetupSpotLight( void );
 	void FinishSpotLight( void );
 	bool LightCanShadow( void );
-	int	CullDynLightBBox (vec3_t mins, vec3_t maxs);
+	int	CullDynLightBBox (Vector mins, Vector maxs);
 
 	void PushDynLights ( void );
 	void MarkLights( cl_dlight_t *pLight, int iBit, mnode_t *node);
-	void MarkBrushFaces( vec3_t mins, vec3_t maxs );
+	void MarkBrushFaces( Vector mins, Vector maxs );
 	void AddDynamicLights( msurface_t *surf );
 
 	void DisableWorldDrawing( ref_params_t *pparam );
@@ -108,7 +108,7 @@ public:
 	void EmitWaterPolys( msurface_t *fa );
 	void DrawPolyFromArray( glpoly_t *p );
 
-	bool DynamicLighted( const vec3_t &vmins, const vec3_t &vmaxs );
+	bool DynamicLighted( const Vector &vmins, const Vector &vmaxs );
 	void DrawDynamicLightsForWorld( void );
 	void DrawDynamicLightsForDetails( void );
 	void RecursiveWorldNodeLight (mnode_t *node);
@@ -152,10 +152,10 @@ public:
 	decalgroupentry_t *GetRandomDecal( decalgroup_t *group );
 	decalgroupentry_t *FindDecalByName( const char *szName );
 
-	bool CullDecalBBox( vec3_t mins, vec3_t maxs );
-	void CreateDecal(vec3_t endpos, vec3_t pnormal, const char *name, int persistent = 0);
-	void RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texptr, customdecal_t *pDecal, vec3_t endpos, vec3_t pnormal);
-	void DecalSurface(msurface_t *surf, decalgroupentry_t *texptr, cl_entity_t *pEntity, customdecal_t *pDecal, vec3_t endpos, vec3_t pnormal);
+	bool CullDecalBBox( Vector mins, Vector maxs );
+	void CreateDecal(Vector endpos, Vector pnormal, const char *name, int persistent = 0);
+	void RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texptr, customdecal_t *pDecal, Vector endpos, Vector pnormal);
+	void DecalSurface(msurface_t *surf, decalgroupentry_t *texptr, cl_entity_t *pEntity, customdecal_t *pDecal, Vector endpos, Vector pnormal);
 	
 	int MsgCustomDecal(const char *pszName, int iSize, void *pbuf);
 
@@ -165,9 +165,9 @@ public:
 	customdecal_t *AllocDecal( void );
 	customdecal_t *AllocStaticDecal( void );
 
-	void GetUpRight(vec3_t forward, vec3_t &up, vec3_t &right);
-	int ClipPolygonByPlane (const vec3_t *arrIn, int numpoints, vec3_t normal, vec3_t planepoint, vec3_t *arrOut);
-	void FindIntersectionPoint( const vec3_t &p1, const vec3_t &p2, const vec3_t &normal, const vec3_t &planepoint, vec3_t &newpoint );
+	void GetUpRight(Vector forward, Vector &up, Vector &right);
+	int ClipPolygonByPlane (const Vector *arrIn, int numpoints, Vector normal, Vector planepoint, Vector *arrOut);
+	void FindIntersectionPoint( const Vector &p1, const Vector &p2, const Vector &normal, const Vector &planepoint, Vector &newpoint );
 
 public:
 	GLuint				m_uiBufferIndex;
@@ -221,15 +221,15 @@ public:
 	bool				m_bDontPromptShadowPCF;
 	bool				m_bDontPromptParanoia;
 
-	vec3_t				m_vRenderOrigin;
-	vec3_t				m_vViewAngles;
-	vec3_t				m_vVecToEyes;
+	Vector				m_vRenderOrigin;
+	Vector				m_vViewAngles;
+	Vector				m_vVecToEyes;
 
-	vec3_t				m_vSkyOrigin;
-	vec3_t				m_vSkyWorldOrigin;
+	Vector				m_vSkyOrigin;
+	Vector				m_vSkyWorldOrigin;
 
-	vec3_t				m_vCurDLightOrigin;
-	vec3_t				m_vCurSpotForward;
+	Vector				m_vCurDLightOrigin;
+	Vector				m_vCurSpotForward;
 
 	cvar_t				*m_pCvarSpeeds;
 	cvar_t				*m_pCvarDetailTextures;
@@ -241,8 +241,8 @@ public:
 	cvar_t				*m_pCvarPCFShadows;
 	cvar_t				*m_pCvarShadows;
 
-	vec3_t				m_vDLightMins;
-	vec3_t				m_vDLightMaxs;
+	Vector				m_vDLightMins;
+	Vector				m_vDLightMaxs;
 
 	float				m_fSavedMinsMaxs[6];
 	float				m_fSkySpeed;
@@ -332,8 +332,8 @@ public:
 	int					m_iCacheDecals;
 	int					m_iNumDecalGroups;
 
-	vec3_t				m_vDecalMins;
-	vec3_t				m_vDecalMaxs;
+	Vector				m_vDecalMins;
+	Vector				m_vDecalMaxs;
 
 private:
 	GLint				m_iBlendActive;

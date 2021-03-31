@@ -25,40 +25,38 @@ class CBreakable : public CBaseDelay
 {
 public:
 	// basic functions
-	void Spawn( void );
-	void Precache( void );
-	void KeyValue( KeyValueData* pkvd);
-	virtual bool CalcNumber(CBaseEntity *pLocus, float* OUTresult);
+	void Spawn() override;
+	void Precache() override;
+	void KeyValue( KeyValueData* pkvd) override;
+	bool CalcNumber(CBaseEntity *pLocus, float* OUTresult) override;
 	void EXPORT BreakTouch( CBaseEntity *pOther );
 	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void EXPORT RespawnThink( void );
-	void EXPORT RespawnFadeThink( void );
-	void DamageSound( void );
-	virtual void DoRespawn( void ); //AJH Fix for respawnable breakable pushables
-	virtual int Classify ( void ) { return m_iClass; }
+	void EXPORT RespawnThink();
+	void EXPORT RespawnFadeThink();
+	void DamageSound();
+	virtual void DoRespawn(); //AJH Fix for respawnable breakable pushables
+    int Classify () override { return m_iClass; }
 
 	// breakables use an overridden takedamage
-	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
+    int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	// To spark when hit
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
+	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType ) override;
 
-	BOOL IsBreakable( void );
-	BOOL SparkWhenHit( void );
+	BOOL IsBreakable();
+	BOOL SparkWhenHit();
 
-	STATE GetState( void );
-	
-	//RENDERERS START
-	char	*DamageDecal( int bitsDamageType );
-	//RENDERERS END
+	STATE GetState() override;
 
-	void EXPORT		Die( void );
-	virtual int		ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int	 DamageDecal( int bitsDamageType ) override;
 
-	inline BOOL		Explodable( void ) { return ExplosionMagnitude() > 0; }
-	inline int		ExplosionMagnitude( void ) { return pev->impulse; }
+	void EXPORT		Die();
+    int		ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
+
+	inline BOOL		Explodable() { return ExplosionMagnitude() > 0; }
+	inline int		ExplosionMagnitude() { return pev->impulse; }
 	inline void		ExplosionSetMagnitude( int magnitude ) { pev->impulse = magnitude; }
 
 	static void MaterialSoundPrecache( Materials precacheMaterial );

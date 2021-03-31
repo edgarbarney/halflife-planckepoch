@@ -208,10 +208,10 @@ void CMirrorManager::SetupClipping( void )
 	float	eq2[4];
 	float	projection[16];
 
-	vec3_t	vDist;
-	vec3_t	vForward;
-	vec3_t	vRight;
-	vec3_t	vUp;
+	Vector	vDist;
+	Vector	vForward;
+	Vector	vRight;
+	Vector	vUp;
 
 	AngleVectors(m_pMirrorParams.viewangles, vForward, vRight, vUp);
 	VectorSubtract(m_pCurrentMirror->origin, m_pMirrorParams.vieworg, vDist);
@@ -309,7 +309,7 @@ SetupMirrorPass
 */
 void CMirrorManager::SetupMirrorPass( void ) 
 {
-	vec3_t forward;
+	Vector forward;
 	AngleVectors(m_pViewParams->viewangles, forward, NULL, NULL);
 
 	float flDist = DotProduct(m_pViewParams->vieworg, m_pCurrentMirror->surface->plane->normal) -  m_pCurrentMirror->surface->plane->dist;

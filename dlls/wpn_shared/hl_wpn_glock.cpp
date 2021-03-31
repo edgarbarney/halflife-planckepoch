@@ -22,22 +22,8 @@
 #include "player.h"
 #include "UserMessages.h"
 
-enum glock_e {
-	GLOCK_IDLE1 = 0,
-	GLOCK_IDLE2,
-	GLOCK_IDLE3,
-	GLOCK_SHOOT,
-	GLOCK_SHOOT_EMPTY,
-	GLOCK_RELOAD,
-	GLOCK_RELOAD_NOT_EMPTY,
-	GLOCK_DRAW,
-	GLOCK_HOLSTER,
-	GLOCK_ADD_SILENCER
-};
-
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
 LINK_ENTITY_TO_CLASS( weapon_9mmhandgun, CGlock );
-
 
 void CGlock::Spawn( )
 {
@@ -70,7 +56,7 @@ void CGlock::Holster( int skiplocal )
 }
 
 
-void CGlock::Precache( void )
+void CGlock::Precache()
 {
 	PRECACHE_MODEL("models/v_9mmhandgun.mdl");
 	PRECACHE_MODEL("models/w_9mmhandgun.mdl");
@@ -112,12 +98,12 @@ BOOL CGlock::Deploy( )
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
 }
 
-void CGlock::SecondaryAttack( void )
+void CGlock::SecondaryAttack()
 {
 	GlockFire( 0.1, 0.2, FALSE );
 }
 
-void CGlock::PrimaryAttack( void )
+void CGlock::PrimaryAttack()
 {
 	GlockFire( 0.01, 0.3, TRUE );
 }
@@ -205,7 +191,7 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 }
 
 
-void CGlock::Reload( void )
+void CGlock::Reload()
 {
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		 return;
@@ -225,7 +211,7 @@ void CGlock::Reload( void )
 
 
 
-void CGlock::WeaponIdle( void )
+void CGlock::WeaponIdle()
 {
 	ResetEmptySound( );
 
@@ -268,19 +254,19 @@ void CGlock::WeaponIdle( void )
 
 class CGlockAmmo : public CBasePlayerAmmo
 {
-	void Spawn( void )
-	{ 
+	void Spawn() override
+    { 
 		Precache( );
 		SET_MODEL(ENT(pev), "models/w_9mmclip.mdl");
 		CBasePlayerAmmo::Spawn( );
 	}
-	void Precache( void )
-	{
+	void Precache() override
+    {
 		PRECACHE_MODEL ("models/w_9mmclip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo( CBaseEntity *pOther ) 
-	{ 
+	BOOL AddAmmo( CBaseEntity *pOther ) override
+    { 
 		if (pOther->GiveAmmo( AMMO_GLOCKCLIP_GIVE, "9mm", _9MM_MAX_CARRY ) != -1)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);

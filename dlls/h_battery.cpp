@@ -30,16 +30,16 @@
 class CRecharge : public CBaseToggle
 {
 public:
-	void Spawn( );
-	void Precache( void );
-	void EXPORT Off(void);
-	void EXPORT Recharge(void);
-	void KeyValue( KeyValueData *pkvd );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int	ObjectCaps( void ) { return (CBaseToggle :: ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION; }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	virtual STATE GetState( void );
+	void Spawn( ) override;
+	void Precache() override;
+	void EXPORT Off();
+	void EXPORT Recharge();
+	void KeyValue( KeyValueData *pkvd ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+    int	ObjectCaps() override { return (CBaseToggle :: ObjectCaps() | FCAP_CONTINUOUS_USE) & ~FCAP_ACROSS_TRANSITION; }
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
+    STATE GetState() override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -182,7 +182,7 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	m_flNextCharge = gpGlobals->time + 0.1;
 }
 
-void CRecharge::Recharge(void)
+void CRecharge::Recharge()
 {
 	m_iJuice = gSkillData.suitchargerCapacity;
 	pev->frame = 0;			
@@ -192,7 +192,7 @@ void CRecharge::Recharge(void)
 	SetThink( &CRecharge::SUB_DoNothing );
 }
 
-void CRecharge::Off(void)
+void CRecharge::Off()
 {
 	// Stop looping sound.
 	if (m_iOn > 1)
@@ -209,7 +209,7 @@ void CRecharge::Off(void)
 		SetThink( &CRecharge::SUB_DoNothing );
 }
 
-STATE CRecharge::GetState( void )
+STATE CRecharge::GetState()
 {
 	if (m_iOn == 2)
 		return STATE_IN_USE;

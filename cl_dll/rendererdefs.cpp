@@ -58,8 +58,8 @@ extern CGameStudioModelRenderer g_StudioRenderer;
 #define BASE_EXT_TEXTURE_ID		(1<<25) // dont use zero
 int current_ext_texture_id = BASE_EXT_TEXTURE_ID;
 
-vec3_t g_vecFull(1.0f, 1.0f, 1.0f); // color of 3d attenuation texture
-vec3_t g_vecZero(0.0f, 0.0f, 0.0f); // color of 3d attenuation texture
+Vector g_vecFull(1.0f, 1.0f, 1.0f); // color of 3d attenuation texture
+//Vector g_vecZero(0.0f, 0.0f, 0.0f); // color of 3d attenuation texture
 
 double sqrt(double x);
 
@@ -138,7 +138,7 @@ void FilenameFromPath( char *szin, char *szout )
 // SSE DotProduct Plane EQ
 //
 //==========================
-inline void SSEDotProductSub(float *result, vec3_t *v0, vec3_t *v1, float *subval )
+inline void SSEDotProductSub(float *result, Vector *v0, Vector *v1, float *subval )
 {
 	_asm{
 		mov             esi,    v0
@@ -312,7 +312,7 @@ VectorIRotate
 
 ====================
 */
-void VectorIRotate (const vec3_t &in1, const float in2[3][4], vec3_t &out)
+void VectorIRotate (const Vector &in1, const float in2[3][4], Vector &out)
 {
 	out[0] = in1[0]*in2[0][0] + in1[1]*in2[1][0] + in1[2]*in2[2][0];
 	out[1] = in1[0]*in2[0][1] + in1[1]*in2[1][1] + in1[2]*in2[2][1];
@@ -527,7 +527,7 @@ void MyLookAt( GLdouble eyex, GLdouble eyey, GLdouble eyez,
 //	MOD_PointInLeaf
 //
 //==========================
-mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
+mleaf_t *Mod_PointInLeaf (Vector p, model_t *model)
 {
 	mnode_t *node;
 	float d;
@@ -549,7 +549,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 
 	return NULL;	// never reached
 }
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
+int BoxOnPlaneSideTrin(Vector emins, Vector emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
 	int		sides;
@@ -636,7 +636,7 @@ void SV_FindTouchedLeafs (entextradata_t *ent, mnode_t *node)
 // NODE_MIXED
 
 	splitplane = node->plane;
-	sides = BoxOnPlaneSide(ent->absmin, ent->absmax, splitplane);
+	sides = BoxOnPlaneSideTrin(ent->absmin, ent->absmax, splitplane);
 	
 // recurse down the contacted sides
 	if (sides & 1)
@@ -1071,10 +1071,10 @@ void GenDetail( void )
 //===============================
 // buz: flashlight managenemt
 //===============================
-void SetupFlashlight(vec3_t origin, vec3_t angles, float time, float frametime)
+void SetupFlashlight(Vector origin, Vector angles, float time, float frametime)
 {
 	pmtrace_t tr;
-	vec3_t fwd, right, up;
+	Vector fwd, right, up;
 
 	static float add = 0;
 	float addideal = 0;
@@ -1245,7 +1245,7 @@ int ByteToInt( byte *byte )
 	return iValue;
 }
 
-void FixVectorForSpotlight( vec3_t &vec )
+void FixVectorForSpotlight( Vector &vec )
 {
 	if (vec[PITCH] == 0) vec[PITCH] = 1;
 	if (vec[PITCH] == 90) vec[PITCH] = 89;
