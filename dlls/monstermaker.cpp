@@ -222,6 +222,10 @@ void CMonsterMaker::TryMakeMonster()
 			pev->vuser3 = pTemp->pev->velocity;
 		//	ALERT(at_debug,"DEBUG: Monstermaker setting velocity to %f %f %f\n",pWhere->pev->velocity.x,pWhere->pev->velocity.y,pWhere->pev->velocity.z);
 	}
+	else
+	{
+		pev->vuser3 = g_vecZero;
+	}
 
 	//	ALERT(at_debug,"DEBUG: Montermaker spawnpoint set to %f, %f, %f\n", pWhere->pev->origin.x,pWhere->pev->origin.y,pWhere->pev->origin.z);
 
