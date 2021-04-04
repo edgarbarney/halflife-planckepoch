@@ -133,7 +133,7 @@ public:
 	virtual int getImageTall();
 	virtual int getImageWide();
 
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 		// Do nothing, so the background's left transparent.
 	}
@@ -216,9 +216,9 @@ public:
 	void setParentMenu( CCommandMenu *pParentMenu );
 
 	// Overloaded vgui functions
-	virtual void paint();
+	void paint() override;
 	virtual void setText( const char *text );
-	virtual void paintBackground();
+	void paintBackground() override;
 
 	void cursorEntered( );
 	void cursorExited( );
@@ -248,7 +248,7 @@ public:
 	  }
 	
 
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 		int r, g, b, a;
 		Color bgcolor;
@@ -278,7 +278,7 @@ public:
 			}
 		}
 	}
-	void paint()
+	void paint() override
 	{
 		int r, g, b, a;
 		if ( isArmed() )
@@ -339,7 +339,7 @@ public:
 			setText( text );
 	  }
 		
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 		if ( isArmed())
 		{
@@ -348,7 +348,7 @@ public:
 		}
 	}
 
-	virtual void paint()
+	void paint() override
 	{
 	
 		if ( isArmed() )
@@ -419,7 +419,7 @@ public:
 
 	bool		KeyInput( int keyNum );
 
-	virtual void paintBackground();
+	void paintBackground() override;
 };
 
 //==============================================================================
@@ -448,7 +448,7 @@ public:
 
 	  }
 
-	virtual void   setVisible(bool state)
+	void   setVisible(bool state) override
 	{
 		m_pOpenButton->setVisible(state);
 		ColorButton::setVisible(state);
@@ -480,7 +480,7 @@ public:
 			m_pOpenButton->setVisible(true);
 	  }
 
-	virtual void   setVisible(bool state)
+	void   setVisible(bool state) override
 	{
 		m_pOpenButton->setVisible(state);
 		ColorButton::setVisible(state);
@@ -615,7 +615,7 @@ public:
 	// Input
 	bool SlotInput( int iSlot );
 
-	virtual void paintBackground();
+	void paintBackground() override;
 
 	CSchemeManager *GetSchemeManager( ) { return &m_SchemeManager; }
 	ScorePanel *GetScoreBoard( ) { return m_pScoreBoard; }
@@ -658,7 +658,7 @@ public:
 		m_iCloseVGUIMenu = true;
 	}
 
-	virtual void actionPerformed(Panel* panel)
+	void actionPerformed(Panel* panel) override
 	{
 		gEngfuncs.pfnClientCmd(m_pszCommand);
 
@@ -683,7 +683,7 @@ public:
 	{
 	}
 
-	virtual void actionPerformed(Panel* panel)
+	void actionPerformed(Panel* panel) override
 	{
 		CMenuHandler_StringCommand::actionPerformed( panel );
 
@@ -713,7 +713,7 @@ public:
 	{
 	}
 
-	virtual void actionPerformed(Panel* panel);
+	void actionPerformed(Panel* panel) override;
 };
 
 class CMenuHandler_PopupSubMenuInput : public InputSignal
@@ -728,27 +728,27 @@ public:
 		m_pButton = pButton;
 	}
 
-	virtual void cursorMoved(int x,int y,Panel* panel)
+	void cursorMoved(int x,int y,Panel* panel) override
 	{
 		//gViewPort->SetCurrentCommandMenu( m_pSubMenu );
 	}
 
-	virtual void cursorEntered(Panel* panel) 
+	void cursorEntered(Panel* panel) override 
 	{
 		gViewPort->SetCurrentCommandMenu( m_pSubMenu );
 
 		if (m_pButton)
 			m_pButton->setArmed(true);
 	};
-	virtual void cursorExited(Panel* Panel) {};
-	virtual void mousePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+	void cursorExited(Panel* Panel) override {};
+	void mousePressed(MouseCode code,Panel* panel) override  {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override  {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 };
 
 class CMenuHandler_LabelInput : public InputSignal
@@ -761,21 +761,21 @@ public:
 		m_pActionSignal = pSignal;
 	}
 
-	virtual void mousePressed(MouseCode code,Panel* panel)
+	void mousePressed(MouseCode code,Panel* panel) override
 	{
 		m_pActionSignal->actionPerformed( panel );
 	}
 
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void cursorEntered(Panel* panel) {};
-	virtual void cursorExited(Panel* Panel) {};
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void cursorEntered(Panel* panel) override {};
+	void cursorExited(Panel* Panel) override {};
+	void cursorMoved(int x,int y,Panel* panel) override {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override  {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 };
 
 #define HIDE_TEXTWINDOW		0
@@ -794,7 +794,7 @@ public:
 		m_iState = iState;
 	}
 
-	virtual void actionPerformed(Panel* panel)
+	void actionPerformed(Panel* panel) override
 	{
 		if (m_iState == HIDE_TEXTWINDOW)
 		{
@@ -819,7 +819,7 @@ public:
 		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
 	}
 
-	virtual void actionPerformed(Panel* panel)
+	void actionPerformed(Panel* panel) override
 	{
 		if ( m_cvar->value )
 			m_cvar->value = 0.0f;
@@ -846,7 +846,7 @@ public:
 		m_szplayer[MAX_COMMAND_SIZE-1] = '\0';
 	}
 
-	virtual void actionPerformed(Panel* panel)
+	void actionPerformed(Panel* panel) override
 	{
 		gViewPort->HideCommandMenu();
 	}
@@ -869,18 +869,18 @@ public:
 		m_bDragging = false;
 	}
 
-	void cursorMoved(int x,int y,Panel* panel);
-	void mousePressed(MouseCode code,Panel* panel);
-	void mouseReleased(MouseCode code,Panel* panel);
+	void cursorMoved(int x,int y,Panel* panel) override;
+	void mousePressed(MouseCode code,Panel* panel) override;
+	void mouseReleased(MouseCode code,Panel* panel) override;
 
-	void mouseDoublePressed(MouseCode code,Panel* panel) {};
-	void cursorEntered(Panel* panel) {};
-	void cursorExited(Panel* panel) {};
-	void mouseWheeled(int delta,Panel* panel) {};
-	void keyPressed(KeyCode code,Panel* panel) {};
-	void keyTyped(KeyCode code,Panel* panel) {};
-	void keyReleased(KeyCode code,Panel* panel) {};
-	void keyFocusTicked(Panel* panel) {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override {};
+	void cursorEntered(Panel* panel) override {};
+	void cursorExited(Panel* panel) override {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 };
 
 class CHandler_MenuButtonOver : public InputSignal
@@ -895,18 +895,18 @@ public:
 		m_pMenuPanel = pPanel;
 	}
 		
-	void cursorEntered(Panel *panel);
+	void cursorEntered(Panel *panel) override;
 
-	void cursorMoved(int x,int y,Panel* panel) {};
-	void mousePressed(MouseCode code,Panel* panel) {};
-	void mouseReleased(MouseCode code,Panel* panel) {};
-	void mouseDoublePressed(MouseCode code,Panel* panel) {};
-	void cursorExited(Panel* panel) {};
-	void mouseWheeled(int delta,Panel* panel) {};
-	void keyPressed(KeyCode code,Panel* panel) {};
-	void keyTyped(KeyCode code,Panel* panel) {};
-	void keyReleased(KeyCode code,Panel* panel) {};
-	void keyFocusTicked(Panel* panel) {};
+	void cursorMoved(int x,int y,Panel* panel) override {};
+	void mousePressed(MouseCode code,Panel* panel) override {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override {};
+	void cursorExited(Panel* panel) override {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 };
 
 class CHandler_ButtonHighlight : public InputSignal
@@ -919,23 +919,23 @@ public:
 		m_pButton = pButton;
 	}
 
-	virtual void cursorEntered(Panel* panel) 
+	void cursorEntered(Panel* panel) override 
 	{ 
 		m_pButton->setArmed(true);
 	};
-	virtual void cursorExited(Panel* Panel) 
+	void cursorExited(Panel* Panel) override 
 	{
 		m_pButton->setArmed(false);
 	};
-	virtual void mousePressed(MouseCode code,Panel* panel) {};
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+	void mousePressed(MouseCode code,Panel* panel) override {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void cursorMoved(int x,int y,Panel* panel) override {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override  {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 };
 
 //-----------------------------------------------------------------------------
@@ -951,12 +951,12 @@ public:
 		m_pCommandButton = pButton;
 	}
 
-	virtual void cursorEntered( Panel *panel )
+	void cursorEntered( Panel *panel ) override
 	{
 		m_pCommandButton->cursorEntered();
 	}
 
-	virtual void cursorExited( Panel *panel )
+	void cursorExited( Panel *panel ) override
 	{
 		m_pCommandButton->cursorExited();
 	}
@@ -976,7 +976,7 @@ public:
 		m_iPlayerClass = iClass;
 	}
 
-	virtual int IsNotValid();
+	int IsNotValid() override;
 };
 
 class TeamButton : public CommandButton
@@ -989,7 +989,7 @@ public:
 		m_iTeamNumber = iTeam;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		int iTeams = gViewPort->GetNumberOfTeams();
 		// Never valid if there's only 1 team
@@ -1017,7 +1017,7 @@ public:
 		m_iFeignState = iState;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		// Only visible for spies
 #ifdef _TFC
@@ -1038,7 +1038,7 @@ public:
 	{
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		return true;
 	}
@@ -1060,7 +1060,7 @@ public:
 		m_iValidTeamsBits = iValidTeamNumsBits;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 #ifdef _TFC
 		// Only visible for spies
@@ -1090,7 +1090,7 @@ public:
 		m_iItem = item;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		// Always show the main 'Inventory' button (if it is specified in commandmenu.txt
 		if (m_iItem < 0 || m_iItem>=MAX_ITEMS) // m_iItem >= MAX_ITEMS shouldn't ever be true
@@ -1113,7 +1113,7 @@ public:
 		m_iDetpackState = iState;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 #ifdef _TFC
 		// Only visible for demomen
@@ -1155,7 +1155,7 @@ public:
 		m_iBuildData = iData;
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 #ifdef _TFC
 		// Only visible for engineers
@@ -1231,7 +1231,7 @@ public:
 		sprintf( m_szMapName, "maps/%s.bsp", pMapName );
 	}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		const char *level = gEngfuncs.pfnGetLevelName();
 		if (!level)
@@ -1257,7 +1257,7 @@ public:
 	TeamOnlyCommandButton( int iTeamNum, const char* text,int x,int y,int wide,int tall, bool flat ) : 
 	  CommandButton( text, x, y, wide, tall, false, flat ), m_iTeamNum(iTeamNum) {}
 
-	virtual int IsNotValid()
+	int IsNotValid() override
 	{
 		if ( g_iTeamNumber != m_iTeamNum )
 			return true;
@@ -1305,32 +1305,32 @@ public:
 		setFgColor(Scheme::sc_primary1);
 	}
 
-	virtual void cursorEntered(Panel* panel)
+	void cursorEntered(Panel* panel) override
 	{
 		CommandButton::cursorEntered();
 	}
 
-	virtual void cursorExited(Panel* panel)
+	void cursorExited(Panel* panel) override
 	{
 		CommandButton::cursorExited();
 	}
 
-	virtual void mousePressed(MouseCode code,Panel* panel)
+	void mousePressed(MouseCode code,Panel* panel) override
 	{
 		doClick();
 	};
 
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
+	void cursorMoved(int x,int y,Panel* panel) override {};
 	
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override  {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 
-	virtual void paint( )
+	void paint( ) override
 	{
 		if ( !m_cvar )
 		{
@@ -1377,32 +1377,32 @@ public:
 		pLabelOn->setPos( textwide, (tall - pLabelOn->getTall()) / 2 );
 	  } 
 
-	virtual void cursorEntered(Panel* panel)
+	void cursorEntered(Panel* panel) override
 	{
 		CommandButton::cursorEntered();
 	}
 
-	virtual void cursorExited(Panel* panel)
+	void cursorExited(Panel* panel) override
 	{
 		CommandButton::cursorExited();
 	}
 
-	virtual void mousePressed(MouseCode code,Panel* panel)
+	void mousePressed(MouseCode code,Panel* panel) override
 	{
 		doClick();
 	};
 
-	virtual void cursorMoved(int x,int y,Panel* panel) {};
+	void cursorMoved(int x,int y,Panel* panel) override {};
 	
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
+	void mouseDoublePressed(MouseCode code,Panel* panel) override  {};
+	void mouseReleased(MouseCode code,Panel* panel) override {};
+	void mouseWheeled(int delta,Panel* panel) override {};
+	void keyPressed(KeyCode code,Panel* panel) override {};
+	void keyTyped(KeyCode code,Panel* panel) override {};
+	void keyReleased(KeyCode code,Panel* panel) override {};
+	void keyFocusTicked(Panel* panel) override {};
 
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 		if ( isArmed() )
 		{
@@ -1411,7 +1411,7 @@ public:
 		}
 	}
 	
-	virtual void paint( )
+	void paint( ) override
 	{
 		if ( isArmed() )
 		{ 
@@ -1559,7 +1559,7 @@ public:
 		m_iTransparency = iTrans;
 	}
 
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 		if (m_iTransparency)
 		{
@@ -1658,8 +1658,8 @@ private:
 public:
 	CTFScrollButton(int iArrow, const char* text,int x,int y,int wide,int tall);
 
-	virtual void paint( );
-	virtual void paintBackground( );
+	void paint( ) override;
+	void paintBackground( ) override;
 };
 
 // Custom drawn slider bar
@@ -1670,7 +1670,7 @@ public:
 	{
 	};
 
-	virtual void paintBackground( );
+	void paintBackground( ) override;
 };
 
 // Custom drawn scrollpanel
@@ -1702,13 +1702,13 @@ private:
 public:
 	CClassMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
 
-	virtual bool SlotInput( int iSlot );
-	virtual void Open( );
+	bool SlotInput( int iSlot ) override;
+	void Open( ) override;
 	virtual void Update( );
-	virtual void SetActiveInfo( int iInput );
+	void SetActiveInfo( int iInput ) override;
 	virtual void Initialize( );
 
-	virtual void Reset( )
+	void Reset( ) override
 	{
 		CMenuPanel::Reset();
 		m_iCurrentInfo = 0;
@@ -1734,13 +1734,13 @@ private:
 public:
 	CCustomMenu(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
 
-	virtual bool SlotInput( int iSlot );
-	virtual void Open( );
+	bool SlotInput( int iSlot ) override;
+	void Open( ) override;
 	virtual void Update( );
-	virtual void SetActiveInfo( int iInput );
+	void SetActiveInfo( int iInput ) override;
 	virtual void Initialize( );
 
-	virtual void Reset( )
+	void Reset( ) override
 	{
 		CMenuPanel::Reset();
 		m_iCurrentInfo = 0;
@@ -1765,15 +1765,15 @@ public:
 public:
 	CTeamMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,int tall);
 
-	virtual bool SlotInput( int iSlot );
-	virtual void Open( );
+	bool SlotInput( int iSlot ) override;
+	void Open( ) override;
 	virtual void Update( );
-	virtual void SetActiveInfo( int iInput );
-	virtual void paintBackground( );
+	void SetActiveInfo( int iInput ) override;
+	void paintBackground( ) override;
 
 	virtual void Initialize( );
 
-	virtual void Reset( )
+	void Reset( ) override
 	{
 		CMenuPanel::Reset();
 		m_iCurrentInfo = 0;
@@ -1808,11 +1808,11 @@ public:
 		//m_pHealthLabel->setPos( 10, (getTall() - iYSize) / 2 );
 	}
 
-	virtual void paintBackground()
+	void paintBackground() override
 	{
 	}
 
-	void paint()
+	void paint() override
 	{
 		// Get the paint color
 		int r,g,b,a;

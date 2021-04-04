@@ -19,7 +19,7 @@ class VGUIAPI MenuSeparator : public Label
 public:
 	MenuSeparator(const char* text);
 protected:
-	virtual void paintBackground();
+	void paintBackground() override;
 };
 
 }

@@ -29,7 +29,7 @@ public: //bullshit public
 	virtual void     setDesktop(Desktop* desktop);
 	virtual MiniApp* getMiniApp();
 protected:
-	virtual void paintBackground();
+	void paintBackground() override;
 protected:
 	Desktop* _desktop;
 	MiniApp* _miniApp;

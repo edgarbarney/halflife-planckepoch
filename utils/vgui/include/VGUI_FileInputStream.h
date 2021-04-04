@@ -23,13 +23,13 @@ private:
 public:
 	FileInputStream(const char* fileName,bool textMode);
 public:
-	virtual void  seekStart(bool& success);
-	virtual void  seekRelative(int count,bool& success);
-	virtual void  seekEnd(bool& success);
-	virtual int   getAvailable(bool& success);
-	virtual uchar readUChar(bool& success);
-	virtual void  readUChar(uchar* buf,int count,bool& success);
-	virtual void  close(bool& success);
+	void  seekStart(bool& success) override;
+	void  seekRelative(int count,bool& success) override;
+	void  seekEnd(bool& success) override;
+	int   getAvailable(bool& success) override;
+	uchar readUChar(bool& success) override;
+	void  readUChar(uchar* buf,int count,bool& success) override;
+	void  close(bool& success) override;
 	virtual void  close();
 };
 

@@ -784,7 +784,7 @@ LoadMDL
 */
 bool CPropManager::LoadMDL( char *name, cl_entity_t *pEntity, entity_t *pBSPEntity )
 {
-	if( m_pCurrentExtraData->pModelData = GetHeader( name ))
+	if( (m_pCurrentExtraData->pModelData = GetHeader( name )))
 		return true;
 
 	if ( m_iNumHeaders == MAXRENDERENTS )
@@ -828,8 +828,8 @@ bool CPropManager::LoadMDL( char *name, cl_entity_t *pEntity, entity_t *pBSPEnti
 
 	g_StudioRenderer.StudioSaveModelData(&m_pHeaders[m_iNumHeaders]);
 
-	delete[] pTempEnt;
-	delete[] pTempModel;
+	delete pTempEnt;
+	delete pTempModel;
 
 	m_pCurrentExtraData->pModelData = &m_pHeaders[m_iNumHeaders];
 	m_iNumHeaders++;

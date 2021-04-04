@@ -44,7 +44,7 @@ int UseTexture(HL_HSPRITE &hsprSpr, char * str)
 	if (hsprSpr == 0)
 	{
 		char sz[256];
-		sprintf( sz, str );
+		sprintf( sz, "%s", str );
 		hsprSpr = SPR_Load( sz );
 	}
 

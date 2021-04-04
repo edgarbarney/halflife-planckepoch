@@ -4453,7 +4453,7 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 
 	if(ptex->flags & STUDIO_NF_CHROME || m_bChromeShell)
 	{
-		while (i = *(ptricmds++))
+		while ((i = *(ptricmds++)))
 		{
 			if (i < 0)
 			{
@@ -4476,7 +4476,7 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 	}
 	else
 	{
-		while (i = *(ptricmds++))
+		while ((i = *(ptricmds++)))
 		{
 			if (i < 0)
 			{
@@ -4831,7 +4831,7 @@ void CStudioModelRenderer::StudioSaveModelData( modeldata_t *pExtraData )
 
 				int j = 0;
 				short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[l].triindex);
-				while (j = *(ptricmds++))
+				while ((j = *(ptricmds++)))
 				{	
 					if (j > 0) 
 					{
@@ -5571,7 +5571,7 @@ void CStudioModelRenderer::StudioDecalForSubModel( Vector position, Vector norma
 		short *ptricmds = (short *)((byte *)m_pStudioHeader + pmesh->triindex);
 
 		int j;
-		while (j = *(ptricmds++))
+		while ((j = *(ptricmds++)))
 		{	
 			if (j > 0) 
 			{
@@ -6243,7 +6243,7 @@ void CStudioModelRenderer::StudioDrawPointsSolid ( void )
 			int i;
 			short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[j].triindex);
 
-			while (i = *(ptricmds++))
+			while ((i = *(ptricmds++)))
 			{
 				if (i < 0)
 				{
@@ -6276,7 +6276,7 @@ void CStudioModelRenderer::StudioDrawPointsSolid ( void )
 			int i;
 			short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[j].triindex);
 
-			while (i = *(ptricmds++))
+			while ((i = *(ptricmds++)))
 			{
 				if (i < 0)
 				{

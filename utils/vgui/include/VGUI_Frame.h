@@ -23,9 +23,9 @@ class VGUIAPI Frame : public Panel
  public:
   Frame(int x,int y,int wide,int tall);
  public:
-  virtual void   setSize(int wide,int tall);
+  void   setSize(int wide,int tall) override;
   virtual void   setInternal(bool state);
-  virtual void   paintBackground();
+  void   paintBackground() override;
   virtual bool   isInternal();
   virtual Panel* getClient();
   virtual void   setTitle(const char* title);
@@ -35,7 +35,7 @@ class VGUIAPI Frame : public Panel
   virtual bool   isMoveable();
   virtual bool   isSizeable();
   virtual void   addFrameSignal(FrameSignal* s);
-  virtual void   setVisible(bool state);
+  void   setVisible(bool state) override;
   virtual void   setMenuButtonVisible(bool state);
   virtual void   setTrayButtonVisible(bool state);
   virtual void   setMinimizeButtonVisible(bool state);

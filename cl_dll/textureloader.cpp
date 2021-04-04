@@ -194,8 +194,8 @@ bool CTextureLoader::LoadTGAFile( byte *pFile, cl_texture_t *pTexture, bool bNoM
 {
 	// Set basic information
 	tga_header_t *pHeader = (tga_header_t *)pFile;
-	if(pHeader->datatypecode != 2 && pHeader->datatypecode != 10
-		|| pHeader->bitsperpixel != 24 && pHeader->bitsperpixel != 32)
+	if((pHeader->datatypecode != 2 && pHeader->datatypecode != 10)
+		|| (pHeader->bitsperpixel != 24 && pHeader->bitsperpixel != 32))
 	{
 		gEngfuncs.Con_Printf("Error! %s is using a non-supported format. Only 24 bit and 32 bit true color formats are supported.\n", pTexture->szName);
 		return false;

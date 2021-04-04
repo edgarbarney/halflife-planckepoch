@@ -52,14 +52,14 @@ public:
 	virtual void   setCellSectionEnabled(bool state);
 	virtual void   setEditableCell(int column,int row);
 	virtual void   stopCellEditing();
-	virtual void   getVirtualSize(int& wide,int& tall);
+	void   getVirtualSize(int& wide,int& tall) override;
 	virtual int    getRowCount()=0;
 	virtual int    getCellTall(int row)=0;
 	virtual Panel* getCellRenderer(int column,int row,bool columnSelected,bool rowSelected,bool cellSelected)=0;
 	virtual Panel* startCellEditing(int column,int row)=0;
 protected:
-	virtual void   paint();
-	virtual Panel* isWithinTraverse(int x,int y);
+	void   paint() override;
+	Panel* isWithinTraverse(int x,int y) override;
 private:
 	virtual void privateMousePressed(MouseCode code,Panel* panel);
 	virtual void privateMouseDoublePressed(MouseCode code,Panel* panel);
