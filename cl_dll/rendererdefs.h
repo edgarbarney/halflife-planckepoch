@@ -722,24 +722,24 @@ extern mleaf_t	*Mod_PointInLeaf (Vector p, model_t *model);
 extern byte		*Mod_LeafPVS(mleaf_t *leaf, model_t *model);
 extern void		R_MarkLeaves ( mleaf_t *pLeaf );
 
-extern void		HUD_PrintSpeeds( void );
-extern void		RenderersDumpInfo( void );
-extern void		GenDetail( void );
+extern void		HUD_PrintSpeeds( );
+extern void		RenderersDumpInfo( );
+extern void		GenDetail( );
 extern void		SetupFlashlight( Vector origin, Vector angles, float time, float frametime );
-extern void		ExportWorld( void );
+extern void		ExportWorld( );
 
 extern unsigned short	ByteToUShort( byte *byte );
 extern unsigned int		ByteToUInt( byte *byte );
 extern int		ByteToInt( byte *byte );
 
 extern void		R_CalcRefDef( ref_params_t *pparams );
-extern void		R_DrawNormalTriangles( void );
-extern void		R_DrawTransparentTriangles( void );
+extern void		R_DrawNormalTriangles( );
+extern void		R_DrawTransparentTriangles( );
 
-extern void		RenderFog( void );
-extern void		BlackFog( void );
-extern void		DisableFog( void );
-extern void		ClearToFogColor( void );
+extern void		RenderFog( );
+extern void		BlackFog( );
+extern void		DisableFog( );
+extern void		ClearToFogColor( );
 
 extern void		R_RotateForEntity (cl_entity_t *e);
 extern int		IsEntityMoved(cl_entity_t *e);

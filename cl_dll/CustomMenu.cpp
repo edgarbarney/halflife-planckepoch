@@ -388,7 +388,7 @@ bool CCustomMenu::SlotInput( int iSlot )
 
 //======================================
 // Update the Class menu before opening it
-void CCustomMenu::Open( void )
+void CCustomMenu::Open( )
 {
 	Update();
 	CMenuPanel::Open();
@@ -397,7 +397,7 @@ void CCustomMenu::Open( void )
 //-----------------------------------------------------------------------------
 // Purpose: Called each time a new level is started.
 //-----------------------------------------------------------------------------
-void CCustomMenu::Initialize( void )
+void CCustomMenu::Initialize( )
 {
 	setVisible( false );
 	m_pScrollPanel->setScrollValue( 0, 0 );

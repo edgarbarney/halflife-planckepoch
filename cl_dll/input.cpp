@@ -517,7 +517,7 @@ void IN_ScoreUp()
 	}
 }
 
-void IN_HUDDown(void)	//AJH
+void IN_HUDDown()	//AJH
 {
 	KeyDown(&in_customhud);
 	if ( gViewPort )
@@ -527,7 +527,7 @@ void IN_HUDDown(void)	//AJH
 	}
 }
 
-void IN_HUDUp(void)	//AJH
+void IN_HUDUp()	//AJH
 {
 	KeyUp(&in_customhud);
 	if ( gViewPort )

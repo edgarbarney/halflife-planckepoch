@@ -36,20 +36,20 @@ CParticleEngine
 class CParticleEngine
 {
 public:
-	void Init( void );
-	void VidInit( void );
+	void Init( );
+	void VidInit( );
 
 	void CreateCluster( char *szPath, Vector origin, Vector dir, int iId );
 	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = NULL );
 	void RemoveSystem( int iId );
 
-	particle_system_t *AllocSystem( void );
+	particle_system_t *AllocSystem( );
 	cl_particle_t *AllocParticle( particle_system_t *pSystem );
 
-	void Update( void );
-	void DrawParticles( void );
-	void CullSystems( void );
-	void UpdateSystems( void );
+	void Update( );
+	void DrawParticles( );
+	void CullSystems( );
+	void UpdateSystems( );
 
 	Vector LightForParticle( cl_particle_t *pParticle );
 	bool CheckLightBBox( cl_particle_t *pParticle, cl_dlight_t *pLight );

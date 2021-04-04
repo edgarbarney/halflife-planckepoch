@@ -72,9 +72,9 @@ CPropManager gPropManager;
 CMirrorManager gMirrorManager;
 //RENDERERS END
 
-void InitInput (void);
-void EV_HookEvents( void );
-void IN_Commands( void );
+void InitInput ();
+void EV_HookEvents( );
+void IN_Commands( );
 
 // SCREEN GLOW FragBait0
 extern void InitScreenGlow(); // FragBait0 - Glow Effect
@@ -229,7 +229,7 @@ redraw the HUD.
 ===========================
 */
 //RENDERERS START
-extern void HUD_PrintSpeeds( void );
+extern void HUD_PrintSpeeds( );
 //RENDERERS END
 int DLLEXPORT HUD_Redraw( float time, int intermission )
 {

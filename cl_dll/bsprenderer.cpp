@@ -165,7 +165,7 @@ Shutdown
 
 ====================
 */
-void CBSPRenderer::Shutdown( void )
+void CBSPRenderer::Shutdown( )
 {	
 	FreeBuffer();
 }
@@ -176,7 +176,7 @@ Init
 
 ====================
 */
-void CBSPRenderer::Init( void ) 
+void CBSPRenderer::Init( ) 
 {
 	//
 	// Check extensions
@@ -391,7 +391,7 @@ VidInit
 
 ====================
 */
-void CBSPRenderer::VidInit( void )
+void CBSPRenderer::VidInit( )
 {
 	if (!IEngineStudio.IsHardware())
 	{
@@ -527,7 +527,7 @@ GetRenderEnts
 
 ====================
 */
-void CBSPRenderer::GetRenderEnts( void )
+void CBSPRenderer::GetRenderEnts( )
 {
 	// Clear counters
 	m_iNumRenderEntities = NULL;
@@ -760,7 +760,7 @@ GetAdditionalLights
 
 ====================
 */
-void CBSPRenderer::GetAdditionalLights( void )
+void CBSPRenderer::GetAdditionalLights( )
 {
 	if(m_bGotAdditional)
 		return;
@@ -869,7 +869,7 @@ SetupSpotlightVis
 
 ====================
 */
-void CBSPRenderer::SetupSpotlightVis( void )
+void CBSPRenderer::SetupSpotlightVis( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value < 1)
 		return;
@@ -895,7 +895,7 @@ CheckTextures
 
 ====================
 */
-void CBSPRenderer::CheckTextures ( void )
+void CBSPRenderer::CheckTextures ( )
 {
 	char szFile[64];
 	char szTexture[32];
@@ -939,7 +939,7 @@ SetupRenderer
 
 ====================
 */
-void CBSPRenderer::SetupRenderer ( void )
+void CBSPRenderer::SetupRenderer ( )
 {
 	if (!m_bReloaded)
 		return;
@@ -1035,7 +1035,7 @@ RestoreWorldDrawing
 
 ====================
 */
-void CBSPRenderer::RestoreWorldDrawing( void )
+void CBSPRenderer::RestoreWorldDrawing( )
 {
 	memcpy(m_pWorld->nodes[0].minmaxs, m_fSavedMinsMaxs, 6 * sizeof(float));
 };
@@ -1046,7 +1046,7 @@ RemoveSky
 
 ====================
 */
-void CBSPRenderer::RemoveSky( void )
+void CBSPRenderer::RemoveSky( )
 {
 	bool foundSky = false;
 	msurface_t* surfaces = m_pWorld->surfaces;
@@ -1070,7 +1070,7 @@ ClearDetailObjects
 
 ====================
 */
-void CBSPRenderer::ClearDetailObjects( void )
+void CBSPRenderer::ClearDetailObjects( )
 {
 	for(int i = 0; i < m_iNumDetailObjects; i++)
 	{
@@ -1100,7 +1100,7 @@ LoadDetailFile
 Comment: BLARGH
 ====================
 */
-void CBSPRenderer::LoadDetailFile( void )
+void CBSPRenderer::LoadDetailFile( )
 {
 	char szPath[64];
 	char szFile[64];
@@ -1257,7 +1257,7 @@ CreateTextures
 
 ====================
 */
-void CBSPRenderer::CreateTextures( void )
+void CBSPRenderer::CreateTextures( )
 {
 	//
 	// Load flashlight texture
@@ -1422,7 +1422,7 @@ FreeBuffer
 
 ====================
 */
-void CBSPRenderer::FreeBuffer( void )
+void CBSPRenderer::FreeBuffer( )
 {
 	if (m_uiBufferIndex)
 	{
@@ -1450,7 +1450,7 @@ GenerateVertexArray
 
 ====================
 */
-void CBSPRenderer::GenerateVertexArray( void )
+void CBSPRenderer::GenerateVertexArray( )
 {
 	int iNumFaces = 0;
 	int iCurFace = 0;
@@ -1831,7 +1831,7 @@ EnableVertexArray
 
 ====================
 */
-void CBSPRenderer::EnableVertexArray( void )
+void CBSPRenderer::EnableVertexArray( )
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -1848,7 +1848,7 @@ DisableVertexArray
 
 ====================
 */
-void CBSPRenderer::DisableVertexArray( void )
+void CBSPRenderer::DisableVertexArray( )
 {
 	glDisableClientState(GL_VERTEX_ARRAY);
 	if(m_bSpecialFog)
@@ -1918,7 +1918,7 @@ ResetRenderer
 
 ====================
 */
-void CBSPRenderer::ResetRenderer( void )
+void CBSPRenderer::ResetRenderer( )
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -1942,7 +1942,7 @@ SaveMultiTexture
 
 ====================
 */
-void CBSPRenderer::SaveMultiTexture( void )
+void CBSPRenderer::SaveMultiTexture( )
 {
 	RenderFog();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -2017,7 +2017,7 @@ RestoreMultiTexture
 
 ====================
 */
-void CBSPRenderer::RestoreMultiTexture( void )
+void CBSPRenderer::RestoreMultiTexture( )
 {
 	glPopAttrib();
 	glActiveTextureARB( GL_TEXTURE0_ARB );
@@ -2091,7 +2091,7 @@ ResetCache
 
 ====================
 */
-void CBSPRenderer::ResetCache( void )
+void CBSPRenderer::ResetCache( )
 {
 	for(int i = 0; i < 3; i++)
 		m_uiCurrentBinds[i] = 0;
@@ -2109,7 +2109,7 @@ HasDynLights
 
 ====================
 */
-bool CBSPRenderer::HasDynLights( void )
+bool CBSPRenderer::HasDynLights( )
 {
 	float time	= gEngfuncs.GetClientTime();
 	cl_dlight_t *dl = m_pDynLights;
@@ -2141,7 +2141,7 @@ PrepareRenderer
 
 ====================
 */
-void CBSPRenderer::PrepareRenderer( void )
+void CBSPRenderer::PrepareRenderer( )
 {
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
@@ -2168,7 +2168,7 @@ DrawNormalTriangles
 
 ====================
 */
-void CBSPRenderer::DrawNormalTriangles( void )
+void CBSPRenderer::DrawNormalTriangles( )
 {
 	if (!m_bCanDraw)
 		return;
@@ -2199,7 +2199,7 @@ DrawTransparentTriangles
 
 ====================
 */
-void CBSPRenderer::DrawTransparentTriangles( void )
+void CBSPRenderer::DrawTransparentTriangles( )
 {
 	if(!m_pCvarDrawWorld->value)
 		return;
@@ -2231,7 +2231,7 @@ DrawWorld
 
 ====================
 */
-void CBSPRenderer::DrawWorld( void )
+void CBSPRenderer::DrawWorld( )
 {
 	// Restore mins/maxs
 	RestoreWorldDrawing();
@@ -2288,7 +2288,7 @@ DrawDetails
 
 ====================
 */
-void CBSPRenderer::DrawDetails( void )
+void CBSPRenderer::DrawDetails( )
 {
 	if(!m_iNumDetailObjects)
 		return;
@@ -2533,7 +2533,7 @@ RenderFinalPasses
 
 ====================
 */
-void CBSPRenderer::RenderFinalPasses( void )
+void CBSPRenderer::RenderFinalPasses( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -2996,7 +2996,7 @@ void CBSPRenderer::SurfaceToChain(msurface_t *s, bool dynlit)
 	brushface_t *pFace = &m_pFacesExtraData[s->polys->flags];
 	clientsurfdata_t *pData = &m_pSurfaces[pFace->index];
 
-	for (int i = 1; i < MAXLIGHTMAPS && s->styles[i] != 255 || s->dlightframe; i++)
+	for (int i = 1; (i < MAXLIGHTMAPS && s->styles[i] != 255) || s->dlightframe; i++)
 	{
 		if (m_iLightStyleValue[s->styles[i]] != m_pSurfaces[pFace->index].cached_light[i] || s->dlightframe)
 		{
@@ -3203,7 +3203,7 @@ PushDynLights
 
 ====================
 */
-void CBSPRenderer::PushDynLights( void )
+void CBSPRenderer::PushDynLights( )
 {
 	if(m_bShaderSupport && m_pCvarWorldShaders->value >= 1)
 		return;
@@ -3227,7 +3227,7 @@ AnimateLight
 
 ====================
 */
-void CBSPRenderer::AnimateLight( void )
+void CBSPRenderer::AnimateLight( )
 {
 	int			i,j,k;
 	
@@ -3420,7 +3420,7 @@ UploadLightmaps
 
 ====================
 */
-void CBSPRenderer::UploadLightmaps( void )
+void CBSPRenderer::UploadLightmaps( )
 {
 	memset(m_iLightStyleValue, 0, sizeof(m_iLightStyleValue));
 	memset(m_pEngineLightmaps, 0, sizeof(m_pEngineLightmaps));
@@ -3714,7 +3714,7 @@ ParseDetailTextureFile
 
 ====================
 */
-void CBSPRenderer::ParseDetailTextureFile( void )
+void CBSPRenderer::ParseDetailTextureFile( )
 {
 	char szLevelName[256];
 	m_iNumDetailTextures = 0;
@@ -3806,7 +3806,7 @@ LoadDetailTextures
 
 ====================
 */
-void CBSPRenderer::LoadDetailTextures( void )
+void CBSPRenderer::LoadDetailTextures( )
 {
 	ParseDetailTextureFile();
 
@@ -4016,7 +4016,7 @@ LoadDecals
 
 ====================
 */
-void CBSPRenderer::LoadDecals( void )
+void CBSPRenderer::LoadDecals( )
 {
 	char *pfile = (char *)gEngfuncs.COM_LoadFile("gfx/textures/decals/decalinfo.txt", 5, NULL);
 	if (!pfile)
@@ -4113,7 +4113,7 @@ AllocDecal
 
 ====================
 */
-customdecal_t *CBSPRenderer::AllocDecal( void )
+customdecal_t *CBSPRenderer::AllocDecal( )
 {
 	customdecal_t *ret = &m_pDecals[m_iCurDecal];
 
@@ -4143,7 +4143,7 @@ AllocStaticDecal
 
 ====================
 */
-customdecal_t *CBSPRenderer::AllocStaticDecal( void )
+customdecal_t *CBSPRenderer::AllocStaticDecal( )
 {
 	if (m_iNumStaticDecals < MAX_STATICDECALS)
 	{
@@ -4611,7 +4611,7 @@ CreateCachedDecals
 
 ====================
 */
-void CBSPRenderer::CreateCachedDecals( void )
+void CBSPRenderer::CreateCachedDecals( )
 {
 	for (int i = 0; i < gPropManager.m_iNumDecals; i++)
 	{
@@ -4734,7 +4734,7 @@ DrawDecals
 
 ====================
 */
-void CBSPRenderer::DrawDecals( void )
+void CBSPRenderer::DrawDecals( )
 {
 	CreateCachedDecals();
 
@@ -4822,7 +4822,7 @@ DeleteDecals
 
 ====================
 */
-void CBSPRenderer::DeleteDecals( void )
+void CBSPRenderer::DeleteDecals( )
 {
 	m_iCurDecal = 0;
 
@@ -4863,7 +4863,7 @@ SetDynLightBBox
 
 ====================
 */
-void CBSPRenderer::SetDynLightBBox( void )
+void CBSPRenderer::SetDynLightBBox( )
 {
 	m_vDLightMins[0] = m_vCurDLightOrigin[0] - m_pCurrentDynLight->radius;
 	m_vDLightMins[1] = m_vCurDLightOrigin[1] - m_pCurrentDynLight->radius;
@@ -4908,7 +4908,7 @@ SetupDynLight
 
 ====================
 */
-void CBSPRenderer::SetupDynLight( void )
+void CBSPRenderer::SetupDynLight( )
 {
 	glBlendFunc(GL_ONE, GL_ONE);
 	glColor3fv(m_pCurrentDynLight->color);
@@ -4947,7 +4947,7 @@ FinishDynLight
 
 ====================
 */
-void CBSPRenderer::FinishDynLight( void )
+void CBSPRenderer::FinishDynLight( )
 {
 	glActiveTextureARB( GL_TEXTURE0_ARB );
 	glDisable(GL_TEXTURE_3D);
@@ -4964,7 +4964,7 @@ LightCanShadow
 
 ====================
 */
-bool CBSPRenderer::LightCanShadow( void )
+bool CBSPRenderer::LightCanShadow( )
 {
 	if(!m_bShadowSupport)
 		return false;
@@ -4990,7 +4990,7 @@ SetupSpotLight
 
 ====================
 */
-void CBSPRenderer::SetupSpotLight( void )
+void CBSPRenderer::SetupSpotLight( )
 {
 	glBlendFunc(GL_ONE, GL_ONE);
 
@@ -5104,7 +5104,7 @@ FinishSpotLight
 
 ====================
 */
-void CBSPRenderer::FinishSpotLight( void )
+void CBSPRenderer::FinishSpotLight( )
 {
 	glActiveTextureARB( GL_TEXTURE0_ARB );
 	glMatrixMode(GL_TEXTURE);
@@ -5147,7 +5147,7 @@ DrawDynamicLightsForDetails
 
 ====================
 */
-void CBSPRenderer::DrawDynamicLightsForDetails( void )
+void CBSPRenderer::DrawDynamicLightsForDetails( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5248,7 +5248,7 @@ DrawDynamicLightsForWorld
 
 ====================
 */
-void CBSPRenderer::DrawDynamicLightsForWorld( void )
+void CBSPRenderer::DrawDynamicLightsForWorld( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5617,7 +5617,7 @@ InitSky
 
 ====================
 */
-void CBSPRenderer::InitSky( void )
+void CBSPRenderer::InitSky( )
 {
 	m_bDrawSky = true;
 	if (m_szSkyName[0] == 0)
@@ -5669,7 +5669,7 @@ DrawSky
 
 ====================
 */
-void CBSPRenderer::DrawSky( void )
+void CBSPRenderer::DrawSky( )
 {
 	fog_settings_t pSaved;
 	static float projection[16];
@@ -5831,7 +5831,7 @@ DecayLights
 
 ====================
 */
-void CBSPRenderer::DecayLights( void )
+void CBSPRenderer::DecayLights( )
 {
 	static float lasttime = 0;
 
@@ -5936,7 +5936,7 @@ DrawShadowPasses
 
 ====================
 */
-void CBSPRenderer::DrawShadowPasses( void )
+void CBSPRenderer::DrawShadowPasses( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5968,7 +5968,7 @@ CreateShadowMap
 
 ====================
 */
-void CBSPRenderer::CreateShadowMap( void )
+void CBSPRenderer::CreateShadowMap( )
 {
 	float flProj[16];
 	float flModel[16];
@@ -6054,7 +6054,7 @@ DrawWorldSolid
 
 ====================
 */
-void CBSPRenderer::DrawWorldSolid( void )
+void CBSPRenderer::DrawWorldSolid( )
 {
 	gHUD.viewFrustum.SetFrustum(m_pCurrentDynLight->angles, m_pCurrentDynLight->origin, m_pCurrentDynLight->cone_size, m_pCurrentDynLight->radius);
 	VectorCopy(m_pCurrentDynLight->angles, m_vViewAngles);
@@ -6194,7 +6194,7 @@ DrawDetailsSolid
 
 ====================
 */
-void CBSPRenderer::DrawDetailsSolid( void )
+void CBSPRenderer::DrawDetailsSolid( )
 {
 	if(!m_iNumDetailObjects)
 		return;
