@@ -30,7 +30,7 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
-void I_Precache( void )
+void I_Precache( )
 {	
 	// common world objects (moved from W_Precache - weapons.cpp)
 	UTIL_PrecacheOther( "item_suit" );
@@ -426,7 +426,7 @@ LINK_ENTITY_TO_CLASS( item_medicalkit, CItemMedicalKit );
 #define ITEM_PICKEDUP 1
 #define ITEM_DRAINED 2	//The item has had some 'charge' removed but remains in existence
 
-void CItemMedicalKit :: Spawn( void )
+void CItemMedicalKit :: Spawn( )
 {
 	Precache( );
 	SET_MODEL(ENT(pev), "models/w_portablemed.mdl");	// create a new model and spawn it here
@@ -446,7 +446,7 @@ void CItemMedicalKit :: Spawn( void )
 	}
 }
 
-void CItemMedicalKit::Precache( void )
+void CItemMedicalKit::Precache( )
 {
 	PRECACHE_MODEL("models/w_portablemed.mdl");	// create a new model and precache it here
 	PRECACHE_SOUND("items/smallmedkit1.wav");
@@ -543,14 +543,14 @@ void CItemMedicalKit::ItemTouch( CBaseEntity *pOther )
 	}
 }
 
-void CItemAntiRad::Spawn( void )
+void CItemAntiRad::Spawn( )
 { 
 	Precache( );
 	SET_MODEL(ENT(pev), "models/w_rad.mdl");
 	CItem::Spawn( );
 }
 
-void CItemAntiRad::Precache( void )
+void CItemAntiRad::Precache( )
 {
 	PRECACHE_MODEL ("models/w_rad.mdl");
 }
@@ -587,14 +587,14 @@ LINK_ENTITY_TO_CLASS(item_antirad, CItemAntiRad);
 
 
 
-void CItemFlare::Spawn( void )
+void CItemFlare::Spawn( )
 { 
 	Precache( );
 	SET_MODEL(ENT(pev), "models/w_flare.mdl");
 	CItem::Spawn( );
 }
 
-void CItemFlare::Precache( void )
+void CItemFlare::Precache( )
 {
 	PRECACHE_MODEL ("models/w_flare.mdl");
 }
@@ -691,7 +691,7 @@ TYPEDESCRIPTION	CItemCamera::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CItemCamera,CItem);
 
-void CItemCamera::Spawn( void )
+void CItemCamera::Spawn( )
 {
 	Precache( );
 	SET_MODEL(ENT(pev), "models/w_camera.mdl");
@@ -718,7 +718,7 @@ void CItemCamera::Spawn( void )
 	
 }
 
-void CItemCamera::Precache( void )
+void CItemCamera::Precache( )
 {
 	PRECACHE_MODEL ("models/w_camera.mdl");
 }

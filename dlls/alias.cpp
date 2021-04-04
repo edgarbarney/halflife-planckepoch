@@ -123,7 +123,7 @@ void CInfoAlias :: KeyValue( KeyValueData *pkvd ) //AJH
 	}
 }
 
-void CInfoAlias::Spawn( void )
+void CInfoAlias::Spawn( )
 {
 	if(m_iMode==0){
 		if (pev->spawnflags & SF_ALIAS_OFF)

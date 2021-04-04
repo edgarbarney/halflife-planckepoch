@@ -64,42 +64,42 @@ enum
 class CClyde : public CTalkMonster
 {
 public:
-	void Spawn( void );
-	void Precache( void );
-	void SetYawSpeed( void );
-	int  ISoundMask( void );
-	void ClydeFirePistol( void );
-	void AlertSound( void );
-	int  Classify ( void );
+	void Spawn( );
+	void Precache( );
+	void SetYawSpeed( );
+	int  ISoundMask( );
+	void ClydeFirePistol( );
+	void AlertSound( );
+	int  Classify ( );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
-	void CheckAmmo(void); // For Reload
+	void CheckAmmo(); // For Reload
 
 	//For Multiple Weapons
 	void SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock);
 	void SwitchWeapon(int weaponToWork, bool forcehand);
 	void SetActivity(Activity NewActivity);
-	void ClydeFireMP5(void);
-	void ClydeFireAR16(void);
+	void ClydeFireMP5();
+	void ClydeFireAR16();
 
 	void KeyValue(KeyValueData* pkvd);
 
 	void RunTask( Task_t *pTask );
 	void StartTask( Task_t *pTask );
-	virtual int	ObjectCaps( void ) { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
+	virtual int	ObjectCaps( ) { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
 	BOOL CheckRangeAttack1 ( float flDot, float flDist );
 	
-	void DeclineFollowing( void );
+	void DeclineFollowing( );
 
 	// Override these to set behavior
 	Schedule_t *GetScheduleOfType ( int Type );
-	Schedule_t *GetSchedule ( void );
-	MONSTERSTATE GetIdealState ( void );
+	Schedule_t *GetSchedule ( );
+	MONSTERSTATE GetIdealState ( );
 
-	void DeathSound( void );
-	void PainSound( void );
+	void DeathSound( );
+	void PainSound( );
 	
-	void TalkInit( void );
+	void TalkInit( );
 
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	void Killed( entvars_t *pevAttacker, int iGib );
@@ -384,7 +384,7 @@ void CClyde :: RunTask( Task_t *pTask )
 // ISoundMask - returns a bit mask indicating which types
 // of sounds this monster regards. 
 //=========================================================
-int CClyde :: ISoundMask ( void) 
+int CClyde :: ISoundMask ( ) 
 {
 	return	bits_SOUND_WORLD	|
 			bits_SOUND_COMBAT	|
@@ -399,7 +399,7 @@ int CClyde :: ISoundMask ( void)
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CClyde :: Classify ( void )
+int	CClyde :: Classify ( )
 {
 	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
 }
@@ -407,7 +407,7 @@ int	CClyde :: Classify ( void )
 //=========================================================
 // ALertSound - clyde says "Freeze!"
 //=========================================================
-void CClyde :: AlertSound( void )
+void CClyde :: AlertSound( )
 {
 	if ( m_hEnemy != NULL )
 	{
@@ -432,7 +432,7 @@ void CClyde :: AlertSound( void )
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CClyde :: SetYawSpeed ( void )
+void CClyde :: SetYawSpeed ( )
 {
 	int ys;
 
@@ -493,7 +493,7 @@ BOOL CClyde :: CheckRangeAttack1 ( float flDot, float flDist )
 // the enemy clyde is facing.
 //=========================================================
 
-void CClyde::ClydeFireAR16(void)
+void CClyde::ClydeFireAR16()
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -549,7 +549,7 @@ void CClyde::ClydeFireAR16(void)
 // the enemy clyde is facing.
 //=========================================================
 
-void CClyde::ClydeFireMP5(void)
+void CClyde::ClydeFireMP5()
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -604,7 +604,7 @@ void CClyde::ClydeFireMP5(void)
 // ClydeFirePistol - shoots one round from the pistol at
 // the enemy clyde is facing.
 //=========================================================
-void CClyde :: ClydeFirePistol ( void )
+void CClyde :: ClydeFirePistol ( )
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -661,7 +661,7 @@ void CClyde :: ClydeFirePistol ( void )
 // CheckAmmo - overridden for the clyde because like
 // hgrunt, he actually uses ammo! (base class doesn't)
 //=========================================================
-void CClyde::CheckAmmo(void)
+void CClyde::CheckAmmo()
 {
 	if (m_cAmmoLoaded <= 0)
 	{
@@ -1009,7 +1009,7 @@ int CClyde :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float
 //=========================================================
 // PainSound
 //=========================================================
-void CClyde :: PainSound ( void )
+void CClyde :: PainSound ( )
 {
 	if (gpGlobals->time < m_painTime)
 		return;
@@ -1027,7 +1027,7 @@ void CClyde :: PainSound ( void )
 //=========================================================
 // DeathSound 
 //=========================================================
-void CClyde :: DeathSound ( void )
+void CClyde :: DeathSound ( )
 {
 	switch (RANDOM_LONG(0,2))
 	{
@@ -1273,7 +1273,7 @@ Schedule_t* CClyde :: GetScheduleOfType ( int Type )
 // monster's member function to get a pointer to a schedule
 // of the proper type.
 //=========================================================
-Schedule_t *CClyde :: GetSchedule ( void )
+Schedule_t *CClyde :: GetSchedule ( )
 {
 	if (HasConditions(bits_COND_NO_AMMO_LOADED))
 	{
@@ -1371,14 +1371,14 @@ Schedule_t *CClyde :: GetSchedule ( void )
 	return CTalkMonster::GetSchedule();
 }
 
-MONSTERSTATE CClyde :: GetIdealState ( void )
+MONSTERSTATE CClyde :: GetIdealState ( )
 {
 	return CTalkMonster::GetIdealState();
 }
 
 
 
-void CClyde::DeclineFollowing( void )
+void CClyde::DeclineFollowing( )
 {
 	PlaySentence( m_szGrp[TLK_DECLINE], 2, VOL_NORM, ATTN_NORM ); //LRC
 }
@@ -1396,8 +1396,8 @@ void CClyde::DeclineFollowing( void )
 class CDeadClyde : public CBaseMonster
 {
 public:
-	void Spawn( void );
-	int	Classify ( void ) { return	CLASS_PLAYER_ALLY; }
+	void Spawn( );
+	int	Classify ( ) { return	CLASS_PLAYER_ALLY; }
 
 	void KeyValue( KeyValueData *pkvd );
 

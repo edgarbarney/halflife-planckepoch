@@ -18,7 +18,7 @@ LINK_ENTITY_TO_CLASS(weapon_556AR, CAR16);
 
 //=========================================================
 //=========================================================
-int CAR16::SecondaryAmmoIndex(void)
+int CAR16::SecondaryAmmoIndex()
 {
 	return m_iSecondaryAmmoType;
 }
@@ -36,7 +36,7 @@ void CAR16::Spawn()
 }
 
 
-void CAR16::Precache(void)
+void CAR16::Precache()
 {
 	PRECACHE_MODEL("models/v_ar16.mdl");
 	PRECACHE_MODEL("models/w_ar16.mdl");
@@ -193,7 +193,7 @@ void CAR16::PrimaryAttack()
 
 
 
-void CAR16::SecondaryAttack(void)
+void CAR16::SecondaryAttack()
 {
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD)
@@ -253,7 +253,7 @@ void CAR16::SecondaryAttack(void)
 	m_pPlayer->pev->punchangle.x -= 10;
 }
 
-void CAR16::Reload(void)
+void CAR16::Reload()
 {
 	if (m_pPlayer->ammo_556 <= 0)
 		return;
@@ -262,7 +262,7 @@ void CAR16::Reload(void)
 }
 
 
-void CAR16::WeaponIdle(void)
+void CAR16::WeaponIdle()
 {
 	ResetEmptySound();
 
@@ -293,13 +293,13 @@ void CAR16::WeaponIdle(void)
 
 class CAR16AmmoClip : public CBasePlayerAmmo
 {
-	void Spawn(void)
+	void Spawn()
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ar16clip.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache(void)
+	void Precache()
 	{
 		PRECACHE_MODEL("models/w_ar16clip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
@@ -321,13 +321,13 @@ LINK_ENTITY_TO_CLASS(ammo_556, CAR16AmmoClip);
 
 class CAR16Chainammo : public CBasePlayerAmmo
 {
-	void Spawn(void)
+	void Spawn()
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ar16_magpale.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache(void)
+	void Precache()
 	{
 		PRECACHE_MODEL("models/w_ar16_magpale.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
@@ -348,13 +348,13 @@ LINK_ENTITY_TO_CLASS(ammo_556box, CAR16Chainammo);
 
 class CAR16AmmoGrenade : public CBasePlayerAmmo
 {
-	void Spawn(void)
+	void Spawn()
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ARgrenade.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache(void)
+	void Precache()
 	{
 		PRECACHE_MODEL("models/w_ARgrenade.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");

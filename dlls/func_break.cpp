@@ -1249,7 +1249,7 @@ int CPushable::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 	return 1;
 }
 
-void CPushable::DoRespawn(void){	//AJH Fix for respawnable breakable pushables (BY HAWK777)
+void CPushable::DoRespawn(){	//AJH Fix for respawnable breakable pushables (BY HAWK777)
 	pev->solid = SOLID_BBOX;
 	pev->origin.z += 1;
 	UTIL_SetOrigin( this, pev->origin ); 

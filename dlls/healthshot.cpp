@@ -55,7 +55,7 @@ void CHealthShot::Spawn()
 	FallInit();// get ready to fall down.
 }
 
-void CHealthShot::Precache(void)
+void CHealthShot::Precache()
 {
 	PRECACHE_MODEL(healthshot_models[MDL_WORLD]);
 	PRECACHE_MODEL(healthshot_models[MDL_VIEW]);
@@ -63,7 +63,7 @@ void CHealthShot::Precache(void)
 	PRECACHE_SOUND("items/smallmedkit1.wav");
 }
 
-BOOL CHealthShot::Deploy(void)
+BOOL CHealthShot::Deploy()
 {
 	return DefaultDeploy(healthshot_models[MDL_VIEW], healthshot_models[MDL_PLAYA], HEALTHSHOT_DRAW, "healthshot", 0.9);
 }
@@ -123,7 +123,7 @@ void CHealthShot::PrimaryAttack()
 	}
 }
 
-void CHealthShot::ApplyHealth(void)
+void CHealthShot::ApplyHealth()
 {
 #ifndef CLIENT_DLL
 	UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 0.1, 128, FFADE_IN);
@@ -141,7 +141,7 @@ void CHealthShot::ApplyHealth(void)
 		RetireWeapon();
 }
 
-void CHealthShot::WeaponIdle(void)
+void CHealthShot::WeaponIdle()
 {
 	ResetEmptySound();
 

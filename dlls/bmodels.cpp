@@ -156,7 +156,7 @@ void CFuncWallToggle :: TurnOn()
 }
 
 
-BOOL CFuncWallToggle :: IsOn( void )
+BOOL CFuncWallToggle :: IsOn( )
 {
 	if ( pev->solid == SOLID_NOT )
 		return FALSE;
@@ -185,17 +185,17 @@ class CFuncWallCvar : public CFuncWall
 {
 public:
 	void	KeyValue(KeyValueData* pkvd);
-	void	Spawn(void);
+	void	Spawn();
 	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void	TurnOff(void);
-	void	TurnOn(void);
-	BOOL	IsOn(void);
+	void	TurnOff();
+	void	TurnOn();
+	BOOL	IsOn();
 
 	int	m_cVarName;
 
 	int		m_cVarValue;
 
-	virtual STATE GetState(void) { return (pev->solid == SOLID_NOT) ? STATE_OFF : STATE_ON; };
+	virtual STATE GetState() { return (pev->solid == SOLID_NOT) ? STATE_OFF : STATE_ON; };
 };
 
 LINK_ENTITY_TO_CLASS(func_wall_cvar, CFuncWallCvar);
@@ -216,7 +216,7 @@ void CFuncWallCvar::KeyValue(KeyValueData* pkvd)
 		CFuncWall::KeyValue(pkvd);
 }
 
-void CFuncWallCvar::Spawn(void)
+void CFuncWallCvar::Spawn()
 {
 	CFuncWall::Spawn();
 
@@ -233,7 +233,7 @@ void CFuncWallCvar::Spawn(void)
 }
 
 
-void CFuncWallCvar::TurnOff(void)
+void CFuncWallCvar::TurnOff()
 {
 	pev->solid = SOLID_NOT;
 	pev->effects |= EF_NODRAW;
@@ -241,7 +241,7 @@ void CFuncWallCvar::TurnOff(void)
 }
 
 
-void CFuncWallCvar::TurnOn(void)
+void CFuncWallCvar::TurnOn()
 {
 	pev->solid = SOLID_BSP;
 	pev->effects &= ~EF_NODRAW;
@@ -249,7 +249,7 @@ void CFuncWallCvar::TurnOn(void)
 }
 
 
-BOOL CFuncWallCvar::IsOn(void)
+BOOL CFuncWallCvar::IsOn()
 {
 	if (pev->solid == SOLID_NOT)
 		return FALSE;
@@ -336,13 +336,13 @@ void CFuncConveyor :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 class CFuncMirror : public CFuncWall
 {
 public:
-	void	Spawn( void );
+	void	Spawn( );
 };
 
 LINK_ENTITY_TO_CLASS( func_mirror, CFuncMirror );
 LINK_ENTITY_TO_CLASS( func_detail_ext, CFuncWall );
 
-void CFuncMirror :: Spawn( void )
+void CFuncMirror :: Spawn( )
 {
 	CFuncWall::Spawn();
 	pev->effects |= FL_MIRROR;

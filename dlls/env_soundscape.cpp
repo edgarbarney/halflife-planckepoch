@@ -85,7 +85,7 @@ char* CSoundScape::GetSoundFileDir()
 	return (char*)STRING(pev->message);
 }
 
-void CSoundScape::Spawn(void)
+void CSoundScape::Spawn()
 {
 	m_flAttenuation = ATTN_NONE;
 

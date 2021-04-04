@@ -103,7 +103,7 @@ unsigned int ByteToInt( byte *byte )
 }
 
 typedef void (__cdecl *CLGETMDL)(int, void **);
-void ExportDetails( void )
+void ExportDetails( )
 {	 
 	CLGETMDL ClientGetModelByIndex;
 

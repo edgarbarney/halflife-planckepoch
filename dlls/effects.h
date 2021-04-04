@@ -222,14 +222,13 @@ public:
 	int		m_iTowardsMode;
 };
 
-// TODO - Modernize
 class CRainSettings : public CBaseEntity
 {
 public:
-	void	Spawn( void );
+	void	Spawn( );
 	void	KeyValue( KeyValueData *pkvd );
 
-	int	ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps( ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
@@ -242,11 +241,11 @@ public:
 class CRainModify : public CBaseEntity
 {
 public:
-	void	Spawn( void );
+	void	Spawn( );
 	void	KeyValue( KeyValueData *pkvd );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
-	int	ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps( ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
@@ -265,7 +264,7 @@ public:
 class CClientFog : public CBaseEntity
 {
 public:
-	void Spawn( void );
+	void Spawn( );
 	void KeyValue( KeyValueData *pkvd );
 	void SendInitMessage( CBasePlayer *player );
 
@@ -281,7 +280,7 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 public:
-	static CClientFog *FogCreate( void );
+	static CClientFog *FogCreate( );
 };
 
 //=======================
@@ -290,11 +289,11 @@ public:
 class CItemProp : public CBaseAnimating
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
+	void	Spawn( );
+	void	Precache( );
 	void	KeyValue( KeyValueData *pkvd );
 
-	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );

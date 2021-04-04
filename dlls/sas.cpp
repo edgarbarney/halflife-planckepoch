@@ -170,41 +170,41 @@ enum
 class CSAS : public COFSquadTalkMonster
 {
 public:
-	void Spawn(void);
-	void Precache(void);
-	void SetYawSpeed(void);
-	int  Classify(void);
-	int ISoundMask(void);
+	void Spawn();
+	void Precache();
+	void SetYawSpeed();
+	int  Classify();
+	int ISoundMask();
 	void HandleAnimEvent(MonsterEvent_t* pEvent);
-	BOOL FCanCheckAttacks(void);
+	BOOL FCanCheckAttacks();
 	BOOL CheckMeleeAttack1(float flDot, float flDist);
 	BOOL CheckRangeAttack1(float flDot, float flDist);
 	BOOL CheckRangeAttack2(float flDot, float flDist);
-	void CheckAmmo(void);
+	void CheckAmmo();
 	void SetActivity(Activity NewActivity);
 	void StartTask(Task_t* pTask);
 	void RunTask(Task_t* pTask);
-	void DeathSound(void);
-	void PainSound(void);
-	void IdleSound(void);
-	Vector GetGunPosition(void);
-	void Shoot(void);
-	void Shotgun(void);
-	void PrescheduleThink(void);
-	void GibMonster(void);
-	void SpeakSentence(void);
+	void DeathSound();
+	void PainSound();
+	void IdleSound();
+	Vector GetGunPosition();
+	void Shoot();
+	void Shotgun();
+	void PrescheduleThink();
+	void GibMonster();
+	void SpeakSentence();
 
 	int	Save(CSave& save);
 	int Restore(CRestore& restore);
 
-	CBaseEntity* Kick(void);
-	Schedule_t* GetSchedule(void);
+	CBaseEntity* Kick();
+	Schedule_t* GetSchedule();
 	Schedule_t* GetScheduleOfType(int Type);
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
 	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
 
-	BOOL FOkToSpeak(void);
-	void JustSpoke(void);
+	BOOL FOkToSpeak();
+	void JustSpoke();
 
 	int GetCount();
 
@@ -322,7 +322,7 @@ enum
 // may still fail but in most cases, well after the grunt has 
 // started moving.
 //=========================================================
-void CSAS::SpeakSentence(void)
+void CSAS::SpeakSentence()
 {
 	if (m_iSentence == HSAS_SENT_NONE)
 	{
@@ -340,7 +340,7 @@ void CSAS::SpeakSentence(void)
 //=========================================================
 // GibMonster - make gun fly through the air.
 //=========================================================
-void CSAS::GibMonster(void)
+void CSAS::GibMonster()
 {
 	if (m_hWaitMedic)
 	{
@@ -399,7 +399,7 @@ void CSAS::GibMonster(void)
 // hear the DANGER sound that is made by hand grenades and
 // other dangerous items.
 //=========================================================
-int CSAS::ISoundMask(void)
+int CSAS::ISoundMask()
 {
 	return	bits_SOUND_WORLD |
 		bits_SOUND_COMBAT |
@@ -413,7 +413,7 @@ int CSAS::ISoundMask(void)
 //=========================================================
 // someone else is talking - don't speak
 //=========================================================
-BOOL CSAS::FOkToSpeak(void)
+BOOL CSAS::FOkToSpeak()
 {
 	// if someone else is talking, don't speak
 	if (gpGlobals->time <= COFSquadTalkMonster::g_talkWaitTime)
@@ -437,7 +437,7 @@ BOOL CSAS::FOkToSpeak(void)
 
 //=========================================================
 //=========================================================
-void CSAS::JustSpoke(void)
+void CSAS::JustSpoke()
 {
 	COFSquadTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(1.5, 2.0);
 	m_iSentence = HSAS_SENT_NONE;
@@ -447,7 +447,7 @@ void CSAS::JustSpoke(void)
 // PrescheduleThink - this function runs after conditions
 // are collected and before scheduling code is run.
 //=========================================================
-void CSAS::PrescheduleThink(void)
+void CSAS::PrescheduleThink()
 {
 	if (InSquad() && m_hEnemy != NULL)
 	{
@@ -479,7 +479,7 @@ void CSAS::PrescheduleThink(void)
 // this is a bad bug. Friendly machine gun fire avoidance
 // will unecessarily prevent the throwing of a grenade as well.
 //=========================================================
-BOOL CSAS::FCanCheckAttacks(void)
+BOOL CSAS::FCanCheckAttacks()
 {
 	if (!HasConditions(bits_COND_ENEMY_TOOFAR))
 	{
@@ -784,7 +784,7 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CSAS::SetYawSpeed(void)
+void CSAS::SetYawSpeed()
 {
 	int ys;
 
@@ -840,7 +840,7 @@ int CSAS::GetCount()
 	return totCount;
 }
 
-void CSAS::IdleSound(void)
+void CSAS::IdleSound()
 {
 	if (FOkToSpeak() && (g_fGruntAllyQuestion || RANDOM_LONG(0, 1)))
 	{
@@ -903,7 +903,7 @@ void CSAS::IdleSound(void)
 // CheckAmmo - overridden for the grunt because he actually
 // uses ammo! (base class doesn't)
 //=========================================================
-void CSAS::CheckAmmo(void)
+void CSAS::CheckAmmo()
 {
 	if (m_cAmmoLoaded <= 0)
 	{
@@ -915,14 +915,14 @@ void CSAS::CheckAmmo(void)
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CSAS::Classify(void)
+int	CSAS::Classify()
 {
 	return	CLASS_PLAYER_ALLY;
 }
 
 //=========================================================
 //=========================================================
-CBaseEntity* CSAS::Kick(void)
+CBaseEntity* CSAS::Kick()
 {
 	TraceResult tr;
 
@@ -961,7 +961,7 @@ Vector CSAS::GetGunPosition()
 //=========================================================
 // Shoot
 //=========================================================
-void CSAS::Shoot(void)
+void CSAS::Shoot()
 {
 	if (m_hEnemy == NULL)
 	{
@@ -988,7 +988,7 @@ void CSAS::Shoot(void)
 //=========================================================
 // Shoot
 //=========================================================
-void CSAS::Shotgun(void)
+void CSAS::Shotgun()
 {
 	if (m_hEnemy == NULL)
 	{
@@ -1435,7 +1435,7 @@ void CSAS::RunTask(Task_t* pTask)
 //=========================================================
 // PainSound
 //=========================================================
-void CSAS::PainSound(void)
+void CSAS::PainSound()
 {
 	if (gpGlobals->time > m_flNextPainTime)
 	{
@@ -1481,7 +1481,7 @@ void CSAS::PainSound(void)
 //=========================================================
 // DeathSound 
 //=========================================================
-void CSAS::DeathSound(void)
+void CSAS::DeathSound()
 {
 	//TODO: these sounds don't exist, the gr_ prefix is wrong
 	switch (RANDOM_LONG(0, 5))
@@ -2356,7 +2356,7 @@ void CSAS::SetActivity(Activity NewActivity)
 //=========================================================
 // Get Schedule!
 //=========================================================
-Schedule_t* CSAS::GetSchedule(void)
+Schedule_t* CSAS::GetSchedule()
 {
 
 	// clear old sentence
@@ -3043,8 +3043,8 @@ class CSASRepel : public CBaseMonster
 public:
 	void KeyValue(KeyValueData* pkvd) override;
 
-	void Spawn(void);
-	void Precache(void);
+	void Spawn();
+	void Precache();
 	void EXPORT RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	int m_iSpriteTexture;	// Don't save, precache
 
@@ -3077,7 +3077,7 @@ void CSASRepel::KeyValue(KeyValueData* pkvd)
 		CBaseMonster::KeyValue(pkvd);
 }
 
-void CSASRepel::Spawn(void)
+void CSASRepel::Spawn()
 {
 	Precache();
 	pev->solid = SOLID_NOT;
@@ -3085,7 +3085,7 @@ void CSASRepel::Spawn(void)
 	SetUse(&CSASRepel::RepelUse);
 }
 
-void CSASRepel::Precache(void)
+void CSASRepel::Precache()
 {
 	UTIL_PrecacheOther("monster_sas");
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/rope.spr");
@@ -3149,8 +3149,8 @@ void CSASRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 class CDeadSAS : public CBaseMonster
 {
 public:
-	void Spawn(void);
-	int	Classify(void) { return	CLASS_PLAYER_ALLY; }
+	void Spawn();
+	int	Classify() { return	CLASS_PLAYER_ALLY; }
 
 	void KeyValue(KeyValueData* pkvd);
 
@@ -3182,7 +3182,7 @@ LINK_ENTITY_TO_CLASS(monster_sas_dead, CDeadSAS);
 //=========================================================
 // ********** DeadSAS SPAWN **********
 //=========================================================
-void CDeadSAS::Spawn(void)
+void CDeadSAS::Spawn()
 {
 	PRECACHE_MODEL("models/sas.mdl");
 	SET_MODEL(ENT(pev), "models/sas.mdl");

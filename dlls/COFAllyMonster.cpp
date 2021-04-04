@@ -661,7 +661,7 @@ CBaseEntity	*COFAllyMonster::EnumFriends( CBaseEntity *pPrevious, int listNumber
 	Vector vecCheck;
 
 	pszFriend = m_szFriends[ FriendNumber( listNumber ) ];
-	while( pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend ) )
+	while( (pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend )) )
 	{
 		if( pFriend == this || !pFriend->IsAlive() )
 			// don't talk to self or dead people
@@ -686,7 +686,7 @@ CBaseEntity	*COFAllyMonster::EnumFriends( CBaseEntity *pPrevious, int listNumber
 }
 
 
-void COFAllyMonster::AlertFriends( void )
+void COFAllyMonster::AlertFriends( )
 {
 	CBaseEntity *pFriend = NULL;
 	int i;
@@ -694,7 +694,7 @@ void COFAllyMonster::AlertFriends( void )
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, TRUE ) )
+		while( (pFriend = EnumFriends( pFriend, i, TRUE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster->IsAlive() )
@@ -708,7 +708,7 @@ void COFAllyMonster::AlertFriends( void )
 
 
 
-void COFAllyMonster::ShutUpFriends( void )
+void COFAllyMonster::ShutUpFriends( )
 {
 	CBaseEntity *pFriend = NULL;
 	int i;
@@ -716,7 +716,7 @@ void COFAllyMonster::ShutUpFriends( void )
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, TRUE ) )
+		while( (pFriend = EnumFriends( pFriend, i, TRUE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster )
@@ -739,7 +739,7 @@ void COFAllyMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, FALSE ) )
+		while( (pFriend = EnumFriends( pFriend, i, FALSE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster )
@@ -756,7 +756,7 @@ void COFAllyMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 }
 
 
-float COFAllyMonster::TargetDistance( void )
+float COFAllyMonster::TargetDistance( )
 {
 	// If we lose the player, or he dies, return a really large distance
 	if( m_hTargetEnt == NULL || !m_hTargetEnt->IsAlive() )
@@ -792,7 +792,7 @@ void COFAllyMonster::HandleAnimEvent( MonsterEvent_t *pEvent )
 
 // monsters derived from COFAllyMonster should call this in precache()
 
-void COFAllyMonster::TalkInit( void )
+void COFAllyMonster::TalkInit( )
 {
 	// every new talking monster must reset this global, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
@@ -838,7 +838,7 @@ CBaseEntity *COFAllyMonster::FindNearestFriend( BOOL fPlayer )
 			continue;
 
 		// for each friend in this bsp...
-		while( pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend ) )
+		while( (pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend )) )
 		{
 			if( pFriend == this || !pFriend->IsAlive() )
 				// don't talk to self or dead people
@@ -874,7 +874,7 @@ CBaseEntity *COFAllyMonster::FindNearestFriend( BOOL fPlayer )
 	return pNearest;
 }
 
-int COFAllyMonster::GetVoicePitch( void )
+int COFAllyMonster::GetVoicePitch( )
 {
 	return m_voicePitch + RANDOM_LONG( 0, 3 );
 }
@@ -909,7 +909,7 @@ void COFAllyMonster::Touch( CBaseEntity *pOther )
 // IdleRespond
 // Respond to a previous question
 //=========================================================
-void COFAllyMonster::IdleRespond( void )
+void COFAllyMonster::IdleRespond( )
 {
 	int pitch = GetVoicePitch();
 
@@ -917,7 +917,7 @@ void COFAllyMonster::IdleRespond( void )
 	PlaySentence( m_szGrp[ TLK_ANSWER ], RANDOM_FLOAT( 2.8, 3.2 ), VOL_NORM, ATTN_IDLE );
 }
 
-int COFAllyMonster::FOkToSpeak( void )
+int COFAllyMonster::FOkToSpeak( )
 {
 	// if in the grip of a barnacle, don't speak
 	if( m_MonsterState == MONSTERSTATE_PRONE || m_IdealMonsterState == MONSTERSTATE_PRONE )
@@ -963,7 +963,7 @@ int COFAllyMonster::CanPlaySentence( BOOL fDisregardState )
 //=========================================================
 // FIdleStare
 //=========================================================
-int COFAllyMonster::FIdleStare( void )
+int COFAllyMonster::FIdleStare( )
 {
 	if( !FOkToSpeak() )
 		return FALSE;
@@ -978,7 +978,7 @@ int COFAllyMonster::FIdleStare( void )
 // IdleHello
 // Try to greet player first time he's seen
 //=========================================================
-int COFAllyMonster::FIdleHello( void )
+int COFAllyMonster::FIdleHello( )
 {
 	if( !FOkToSpeak() )
 		return FALSE;
@@ -1030,7 +1030,7 @@ void COFAllyMonster::IdleHeadTurn( Vector &vecFriend )
 // FIdleSpeak
 // ask question of nearby friend, or make statement
 //=========================================================
-int COFAllyMonster::FIdleSpeak( void )
+int COFAllyMonster::FIdleSpeak( )
 {
 	// try to start a conversation, or make statement
 	int pitch;
@@ -1316,7 +1316,7 @@ Schedule_t* COFAllyMonster::GetScheduleOfType( int Type )
 //=========================================================
 // IsTalking - am I saying a sentence right now?
 //=========================================================
-BOOL COFAllyMonster::IsTalking( void )
+BOOL COFAllyMonster::IsTalking( )
 {
 	if( m_flStopTalkTime > gpGlobals->time )
 	{
@@ -1329,7 +1329,7 @@ BOOL COFAllyMonster::IsTalking( void )
 //=========================================================
 // If there's a player around, watch him.
 //=========================================================
-void COFAllyMonster::PrescheduleThink( void )
+void COFAllyMonster::PrescheduleThink( )
 {
 	if( !HasConditions( bits_COND_SEE_CLIENT ) )
 	{
@@ -1338,7 +1338,7 @@ void COFAllyMonster::PrescheduleThink( void )
 }
 
 // try to smell something
-void COFAllyMonster::TrySmellTalk( void )
+void COFAllyMonster::TrySmellTalk( )
 {
 	if( !FOkToSpeak() )
 		return;
@@ -1406,7 +1406,7 @@ void COFAllyMonster::StartFollowing( CBaseEntity *pLeader )
 }
 
 
-BOOL COFAllyMonster::CanFollow( void )
+BOOL COFAllyMonster::CanFollow( )
 {
 	if( m_MonsterState == MONSTERSTATE_SCRIPT )
 	{
@@ -1470,7 +1470,7 @@ void COFAllyMonster::KeyValue( KeyValueData *pkvd )
 }
 
 
-void COFAllyMonster::Precache( void )
+void COFAllyMonster::Precache( )
 {
 	if( m_iszUse )
 		m_szGrp[ TLK_USE ] = STRING( m_iszUse );

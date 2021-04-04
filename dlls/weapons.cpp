@@ -712,7 +712,7 @@ void CBasePlayerItem::DefaultTouch( CBaseEntity *pOther )
 	SUB_UseTargets( pOther, USE_TOGGLE, 0 ); // UNDONE: when should this happen?
 }
 
-void CBasePlayerItem::DestroyItem( void )
+void CBasePlayerItem::DestroyItem( )
 {
 	if ( m_pPlayer )
 	{
@@ -995,7 +995,7 @@ BOOL CBasePlayerWeapon::CbarDeploy(const char* szViewModel, const char* szWeapon
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon :: PlayEmptySound( void )
+BOOL CBasePlayerWeapon :: PlayEmptySound( )
 {
 	if (m_iPlayEmptySound)
 	{

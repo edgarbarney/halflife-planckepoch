@@ -670,24 +670,24 @@ private:
 class CHealthShot : public CBasePlayerWeapon
 {
 public:
-	void Spawn(void);
-	void Precache(void);
-	int iItemSlot(void) { return 5; }
+	void Spawn();
+	void Precache();
+	int iItemSlot() { return 5; }
 	int GetItemInfo(ItemInfo* p);
 
 	int AddToPlayer(CBasePlayer* pPlayer);
 
-	void PrimaryAttack(void);
-	BOOL Deploy(void);
+	void PrimaryAttack();
+	BOOL Deploy();
 	void Holster(int skiplocal = 0);
-	void WeaponIdle(void);
-	void ApplyHealth(void);
+	void WeaponIdle();
+	void ApplyHealth();
 
 	bool m_isUsed;
 
 	const float m_healthToAdd = 50.0f;
 
-	virtual BOOL UseDecrement(void)
+	virtual BOOL UseDecrement()
 	{
 #if defined( CLIENT_WEAPONS )
 		return TRUE;
@@ -800,22 +800,22 @@ enum ar16_e
 class CAR16 : public CBasePlayerWeapon
 {
 public:
-	void Spawn(void);
-	void Precache(void);
+	void Spawn();
+	void Precache();
 	int GetItemInfo(ItemInfo* p);
 	int AddToPlayer(CBasePlayer* pPlayer);
 
-	void PrimaryAttack(void);
-	void SecondaryAttack(void);
-	int SecondaryAmmoIndex(void);
-	BOOL Deploy(void);
+	void PrimaryAttack();
+	void SecondaryAttack();
+	int SecondaryAmmoIndex();
+	BOOL Deploy();
 	void Holster(int skiplocal = 0);
-	void Reload(void);
-	void WeaponIdle(void);
+	void Reload();
+	void WeaponIdle();
 	float m_flNextAnimTime;
 	int m_iShell;
 
-	virtual BOOL UseDecrement(void)
+	virtual BOOL UseDecrement()
 	{
 #if defined( CLIENT_WEAPONS )
 		return TRUE;
@@ -1436,7 +1436,7 @@ public:
 	int m_fSpotActive;
 	void UpdateSpot( void );
 */
-    BOOL UseDecrement( void ) override
+    BOOL UseDecrement( ) override
     { 
 #if defined( CLIENT_WEAPONS )
 	return TRUE;

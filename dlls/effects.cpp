@@ -1734,8 +1734,7 @@ class CEnvModel : public CBaseAnimating
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void SetSequence();
-    // TODO - Modernize
-	void StickToThink(void);
+	void StickToThink();
 
 	string_t m_iszSequence_On;
 	string_t m_iszSequence_Off;
@@ -1943,7 +1942,7 @@ void CEnvModel :: SetSequence()
 	}
 }
 
-void CEnvModel :: StickToThink( void )
+void CEnvModel :: StickToThink( )
 {
 		if (gpGlobals->time < m_spawnTime + m_precisionTime)
 		{
@@ -3734,7 +3733,7 @@ void CEnvRain::Think()
 
 #define SF_FOG_STARTON 1
 
-CClientFog *CClientFog::FogCreate( void )
+CClientFog *CClientFog::FogCreate( )
 {
 	CClientFog *pFog = GetClassPtr( (CClientFog *)NULL );
 	pFog->pev->classname = MAKE_STRING("env_fog_trinity");
@@ -3763,7 +3762,7 @@ void CClientFog :: KeyValue( KeyValueData *pkvd )
 		CBaseEntity::KeyValue( pkvd );
 }
 
-void CClientFog :: Spawn ( void )
+void CClientFog :: Spawn ( )
 {
 	pev->effects |= EF_NODRAW;
 
@@ -3843,11 +3842,11 @@ IMPLEMENT_SAVERESTORE( CClientFog, CBaseEntity );
 class CItemGeneric : public CBaseAnimating
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
+	void	Spawn( );
+	void	Precache( );
 	void	KeyValue( KeyValueData *pkvd );
 
-	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
@@ -3884,12 +3883,12 @@ void CItemGeneric :: KeyValue( KeyValueData *pkvd )
 		CBaseAnimating::KeyValue( pkvd );
 }
 
-void CItemGeneric :: Precache ( void )
+void CItemGeneric :: Precache ( )
 {
 	PRECACHE_MODEL( (char *)STRING(pev->model) );
 }
 
-void CItemGeneric::Spawn( void )
+void CItemGeneric::Spawn( )
 {
 	if ( pev->targetname )
 	{
@@ -3923,17 +3922,17 @@ void CItemGeneric::Spawn( void )
 class CDynamicLight : public CPointEntity
 {
 public:
-	void Spawn( void );
-	void Precache( void );
+	void Spawn( );
+	void Precache( );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
-	void EXPORT LightThink( void );
+	void EXPORT LightThink( );
 };
 
 LINK_ENTITY_TO_CLASS( env_elight, CDynamicLight );
 LINK_ENTITY_TO_CLASS( env_dlight, CDynamicLight );
 LINK_ENTITY_TO_CLASS( env_spotlight, CDynamicLight );
-void CDynamicLight::Spawn( void )
+void CDynamicLight::Spawn( )
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -3970,7 +3969,7 @@ void CDynamicLight::Spawn( void )
 	SET_MODEL(ENT(pev),"sprites/null.spr"); // should be visible to send to client
 	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 }
-void CDynamicLight::Precache( void )
+void CDynamicLight::Precache( )
 {
 	PRECACHE_MODEL("sprites/null.spr");
 }
@@ -4006,7 +4005,7 @@ void CDynamicLight::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		}
 	}
 };
-void CDynamicLight::LightThink( void )
+void CDynamicLight::LightThink( )
 {
 	edict_t *pentFind = FIND_ENTITY_BY_TARGETNAME(NULL, STRING(pev->target));
 		
@@ -4034,11 +4033,11 @@ void CDynamicLight::LightThink( void )
 class CEnvPos_Sky : public CPointEntity
 {
 public:
-	void Spawn( void );
+	void Spawn( );
 	void SendInitMessage( CBasePlayer *player );
 	void KeyValue( KeyValueData *pkvd );
 
-	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
@@ -4060,7 +4059,7 @@ TYPEDESCRIPTION	CEnvPos_Sky::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CEnvPos_Sky, CPointEntity );
 
-void CEnvPos_Sky :: Spawn( void )
+void CEnvPos_Sky :: Spawn( )
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -4165,7 +4164,7 @@ char *stristr( const char *string, const char *string2 )
 class CEnvDecal : public CPointEntity
 {
 public:
-	void Spawn( void );
+	void Spawn( );
 	void KeyValue( KeyValueData *pkvd );
 	void SendInitMessage( CBasePlayer *player );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
@@ -4194,7 +4193,7 @@ IMPLEMENT_SAVERESTORE( CEnvDecal, CBaseEntity );
 
 LINK_ENTITY_TO_CLASS( env_decal, CEnvDecal );
 
-void CEnvDecal::Spawn( void )
+void CEnvDecal::Spawn( )
 {
 	TraceResult tr;
 
@@ -4286,11 +4285,11 @@ void CEnvDecal :: KeyValue( KeyValueData *pkvd )
 class CEnvParticle : public CPointEntity
 {
 public:
-	void Spawn( void );
+	void Spawn( );
 	void KeyValue( KeyValueData *pkvd );
 	void SendInitMessage( CBasePlayer *player );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void EXPORT ParticleThink ( void );
+	void EXPORT ParticleThink ( );
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
 	static	TYPEDESCRIPTION m_SaveData[];
@@ -4307,7 +4306,7 @@ IMPLEMENT_SAVERESTORE( CEnvParticle, CBaseEntity );
 
 LINK_ENTITY_TO_CLASS( env_particle_system, CEnvParticle );
 
-void CEnvParticle::Spawn( void )
+void CEnvParticle::Spawn( )
 {
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
@@ -4354,7 +4353,7 @@ void CEnvParticle::SendInitMessage( CBasePlayer *player )
 	pev->nextthink = gpGlobals->time + 0.01;
 }
 
-void CEnvParticle :: ParticleThink( void )
+void CEnvParticle :: ParticleThink( )
 {
 	if(!m_bActive)
 	{

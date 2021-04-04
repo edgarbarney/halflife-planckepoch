@@ -374,7 +374,7 @@ void CZombie::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 // Crab Removal
 //=========================================================
-void CZombie::RemoveKrabby(void)
+void CZombie::RemoveKrabby()
 {
 	m_zombieType = static_cast<zombieTypeEnum>(GetBodygroup(0));
 	switch (m_zombieType)

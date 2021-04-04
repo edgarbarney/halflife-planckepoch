@@ -48,7 +48,6 @@ public:
 
 	STATE GetState() override;
 	
-    // TODO - Modernize
 	//RENDERERS START
 	char	*DamageDecal( int bitsDamageType );
 	//RENDERERS END

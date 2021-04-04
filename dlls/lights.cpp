@@ -102,10 +102,9 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
-// TODO - Modernize
 	virtual void	KeyValue( KeyValueData* pkvd ); 
 	virtual void	SendInitMessage( CBasePlayer *player );
-	void EXPORT	LightStyleThink( void );
+	void EXPORT	LightStyleThink( );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
 	virtual int		Save( CSave &save );

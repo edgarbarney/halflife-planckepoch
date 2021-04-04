@@ -326,7 +326,7 @@ public:
 	virtual CSquadMonster *MySquadMonsterPointer() { return NULL;}
 	virtual	int		GetToggleState() { return TS_AT_TOP; }
 	//Solokiller's OP4
-	virtual COFSquadTalkMonster* MySquadTalkMonsterPointer(void) { return nullptr; }
+	virtual COFSquadTalkMonster* MySquadTalkMonsterPointer() { return nullptr; }
 	virtual void	AddPoints( int score, BOOL bAllowNegativeScore ) {}
 	virtual void	AddPointsToTeam( int score, BOOL bAllowNegativeScore ) {}
 	virtual BOOL	AddPlayerItem( CBasePlayerItem *pItem ) { return 0; }

@@ -4689,7 +4689,7 @@ void CBasePlayer :: UpdateClientData()
 }
 
 //RENDERERS START
-void CBasePlayer :: ClearEffects( void )
+void CBasePlayer :: ClearEffects( )
 {
 	MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, pev );
 		WRITE_SHORT ( 0 );
@@ -4700,7 +4700,7 @@ void CBasePlayer :: ClearEffects( void )
 	MESSAGE_END();
 }
 // Thanks BUzer
-void CBasePlayer :: SendInitMessages( void )
+void CBasePlayer :: SendInitMessages( )
 {
 	edict_t		*pEdict = g_engfuncs.pfnPEntityOfEntIndex( 1 );
 	CBaseEntity *pEntity;

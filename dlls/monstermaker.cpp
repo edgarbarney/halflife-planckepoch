@@ -270,7 +270,7 @@ void CMonsterMaker::TryMakeMonster()
 //=========================================================
 // MakeMonsterThink- a really trivial think function
 //=========================================================
-void CMonsterMaker::MakeMonsterThink( void )
+void CMonsterMaker::MakeMonsterThink( )
 {
 	MakeMonster();
 }

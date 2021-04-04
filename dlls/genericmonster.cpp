@@ -272,7 +272,7 @@ enum
 // =========================================================
 // TORCH SUPPORT
 // =========================================================
-void CGenericMonster :: Torch ( void )
+void CGenericMonster :: Torch ( )
 {
 	Vector vecGunPos;
 	Vector vecGunAngles;
@@ -285,9 +285,9 @@ void CGenericMonster :: Torch ( void )
 		SetBlending( 0, angDir.x );
 }
 
-void CGenericMonster::UpdateGas( void ) { }
+void CGenericMonster::UpdateGas( ) { }
 
-void CGenericMonster::MakeGas( void )
+void CGenericMonster::MakeGas( )
 {
 	Vector posGun, angleGun;
 	TraceResult tr;
@@ -326,7 +326,7 @@ void CGenericMonster::MakeGas( void )
 	}
 }
 
-void CGenericMonster :: KillGas( void )
+void CGenericMonster :: KillGas( )
 {
 	if ( m_pBeam )
 	{

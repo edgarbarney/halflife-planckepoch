@@ -90,15 +90,14 @@ public:
     int	ObjectCaps() override { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-    // TODO - Modernize
-	void CheckAmmo(void); // For Reload
+	void CheckAmmo(); // For Reload
 
 	//For Multiple Weapons
 	void SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock);
 	void SwitchWeapon(int weaponToWork, bool forcehand);
 	void SetActivity(Activity NewActivity);
-	void BarneyFireMP5(void);
-	void BarneyFireAR16(void);
+	void BarneyFireMP5();
+	void BarneyFireAR16();
 
 	void KeyValue(KeyValueData* pkvd);
 	
@@ -507,7 +506,7 @@ BOOL CBarney :: CheckRangeAttack1 ( float flDot, float flDist )
 // the enemy barney is facing.
 //=========================================================
 
-void CBarney::BarneyFireAR16(void)
+void CBarney::BarneyFireAR16()
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -563,7 +562,7 @@ void CBarney::BarneyFireAR16(void)
 // the enemy barney is facing.
 //=========================================================
 
-void CBarney::BarneyFireMP5(void)
+void CBarney::BarneyFireMP5()
 {
 	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
 	{
@@ -675,7 +674,7 @@ void CBarney :: BarneyFirePistol ()
 // CheckAmmo - overridden for the barney because like
 // hgrunt, he actually uses ammo! (base class doesn't)
 //=========================================================
-void CBarney::CheckAmmo(void)
+void CBarney::CheckAmmo()
 {
 	if (m_cAmmoLoaded <= 0)
 	{

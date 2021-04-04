@@ -25,17 +25,17 @@
 class CDebugger: public CBasePlayerWeapon
 {
 public:
-	void Spawn( void );
-	void Precache( void );
+	void Spawn( );
+	void Precache( );
 	int GetItemInfo(ItemInfo *p);
 	int AddToPlayer( CBasePlayer *pPlayer );
 	void EXPORT Commands( BOOL type );
-	void PrimaryAttack( void );
-	void SecondaryAttack( void );
-	BOOL Deploy( void );
+	void PrimaryAttack( );
+	void SecondaryAttack( );
+	BOOL Deploy( );
 	void Holster( int skiplocal = 0 );
 //	void WeaponIdle( void );
-	void UpdateInfo (void);
+	void UpdateInfo ();
 	int command;
 };
 
@@ -69,7 +69,7 @@ void CDebugger::Holster( int skiplocal )
 	SendWeaponAnim( 8 );
 }
 
-void CDebugger::Precache( void )
+void CDebugger::Precache( )
 {
 	PRECACHE_MODEL("models/v_9mmhandgun.mdl");
 	PRECACHE_MODEL("models/w_9mmhandgun.mdl");
@@ -145,17 +145,17 @@ BOOL CDebugger::Deploy( )
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", 7, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
 }
 
-void CDebugger::PrimaryAttack( void )
+void CDebugger::PrimaryAttack( )
 {
  	Commands (TRUE);
 }
 
-void CDebugger::SecondaryAttack( void )
+void CDebugger::SecondaryAttack( )
 {
 	Commands (FALSE);
 }
 
-void CDebugger::UpdateInfo (void)
+void CDebugger::UpdateInfo ()
 {
 	SERVER_COMMAND( "impulse 106\n" );
 }
