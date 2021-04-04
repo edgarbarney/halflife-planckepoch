@@ -351,7 +351,7 @@ class CItemSecurity : public CItem
     {
 		PRECACHE_MODEL ("models/w_security.mdl");
 	}
-	BOOL MyTouch( CBasePlayer *pPlayer )
+	BOOL MyTouch( CBasePlayer *pPlayer ) override
 	{
 		pPlayer->m_rgItems[ITEM_SECURITY] += 1;		//AJH implement a new system with different cards instead of just MORE cards
 		

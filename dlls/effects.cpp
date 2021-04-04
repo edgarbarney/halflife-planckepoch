@@ -3842,14 +3842,14 @@ IMPLEMENT_SAVERESTORE( CClientFog, CBaseEntity );
 class CItemGeneric : public CBaseAnimating
 {
 public:
-	void	Spawn( );
-	void	Precache( );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn( ) override;
+	void	Precache( ) override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int		ObjectCaps( ) override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_fDisableShadows;
@@ -3922,9 +3922,9 @@ void CItemGeneric::Spawn( )
 class CDynamicLight : public CPointEntity
 {
 public:
-	void Spawn( );
-	void Precache( );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Spawn( ) override;
+	void Precache( ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	void EXPORT LightThink( );
 };
@@ -4033,14 +4033,14 @@ void CDynamicLight::LightThink( )
 class CEnvPos_Sky : public CPointEntity
 {
 public:
-	void Spawn( );
-	void SendInitMessage( CBasePlayer *player );
-	void KeyValue( KeyValueData *pkvd );
+	void Spawn( ) override;
+	void SendInitMessage( CBasePlayer *player ) override;
+	void KeyValue( KeyValueData *pkvd ) override;
 
-	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int		ObjectCaps( ) override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 public:
@@ -4107,14 +4107,14 @@ void CEnvPos_Sky :: SendInitMessage( CBasePlayer *player )
 class CEnvPos_World : public CPointEntity
 {
 public:
-	void Spawn()
+	void Spawn() override
 	{
 		pev->solid = SOLID_NOT;
 		pev->movetype = MOVETYPE_NONE;
 		pev->effects |= EF_NODRAW;
 	}
 	
-	void SendInitMessage( CBasePlayer *player )
+	void SendInitMessage( CBasePlayer *player ) override
 	{
 		MESSAGE_BEGIN( MSG_ONE, gmsgSkyMark_World, NULL, player->pev );
 			WRITE_COORD( pev->origin.x );
@@ -4164,13 +4164,13 @@ char *stristr( const char *string, const char *string2 )
 class CEnvDecal : public CPointEntity
 {
 public:
-	void Spawn( );
-	void KeyValue( KeyValueData *pkvd );
-	void SendInitMessage( CBasePlayer *player );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Spawn( ) override;
+	void KeyValue( KeyValueData *pkvd ) override;
+	void SendInitMessage( CBasePlayer *player ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_bActive;
@@ -4285,13 +4285,13 @@ void CEnvDecal :: KeyValue( KeyValueData *pkvd )
 class CEnvParticle : public CPointEntity
 {
 public:
-	void Spawn( );
-	void KeyValue( KeyValueData *pkvd );
-	void SendInitMessage( CBasePlayer *player );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Spawn( ) override;
+	void KeyValue( KeyValueData *pkvd ) override;
+	void SendInitMessage( CBasePlayer *player ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void EXPORT ParticleThink ( );
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_bActive;
@@ -4755,8 +4755,8 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 class CEnvSky : public CBaseEntity
 {
 public:
-	void Activate();
-	void DesiredAction();
+	void Activate() override;
+	void DesiredAction() override;
 };
 
 void CEnvSky :: Activate ()

@@ -53,7 +53,7 @@ public:
 	int  Classify () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 	int IgnoreConditions () override;
-	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
+	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
 	void SpawnCrab();
 	void RemoveKrabby();
 	zombieTypeEnum m_zombieType;

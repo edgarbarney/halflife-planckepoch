@@ -823,8 +823,8 @@ public:
 
 	inline BOOL	UseOnly() { return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) ? TRUE : FALSE; }
 
-	virtual int		Save(CSave& save);
-	virtual int		Restore(CRestore& restore);
+	int		Save(CSave& save) override;
+	int		Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 private:

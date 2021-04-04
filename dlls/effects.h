@@ -225,13 +225,13 @@ public:
 class CRainSettings : public CBaseEntity
 {
 public:
-	void	Spawn( );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn( ) override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	int	ObjectCaps( ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps( ) override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float Rain_Distance;
@@ -241,14 +241,14 @@ public:
 class CRainModify : public CBaseEntity
 {
 public:
-	void	Spawn( );
-	void	KeyValue( KeyValueData *pkvd );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Spawn( ) override;
+	void	KeyValue( KeyValueData *pkvd ) override;
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	int	ObjectCaps( ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int	ObjectCaps( ) override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int Rain_Drips;
@@ -264,19 +264,19 @@ public:
 class CClientFog : public CBaseEntity
 {
 public:
-	void Spawn( );
-	void KeyValue( KeyValueData *pkvd );
-	void SendInitMessage( CBasePlayer *player );
+	void Spawn( ) override;
+	void KeyValue( KeyValueData *pkvd ) override;
+	void SendInitMessage( CBasePlayer *player ) override;
 
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	float m_iStartDist;
 	float m_iEndDist;
 
 	BOOL  m_fActive;
 	BOOL  m_bDontAffectSky;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 public:
@@ -289,14 +289,14 @@ public:
 class CItemProp : public CBaseAnimating
 {
 public:
-	void	Spawn( );
-	void	Precache( );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn( ) override;
+	void	Precache( ) override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	virtual int		ObjectCaps( ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int		ObjectCaps( ) override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_fDisableShadows;

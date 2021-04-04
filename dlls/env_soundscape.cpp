@@ -16,7 +16,7 @@ public:
 	void Precache() override;
 	//void EXPORT ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void EXPORT StartPlayFrom();
-	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	void EXPORT Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 	void ForceStopSound();
 	void RefreshPlayerVar();
 	char* GetSoundFileDir();

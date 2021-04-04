@@ -184,9 +184,9 @@ void CFuncWallToggle :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 class CFuncWallCvar : public CFuncWall
 {
 public:
-	void	KeyValue(KeyValueData* pkvd);
-	void	Spawn();
-	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	void	KeyValue(KeyValueData* pkvd) override;
+	void	Spawn() override;
+	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 	void	TurnOff();
 	void	TurnOn();
 	BOOL	IsOn();
@@ -195,7 +195,7 @@ public:
 
 	int		m_cVarValue;
 
-	virtual STATE GetState() { return (pev->solid == SOLID_NOT) ? STATE_OFF : STATE_ON; };
+	STATE GetState() override { return (pev->solid == SOLID_NOT) ? STATE_OFF : STATE_ON; };
 };
 
 LINK_ENTITY_TO_CLASS(func_wall_cvar, CFuncWallCvar);
@@ -336,7 +336,7 @@ void CFuncConveyor :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 class CFuncMirror : public CFuncWall
 {
 public:
-	void	Spawn( );
+	void	Spawn( ) override;
 };
 
 LINK_ENTITY_TO_CLASS( func_mirror, CFuncMirror );

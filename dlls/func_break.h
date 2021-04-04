@@ -49,7 +49,7 @@ public:
 	STATE GetState() override;
 	
 	//RENDERERS START
-	char	*DamageDecal( int bitsDamageType );
+	char	*DamageDecal( int bitsDamageType ) override;
 	//RENDERERS END
 
 	void EXPORT		Die();

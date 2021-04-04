@@ -102,13 +102,13 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
-	virtual void	KeyValue( KeyValueData* pkvd ); 
-	virtual void	SendInitMessage( CBasePlayer *player );
+	void	KeyValue( KeyValueData* pkvd ) override; 
+	void	SendInitMessage( CBasePlayer *player ) override;
 	void EXPORT	LightStyleThink( );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 

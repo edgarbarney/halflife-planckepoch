@@ -60,7 +60,7 @@ public:
     int	Save( CSave &save ) override;
     int	Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
-	BOOL CFuncTankControls :: OnControls( entvars_t *pevTest ) override;
+	BOOL OnControls( entvars_t *pevTest ) override;
 
 	BOOL m_active; // am I being used to control tanks right now?
 	Vector		m_vecControllerUsePos; // where was the player standing when he used me?
@@ -237,7 +237,7 @@ protected:
 
 	int			m_iTankClass;	// Behave As
 
-	void CFuncTank::UpdateSpot();
+	void UpdateSpot();
 //	CLaserSpot*  m_pViewTarg;	// Player view indicator
 
 	CPointEntity *m_pFireProxy; //LRC - locus position for custom shots
@@ -1617,7 +1617,7 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 			return;
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.
-		while (tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target)))
+		while ((tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target))))
 		{
 			if (!strncmp( STRING(tryTank->pev->classname), "func_tank", 9 ))
 			{
@@ -1661,7 +1661,7 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 		//ALERT(at_console, "TANK controls deactivated\n");
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.
-		while (tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target)))
+		while ((tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target))))
 		{
 			if (FClassnameIs(tryTank->pev, "func_tank") || FClassnameIs(tryTank->pev, "func_tanklaser") || FClassnameIs(tryTank->pev, "func_tankmortar") || FClassnameIs(tryTank->pev, "func_tankrocket"))
 			{

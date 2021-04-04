@@ -293,18 +293,18 @@ void CAR16::WeaponIdle()
 
 class CAR16AmmoClip : public CBasePlayerAmmo
 {
-	void Spawn()
+	void Spawn() override
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ar16clip.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache()
+	void Precache() override
 	{
 		PRECACHE_MODEL("models/w_ar16clip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo(CBaseEntity* pOther)
+	BOOL AddAmmo(CBaseEntity* pOther) override
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_AR16CLIP_GIVE, "556", _556_MAX_CARRY) != -1);
 		if (bResult)
@@ -321,18 +321,18 @@ LINK_ENTITY_TO_CLASS(ammo_556, CAR16AmmoClip);
 
 class CAR16Chainammo : public CBasePlayerAmmo
 {
-	void Spawn()
+	void Spawn() override
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ar16_magpale.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache()
+	void Precache() override
 	{
 		PRECACHE_MODEL("models/w_ar16_magpale.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo(CBaseEntity* pOther)
+	BOOL AddAmmo(CBaseEntity* pOther) override
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_CHAINBOX_GIVE, "556", _556_MAX_CARRY) != -1);
 		if (bResult)
@@ -348,18 +348,18 @@ LINK_ENTITY_TO_CLASS(ammo_556box, CAR16Chainammo);
 
 class CAR16AmmoGrenade : public CBasePlayerAmmo
 {
-	void Spawn()
+	void Spawn() override
 	{
 		Precache();
 		SET_MODEL(ENT(pev), "models/w_ARgrenade.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
-	void Precache()
+	void Precache() override
 	{
 		PRECACHE_MODEL("models/w_ARgrenade.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
-	BOOL AddAmmo(CBaseEntity* pOther)
+	BOOL AddAmmo(CBaseEntity* pOther) override
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_M203BOX_GIVE, "ARgrenades", M203_GRENADE_MAX_CARRY) != -1);
 

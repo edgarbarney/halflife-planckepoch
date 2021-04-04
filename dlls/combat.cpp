@@ -345,7 +345,7 @@ void CBaseMonster :: GibMonster()
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);		
 
-	if ( iszCustomGibs = HasCustomGibs() ) //LRC - monster_generic can have a custom gibset
+	if ( (iszCustomGibs = HasCustomGibs()) ) //LRC - monster_generic can have a custom gibset
 	{
 		if ( CVAR_GET_FLOAT("violence_hgibs") != 0 )
 		{

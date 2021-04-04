@@ -90,16 +90,16 @@ public:
     int	ObjectCaps() override { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	void CheckAmmo(); // For Reload
+	void CheckAmmo() override; // For Reload
 
 	//For Multiple Weapons
 	void SetWeaponBG(int weaponToWork, int gunstatus, bool forceglock);
 	void SwitchWeapon(int weaponToWork, bool forcehand);
-	void SetActivity(Activity NewActivity);
+	void SetActivity(Activity NewActivity) override;
 	void BarneyFireMP5();
 	void BarneyFireAR16();
 
-	void KeyValue(KeyValueData* pkvd);
+	void KeyValue(KeyValueData* pkvd) override;
 	
 	void DeclineFollowing() override;
 

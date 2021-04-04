@@ -270,7 +270,7 @@ void CHGrunt :: SpeakSentence()
 int CHGrunt::IRelationship ( CBaseEntity *pTarget )
 {
 	//LRC- only hate alien grunts if my behaviour hasn't been overridden
-	if (!m_iClass && FClassnameIs( pTarget->pev, "monster_alien_grunt" ) || ( FClassnameIs( pTarget->pev,  "monster_gargantua" ) ) )
+	if ((!m_iClass && FClassnameIs( pTarget->pev, "monster_alien_grunt" )) || ( FClassnameIs( pTarget->pev,  "monster_gargantua" ) ) )
 	{
 		return R_NM;
 	}

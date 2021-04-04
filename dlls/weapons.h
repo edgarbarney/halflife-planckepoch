@@ -670,24 +670,24 @@ private:
 class CHealthShot : public CBasePlayerWeapon
 {
 public:
-	void Spawn();
-	void Precache();
-	int iItemSlot() { return 5; }
-	int GetItemInfo(ItemInfo* p);
+	void Spawn() override;
+	void Precache() override;
+	int iItemSlot() override { return 5; }
+	int GetItemInfo(ItemInfo* p) override;
 
-	int AddToPlayer(CBasePlayer* pPlayer);
+	int AddToPlayer(CBasePlayer* pPlayer) override;
 
-	void PrimaryAttack();
-	BOOL Deploy();
-	void Holster(int skiplocal = 0);
-	void WeaponIdle();
+	void PrimaryAttack() override;
+	BOOL Deploy() override;
+	void Holster(int skiplocal = 0) override;
+	void WeaponIdle() override;
 	void ApplyHealth();
 
 	bool m_isUsed;
 
 	const float m_healthToAdd = 50.0f;
 
-	virtual BOOL UseDecrement()
+	BOOL UseDecrement() override
 	{
 #if defined( CLIENT_WEAPONS )
 		return TRUE;
@@ -800,22 +800,22 @@ enum ar16_e
 class CAR16 : public CBasePlayerWeapon
 {
 public:
-	void Spawn();
-	void Precache();
-	int GetItemInfo(ItemInfo* p);
-	int AddToPlayer(CBasePlayer* pPlayer);
+	void Spawn() override;
+	void Precache() override;
+	int GetItemInfo(ItemInfo* p) override;
+	int AddToPlayer(CBasePlayer* pPlayer) override;
 
-	void PrimaryAttack();
-	void SecondaryAttack();
-	int SecondaryAmmoIndex();
-	BOOL Deploy();
-	void Holster(int skiplocal = 0);
-	void Reload();
-	void WeaponIdle();
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	int SecondaryAmmoIndex() override;
+	BOOL Deploy() override;
+	void Holster(int skiplocal = 0) override;
+	void Reload() override;
+	void WeaponIdle() override;
 	float m_flNextAnimTime;
 	int m_iShell;
 
-	virtual BOOL UseDecrement()
+	BOOL UseDecrement() override
 	{
 #if defined( CLIENT_WEAPONS )
 		return TRUE;

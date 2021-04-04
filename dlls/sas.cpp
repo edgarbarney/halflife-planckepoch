@@ -170,38 +170,38 @@ enum
 class CSAS : public COFSquadTalkMonster
 {
 public:
-	void Spawn();
-	void Precache();
-	void SetYawSpeed();
-	int  Classify();
-	int ISoundMask();
-	void HandleAnimEvent(MonsterEvent_t* pEvent);
-	BOOL FCanCheckAttacks();
-	BOOL CheckMeleeAttack1(float flDot, float flDist);
-	BOOL CheckRangeAttack1(float flDot, float flDist);
-	BOOL CheckRangeAttack2(float flDot, float flDist);
-	void CheckAmmo();
-	void SetActivity(Activity NewActivity);
-	void StartTask(Task_t* pTask);
-	void RunTask(Task_t* pTask);
-	void DeathSound();
-	void PainSound();
-	void IdleSound();
-	Vector GetGunPosition();
+	void Spawn() override;
+	void Precache() override;
+	void SetYawSpeed() override;
+	int  Classify() override;
+	int ISoundMask() override;
+	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
+	BOOL FCanCheckAttacks() override;
+	BOOL CheckMeleeAttack1(float flDot, float flDist) override;
+	BOOL CheckRangeAttack1(float flDot, float flDist) override;
+	BOOL CheckRangeAttack2(float flDot, float flDist) override;
+	void CheckAmmo() override;
+	void SetActivity(Activity NewActivity) override;
+	void StartTask(Task_t* pTask) override;
+	void RunTask(Task_t* pTask) override;
+	void DeathSound() override;
+	void PainSound() override;
+	void IdleSound() override;
+	Vector GetGunPosition() override;
 	void Shoot();
 	void Shotgun();
-	void PrescheduleThink();
-	void GibMonster();
+	void PrescheduleThink() override;
+	void GibMonster() override;
 	void SpeakSentence();
 
-	int	Save(CSave& save);
-	int Restore(CRestore& restore);
+	int	Save(CSave& save) override;
+	int Restore(CRestore& restore) override;
 
 	CBaseEntity* Kick();
-	Schedule_t* GetSchedule();
-	Schedule_t* GetScheduleOfType(int Type);
-	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
-	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
+	Schedule_t* GetSchedule() override;
+	Schedule_t* GetScheduleOfType(int Type) override;
+	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
+	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 
 	BOOL FOkToSpeak();
 	void JustSpoke();
@@ -222,7 +222,7 @@ public:
 
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 
-	MONSTERSTATE GetIdealState()
+	MONSTERSTATE GetIdealState() override
 	{
 		return COFSquadTalkMonster::GetIdealState();
 	}
@@ -3043,8 +3043,8 @@ class CSASRepel : public CBaseMonster
 public:
 	void KeyValue(KeyValueData* pkvd) override;
 
-	void Spawn();
-	void Precache();
+	void Spawn() override;
+	void Precache() override;
 	void EXPORT RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	int m_iSpriteTexture;	// Don't save, precache
 
@@ -3149,10 +3149,10 @@ void CSASRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 class CDeadSAS : public CBaseMonster
 {
 public:
-	void Spawn();
-	int	Classify() { return	CLASS_PLAYER_ALLY; }
+	void Spawn() override;
+	int	Classify() override { return	CLASS_PLAYER_ALLY; }
 
-	void KeyValue(KeyValueData* pkvd);
+	void KeyValue(KeyValueData* pkvd) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	int m_iGruntHead;

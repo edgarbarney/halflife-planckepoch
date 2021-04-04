@@ -915,7 +915,7 @@ class CBaseMutableAlias : public CPointEntity
 {
 public:
 	BOOL IsMutableAlias() override { return TRUE; }
-	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; };
+	CBaseEntity *FollowAlias( CBaseEntity *pFrom ) override { return NULL; };
 	virtual void ChangeValue( int iszValue ) { ALERT(at_error, "%s entities cannot change value!", STRING(pev->classname)); }
 	virtual void ChangeValue( CBaseEntity *pValue ) { ChangeValue(pValue->pev->targetname); }
 	virtual void FlushChanges() {};

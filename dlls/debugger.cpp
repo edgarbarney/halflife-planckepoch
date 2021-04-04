@@ -25,15 +25,15 @@
 class CDebugger: public CBasePlayerWeapon
 {
 public:
-	void Spawn( );
-	void Precache( );
-	int GetItemInfo(ItemInfo *p);
-	int AddToPlayer( CBasePlayer *pPlayer );
+	void Spawn( ) override;
+	void Precache( ) override;
+	int GetItemInfo(ItemInfo *p) override;
+	int AddToPlayer( CBasePlayer *pPlayer ) override;
 	void EXPORT Commands( BOOL type );
-	void PrimaryAttack( );
-	void SecondaryAttack( );
-	BOOL Deploy( );
-	void Holster( int skiplocal = 0 );
+	void PrimaryAttack( ) override;
+	void SecondaryAttack( ) override;
+	BOOL Deploy( ) override;
+	void Holster( int skiplocal = 0 ) override;
 //	void WeaponIdle( void );
 	void UpdateInfo ();
 	int command;
