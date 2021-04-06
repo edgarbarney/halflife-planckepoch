@@ -310,6 +310,8 @@ public:
 	virtual BOOL	HasHumanGibs();
 	virtual BOOL	HasAlienGibs();
 	virtual void	FadeMonster();	// Called instead of GibMonster() when gibs are disabled
+	//Stun Grenade thingies
+	virtual void	BeStunned();
 
 	Vector ShootAtEnemy( const Vector &shootOrigin );
 	Vector BodyTarget( const Vector &posSrc ) override { return Center( ) * 0.75 + EyePosition() * 0.25; }		// position to shoot at

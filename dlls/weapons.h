@@ -34,10 +34,14 @@ public:
 	static CGrenade *ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time );
 	static CGrenade *ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
 	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
+	static CGrenade* ShootStun( entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time );
 	static void UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code );
 
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
+
+	//Stun Grenade
+	void StunExplode(TraceResult* pTrace, int bitsDamageType);
 
 	// Ear Ringing
 	int CalcDamageDirection(Vector vecFrom, CBasePlayer* playaPtr);
@@ -59,6 +63,9 @@ public:
     void Killed( entvars_t *pevAttacker, int iGib ) override;
 
 	BOOL m_fRegisteredSound;// whether or not this grenade has issued its DANGER sound to the world sound list yet.
+
+	//Nade Type
+	int m_nadeType;
 
 	// Ear Ringing
 	float m_fAttackFront, m_fAttackRear, m_fAttackLeft, m_fAttackRight;
@@ -87,19 +94,20 @@ public:
 #define WEAPON_PYTHON			3
 #define WEAPON_GENERIC			4
 #define WEAPON_MP5				5
-#define WEAPON_DEBUG                           	6 //G-Cont. weapon for hunt bugs. he-he-he
+#define WEAPON_DEBUG            6 //G-Cont. weapon for hunt bugs. he-he-he
 #define WEAPON_CROSSBOW			7
 #define WEAPON_SHOTGUN			8
 #define WEAPON_RPG				9
 #define WEAPON_GAUSS			10
 #define WEAPON_EGON				11
-#define WEAPON_HORNETGUN			12
-#define WEAPON_HANDGRENADE			13
+#define WEAPON_HORNETGUN		12
+#define WEAPON_HANDGRENADE		13
 #define WEAPON_TRIPMINE			14
 #define WEAPON_SATCHEL			15
 #define WEAPON_SNARK			16
 #define WEAPON_AR16				17
 #define WEAPON_HEALTHSHOT		18
+#define WEAPON_STUNGRENADE		19
 
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
@@ -129,6 +137,7 @@ public:
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
 #define HEALTHSHOT_WEIGHT	-10
+#define STUNGRENADE_WEIGHT	-10
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
@@ -145,6 +154,7 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
+#define STUNGRENADE_MAX_CARRY	5
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -166,6 +176,7 @@ public:
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
 #define HEALTHSHOT_MAX_CLIP		WEAPON_NOCLIP
+#define STUNGRENADE_MAX_CLIP	WEAPON_NOCLIP
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
@@ -185,6 +196,7 @@ public:
 #define HEALTHSHOT_DEFAULT_GIVE		1
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
+#define STUNGRENADE_DEFAULT_GIVE	1
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -1252,6 +1264,41 @@ public:
 
     BOOL UseDecrement() override
     { 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+};
+
+enum stungrenade_e
+{
+	STUNGRENADE_IDLE = 0,
+	STUNGRENADE_FIDGET,
+	STUNGRENADE_PINPULL,
+	STUNGRENADE_THROW1,	// toss
+	STUNGRENADE_THROW2 = 3,	// medium
+	STUNGRENADE_THROW3 = 3,	// hard
+	STUNGRENADE_HOLSTER = 6,
+	STUNGRENADE_DRAW
+};
+
+class CStunGrenade : public CBasePlayerWeapon
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	int GetItemInfo(ItemInfo* p) override;
+
+	void PrimaryAttack() override;
+	BOOL Deploy() override;
+	BOOL CanHolster() override;
+	void Holster(int skiplocal = 0) override;
+	void WeaponIdle() override;
+
+	BOOL UseDecrement() override
+	{
 #if defined( CLIENT_WEAPONS )
 		return TRUE;
 #else

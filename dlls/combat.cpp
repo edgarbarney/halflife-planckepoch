@@ -1819,3 +1819,9 @@ void CBaseMonster :: MakeDamageBloodDecal ( int cCount, float flNoise, TraceResu
 		}
 	}
 }
+
+void CBaseMonster::BeStunned()
+{
+	ALERT(at_console, "\nMonster %s at %f,%f,%f is now paralized!\n", STRING(pev->classname), pev->origin.x, pev->origin.y, pev->origin.z);
+	SetActivity(ACT_VICTORY_DANCE);
+}

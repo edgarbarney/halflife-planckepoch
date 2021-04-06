@@ -442,6 +442,9 @@ void W_Precache()
 	// healthshot
 	UTIL_PrecacheOtherWeapon("weapon_healthshot");
 
+	// stun grenade
+	UTIL_PrecacheOtherWeapon("weapon_stungrenade");
+
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	if ( g_pGameRules->IsDeathmatch() )
 	{
@@ -471,6 +474,10 @@ void W_Precache()
 	PRECACHE_SOUND ("weapons/grenade_hit1.wav");//grenade
 	PRECACHE_SOUND ("weapons/grenade_hit2.wav");//grenade
 	PRECACHE_SOUND ("weapons/grenade_hit3.wav");//grenade
+
+	PRECACHE_SOUND ("weapons/fbang_hit1.wav");//stun-grenade
+	PRECACHE_SOUND ("weapons/fbang_explode1.wav");//stun-grenade
+	PRECACHE_SOUND ("weapons/fbang_explode2.wav");//stun-grenade
 
 	PRECACHE_SOUND ("weapons/bullet_hit1.wav");	// hit by bullet
 	PRECACHE_SOUND ("weapons/bullet_hit2.wav");	// hit by bullet

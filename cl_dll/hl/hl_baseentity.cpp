@@ -104,6 +104,7 @@ void CGrenade::Killed( entvars_t *, int ) { }
 void CGrenade::Spawn() { }
 CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time ){ return 0; }
 CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity ){ return 0; }
+CGrenade *CGrenade::ShootStun(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time) { return 0; };
 void CGrenade::DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ){ }
 
 void UTIL_Remove( CBaseEntity *pEntity ){ }
@@ -228,6 +229,7 @@ BOOL CBaseMonster :: ShouldFadeOnDeath() { return FALSE; }
 void CBaseMonster :: RadiusDamage(entvars_t* pevInflictor, entvars_t*	pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType ) { }
 void CBaseMonster :: RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType ) { }
 void CBaseMonster::FadeMonster() { }
+void CBaseMonster::BeStunned() { }
 void CBaseMonster :: GibMonster() { }
 BOOL CBaseMonster :: HasHumanGibs() { return FALSE; }
 BOOL CBaseMonster :: HasAlienGibs() { return FALSE; }

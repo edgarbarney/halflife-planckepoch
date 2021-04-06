@@ -72,6 +72,7 @@ CSatchel g_Satchel;
 CTripmine g_Tripmine;
 CSqueak g_Snark;
 CHealthShot g_HealthShot;
+CStunGrenade g_StunGren;
 
 
 /*
@@ -499,6 +500,7 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity( &g_Tripmine		, &player );
 	HUD_PrepEntity( &g_Snark		, &player );
 	HUD_PrepEntity( &g_HealthShot	, &player );
+	HUD_PrepEntity( &g_StunGren		, &player );
 }
 
 /*
@@ -626,6 +628,10 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 
 		case WEAPON_HEALTHSHOT:
 			pWeapon = &g_HealthShot;
+			break;
+
+		case WEAPON_STUNGRENADE:
+			pWeapon = &g_StunGren;
 			break;
 	}
 
