@@ -126,7 +126,7 @@ void CHealthShot::PrimaryAttack()
 void CHealthShot::ApplyHealth()
 {
 #ifndef CLIENT_DLL
-	UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 0.1, 128, FFADE_IN);
+	UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 2, 128, FFADE_IN);
 #endif
 	m_pPlayer->pev->iuser1 = TRUE;
 	m_pPlayer->pev->fuser1 = 600; //def 320. sv_maxspeed replacement
@@ -178,15 +178,15 @@ void CHealthShot::WeaponIdle()
 		// we've finished the throw, restart.
 		m_flStartThrow = 0;
 
-		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
-		{
-			SendWeaponAnim(HEALTHSHOT_DRAW);
-		}
-		else
-		{
-			RetireWeapon();
-			return;
-		}
+		//if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		//{
+		//	SendWeaponAnim(HEALTHSHOT_DRAW);
+		//}
+		//else
+		//{
+		RetireWeapon();
+		return;
+		//}
 
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 		m_flReleaseThrow = -1;
