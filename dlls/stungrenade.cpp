@@ -45,6 +45,7 @@ void CStunGrenade::Spawn( )
 void CStunGrenade::Precache()
 {
 	PRECACHE_MODEL("models/w_stungrenade.mdl");
+	PRECACHE_MODEL("models/w_stungrenade_thrown.mdl");
 	PRECACHE_MODEL("models/v_stungrenade.mdl");
 	PRECACHE_MODEL("models/p_stungrenade.mdl");
 }

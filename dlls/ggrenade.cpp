@@ -365,8 +365,8 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 	*/
 	switch (RANDOM_LONG(0, 1))
 	{
-	case 0:	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/fbang_explode1.wav", 0.55, ATTN_NORM);	break;
-	case 1:	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/fbang_explode2.wav", 0.55, ATTN_NORM);	break;
+	case 0:	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/fbang_explode1.wav", 1.5f, ATTN_NORM);	break;
+	case 1:	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/fbang_explode2.wav", 1.5f, ATTN_NORM);	break;
 	}
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/debris3.wav", 0.55, ATTN_NORM);
 
@@ -773,7 +773,7 @@ CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->pev->gravity = 1;
 	pGrenade->pev->friction = 0.8;
 
-	SET_MODEL(ENT(pGrenade->pev), "models/w_grenade.mdl");
+	SET_MODEL(ENT(pGrenade->pev), "models/W_grenade_thrown.mdl");
 	pGrenade->pev->dmg = 100;
 
 	return pGrenade;
@@ -814,7 +814,7 @@ CGrenade* CGrenade::ShootStun(entvars_t* pevOwner, Vector vecStart, Vector vecVe
 	pGrenade->pev->gravity = 1;
 	pGrenade->pev->friction = 0.8;
 
-	SET_MODEL(ENT(pGrenade->pev), "models/w_stungrenade.mdl");
+	SET_MODEL(ENT(pGrenade->pev), "models/w_stungrenade_thrown.mdl");
 	pGrenade->pev->dmg = 100;
 
 	return pGrenade;
