@@ -153,8 +153,6 @@ void CHealthShot::WeaponIdle()
 
 	if (m_flStartThrow)
 	{
-		// player "shoot" animation
-		//m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ApplyHealth();
 
 		m_flReleaseThrow = 0;
@@ -163,33 +161,19 @@ void CHealthShot::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
 
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		
+		RetireWeapon();
+#ifndef CLIENT_DLL
+		m_pPlayer->SwitchWeapon(m_pPlayer->m_pLastItem);
+#endif
 
-		if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
-		{
-			// just used last water
-			// set attack times in the future, and weapon idle in the future so we can see the whole use
-			// animation, weapon idle will automatically retire the weapon for us.
-			m_flTimeWeaponIdle = m_flNextSecondaryAttack = m_flNextPrimaryAttack = GetNextAttackDelay(0.5);// ensure that the animation can finish playing
-		}
 		return;
 	}
 	else if (m_flReleaseThrow > 0)
 	{
 		// we've finished the throw, restart.
-		m_flStartThrow = 0;
-
-		//if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
-		//{
-		//	SendWeaponAnim(HEALTHSHOT_DRAW);
-		//}
-		//else
-		//{
 		RetireWeapon();
-		return;
-		//}
-
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
-		m_flReleaseThrow = -1;
+		m_flStartThrow = 0;
 		return;
 	}
 
