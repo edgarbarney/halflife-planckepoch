@@ -157,6 +157,7 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	g_gameStateManager.InitHud();
 }
 
+/*
 //LRC
 void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 {
@@ -191,6 +192,7 @@ void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 		dl->color.b = READ_BYTE();
 	}
 }
+*/
 
 //LRC
 void CHud :: MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf )

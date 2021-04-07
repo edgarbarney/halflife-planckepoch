@@ -22,7 +22,7 @@ extern int gmsgFlashlight;
 extern int gmsgFlashBattery;
 extern int gmsgResetHUD;
 extern int gmsgInitHUD;
-extern int gmsgKeyedDLight; //LRC
+//extern int gmsgKeyedDLight; //LRC
 extern int gmsgKeyedELight;//LRC
 extern int gmsgSetSky; // LRC
 extern int gmsgHUDColor; // LRC

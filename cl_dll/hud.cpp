@@ -127,12 +127,14 @@ int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
 	return 1;
 }
 
+/*
 //LRC
 int __MsgFunc_KeyedDLight(const char *pszName, int iSize, void *pbuf)
 {
 	gHUD.MsgFunc_KeyedDLight( pszName, iSize, pbuf );
 	return 1;
 }
+*/
 
 int __MsgFunc_Test(const char *pszName, int iSize, void *pbuf)
 { return 1; }
@@ -398,7 +400,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
 	HOOK_MESSAGE( HUDColor ); //LRC
-	HOOK_MESSAGE( KeyedDLight ); //LRC
+//	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC

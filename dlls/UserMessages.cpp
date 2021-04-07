@@ -26,7 +26,7 @@ int gmsgFlashlight = 0;
 int gmsgFlashBattery = 0;
 int gmsgResetHUD = 0;
 int gmsgInitHUD = 0;
-int gmsgKeyedDLight = 0;//LRC
+//int gmsgKeyedDLight = 0;//LRC
 int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
@@ -105,7 +105,7 @@ void LinkUserMessages()
 	gmsgResetHUD = REG_USER_MSG("ResetHUD", 1);		// called every respawn
 	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);		// called every time a new player joins the server
 
-	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
+	//gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
 	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
