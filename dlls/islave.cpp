@@ -217,8 +217,9 @@ void CISlave :: IdleSound()
 
 	UTIL_MakeAimVectors( pev->angles );
 	Vector vecSrc = pev->origin + gpGlobals->v_right * 2 * side;
+	/*
 	// Teh_Freak: World Lighting!
-	MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight, vecSrc );
+	MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight );
 		//WRITE_BYTE(TE_DLIGHT);
 		WRITE_COORD(vecSrc.x);	// X
 		WRITE_COORD(vecSrc.y);	// Y
@@ -227,11 +228,11 @@ void CISlave :: IdleSound()
 		WRITE_BYTE( 0 );		// r
 		WRITE_BYTE( 255 );		// g
 		WRITE_BYTE( 0 );		// b
-		WRITE_BYTE( 10 );		// time * 10
+		WRITE_BYTE( 1 );		// time * 10
 		WRITE_BYTE( 0 );		// decay * 0.1
 	MESSAGE_END( );
 	// Teh_Freak: World Lighting!
-
+	*/
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "debris/zap1.wav", 1, ATTN_NORM, 0, 100 );
 #endif
 }
@@ -372,10 +373,10 @@ void CISlave :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					WRITE_COORD(vecSrc.y);	// Y
 					WRITE_COORD(vecSrc.z);	// Z
 					WRITE_BYTE( 12 );		// radius * 0.1
-					WRITE_BYTE( 255 );		// r
-					WRITE_BYTE( 180 );		// g
-					WRITE_BYTE( 96 );		// b
-					WRITE_BYTE( 20 / pev->framerate );		// time * 10
+					WRITE_BYTE( 0 );		// r
+					WRITE_BYTE( 100 );		// g
+					WRITE_BYTE( 0 );		// b
+					WRITE_BYTE( 2 );		// time * 10
 					WRITE_BYTE( 0 );		// decay * 0.1
 				MESSAGE_END( );
 
