@@ -225,8 +225,8 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 
 	int iContents = UTIL_PointContents(pev->origin);
 
-	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
-		WRITE_BYTE(TE_DLIGHT);
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
+		//WRITE_BYTE(TE_DLIGHT);
 		WRITE_COORD(pev->origin.x); // origin
 		WRITE_COORD(pev->origin.y);
 		WRITE_COORD(pev->origin.z);

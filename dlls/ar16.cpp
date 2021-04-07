@@ -136,8 +136,8 @@ void CAR16::PrimaryAttack()
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 #ifndef CLIENT_DLL 
-	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
-	WRITE_BYTE(TE_DLIGHT);
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
+	//WRITE_BYTE(TE_DLIGHT);
 	WRITE_COORD(pev->origin.x); // origin
 	WRITE_COORD(pev->origin.y);
 	WRITE_COORD(pev->origin.z);

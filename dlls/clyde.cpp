@@ -528,8 +528,8 @@ void CClyde::ClydeFireAR16()
 	m_cAmmoLoaded--;// take away a bullet!
 
 	// Teh_Freak: World Lighting!
-	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
-	WRITE_BYTE(TE_DLIGHT);
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
+	//WRITE_BYTE(TE_DLIGHT);
 	WRITE_COORD(vecShootOrigin.x); // origin
 	WRITE_COORD(vecShootOrigin.y);
 	WRITE_COORD(vecShootOrigin.z);
@@ -584,8 +584,8 @@ void CClyde::ClydeFireMP5()
 	m_cAmmoLoaded--;// take away a bullet!
 
 	// Teh_Freak: World Lighting!
-	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
-	WRITE_BYTE(TE_DLIGHT);
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
+	//WRITE_BYTE(TE_DLIGHT);
 	WRITE_COORD(vecShootOrigin.x); // origin
 	WRITE_COORD(vecShootOrigin.y);
 	WRITE_COORD(vecShootOrigin.z);

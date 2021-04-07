@@ -218,8 +218,8 @@ void CISlave :: IdleSound()
 	UTIL_MakeAimVectors( pev->angles );
 	Vector vecSrc = pev->origin + gpGlobals->v_right * 2 * side;
 	// Teh_Freak: World Lighting!
-	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSrc );
-		WRITE_BYTE(TE_DLIGHT);
+	MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight, vecSrc );
+		//WRITE_BYTE(TE_DLIGHT);
 		WRITE_COORD(vecSrc.x);	// X
 		WRITE_COORD(vecSrc.y);	// Y
 		WRITE_COORD(vecSrc.z);	// Z
@@ -366,8 +366,8 @@ void CISlave :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			if (m_iBeams == 0)
 			{
 				Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
-				MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSrc );
-					WRITE_BYTE(TE_DLIGHT);
+				MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight, vecSrc );
+					//WRITE_BYTE(TE_DLIGHT);
 					WRITE_COORD(vecSrc.x);	// X
 					WRITE_COORD(vecSrc.y);	// Y
 					WRITE_COORD(vecSrc.z);	// Z
