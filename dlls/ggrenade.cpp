@@ -230,17 +230,17 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 		WRITE_COORD(pev->origin.x); // origin
 		WRITE_COORD(pev->origin.y);
 		WRITE_COORD(pev->origin.z);
-		WRITE_BYTE(pev->dmg * 50);     // radius
+		WRITE_BYTE(500);     // radius
 		WRITE_BYTE(255);     // R
 		WRITE_BYTE(255);     // G
 		WRITE_BYTE(255);     // B
-		WRITE_BYTE(100);     // life * 10
-		WRITE_BYTE(100); // decay
+		WRITE_BYTE(0.1f);     // life * 10
+		WRITE_BYTE(0); // decay
 	MESSAGE_END();
 
 	//RENDERERS START
 	if (iContents != CONTENTS_WATER)
-		UTIL_Particle("explosion_stun.txt", pev->origin, g_vecZero, 1);
+		UTIL_Particle("explosion_stun.txt", Vector(pev->origin.x, pev->origin.y, pev->origin.z - 50.0f), g_vecZero, 1);
 	//RENDERERS END
 
 	//if (m_nadeType != NADETYPE_STUN)
@@ -469,7 +469,7 @@ void CGrenade::Smoke()
 	{
 		UTIL_Bubbles( pev->origin - Vector( 64, 64, 64 ), pev->origin + Vector( 64, 64, 64 ), 100 );
 	}
-	else
+	else if (m_nadeType != NADETYPE_STUN)
 	{
 		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 			WRITE_BYTE( TE_SMOKE );
