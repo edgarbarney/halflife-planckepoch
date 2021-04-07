@@ -31,8 +31,8 @@ extern DLL_GLOBAL int		g_iSkillLevel;
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
-#define		ISLAVE_AE_CLAW		( 1 )
-#define		ISLAVE_AE_CLAWRAKE	( 2 )
+#define		ISLAVE_AE_CLAW			( 1 )
+#define		ISLAVE_AE_CLAWRAKE		( 2 )
 #define		ISLAVE_AE_ZAP_POWERUP	( 3 )
 #define		ISLAVE_AE_ZAP_SHOOT		( 4 )
 #define		ISLAVE_AE_ZAP_DONE		( 5 )

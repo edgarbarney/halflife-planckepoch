@@ -123,13 +123,13 @@ namespace SASWeapon
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
-#define		HSAS_AE_RELOAD		( 2 )
+#define		HSAS_AE_RELOAD			( 2 )
 #define		HSAS_AE_KICK			( 3 )
-#define		HSAS_AE_BURST1		( 4 )
-#define		HSAS_AE_BURST2		( 5 ) 
-#define		HSAS_AE_BURST3		( 6 ) 
+#define		HSAS_AE_BURST1			( 4 )
+#define		HSAS_AE_BURST2			( 5 ) 
+#define		HSAS_AE_BURST3			( 6 ) 
 #define		HSAS_AE_GREN_TOSS		( 7 )
-#define		HSAS_AE_GREN_LAUNCH	( 8 )
+#define		HSAS_AE_GREN_LAUNCH		( 8 )
 #define		HSAS_AE_GREN_DROP		( 9 )
 #define		HSAS_AE_CAUGHT_ENEMY	( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
 #define		HSAS_AE_DROP_GUN		( 11) // grunt (probably dead) is dropping his mp5.
