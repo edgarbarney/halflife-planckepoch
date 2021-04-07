@@ -5,3 +5,5 @@
 !utils/vgui/lib/win32_vc6/vgui.lib
 
 *.bak
+
+dlls/.clang-tidy
