@@ -107,7 +107,7 @@ void CStunGrenade::PrimaryAttack()
 		m_flReleaseThrow = 0;
 
 		SendWeaponAnim( STUNGRENADE_PINPULL );
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.8;
 	}
 }
 
@@ -148,8 +148,8 @@ void CStunGrenade::WeaponIdle()
 
 		//m_flReleaseThrow = 0;
 		m_flStartThrow = 0;
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.6);
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
 
 		m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ]--;
 
@@ -158,7 +158,7 @@ void CStunGrenade::WeaponIdle()
 			// just threw last grenade
 			// set attack times in the future, and weapon idle in the future so we can see the whole throw
 			// animation, weapon idle will automatically retire the weapon for us.
-			m_flTimeWeaponIdle = m_flNextSecondaryAttack = m_flNextPrimaryAttack = GetNextAttackDelay(0.5);// ensure that the animation can finish playing
+			m_flTimeWeaponIdle = m_flNextSecondaryAttack = m_flNextPrimaryAttack = GetNextAttackDelay(0.6);// ensure that the animation can finish playing
 		}
 		return;
 	}

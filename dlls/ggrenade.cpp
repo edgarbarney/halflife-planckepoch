@@ -278,10 +278,11 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 			if (tr2.flFraction != 1.0)
 			{
 				pev->origin = pTrace->vecEndPos + (pTrace->vecPlaneNormal * (pev->dmg - 24) * 0.6);
+				// Something's wrong. Couldn't find monster. Try again for the last time.
 				UTIL_TraceLine(pev->origin, monstaPointa->pev->origin, ignore_monsters, ENT(pev), &tr2);
 			}
 			//ALERT(at_console, "\nMonster %s at %f,%f,%f is now BEING paralized!\n", STRING(monstaPointa->pev->classname), monstaPointa->pev->origin.x, monstaPointa->pev->origin.y, monstaPointa->pev->origin.z);
-			if (tr2.flFraction == 1)
+			if (tr2.flFraction == 1 && monstaPointa->pev->deadflag != DEAD_NO) // Dead people are dead. Can't be paralyzed.
 				monstaPointa->BeStunned();
 		}
 	}
