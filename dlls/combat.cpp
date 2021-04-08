@@ -1429,6 +1429,15 @@ void CBaseMonster :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 		TraceBleed( flDamage, vecDir, ptr, bitsDamageType );
 		AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
 	}
+	//RENDERERS START
+	if (BloodColor() != DONT_BLEED)
+	{
+		if (BloodColor() == BLOOD_COLOR_YELLOW || BloodColor() == BLOOD_COLOR_GREEN)
+			UTIL_StudioDecal(ptr->vecPlaneNormal, ptr->vecEndPos, "shot_alien", ENTINDEX(ptr->pHit));
+		else
+			UTIL_StudioDecal(ptr->vecPlaneNormal, ptr->vecEndPos, "shot_human", ENTINDEX(ptr->pHit));
+	}
+	//RENDERERS END
 }
 
 /*
