@@ -833,8 +833,8 @@ int CSAS::GetCount()
 	int totCount = 0;
 	while ((pMate = UTIL_FindEntityByClassname(pMate, "monster_sas")) != NULL)
 	{
-		ALERT(at_console, "Found one. Count is now %d", totCount);
-		totCount++;
+		ALERT(at_console, "Found one. Count is now %d\n", totCount);
+		totCount += pMate->IsAlive();
 	}
 	ALERT(at_console, "Finished. Returning %d", totCount);
 	return totCount;
