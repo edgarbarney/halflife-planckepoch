@@ -256,18 +256,6 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 
 	CBaseEntity* entPointa = nullptr;
 
-	/*
-	while ((entPointa = UTIL_FindEntityInSphere(this, pev->origin, pev->dmg*5)) != nullptr)
-	{
-		CBaseMonster* monstaPointa = entPointa->MyMonsterPointer();
-		if (monstaPointa != nullptr)
-		{ 
-			ALERT(at_console, "\nMonster %s at %f,%f,%f is now BEING paralized!\n", monstaPointa->pev->classname, monstaPointa->pev->origin.x, monstaPointa->pev->origin.y, monstaPointa->pev->origin.z);
-			monstaPointa->BeStunned();
-		}
-	}
-	*/
-
 	while ((entPointa = UTIL_FindEntityInSphere(entPointa, pev->origin, 1500)) != nullptr)
 	{
 		CBaseMonster* monstaPointa = entPointa->MyMonsterPointer();
@@ -282,8 +270,8 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 				UTIL_TraceLine(pev->origin, monstaPointa->pev->origin, ignore_monsters, ENT(pev), &tr2);
 			}
 			//ALERT(at_console, "\nMonster %s at %f,%f,%f is now BEING paralized!\n", STRING(monstaPointa->pev->classname), monstaPointa->pev->origin.x, monstaPointa->pev->origin.y, monstaPointa->pev->origin.z);
-			if (tr2.flFraction == 1 && monstaPointa->pev->deadflag != DEAD_NO) // Dead people are dead. Can't be paralyzed.
-				monstaPointa->BeStunned();
+			if (tr2.flFraction == 1) // Dead people are dead. Can't be paralyzed.
+				monstaPointa->BeStunned(4.0f);
 		}
 	}
 

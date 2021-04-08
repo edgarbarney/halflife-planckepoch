@@ -1820,8 +1820,39 @@ void CBaseMonster :: MakeDamageBloodDecal ( int cCount, float flNoise, TraceResu
 	}
 }
 
-void CBaseMonster::BeStunned()
+void CBaseMonster::BeStunned(float stunTime)
 {
-	ALERT(at_console, "\nMonster %s at %f,%f,%f is now paralized!\n", STRING(pev->classname), pev->origin.x, pev->origin.y, pev->origin.z);
-	SetActivity(ACT_VICTORY_DANCE);
+	if (CanBeStunned())
+	{
+		m_bIsStunned = TRUE;
+		m_flFieldOfViewBackup = m_flFieldOfView;	// backup fov for reverting it later
+		m_flFieldOfView = 0;						// obviously, monster is now blind
+		m_flStunTime = gpGlobals->time + stunTime;	
+		if (!m_stdsStunSequence.empty())
+		{
+			pev->sequence = LookupSequence(m_stdsStunSequence.c_str()); // seek for good ol' stun sequence
+			if (pev->sequence == -1) // is stun sequence name invalid?
+			{
+				pev->sequence = 0;	// shit. then, go back to idle.
+			}
+		}
+		m_hEnemy = NULL;
+		SetState(MONSTERSTATE_ALERT);
+		m_flNextAttack = gpGlobals->time + stunTime;
+		ClearSchedule();
+		Forget(bits_MEMORY_INCOVER);
+	}
+}
+
+BOOL CBaseMonster::CanBeStunned()
+{
+	for (const std::string& monstId : nonStunnableMonsters)
+	{
+		if(FClassnameIs(pev, monstId.c_str()))
+		{
+			return FALSE;
+		}
+	}
+
+	return !IsPlayer() && IsAlive();
 }

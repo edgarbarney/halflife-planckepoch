@@ -608,6 +608,8 @@ void CAGrunt :: Spawn()
 	m_afCapability		= 0;
 	m_afCapability		|= bits_CAP_SQUAD;
 
+	m_stdsStunSequence = "bigflinch";
+
 	m_HackedGunPos		= Vector( 24, 64, 48 );
 
 	m_flNextSpeakTime	= m_flNextWordTime = gpGlobals->time + 10 + RANDOM_LONG(0, 10);

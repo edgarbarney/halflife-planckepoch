@@ -791,6 +791,8 @@ void CGargantua :: Spawn()
 	m_flFieldOfView		= -0.2;// width of forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
 
+	m_stdsStunSequence = "Flinchheavy";
+
 	MonsterInit();
 
 	m_pEyeGlow = CSprite::SpriteCreate( GARG_EYE_SPRITE_NAME, pev->origin, FALSE );

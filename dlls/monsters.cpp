@@ -112,6 +112,11 @@ TYPEDESCRIPTION	CBaseMonster::m_SaveData[] =
 
 	DEFINE_FIELD( CBaseMonster, m_scriptState, FIELD_INTEGER ),
 	DEFINE_FIELD( CBaseMonster, m_pCine, FIELD_CLASSPTR ),
+
+	//Stun Grenade thingies
+	DEFINE_FIELD( CBaseMonster, m_bIsStunned,			FIELD_BOOLEAN	),
+	DEFINE_FIELD( CBaseMonster, m_flFieldOfViewBackup,	FIELD_FLOAT		),
+	DEFINE_FIELD( CBaseMonster, m_flStunTime,			FIELD_TIME		),
 };
 
 //IMPLEMENT_SAVERESTORE( CBaseMonster, CBaseToggle );
@@ -534,10 +539,26 @@ void CBaseMonster :: MonsterThink ()
 
 	float flInterval = StudioFrameAdvance( ); // animate
 
-// start or end a fidget
+	if (m_bIsStunned && m_flStunTime <= gpGlobals->time && CanBeStunned())
+	{
+		ALERT(at_console, "\nMonster %s at %f is now UNparalized!\n", STRING(pev->classname), m_flFieldOfViewBackup);
+		m_flFieldOfView = m_flFieldOfViewBackup;
+		m_flStunTime = 0;
+		m_bIsStunned = FALSE;
+	}
+	else if (m_bIsStunned && CanBeStunned())
+	{
+		m_flFieldOfView = 0;										// obviously, monster is now blind
+		m_hEnemy = NULL;
+		SetState(MONSTERSTATE_ALERT);
+		ClearSchedule();
+		Forget(bits_MEMORY_INCOVER);
+	}
+
+// start or end a fidget if not stunned
 // This needs a better home -- switching animations over time should be encapsulated on a per-activity basis
 // perhaps MaintainActivity() or a ShiftAnimationOverTime() or something.
-	if ( m_MonsterState != MONSTERSTATE_SCRIPT && m_MonsterState != MONSTERSTATE_DEAD && m_Activity == ACT_IDLE && m_fSequenceFinished )
+	if (!m_bIsStunned && m_MonsterState != MONSTERSTATE_SCRIPT && m_MonsterState != MONSTERSTATE_DEAD && m_Activity == ACT_IDLE && m_fSequenceFinished )
 	{
 		int iSequence;
 

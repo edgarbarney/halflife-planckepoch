@@ -13,6 +13,7 @@
 *
 ****/
 
+#include <string>
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
 
@@ -103,6 +104,12 @@ public:
 	string_t			m_iszTriggerTarget;// name of target that should be fired. 
 
 	Vector				m_HackedGunPos;	// HACK until we can query end of gun
+
+	//Stun Grenade thingies
+	BOOL				m_bIsStunned;
+	float				m_flFieldOfViewBackup;	// backup of monster's fov
+	float				m_flStunTime;			// stun time
+	std::string			m_stdsStunSequence;		// stun sequence name. game'll play this. Don't let this be invalid, just in case. Let be it empty, or use idle sequences at least.
 
 // Scripted sequence Info
 	SCRIPTSTATE			m_scriptState;		// internal cinematic state
@@ -311,7 +318,8 @@ public:
 	virtual BOOL	HasAlienGibs();
 	virtual void	FadeMonster();	// Called instead of GibMonster() when gibs are disabled
 	//Stun Grenade thingies
-	virtual void	BeStunned();
+	virtual void	BeStunned(float stunTime);
+	virtual BOOL	CanBeStunned();
 
 	Vector ShootAtEnemy( const Vector &shootOrigin );
 	Vector BodyTarget( const Vector &posSrc ) override { return Center( ) * 0.75 + EyePosition() * 0.25; }		// position to shoot at
@@ -361,6 +369,14 @@ public:
 	}
 };
 
-
+//Stun Grenade thingies
+const std::string nonStunnableMonsters[] =
+{	
+	"monster_apache",
+	"monster_barnacle",
+	"monster_gman",
+	"monster_osprey",
+	"monster_nihilanth",
+};
 
 #endif // BASEMONSTER_H

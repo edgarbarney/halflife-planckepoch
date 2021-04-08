@@ -229,7 +229,8 @@ BOOL CBaseMonster :: ShouldFadeOnDeath() { return FALSE; }
 void CBaseMonster :: RadiusDamage(entvars_t* pevInflictor, entvars_t*	pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType ) { }
 void CBaseMonster :: RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType ) { }
 void CBaseMonster::FadeMonster() { }
-void CBaseMonster::BeStunned() { }
+void CBaseMonster::BeStunned(float stunTime) { }
+BOOL CBaseMonster::CanBeStunned() { return FALSE; }
 void CBaseMonster :: GibMonster() { }
 BOOL CBaseMonster :: HasHumanGibs() { return FALSE; }
 BOOL CBaseMonster :: HasAlienGibs() { return FALSE; }

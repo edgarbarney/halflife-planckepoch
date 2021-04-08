@@ -453,7 +453,7 @@ void CZombie::Spawn()
 	m_MonsterState = MONSTERSTATE_NONE;
 	m_afCapability = bits_CAP_DOORS_GROUP;
 
-	
+	m_stdsStunSequence = "angry";
 
 	MonsterInit();
 }

@@ -978,6 +978,8 @@ void CMOFAssassin :: Spawn()
 	m_flNextPainTime	= gpGlobals->time;
 	m_iSentence			= MASSASSIN_SENT_NONE;
 
+	m_stdsStunSequence = "cower";
+
 	m_afCapability		= bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
 
 	m_fEnemyEluded		= FALSE;

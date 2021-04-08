@@ -500,6 +500,8 @@ void CIchthyosaur :: Spawn()
 
 	MonsterInit();
 
+	m_stdsStunSequence = "bgflinch";
+
 	SetTouch( &CIchthyosaur::BiteTouch );
 	SetUse( &CIchthyosaur::CombatUse );
 

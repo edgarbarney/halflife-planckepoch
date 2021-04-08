@@ -96,7 +96,7 @@ void CSquidSpit:: Spawn()
 	pev->scale = 0.5;
 
 	UTIL_SetSize( pev, Vector( 0, 0, 0), Vector(0, 0, 0) );
-
+	 
 	m_maxFrame = (float) MODEL_FRAMES( pev->modelindex ) - 1;
 }
 
@@ -699,6 +699,8 @@ void CBullsquid :: Spawn()
 		pev->health			= gSkillData.bullsquidHealth;
 	m_flFieldOfView		= 0.2;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
+
+	m_stdsStunSequence = "inspectdown";
 
 	m_fCanThreatDisplay	= TRUE;
 	m_flNextSpitTime = gpGlobals->time;

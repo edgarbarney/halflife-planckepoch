@@ -349,6 +349,8 @@ void CHoundeye :: Spawn()
 	m_fDontBlink		= FALSE;
 	m_afCapability		|= bits_CAP_SQUAD;
 
+	m_stdsStunSequence = "whimper";
+
 	MonsterInit();
 }
 
