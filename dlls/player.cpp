@@ -5152,7 +5152,11 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 	}
 #else
 	m_pActiveItem = pWeapon;
-	pWeapon->Deploy( );
+
+	if (pWeapon)
+	{
+		pWeapon->Deploy();
+	}
 #endif
 	return TRUE;
 }
