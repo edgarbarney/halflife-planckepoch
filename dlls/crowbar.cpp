@@ -138,8 +138,8 @@ void CCrowbar::PrimaryAttack()
 
 void CCrowbar::Smack( )
 {
-	// Trinity Removed
-	//DecalGunshot( &m_trHit, BULLET_PLAYER_CROWBAR );
+	//RENDERERS START
+	//RENDERERS END
 }
 
 
