@@ -66,6 +66,7 @@ extern cvar_t *cl_lw;
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
 
+//RENDERERS START
 char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecEnd )
 {
 	if(gEngfuncs.PM_PointContents( ptr->endpos, NULL ) == CONTENT_SKY)
