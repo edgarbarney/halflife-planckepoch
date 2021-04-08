@@ -548,8 +548,6 @@ void CISlave :: Spawn()
 
 	m_voicePitch		= RANDOM_LONG( 85, 110 );
 
-	m_stdsStunSequence = "collar1";
-
 	MonsterInit();
 }
 

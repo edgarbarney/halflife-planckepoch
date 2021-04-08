@@ -1194,8 +1194,6 @@ void CSAS::Spawn()
 	m_flNextPainTime = gpGlobals->time;
 	m_iSentence = HSAS_SENT_NONE;
 
-	m_stdsStunSequence = "stunned";
-
 	m_deadMates = 0;
 
 	m_afCapability = bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_HEAR;

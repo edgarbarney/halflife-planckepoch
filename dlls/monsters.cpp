@@ -117,6 +117,7 @@ TYPEDESCRIPTION	CBaseMonster::m_SaveData[] =
 	DEFINE_FIELD( CBaseMonster, m_bIsStunned,			FIELD_BOOLEAN	),
 	DEFINE_FIELD( CBaseMonster, m_flFieldOfViewBackup,	FIELD_FLOAT		),
 	DEFINE_FIELD( CBaseMonster, m_flStunTime,			FIELD_TIME		),
+	
 };
 
 //IMPLEMENT_SAVERESTORE( CBaseMonster, CBaseToggle );
@@ -548,17 +549,20 @@ void CBaseMonster :: MonsterThink ()
 	}
 	else if (m_bIsStunned && CanBeStunned())
 	{
-		m_flFieldOfView = 0;										// obviously, monster is now blind
+		m_flFieldOfView = 0;			// keep monster blinded
 		m_hEnemy = NULL;
 		SetState(MONSTERSTATE_ALERT);
-		ClearSchedule();
+		//ClearSchedule();
+		//ChangeSchedule(slCower);
+		//TaskFail();
+		//SetActivity(ACT_COWER);
 		Forget(bits_MEMORY_INCOVER);
 	}
 
 // start or end a fidget if not stunned
 // This needs a better home -- switching animations over time should be encapsulated on a per-activity basis
 // perhaps MaintainActivity() or a ShiftAnimationOverTime() or something.
-	if (!m_bIsStunned && m_MonsterState != MONSTERSTATE_SCRIPT && m_MonsterState != MONSTERSTATE_DEAD && m_Activity == ACT_IDLE && m_fSequenceFinished )
+	if (m_MonsterState != MONSTERSTATE_SCRIPT && m_MonsterState != MONSTERSTATE_DEAD && m_Activity == ACT_IDLE && m_fSequenceFinished )
 	{
 		int iSequence;
 
@@ -566,13 +570,13 @@ void CBaseMonster :: MonsterThink ()
 		{
 			// animation does loop, which means we're playing subtle idle. Might need to 
 			// fidget.
-			iSequence = LookupActivity ( m_Activity );
+			iSequence = LookupActivity ( m_bIsStunned ? ACT_BITE : m_Activity);
 		}
 		else
 		{
 			// animation that just ended doesn't loop! That means we just finished a fidget
 			// and should return to our heaviest weighted idle (the subtle one)
-			iSequence = LookupActivityHeaviest ( m_Activity );
+			iSequence = LookupActivityHeaviest ( m_bIsStunned ? ACT_BITE : m_Activity );
 		}
 		if ( iSequence != ACTIVITY_NOT_AVAILABLE )
 		{

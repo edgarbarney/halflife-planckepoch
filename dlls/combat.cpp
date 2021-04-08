@@ -1820,6 +1820,24 @@ void CBaseMonster :: MakeDamageBloodDecal ( int cCount, float flNoise, TraceResu
 	}
 }
 
+//Stun Grenade thingies
+Task_t	tlStunCower[] =
+{
+	{ TASK_STOP_MOVING,			0					},
+	{ TASK_PLAY_SEQUENCE,		(float)ACT_BITE		},
+};
+
+Schedule_t	slStunCower[] =
+{
+	{
+		tlStunCower,
+		ARRAYSIZE(tlStunCower),
+		0,
+		0,
+		"Cower"
+	},
+};
+
 void CBaseMonster::BeStunned(float stunTime)
 {
 	if (CanBeStunned())
@@ -1828,18 +1846,13 @@ void CBaseMonster::BeStunned(float stunTime)
 		m_flFieldOfViewBackup = m_flFieldOfView;	// backup fov for reverting it later
 		m_flFieldOfView = 0;						// obviously, monster is now blind
 		m_flStunTime = gpGlobals->time + stunTime;	
-		if (!m_stdsStunSequence.empty())
-		{
-			pev->sequence = LookupSequence(m_stdsStunSequence.c_str()); // seek for good ol' stun sequence
-			if (pev->sequence == -1) // is stun sequence name invalid?
-			{
-				pev->sequence = 0;	// shit. then, go back to idle.
-			}
-		}
 		m_hEnemy = NULL;
 		SetState(MONSTERSTATE_ALERT);
 		m_flNextAttack = gpGlobals->time + stunTime;
 		ClearSchedule();
+		SetActivity(ACT_BITE);
+		ChangeSchedule(slStunCower);
+		//TaskFail();
 		Forget(bits_MEMORY_INCOVER);
 	}
 }
@@ -1854,5 +1867,6 @@ BOOL CBaseMonster::CanBeStunned()
 		}
 	}
 
-	return !IsPlayer() && IsAlive();
+	return !IsPlayer() && IsAlive() && pev->deadflag != DEAD_DYING;
 }
+

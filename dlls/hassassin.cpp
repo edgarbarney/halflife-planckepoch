@@ -345,8 +345,6 @@ void CHAssassin :: Spawn()
 	m_afCapability		= bits_CAP_MELEE_ATTACK1 | bits_CAP_DOORS_GROUP;
 	pev->friction		= 1;
 
-	m_stdsStunSequence = "landfromjump";
-
 	m_HackedGunPos		= Vector( 0, 24, 48 );
 
 	m_iTargetRanderamt	= 20;

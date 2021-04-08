@@ -74,7 +74,7 @@ typedef enum {
 	ACT_FLY_RIGHT,			// Turn right in flight
 	ACT_DETECT_SCENT,		// this means the monster smells a scent carried by the air
 	ACT_SNIFF,				// this is the act of actually sniffing an item in front of the monster
-	ACT_BITE,				// some large monsters can eat small things in one bite. This plays one time, EAT loops.
+	ACT_BITE,				// Unused in vanilla. So, now this is paralyzed activity.
 	ACT_THREAT_DISPLAY,		// without attacking, monster demonstrates that it is angry. (Yell, stick out chest, etc )
 	ACT_FEAR_DISPLAY,		// monster just saw something that it is afraid of
 	ACT_EXCITED,			// for some reason, monster is excited. Sees something he really likes to eat, or whatever.
