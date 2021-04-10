@@ -6,4 +6,4 @@
 
 *.bak
 
-dlls/.clang-tidy
+*.clang-tidy
