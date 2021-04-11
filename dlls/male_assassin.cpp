@@ -740,7 +740,7 @@ void CMOFAssassin :: CheckAmmo ( )
 //=========================================================
 int	CMOFAssassin :: Classify ( )
 {
-	return CLASS_HUMAN_ASSASSIN;
+	return m_iClass?m_iClass:CLASS_HUMAN_ASSASSIN;
 }
 
 //=========================================================
