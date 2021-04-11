@@ -108,6 +108,7 @@ enum MAssassinWeaponFlag
 	HandGrenade = 1 << 1,
 	GrenadeLauncher = 1 << 2,
 	SniperRifle = 1 << 3,
+	Flashbang = 1 << 5,
 };
 }
 
@@ -153,6 +154,7 @@ public:
 	int  Classify ( ) override;
 	int ISoundMask ( ) override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
+	void BeStunned ( float stunTime ) override;
 	BOOL FCanCheckAttacks ( ) override;
 	BOOL CheckMeleeAttack1 ( float flDot, float flDist ) override;
 	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
@@ -518,7 +520,7 @@ BOOL CMOFAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 //=========================================================
 BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 {
-	if (! FBitSet(pev->weapons, (MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag ::GrenadeLauncher)))
+	if (! FBitSet(pev->weapons, (MAssassinWeaponFlag::Flashbang | MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag ::GrenadeLauncher)))
 	{
 		return FALSE;
 	}
@@ -547,7 +549,7 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 	
 	Vector vecTarget;
 
-	if (FBitSet( pev->weapons, MAssassinWeaponFlag::HandGrenade ))
+	if (FBitSet( pev->weapons, MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag::Flashbang))
 	{
 		// find feet
 		if (RANDOM_LONG(0,1))
@@ -594,7 +596,7 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 	}
 
 		
-	if (FBitSet( pev->weapons, MAssassinWeaponFlag::HandGrenade ))
+	if (FBitSet( pev->weapons, MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag::Flashbang))
 	{
 		Vector vecToss = VecCheckToss( pev, GetGunPosition(), vecTarget, 0.5 );
 
@@ -859,7 +861,7 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			break;
 
 		case MASSASSIN_AE_RELOAD:
-			EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM );
+			EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16_reload.wav", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM );
 			m_cAmmoLoaded = m_cClipSize;
 			ClearConditions(bits_COND_NO_AMMO_LOADED);
 			break;
@@ -868,7 +870,39 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		{
 			UTIL_MakeVectors( pev->angles );
 			// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
-			CGrenade::ShootTimed( pev, GetGunPosition(), m_vecTossVelocity, 3.5 );
+			if (FBitSet(pev->weapons, MAssassinWeaponFlag::Flashbang) && FBitSet(pev->weapons, MAssassinWeaponFlag::HandGrenade))
+			{
+				switch (RANDOM_LONG(0, 3))
+				{
+				case 0:
+					CGrenade::ShootStun(pev, GetGunPosition(), m_vecTossVelocity, 2.5);
+					ClearSchedule();
+					ChangeSchedule(GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY));
+					break;
+				case 1:
+				case 2:
+				case 3:
+					CGrenade::ShootTimed(pev, GetGunPosition(), m_vecTossVelocity, 3.5);
+					break;
+				}
+			}
+			else if (FBitSet(pev->weapons, MAssassinWeaponFlag::Flashbang))
+			{
+				switch (RANDOM_LONG(0, 3))
+				{
+				case 0:
+					CGrenade::ShootStun(pev, GetGunPosition(), m_vecTossVelocity, 2.5);
+					ClearSchedule();
+					ChangeSchedule(GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY));
+					break;
+				case 1:
+				case 2:
+				case 3:
+					break;
+				}
+			}
+			else
+				CGrenade::ShootTimed(pev, GetGunPosition(), m_vecTossVelocity, 3.5);
 
 			m_fThrowGrenade = FALSE;
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
@@ -903,16 +937,16 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			{
 				if ( RANDOM_LONG(0,1) )
 				{
-					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16_fire1.wav", 1, ATTN_NORM );
+					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16sil_fire1.wav", RANDOM_FLOAT(0.4, 0.6), ATTN_NORM );
 				}
 				else
 				{
-					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16_fire2.wav", 1, ATTN_NORM );
+					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "weapons/ar16sil_fire2.wav", RANDOM_FLOAT(0.4, 0.6), ATTN_NORM );
 				}
 			}
 			else
 			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/xbow_fire1.wav", 1, ATTN_NORM );
+				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/xbow_fire1.wav", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM );
 			}
 		
 			CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, 384, 0.3 );
@@ -926,11 +960,11 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				Shoot();
 				if (RANDOM_LONG(0, 1))
 				{
-					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16_fire1.wav", 1, ATTN_NORM);
+					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16sil_fire1.wav", 1, ATTN_NORM);
 				}
 				else
 				{
-					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16_fire2.wav", 1, ATTN_NORM);
+					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/ar16sil_fire2.wav", 1, ATTN_NORM);
 				}
 				CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 			}	
@@ -955,6 +989,22 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			CSquadMonster::HandleAnimEvent( pEvent );
 			break;
 	}
+}
+
+void CMOFAssassin::BeStunned(float stunTime)
+{
+	//Thermal Vision MASSNs can't be stunned too long
+	if (m_iAssassinHead == MAssassinHead::ThermalVision)
+	{
+		m_canCancelStun = true;
+		return CBaseMonster::BeStunned(stunTime / 6.0f);
+	}	
+	else 
+	{
+		m_canCancelStun = false;
+		return CBaseMonster::BeStunned(stunTime);
+	}
+		
 }
 
 //=========================================================
@@ -987,8 +1037,28 @@ void CMOFAssassin :: Spawn()
 
 	if (pev->weapons == 0)
 	{
-		// initialize to original values
-		pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade;
+		// Randomize Weapons If Not Specified
+		switch (RANDOM_LONG(1, 6))
+		{
+		case 1:
+			pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade;
+			break;
+		case 2:
+			pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::Flashbang | MAssassinWeaponFlag::GrenadeLauncher;
+			break;
+		case 3:
+			pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::Flashbang;
+			break;
+		case 4:
+			pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade;
+			break;
+		case 5:
+			pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag::Flashbang;
+			break;
+		case 6:
+			pev->weapons = MAssassinWeaponFlag::MP5; // Sad Boi
+			break;
+		}
 		// pev->weapons = HGRUNT_SHOTGUN;
 		// pev->weapons = HGRUNT_9MMAR | HGRUNT_GRENADELAUNCHER;
 	}
@@ -1039,8 +1109,8 @@ void CMOFAssassin :: Precache()
 {
 	PRECACHE_MODEL("models/massn.mdl");
 
-	PRECACHE_SOUND( "weapons/ar16_fire1.wav" );
-	PRECACHE_SOUND( "weapons/ar16_fire2.wav" );
+	PRECACHE_SOUND( "weapons/ar16sil_fire1.wav" );
+	PRECACHE_SOUND( "weapons/ar16sil_fire2.wav" );
 	
 	PRECACHE_SOUND( "weapons/xbow_fire1.wav");
 
@@ -1048,7 +1118,7 @@ void CMOFAssassin :: Precache()
 	PRECACHE_SOUND( "hgrunt/gr_die2.wav" );
 	PRECACHE_SOUND( "hgrunt/gr_die3.wav" );
 
-	PRECACHE_SOUND( "hgrunt/gr_reload1.wav" );
+	PRECACHE_SOUND( "weapons/ar16_reload.wav" );
 
 	PRECACHE_SOUND( "weapons/glauncher.wav" );
 
@@ -1840,7 +1910,7 @@ void CMOFAssassin :: SetActivity ( Activity NewActivity )
 	case ACT_RANGE_ATTACK2:
 		// grunt is going to a secondary long range attack. This may be a thrown 
 		// grenade or fired grenade, we must determine which and pick proper sequence
-		if ( pev->weapons & MAssassinWeaponFlag::HandGrenade )
+		if ( pev->weapons & MAssassinWeaponFlag::HandGrenade || pev->weapons & MAssassinWeaponFlag::Flashbang )
 		{
 			// get toss anim
 			iSequence = LookupSequence( "throwgrenade" );

@@ -546,6 +546,11 @@ void CBaseMonster :: MonsterThink ()
 		m_flFieldOfView = m_flFieldOfViewBackup;
 		m_flStunTime = 0;
 		m_bIsStunned = FALSE;
+		if (m_canCancelStun)
+		{
+			ClearSchedule();
+			ChangeSchedule(GetScheduleOfType(SCHED_ALERT_STAND)); // SCHED_COMBAT_STAND
+		}
 	}
 	else if (m_bIsStunned && CanBeStunned())
 	{

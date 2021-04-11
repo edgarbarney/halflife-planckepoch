@@ -270,7 +270,7 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 				UTIL_TraceLine(pev->origin, monstaPointa->pev->origin, ignore_monsters, ENT(pev), &tr2);
 			}
 			//ALERT(at_console, "\nMonster %s at %f,%f,%f is now BEING paralized!\n", STRING(monstaPointa->pev->classname), monstaPointa->pev->origin.x, monstaPointa->pev->origin.y, monstaPointa->pev->origin.z);
-			if (tr2.flFraction == 1) // Dead people are dead. Can't be paralyzed.
+			if (tr2.flFraction == 1)
 				monstaPointa->BeStunned(4.0f);
 		}
 	}
@@ -309,11 +309,11 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 				switch (CalcDamageDirection(pev->origin, thePlayerPtr))
 				{
 				case NADEDIR_FRONT:
-					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 1000.0f, 255, FFADE_IN);
+					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 300.0f, 255, FFADE_IN);
 					EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
 					break;
 				case NADEDIR_RIGHT:
-					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 1000.0f, 150, FFADE_IN);
+					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 500.0f, 150, FFADE_IN);
 					EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_right.wav", volu, ATTN_NORM, 0, 100);
 					break;
 				case NADEDIR_REAR:
@@ -321,7 +321,7 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 					EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
 					break;
 				case NADEDIR_LEFT:
-					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 1000.0f, 150, FFADE_IN);
+					UTIL_ScreenFade(thePlayerPtr, Vector(255, 225, 255), (1500.0f - plrDist) / 1000.0f, (1500.0f - plrDist) / 500.0f, 150, FFADE_IN);
 					EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_left.wav", volu, ATTN_NORM, 0, 100);
 					break;
 				case NADEDIR_WTF:

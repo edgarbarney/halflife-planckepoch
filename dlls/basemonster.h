@@ -109,6 +109,7 @@ public:
 	BOOL				m_bIsStunned;
 	float				m_flFieldOfViewBackup;	// backup of monster's fov
 	float				m_flStunTime;			// stun time
+	BOOL				m_canCancelStun;		// if true, being unstunned will force monster to being conscious
 
 // Scripted sequence Info
 	SCRIPTSTATE			m_scriptState;		// internal cinematic state

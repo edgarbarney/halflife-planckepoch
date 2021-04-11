@@ -41,7 +41,7 @@ extern DLL_GLOBAL int		g_iSkillLevel;
 //=========================================================
 #define	SAS_MP5_CLIP_SIZE				36 // how many bullets in a clip? - NOTE: 3 round burst sound, so keep as 3 * x!
 #define SAS_SHOTGUN_CLIP_SIZE			8
-#define SAS_AR16_CLIP_SIZE				36
+#define SAS_AR16_CLIP_SIZE				40
 #define SAS_VOL						0.35		// volume of grunt sounds
 #define SAS_ATTN						ATTN_NORM	// attenutation of grunt sentences
 #define HSAS_LIMP_HEALTH				20
@@ -58,7 +58,8 @@ namespace SASWeaponFlag
 		HandGrenade = 1 << 1,
 		GrenadeLauncher = 1 << 2,
 		Shotgun = 1 << 3,
-		AR16 = 1 << 4
+		AR16 = 1 << 4,
+		Flashbang = 1 << 5,
 	};
 }
 
@@ -131,8 +132,9 @@ namespace SASWeapon
 #define		HSAS_AE_GREN_TOSS		( 7 )
 #define		HSAS_AE_GREN_LAUNCH		( 8 )
 #define		HSAS_AE_GREN_DROP		( 9 )
-#define		HSAS_AE_CAUGHT_ENEMY	( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
-#define		HSAS_AE_DROP_GUN		( 11) // grunt (probably dead) is dropping his mp5.
+#define		HSAS_AE_CAUGHT_ENEMY	( 10 )	// grunt established sight with an enemy (player only) that had previously eluded the squad.
+#define		HSAS_AE_DROP_GUN		( 11 )	// grunt (probably dead) is dropping his mp5.
+#define		HSAS_AE_RELOAD_SOUND	( 12 )	// play sound BEFORE reload is finished.
 
 //=========================================================
 // monster-specific schedule types
@@ -176,6 +178,7 @@ public:
 	int  Classify() override;
 	int ISoundMask() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
+	void BeStunned(float stunTime) override;
 	BOOL FCanCheckAttacks() override;
 	BOOL CheckMeleeAttack1(float flDot, float flDist) override;
 	BOOL CheckRangeAttack1(float flDot, float flDist) override;
@@ -572,7 +575,7 @@ BOOL CSAS::CheckRangeAttack1(float flDot, float flDist)
 //=========================================================
 BOOL CSAS::CheckRangeAttack2(float flDot, float flDist)
 {
-	if (!FBitSet(pev->weapons, (SASWeaponFlag::HandGrenade | SASWeaponFlag::GrenadeLauncher)))
+	if (!FBitSet(pev->weapons, (SASWeaponFlag::Flashbang | SASWeaponFlag::HandGrenade | SASWeaponFlag::GrenadeLauncher)))
 	{
 		return FALSE;
 	}
@@ -601,7 +604,7 @@ BOOL CSAS::CheckRangeAttack2(float flDot, float flDist)
 
 	Vector vecTarget;
 
-	if (FBitSet(pev->weapons, SASWeaponFlag::HandGrenade))
+	if (FBitSet(pev->weapons, SASWeaponFlag::HandGrenade | SASWeaponFlag::Flashbang))
 	{
 		// find feet
 		if (RANDOM_LONG(0, 1))
@@ -648,7 +651,7 @@ BOOL CSAS::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-	if (FBitSet(pev->weapons, SASWeaponFlag::HandGrenade))
+	if (FBitSet(pev->weapons, SASWeaponFlag::HandGrenade | SASWeaponFlag::Flashbang))
 	{
 		Vector vecToss = VecCheckToss(pev, GetGunPosition(), vecTarget, 0.5);
 
@@ -917,7 +920,7 @@ void CSAS::CheckAmmo()
 //=========================================================
 int	CSAS::Classify()
 {
-	return	CLASS_PLAYER_ALLY;
+	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
 }
 
 //=========================================================
@@ -1012,6 +1015,52 @@ void CSAS::Shotgun()
 	SetBlending(0, angDir.x);
 }
 
+void CSAS::ShootAR16()
+{
+	if (m_hEnemy == NULL)
+	{
+		return;
+	}
+
+	Vector vecShootOrigin = GetGunPosition();
+	Vector vecShootDir = ShootAtEnemy(vecShootOrigin);
+
+	UTIL_MakeVectors(pev->angles);
+
+	switch (RANDOM_LONG(0, 1))
+	{
+	case 0:
+	{
+		auto vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(75, 200) + gpGlobals->v_up * RANDOM_FLOAT(150, 200) + gpGlobals->v_forward * 25.0;
+		EjectBrass(vecShootOrigin - vecShootDir * 6, vecShellVelocity, pev->angles.y, m_iAR16Link, TE_BOUNCE_SHELL);
+		break;
+	}
+
+	case 1:
+	{
+		auto vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(100, 250) + gpGlobals->v_up * RANDOM_FLOAT(100, 150) + gpGlobals->v_forward * 25.0;
+		EjectBrass(vecShootOrigin - vecShootDir * 6, vecShellVelocity, pev->angles.y, m_iAR16Shell, TE_BOUNCE_SHELL);
+		break;
+	}
+	}
+
+	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_5DEGREES, 8192, BULLET_PLAYER_556, 2); // shoot +-5 degrees
+
+	switch (RANDOM_LONG(0, 2))
+	{
+	case 0: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
+	case 1: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire2.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
+	case 2: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire3.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
+	}
+
+	pev->effects |= EF_MUZZLEFLASH;
+
+	m_cAmmoLoaded--;// take away a bullet!
+
+	Vector angDir = UTIL_VecToAngles(vecShootDir);
+	SetBlending(0, angDir.x);
+}
+
 //=========================================================
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
@@ -1056,14 +1105,16 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case HSAS_AE_RELOAD:
+	case HSAS_AE_RELOAD_SOUND:
 		if (FBitSet(pev->weapons, SASWeaponFlag::AR16))
-		{
 			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/AR16_reload.wav", 1, ATTN_NORM);
-		}
+		else if (FBitSet(pev->weapons, SASWeaponFlag::Shotgun))
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_shotgunrlod.wav", 1, ATTN_NORM);
 		else
 			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM);
+		break;
 
+	case HSAS_AE_RELOAD:
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
@@ -1072,7 +1123,28 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 		UTIL_MakeVectors(pev->angles);
 		// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
-		CGrenade::ShootTimed(pev, GetGunPosition(), m_vecTossVelocity, 3.5);
+		if (FBitSet(pev->weapons, SASWeaponFlag::Flashbang) && FBitSet(pev->weapons, SASWeaponFlag::HandGrenade))
+		{
+			switch (RANDOM_LONG(0, 1))
+			{
+			case 0:
+				CGrenade::ShootStun(pev, GetGunPosition(), m_vecTossVelocity, 2.5);
+				ClearSchedule();
+				ChangeSchedule(GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY));
+				break;
+			case 1:
+				CGrenade::ShootTimed(pev, GetGunPosition(), m_vecTossVelocity, 3.5);
+				break;
+			}
+		}
+		else if (FBitSet(pev->weapons, SASWeaponFlag::Flashbang))
+		{
+			CGrenade::ShootStun(pev, GetGunPosition(), m_vecTossVelocity, 2.5);
+			ClearSchedule();
+			ChangeSchedule(GetScheduleOfType(SCHED_TAKE_COVER_FROM_ENEMY));
+		}
+		else
+			CGrenade::ShootTimed(pev, GetGunPosition(), m_vecTossVelocity, 3.5);
 
 		m_fThrowGrenade = FALSE;
 		m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
@@ -1123,13 +1195,14 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			Shotgun();
 
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/sbarrel1.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_shotgunfire.wav", 1, ATTN_NORM);
 		}
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 	}
 	break;
 
+	
 	case HSAS_AE_BURST2:
 	case HSAS_AE_BURST3:
 		if (FBitSet(pev->weapons, SASWeaponFlag::MP5))
@@ -1171,6 +1244,13 @@ void CSAS::HandleAnimEvent(MonsterEvent_t* pEvent)
 		COFSquadTalkMonster::HandleAnimEvent(pEvent);
 		break;
 	}
+}
+
+void CSAS::BeStunned(float stunTime)
+{
+	//SAS can't be stunned too long because of their helmets and masks
+	m_canCancelStun = true;
+	return CBaseMonster::BeStunned(stunTime / 6.0f);
 }
 
 //=========================================================
@@ -1224,6 +1304,28 @@ void CSAS::Spawn()
 	}
 	else if (pev->weapons & SASWeaponFlag::AR16)
 	{
+		// Randomize Weapons If AR
+		switch (RANDOM_LONG(1,6))
+		{
+		case 1:
+			pev->weapons = SASWeaponFlag::AR16 | SASWeaponFlag::HandGrenade;
+			break;
+		case 2:
+			pev->weapons = SASWeaponFlag::AR16 | SASWeaponFlag::Flashbang | SASWeaponFlag::GrenadeLauncher;
+			break;
+		case 3:
+			pev->weapons = SASWeaponFlag::AR16 | SASWeaponFlag::Flashbang;
+			break;
+		case 4:
+			pev->weapons = SASWeaponFlag::AR16 | SASWeaponFlag::HandGrenade;
+			break;
+		case 5:
+			pev->weapons = SASWeaponFlag::AR16 | SASWeaponFlag::HandGrenade | SASWeaponFlag::Flashbang;
+			break;
+		case 6:
+			pev->weapons = SASWeaponFlag::AR16; // Sad Boi
+			break;
+		}
 		m_iWeaponIdx = SASWeapon::AR16;
 		m_cClipSize = SAS_AR16_CLIP_SIZE;
 		m_iGruntTorso = SASTorso::AR16;
@@ -1342,7 +1444,8 @@ void CSAS::Precache()
 
 	PRECACHE_SOUND("weapons/glauncher.wav");
 
-	PRECACHE_SOUND("weapons/sbarrel1.wav");
+	PRECACHE_SOUND("hgrunt/gr_shotgunfire.wav");
+	PRECACHE_SOUND("hgrunt/gr_shotgunrlod.wav"); 
 
 	PRECACHE_SOUND("sas/help04.wav");
 
@@ -2949,52 +3052,6 @@ void CSAS::AlertSound()
 void CSAS::DeclineFollowing()
 {
 	PlaySentence("SAS_POK", 2, VOL_NORM, ATTN_NORM);
-}
-
-void CSAS::ShootAR16()
-{
-	if (m_hEnemy == NULL)
-	{
-		return;
-	}
-
-	Vector vecShootOrigin = GetGunPosition();
-	Vector vecShootDir = ShootAtEnemy(vecShootOrigin);
-
-	UTIL_MakeVectors(pev->angles);
-
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-	{
-		auto vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(75, 200) + gpGlobals->v_up * RANDOM_FLOAT(150, 200) + gpGlobals->v_forward * 25.0;
-		EjectBrass(vecShootOrigin - vecShootDir * 6, vecShellVelocity, pev->angles.y, m_iAR16Link, TE_BOUNCE_SHELL);
-		break;
-	}
-
-	case 1:
-	{
-		auto vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(100, 250) + gpGlobals->v_up * RANDOM_FLOAT(100, 150) + gpGlobals->v_forward * 25.0;
-		EjectBrass(vecShootOrigin - vecShootDir * 6, vecShellVelocity, pev->angles.y, m_iAR16Shell, TE_BOUNCE_SHELL);
-		break;
-	}
-	}
-
-	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_5DEGREES, 8192, BULLET_PLAYER_556, 2); // shoot +-5 degrees
-
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
-	case 1: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire2.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
-	case 2: EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/AR16_fire3.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94); break;
-	}
-
-	pev->effects |= EF_MUZZLEFLASH;
-
-	m_cAmmoLoaded--;// take away a bullet!
-
-	Vector angDir = UTIL_VecToAngles(vecShootDir);
-	SetBlending(0, angDir.x);
 }
 
 void CSAS::KeyValue(KeyValueData* pkvd)

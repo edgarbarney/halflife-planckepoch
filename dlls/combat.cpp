@@ -1849,6 +1849,7 @@ Schedule_t	slStunCower[] =
 
 void CBaseMonster::BeStunned(float stunTime)
 {
+	if (m_canCancelStun == NULL) m_canCancelStun = false;
 	if (CanBeStunned())
 	{
 		m_bIsStunned = TRUE;

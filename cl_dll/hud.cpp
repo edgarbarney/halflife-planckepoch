@@ -585,7 +585,7 @@ void CHud::BRD_SetBorderless(SDL_Window* brd_windowArg)
 	weg = dm.w;
 	heg = dm.h;
 	//gEngfuncs.pfnClientCmd("r_borderless 1\n");
-	//gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+	gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
 	SDL_SetWindowFullscreen(brd_windowArg, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_SetWindowSize(brd_windowArg, weg, heg);
 	SDL_SetWindowBordered(brd_windowArg, SDL_FALSE);
