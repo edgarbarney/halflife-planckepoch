@@ -16,11 +16,18 @@
 #define WEAPONS_H
 
 #include "effects.h"
+#include "weaponinfo.h"
 #include "UserMessages.h"
 
 class CBasePlayer;
 
 void DeactivateSatchels( CBasePlayer *pOwner );
+
+int UTIL_DefaultPlaybackFlags();
+
+bool UTIL_DefaultUseDecrement();
+
+bool UTIL_UseOldWeapons();
 
 // Contact Grenade / Timed grenade / Satchel Charge
 class CGrenade : public CBaseMonster
@@ -76,19 +83,29 @@ public:
 #define WEAPON_CROWBAR			1
 #define WEAPON_GLOCK			2
 #define WEAPON_PYTHON			3
-#define WEAPON_GENERIC			4
-#define WEAPON_MP5				5
-#define WEAPON_DEBUG                           	6 //G-Cont. weapon for hunt bugs. he-he-he
-#define WEAPON_CROSSBOW			7
-#define WEAPON_SHOTGUN			8
-#define WEAPON_RPG				9
-#define WEAPON_GAUSS			10
-#define WEAPON_EGON				11
-#define WEAPON_HORNETGUN			12
-#define WEAPON_HANDGRENADE			13
-#define WEAPON_TRIPMINE			14
-#define WEAPON_SATCHEL			15
-#define WEAPON_SNARK			16
+#define WEAPON_MP5				4
+#define WEAPON_CHAINGUN			5
+#define WEAPON_CROSSBOW			6
+#define WEAPON_SHOTGUN			7
+#define WEAPON_RPG				8
+#define WEAPON_GAUSS			9
+#define WEAPON_EGON				10
+#define WEAPON_HORNETGUN		11
+#define WEAPON_HANDGRENADE		12
+#define WEAPON_TRIPMINE			13
+#define	WEAPON_SATCHEL			14
+#define	WEAPON_SNARK			15
+#define WEAPON_GRAPPLE			16
+#define WEAPON_EAGLE			17
+#define WEAPON_PIPEWRENCH		18
+#define WEAPON_M249				19
+#define WEAPON_DISPLACER		20
+#define WEAPON_SHOCKRIFLE		22
+#define WEAPON_SPORELAUNCHER	23
+#define WEAPON_SNIPERRIFLE		24
+#define WEAPON_KNIFE			25
+#define WEAPON_PENGUIN			26
+#define WEAPON_DEBUG			27
 
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
@@ -116,6 +133,14 @@ public:
 #define SNARK_WEIGHT		5
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
+#define EAGLE_WEIGHT		15
+#define SHOCKRIFLE_WEIGHT	15
+#define PIPEWRENCH_WEIGHT	2
+#define M249_WEIGHT			20
+#define DISPLACER_WEIGHT	10
+#define SPORELAUNCHER_WEIGHT	20
+#define SNIPERRIFLE_WEIGHT	10
+#define PENGUIN_WEIGHT 5
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
@@ -130,6 +155,10 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
+#define M249_MAX_CARRY			200
+#define SPORELAUNCHER_MAX_CARRY	20
+#define SNIPERRIFLE_MAX_CARRY	15
+#define PENGUIN_MAX_CARRY 9
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -149,11 +178,18 @@ public:
 #define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
+#define EAGLE_MAX_CLIP			7
+#define M249_MAX_CLIP			50
+#define SPORELAUNCHER_MAX_CLIP	5
+#define SHOCKRIFLE_MAX_CLIP		10
+#define SNIPERRIFLE_MAX_CLIP	5
+#define PENGUIN_MAX_CLIP		3
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
 #define PYTHON_DEFAULT_GIVE			6
-#define MP5_DEFAULT_GIVE			25
+#define DEAGLE_DEFAULT_GIVE			7
+#define MP5_DEFAULT_GIVE			50 //Full magazine for Op4
 #define MP5_DEFAULT_AMMO			25
 #define MP5_M203_DEFAULT_GIVE		0
 #define SHOTGUN_DEFAULT_GIVE		12
@@ -166,6 +202,11 @@ public:
 #define TRIPMINE_DEFAULT_GIVE		1
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
+#define M249_DEFAULT_GIVE			50
+#define DISPLACER_DEFAULT_GIVE		40
+#define SPORELAUNCHER_DEFAULT_GIVE	5
+#define SHOCKRIFLE_DEFAULT_GIVE		10
+#define SNIPERRIFLE_DEFAULT_GIVE	5
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -179,6 +220,10 @@ public:
 #define AMMO_RPGCLIP_GIVE		RPG_MAX_CLIP
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_SNARKBOX_GIVE		5
+#define AMMO_M249_GIVE			50
+#define AMMO_EAGLE_GIVE			7
+#define AMMO_SPORE_GIVE			1
+#define AMMO_SNIPERRIFLE_GIVE	5
 
 // bullet types
 typedef	enum
@@ -193,6 +238,10 @@ typedef	enum
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
 	BULLET_MONSTER_12MM,
+
+	BULLET_PLAYER_556,
+	BULLET_PLAYER_762,
+	BULLET_PLAYER_EAGLE,
 } Bullet;
 
 
@@ -272,9 +321,15 @@ public:
 	virtual int PrimaryAmmoIndex() { return -1; }
 	virtual int SecondaryAmmoIndex() { return -1; }
 
+	virtual void IncrementAmmo(CBasePlayer* pPlayer) {}
+
 	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
 
 	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+
+	virtual void GetWeaponData( weapon_data_t& data ) {}
+
+	virtual void SetWeaponData( const weapon_data_t& data ) {}
 
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
@@ -442,6 +497,8 @@ typedef struct
 
 extern MULTIDAMAGE gMultiDamage;
 
+void FindHullIntersection( const Vector &vecSrc, TraceResult &tr, const Vector& mins, const Vector& maxs, edict_t *pEntity );
+
 
 #define LOUD_GUN_VOLUME			1000
 #define NORMAL_GUN_VOLUME		600
@@ -529,6 +586,8 @@ public:
 	int GetItemInfo(ItemInfo *p) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
+
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
 	void GlockFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
@@ -540,7 +599,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -586,11 +645,14 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
 	}
+private:
+
+	unsigned short m_usCrowbar;
 };
 
 enum python_e
@@ -611,6 +673,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
@@ -622,7 +685,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -651,6 +714,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	void PrimaryAttack() override;
@@ -665,13 +729,14 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
 	}
 
 private:
+	float m_flNextGrenadeLoad;
 	unsigned short m_usMP5;
 	unsigned short m_usMP52;
 };
@@ -698,6 +763,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 
 	void FireBolt();
 	void FireSniperBolt();
@@ -712,7 +778,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -751,6 +817,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	void PrimaryAttack() override;
@@ -767,7 +834,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -780,12 +847,12 @@ private:
 
 class CLaserSpot : public CBaseEntity
 {
+public:
 	void Spawn() override;
 	void Precache() override;
 
 	int	ObjectCaps() override { return FCAP_DONT_SAVE; }
 
-public:
 	void Suspend( float flSuspendTime );
 	void EXPORT Revive();
 	
@@ -821,6 +888,7 @@ public:
 	void Precache() override;
 	void Reload() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	BOOL Deploy() override;
@@ -840,7 +908,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -898,6 +966,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	BOOL Deploy() override;
@@ -922,7 +991,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -977,6 +1046,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	BOOL Deploy() override;
@@ -1011,7 +1081,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1062,7 +1132,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1089,6 +1159,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
+	void IncrementAmmo(CBasePlayer* pPlayer) override;
 
 	void PrimaryAttack() override;
 	BOOL Deploy() override;
@@ -1099,7 +1170,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1151,7 +1222,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1192,7 +1263,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1230,7 +1301,7 @@ public:
     BOOL UseDecrement() override
     { 
 #if defined( CLIENT_WEAPONS )
-		return TRUE;
+		return UTIL_DefaultUseDecrement();
 #else
 		return FALSE;
 #endif
@@ -1238,58 +1309,6 @@ public:
 
 private:
 	unsigned short m_usSnarkFire;
-};
-
-enum generic_e 
-{
-	GENERIC_IDLE1 = 0,
-	GENERIC_IDLE2,
-	GENERIC_IDLE3,
-	GENERIC_SHOOT,
-	GENERIC_SHOOT2,
-	GENERIC_RELOAD,
-	GENERIC_RELOAD2,
-	GENERIC_DRAW,
-	GENERIC_HOLSTER,
-	GENERIC_SPECIAL
-};
-
-class CWpnGeneric : public CBasePlayerWeapon
-{
-public:
-	void Spawn() override;
-	int GetItemInfo(ItemInfo *p) override;
-	int AddToPlayer( CBasePlayer *pPlayer ) override;
-
-	void PrimaryAttack() override;
-	void SecondaryAttack() override;
-	BOOL Deploy() override;
-	void Holster( int skiplocal = 0 ) override;
-	void WeaponIdle() override;
-	void Precache() override;
-	void Reload() override;
-private:
-	int m_iShell;
-	
-
-	unsigned short m_usFireGen1; //Different type of shots
-	unsigned short m_usFireGen2; //In next release may be extended. G-Cont.
-	unsigned short m_usFireGen3;
-public:
-/*	int m_fInZoom; // don't save this
-	BOOL m_fNVG;//NightVision Status
-	CLaserSpot *m_pSpot;
-	int m_fSpotActive;
-	void UpdateSpot( void );
-*/
-    BOOL UseDecrement( void ) override
-    { 
-#if defined( CLIENT_WEAPONS )
-	return TRUE;
-#else
-	return FALSE;
-#endif
-	}
 };
 
 #endif // WEAPONS_H

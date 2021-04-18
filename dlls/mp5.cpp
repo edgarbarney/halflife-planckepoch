@@ -39,6 +39,8 @@ void CMP5::Spawn( )
 
 	m_iDefaultAmmo = MP5_DEFAULT_GIVE;
 
+	m_flNextGrenadeLoad = gpGlobals->time;
+
 	FallInit();// get ready to fall down.
 }
 
@@ -87,6 +89,20 @@ int CMP5::GetItemInfo(ItemInfo *p)
 	p->iWeight = MP5_WEIGHT;
 
 	return 1;
+}
+
+void CMP5::IncrementAmmo(CBasePlayer* pPlayer)
+{
+	if (pPlayer->GiveAmmo(1, "9mm", _9MM_MAX_CARRY))
+	{
+		EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_backpack.wav", 0.5, ATTN_NORM);
+	}
+
+	if (m_flNextGrenadeLoad < gpGlobals->time)
+	{
+		pPlayer->GiveAmmo(1, "ARgrenades", M203_GRENADE_MAX_CARRY);
+		m_flNextGrenadeLoad = gpGlobals->time + 10;
+	}
 }
 
 int CMP5::AddToPlayer( CBasePlayer *pPlayer )
@@ -176,7 +192,7 @@ void CMP5::PrimaryAttack()
 
   int flags;
 #if defined( CLIENT_WEAPONS )
-	flags = FEV_NOTHOST;
+	flags = UTIL_DefaultPlaybackFlags();
 #else
 	flags = 0;
 #endif
@@ -225,7 +241,7 @@ void CMP5::SecondaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
- 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	// we don't add in player velocity anymore.
 	CGrenade::ShootContact( m_pPlayer->pev, 
@@ -234,7 +250,7 @@ void CMP5::SecondaryAttack()
 
 	int flags;
 #if defined( CLIENT_WEAPONS )
-	flags = FEV_NOTHOST;
+	flags = UTIL_DefaultPlaybackFlags();
 #else
 	flags = 0;
 #endif

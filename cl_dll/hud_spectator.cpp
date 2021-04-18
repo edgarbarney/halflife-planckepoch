@@ -116,7 +116,8 @@ void SpectatorHelp()
 {
 	if ( gViewPort )
 	{
-		gViewPort->ShowVGUIMenu( MENU_SPECHELP );
+		//TODO: none of this spectator stuff exists in Op4
+		//gViewPort->ShowVGUIMenu( MENU_SPECHELP );
 	}
 	else
 	{
@@ -1556,7 +1557,7 @@ void CHudSpectator::DrawOverviewEntities()
 
 	z = m_OverviewData.layersHeights[0] * zScale;
 	// get yellow/brown HUD color
-	UnpackRGB(ir,ig,ib, gHUD.m_iHUDColor);
+	UnpackRGB(ir,ig,ib, RGB_HUD_COLOR);
 	r = (float)ir/255.0f;
 	g = (float)ig/255.0f;
 	b = (float)ib/255.0f;

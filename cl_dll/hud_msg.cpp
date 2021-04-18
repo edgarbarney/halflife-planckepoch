@@ -34,12 +34,17 @@
 extern CGameStudioModelRenderer g_StudioRenderer;
 //RENDERERS END
 
+#include "vgui_TeamFortressViewport.h"
+#include "vgui_ScorePanel.h"
+
 //LRC - the fogging fog
 FogSettings g_fog;
 FogSettings g_fogPreFade;
 FogSettings g_fogPostFade;
 float g_fFogFadeDuration;
 float g_fFogFadeFraction;
+
+extern int giTeamplay;
 
 #define MAX_CLIENTS 32
 
@@ -216,7 +221,18 @@ void CHud :: MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf )
 int CHud :: MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 {
 	BEGIN_READ( pbuf, iSize );
-	m_Teamplay = READ_BYTE();
+	m_Teamplay = giTeamplay = READ_BYTE();
+
+	if (gViewPort && !gViewPort->m_pScoreBoard)
+	{
+		gViewPort->CreateScoreBoard();
+		gViewPort->m_pScoreBoard->Initialize();
+
+		if (!gHUD.m_iIntermission)
+		{
+			gViewPort->HideScoreBoard();
+		}
+	}
 
 	return 1;
 }
@@ -251,9 +267,7 @@ int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
 	m_iConcussionEffect = READ_BYTE();
 	if (m_iConcussionEffect)
 	{
-		int r, g, b;
-		UnpackRGB(r, g, b, gHUD.m_iHUDColor);
-		this->m_StatusIcons.EnableIcon("dmg_concuss", r, g, b);
+		this->m_StatusIcons.EnableIcon("dmg_concuss", giR, giG, giB);
 	}
 	else
 		this->m_StatusIcons.DisableIcon("dmg_concuss");

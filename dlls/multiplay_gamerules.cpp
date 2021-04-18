@@ -29,6 +29,8 @@
 #include	"hltv.h"
 #include "UserMessages.h"
 
+#include "ctf/ctfplay_gamerules.h"
+
 #if !defined ( _WIN32 )
 #include <ctype.h>
 #endif
@@ -37,10 +39,6 @@ extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
 
 extern int g_teamplay;
-
-#define ITEM_RESPAWN_TIME	30
-#define WEAPON_RESPAWN_TIME	20
-#define AMMO_RESPAWN_TIME	20
 
 float g_flIntermissionStartTime = 0;
 
@@ -406,6 +404,51 @@ BOOL CHalfLifeMultiplay :: GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerI
 BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] )
 {
 	g_VoiceGameMgr.ClientConnected(pEntity);
+
+	int playersInTeamsCount = 0;
+
+	for( int iPlayer = 1; iPlayer <= gpGlobals->maxClients; ++iPlayer )
+	{
+		auto pPlayer = static_cast< CBasePlayer* >( UTIL_PlayerByIndex( iPlayer ) );
+
+		if( pPlayer )
+		{
+			if( pPlayer->IsPlayer() )
+			{
+				playersInTeamsCount += ( pPlayer->m_iTeamNum > CTFTeam::None ) ? 1 : 0;
+			}
+		}
+	}
+
+	if( playersInTeamsCount <= 1 )
+	{
+		for( int iPlayer = 1; iPlayer <= gpGlobals->maxClients; ++iPlayer )
+		{
+			auto pPlayer = static_cast<CBasePlayer*>( UTIL_PlayerByIndex( iPlayer ) );
+
+			if( pPlayer && pPlayer->m_iItems != CTFItem::None )
+			{
+				if( pPlayer->m_iItems & CTFItem::ItemsMask )
+				{
+					RespawnPlayerCTFPowerups( pPlayer, true );
+				}
+
+				ClientPrint( pPlayer->pev, HUD_PRINTCENTER, "#CTFGameReset" );
+			}
+		}
+	}
+
+	if( pEntity )
+	{
+		//TODO: really shouldn't be modifying this directly
+		auto portNumber = strchr( const_cast<char*>( pszAddress ), ':' );
+
+		if( portNumber )
+			*portNumber = '\0';
+
+		pszPlayerIPs[ ENTINDEX( pEntity ) ] = strdup( pszAddress );
+	}
+
 	return TRUE;
 }
 
@@ -448,11 +491,19 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pl )
 		WRITE_BYTE( ENTINDEX(pl->edict()) );
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( 0 );
+		/*
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( 0 );
+		*/
 	MESSAGE_END();
 
 	SendMOTDToClient( pl->edict() );
+
+	if( IsCTF() )
+	{
+		pl->m_iCurrentMenu = MENU_TEAM;
+		pl->Player_Menu();
+	}
 
 	// loop through all active players and send their score info to the new client
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
@@ -466,8 +517,10 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pl )
 				WRITE_BYTE( i );	// client number
 				WRITE_SHORT( plr->pev->frags );
 				WRITE_SHORT( plr->m_iDeaths );
+				/*
 				WRITE_SHORT( 0 );
 				WRITE_SHORT( GetTeamIndex( plr->m_szTeamName ) + 1 );
+				*/
 			MESSAGE_END();
 		}
 	}
@@ -489,10 +542,21 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 
 		if ( pPlayer )
 		{
+			if( !g_fGameOver && pPlayer->m_iItems & CTFItem::ItemsMask )
+				ScatterPlayerCTFPowerups( pPlayer );
+
 			FireTargets( "game_playerleave", pPlayer, pPlayer, USE_TOGGLE, 0 );
 
+			if (IsCTF())
+			{
+				UTIL_LogPrintf("\"%s<%i><%s><%s>\" disconnected\n",
+					STRING(pPlayer->pev->netname),
+					GETPLAYERUSERID(pPlayer->edict()),
+					GETPLAYERAUTHID(pPlayer->edict()),
+					GetTeamName(pPlayer->edict()));
+			}
 			// team match?
-			if ( g_teamplay )
+			else if ( g_teamplay )
 			{
 				UTIL_LogPrintf( "\"%s<%i><%s><%s>\" disconnected\n",  
 					STRING( pPlayer->pev->netname ), 
@@ -509,7 +573,28 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 					GETPLAYERUSERID( pPlayer->edict() ) );
 			}
 
+			const int playerIndex = ENTINDEX(pClient);
+
+			free(pszPlayerIPs[playerIndex]);
+			pszPlayerIPs[playerIndex] = nullptr;
+
 			pPlayer->RemoveAllItems( TRUE );// destroy all of the players weapons and items
+
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgSpectator, 0, 0);
+			g_engfuncs.pfnWriteByte(ENTINDEX(pClient));
+			g_engfuncs.pfnWriteByte(0);
+			g_engfuncs.pfnMessageEnd();
+
+			for (auto entity : UTIL_FindEntitiesByClassname<CBasePlayer>("player"))
+			{
+				if (entity->pev && entity != pPlayer && entity->m_hObserverTarget == pPlayer)
+				{
+					const int savedIUser1 = entity->pev->iuser1;
+					entity->pev->iuser1 = 0;
+					entity->m_hObserverTarget = nullptr;
+					entity->Observer_SetMode(savedIUser1);
+				}
+			}
 		}
 	}
 }
@@ -542,12 +627,85 @@ BOOL CHalfLifeMultiplay::FPlayerCanTakeDamage( CBasePlayer *pPlayer, CBaseEntity
 
 //=========================================================
 //=========================================================
-void CHalfLifeMultiplay :: PlayerThink( CBasePlayer *pPlayer )
+void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 {
-	if ( g_fGameOver )
+	if (pPlayer->m_iItems & CTFItem::PortableHEV)
+	{
+		if (pPlayer->m_flNextHEVCharge <= gpGlobals->time)
+		{
+			if (pPlayer->pev->armorvalue < 150)
+			{
+				pPlayer->pev->armorvalue += 1;
+
+				if (!pPlayer->m_fPlayingAChargeSound)
+				{
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_armor_charge.wav", VOL_NORM, ATTN_NORM);
+					pPlayer->m_fPlayingAChargeSound = true;
+				}
+			}
+			else if (pPlayer->m_fPlayingAChargeSound)
+			{
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_armor_charge.wav");
+				pPlayer->m_fPlayingAChargeSound = false;
+			}
+
+			pPlayer->m_flNextHEVCharge = gpGlobals->time + 0.5;
+		}
+	}
+	else if (pPlayer->pev->armorvalue > 100 && pPlayer->m_flNextHEVCharge <= gpGlobals->time)
+	{
+		pPlayer->pev->armorvalue -= 1;
+		pPlayer->m_flNextHEVCharge = gpGlobals->time + 0.5;
+	}
+
+	if (pPlayer->m_iItems & CTFItem::Regeneration)
+	{
+		if (pPlayer->m_flNextHealthCharge <= gpGlobals->time)
+		{
+			if (pPlayer->pev->health < 150.0)
+			{
+				pPlayer->pev->health += 1;
+
+				if (!pPlayer->m_fPlayingHChargeSound)
+				{
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_health_charge.wav", VOL_NORM, ATTN_NORM);
+					pPlayer->m_fPlayingHChargeSound = true;
+				}
+			}
+			else if (pPlayer->m_fPlayingHChargeSound)
+			{
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_health_charge.wav");
+				pPlayer->m_fPlayingHChargeSound = false;
+			}
+
+			pPlayer->m_flNextHealthCharge = gpGlobals->time + 0.5;
+		}
+	}
+	else if (pPlayer->pev->health > 100.0 && gpGlobals->time >= pPlayer->m_flNextHealthCharge)
+	{
+		pPlayer->pev->health -= 1;
+		pPlayer->m_flNextHealthCharge = gpGlobals->time + 0.5;
+	}
+
+	if (pPlayer->m_pActiveItem && pPlayer->m_flNextAmmoCharge <= gpGlobals->time && (pPlayer->m_iItems & CTFItem::Backpack))
+	{
+		pPlayer->m_pActiveItem->IncrementAmmo(pPlayer);
+		pPlayer->m_flNextAmmoCharge = gpGlobals->time + 0.75;
+	}
+
+	if (gpGlobals->time - pPlayer->m_flLastDamageTime > 0.15)
+	{
+		if (pPlayer->m_iMostDamage < pPlayer->m_iLastDamage)
+			pPlayer->m_iMostDamage = pPlayer->m_iLastDamage;
+
+		pPlayer->m_flLastDamageTime = 0;
+		pPlayer->m_iLastDamage = 0;
+	}
+
+	if (g_fGameOver)
 	{
 		// check for button presses
-		if ( pPlayer->m_afButtonPressed & ( IN_DUCK | IN_ATTACK | IN_ATTACK2 | IN_USE | IN_JUMP ) )
+		if (pPlayer->m_afButtonPressed & (IN_DUCK | IN_ATTACK | IN_ATTACK2 | IN_USE | IN_JUMP))
 			m_iEndIntermissionButtonHit = TRUE;
 
 		// clear attack/use commands from player
@@ -578,12 +736,18 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 		addDefault = FALSE;
 	}
 
+	g_engfuncs.pfnMessageBegin(MSG_ONE, gmsgOldWeapon, nullptr, pPlayer->edict());
+	g_engfuncs.pfnWriteByte(1 == oldweapons.value);
+	g_engfuncs.pfnMessageEnd();
+
 	if ( addDefault )
 	{
 		pPlayer->GiveNamedItem( "weapon_crowbar" );
 		pPlayer->GiveNamedItem( "weapon_9mmhandgun" );
 		pPlayer->GiveAmmo( 68, "9mm", _9MM_MAX_CARRY );// 4 full reloads
 	}
+	
+	InitItemsForPlayer(pPlayer);
 
 	pPlayer->m_iAutoWepSwitch = originalAutoWepSwitch;
 }
@@ -657,8 +821,10 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 		WRITE_BYTE( ENTINDEX(pVictim->edict()) );
 		WRITE_SHORT( pVictim->pev->frags );
 		WRITE_SHORT( pVictim->m_iDeaths );
+		/*
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( GetTeamIndex( pVictim->m_szTeamName ) + 1 );
+		*/
 	MESSAGE_END();
 
 	// killers score, if it's a player
@@ -671,8 +837,10 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 			WRITE_BYTE( ENTINDEX(PK->edict()) );
 			WRITE_SHORT( PK->pev->frags );
 			WRITE_SHORT( PK->m_iDeaths );
+			/*
 			WRITE_SHORT( 0 );
 			WRITE_SHORT( GetTeamIndex( PK->m_szTeamName) + 1 );
+			*/
 		MESSAGE_END();
 
 		// let the killer paint another decal as soon as he'd like.
@@ -684,6 +852,11 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 		DeactivateSatchels( pVictim );
 	}
 #endif
+
+	if( pVictim->IsPlayer() && !g_fGameOver && ( pVictim->m_iItems & CTFItem::ItemsMask ) )
+	{
+		ScatterPlayerCTFPowerups( pVictim );
+	}
 }
 
 //=========================================================
@@ -730,7 +903,9 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	}
 
 	// strip the monster_* or weapon_* from the inflictor's classname
-	if ( strncmp( killer_weapon_name, "weapon_", 7 ) == 0 )
+	if (strncmp(killer_weapon_name, "ARgr", 4) == 0)
+		killer_weapon_name += 2;
+	else if ( strncmp( killer_weapon_name, "weapon_", 7 ) == 0 )
 		killer_weapon_name += 7;
 	else if ( strncmp( killer_weapon_name, "monster_", 8 ) == 0 )
 		killer_weapon_name += 8;
@@ -761,18 +936,30 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 		WRITE_STRING( kill_technique); //AJH How the victim was killed.
 	MESSAGE_END();
 
+	//Not done by Op4
+	/*
 	// replace the code names with the 'real' names
 	if ( !strcmp( killer_weapon_name, "egon" ) )
 		killer_weapon_name = gluon;
 	else if ( !strcmp( killer_weapon_name, "gauss" ) )
 		killer_weapon_name = tau;
+		*/
 
 	if ( pVictim->pev == pKiller )  
 	{
 		// killed self
 
+		if (IsCTF())
+		{
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",
+				STRING(pVictim->pev->netname),
+				GETPLAYERUSERID(pVictim->edict()),
+				GETPLAYERAUTHID(pVictim->edict()),
+				GetTeamName(pKiller->pContainingEntity),
+				killer_weapon_name);
+		}
 		// team match?
-		if ( g_teamplay )
+		else if ( g_teamplay )
 		{
 			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",  
 				STRING( pVictim->pev->netname ), 
@@ -793,8 +980,21 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	}
 	else if ( pKiller->flags & FL_CLIENT )
 	{
+		if (IsCTF())
+		{
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",
+				STRING(pKiller->netname),
+				GETPLAYERUSERID(ENT(pKiller)),
+				GETPLAYERAUTHID(ENT(pKiller)),
+				GetTeamName(pKiller->pContainingEntity),
+				STRING(pVictim->pev->netname),
+				GETPLAYERUSERID(pVictim->edict()),
+				GETPLAYERAUTHID(pVictim->edict()),
+				GetTeamName(pVictim->edict()),
+				killer_weapon_name);
+		}
 		// team match?
-		if ( g_teamplay )
+		else if ( g_teamplay )
 		{
 			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",  
 				STRING( pKiller->netname ),
@@ -825,8 +1025,17 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	{ 
 		// killed by the world
 
+		if (IsCTF())
+		{
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n",
+				STRING(pVictim->pev->netname),
+				GETPLAYERUSERID(pVictim->edict()),
+				GETPLAYERAUTHID(pVictim->edict()),
+				GetTeamName(pVictim->edict()),
+				killer_weapon_name);
+		}
 		// team match?
-		if ( g_teamplay )
+		else if ( g_teamplay )
 		{
 			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n",
 				STRING( pVictim->pev->netname ), 
@@ -932,10 +1141,6 @@ float CHalfLifeMultiplay :: FlWeaponRespawnTime( CBasePlayerItem *pWeapon )
 
 	return gpGlobals->time + WEAPON_RESPAWN_TIME;
 }
-
-// when we are within this close to running out of entities,  items 
-// marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
-#define ENTITY_INTOLERANCE	100
 
 //=========================================================
 // FlWeaponRespawnTime - Returns 0 if the weapon can respawn 
@@ -1173,6 +1378,8 @@ void CHalfLifeMultiplay :: GoToIntermission()
 {
 	if ( g_fGameOver )
 		return;  // intermission has already been triggered, so ignore.
+
+	FlushCTFPowerupTimes();
 
 	MESSAGE_BEGIN(MSG_ALL, SVC_INTERMISSION);
 	MESSAGE_END();
@@ -1563,7 +1770,7 @@ void CHalfLifeMultiplay :: ChangeLevel()
 	char szCommands[ 1500 ];
 	char szRules[ 1500 ];
 	int minplayers = 0, maxplayers = 0;
-	strcpy( szFirstMapInList, "hldm1" );  // the absolute default level is hldm1
+	strcpy( szFirstMapInList, "op4_bootcamp" );  // the absolute default level is hldm1
 
 	int	curplayers;
 	BOOL do_cycle = TRUE;

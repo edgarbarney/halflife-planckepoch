@@ -21,9 +21,10 @@
 #define CDLL_DLL_H
 
 #define MAX_WEAPONS		32		// ???
+const int SV_MAX_PLAYERS = 32;
 
-#define MAX_WEAPON_SLOTS		5	// hud item selection slots
-#define MAX_ITEM_TYPES			6	// hud item selection slots
+#define MAX_WEAPON_SLOTS		7	// hud item selection slots
+#define MAX_ITEM_TYPES			7	// hud item selection slots
 
 #define MAX_ITEMS				10	//AJH (increased from 5 for expanded inventory system) hard coded item types
 
@@ -154,5 +155,31 @@ constexpr Vector VEC_DUCK_HULL_MAX(16, 16, 18);
 constexpr Vector VEC_DUCK_VIEW(0, 0, 12);
 
 constexpr Vector VEC_DEAD_VIEW(0, 0, -8);
+
+#define MENU_NONE					0
+#define MENU_DEFAULT				1
+#define MENU_TEAM 					2
+#define MENU_CLASS 					3
+#define MENU_MAPBRIEFING			4
+#define MENU_INTRO 					5
+#define MENU_CLASSHELP				6
+#define MENU_CLASSHELP2 			7
+#define MENU_REPEATHELP 			8
+//#define MENU_SPECHELP				9
+#define MENU_STATSMENU				9
+#define MENU_SCOREBOARD				10
+
+#define RGB_YELLOWISH 0x00FFA000 //255,160,0
+#define RGB_REDISH 0x00FF1010 //255,160,0
+#define RGB_GREENISH 0x0000A000 //0,160,0
+
+#define RGB_HUD_COLOR RGB_GREENISH
+
+inline void UnpackRGB(int& r, int& g, int& b, unsigned long ulRGB)
+{
+	r = (ulRGB & 0xFF0000) >> 16;
+	g = (ulRGB & 0xFF00) >> 8;
+	b = ulRGB & 0xFF;
+}
 
 #endif

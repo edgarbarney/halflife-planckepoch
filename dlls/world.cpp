@@ -33,6 +33,9 @@
 #include "weapons.h"
 #include "gamerules.h"
 #include "teamplay_gamerules.h"
+#include "ctf/ctfplay_gamerules.h"
+#include "world.h"
+#include "ctf/CItemCTF.h"
 #include "movewith.h" //LRC
 
 extern CGraph WorldGraph;
@@ -92,6 +95,15 @@ DLL_DECALLIST gDecals[] = {
 	{ "{smscorch3", 0 },	// DECAL_SMALLSCORCH3,	// Small scorch mark
 	{ "{mommablob", 0 },	// DECAL_MOMMABIRTH		// BM Birth spray
 	{ "{mommablob", 0 },	// DECAL_MOMMASPLAT		// BM Mortar spray?? need decal
+	{ "{spr_splt1", 0 },	// DECAL_SPR_SPLT1
+	{ "{spr_splt2", 0 },	// DECAL_SPR_SPLT2
+	{ "{spr_splt3", 0 },	// DECAL_SPR_SPLT3
+	{ "{ofscorch1", 0 },	// DECAL_OFSCORCH1
+	{ "{ofscorch2", 0 },	// DECAL_OFSCORCH2
+	{ "{ofscorch3", 0 },	// DECAL_OFSCORCH3
+	{ "{ofsmscorch1", 0 },	// DECAL_OFSMSCORCH1
+	{ "{ofsmscorch2", 0 },	// DECAL_OFSMSCORCH2
+	{ "{ofsmscorch3", 0 },	// DECAL_OFSMSCORCH3
 };
 
 /*
@@ -479,6 +491,12 @@ void CWorld :: Spawn()
 {
 	g_fGameOver = FALSE;
 	Precache( );
+	CItemCTF::m_pLastSpawn = nullptr;
+
+	if (g_pGameRules->IsCTF())
+	{
+		ResetTeamScores();
+	}
 }
 
 void CWorld :: Precache()
@@ -507,7 +525,7 @@ void CWorld :: Precache()
 		delete g_pGameRules;
 	}
 
-	g_pGameRules = InstallGameRules( );
+	g_pGameRules = InstallGameRules( this );
 
 	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here 
 
@@ -695,6 +713,15 @@ void CWorld :: Precache()
 	{
 		CVAR_SET_FLOAT( "mp_defaultteam", 0 );
 	}
+
+	if (pev->spawnflags & SF_WORLD_COOP)
+	{
+		CVAR_SET_FLOAT("mp_defaultcoop", 1);
+	}
+	else
+	{
+		CVAR_SET_FLOAT("mp_defaultcoop", 0);
+	}
 }
 
 
@@ -764,6 +791,14 @@ void CWorld :: KeyValue( KeyValueData *pkvd )
 		if ( atoi(pkvd->szValue) )
 		{
 			pev->spawnflags |= SF_WORLD_FORCETEAM;
+		}
+		pkvd->fHandled = TRUE;
+	}
+	else if( FStrEq( pkvd->szKeyName, "defaultctf" ) )
+	{
+		if( atoi( pkvd->szValue ) )
+		{
+			pev->spawnflags |= SF_WORLD_CTF;
 		}
 		pkvd->fHandled = TRUE;
 	}

@@ -61,14 +61,22 @@ using qboolean = int;
 #include "winsani_in.h"
 #include <Windows.h>
 #include "winsani_out.h"
+#include <malloc.h>
 
 //Avoid the ISO conformant warning
 #define stricmp _stricmp
 #define strnicmp _strnicmp
 #define itoa _itoa
 #define strupr _strupr
+#define strdup _strdup
 
 #define DLLEXPORT __declspec( dllexport )
+
+#define stackalloc(size) _alloca(size)
+
+//Note: an implementation of stackfree must safely ignore null pointers
+#define stackfree(address)
+
 #else // _WIN32
 #define FALSE 0
 #define TRUE (!FALSE)
@@ -78,6 +86,7 @@ typedef int BOOL;
 #define MAX_PATH PATH_MAX
 #include <limits.h>
 #include <stdarg.h>
+#include <alloca.h>
 #define _vsnprintf(a,b,c,d) vsnprintf(a,b,c,d)
 
 #define stricmp strcasecmp
@@ -87,6 +96,12 @@ typedef int BOOL;
 #define _alloca alloca
 
 #define DLLEXPORT __attribute__ ( ( visibility( "default" ) ) )
+
+#define stackalloc(size) alloca(size)
+
+//Note: an implementation of stackfree must safely ignore null pointers
+#define stackfree(address)
+
 #endif //_WIN32
 
 #define V_min(a,b)  (((a) < (b)) ? (a) : (b))

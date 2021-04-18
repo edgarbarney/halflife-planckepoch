@@ -286,8 +286,6 @@ void CRpgRocket :: FollowThink()
 
 void CRpg::Reload()
 {
-	int iResult;
-
 	if ( m_iClip == 1 )
 	{
 		// don't bother with any of this if don't need to reload.
@@ -324,11 +322,13 @@ void CRpg::Reload()
 	}
 #endif
 
-	if ( m_iClip == 0 )
-		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD, 2 );
-	
-	if ( iResult )
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	if (m_iClip == 0)
+	{
+		int iResult = DefaultReload(RPG_MAX_CLIP, RPG_RELOAD, 2);
+
+		if (iResult)
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
+	}
 	
 }
 
@@ -391,6 +391,14 @@ int CRpg::GetItemInfo(ItemInfo *p)
 	p->iWeight = RPG_WEIGHT;
 
 	return 1;
+}
+
+void CRpg::IncrementAmmo(CBasePlayer* pPlayer)
+{
+	if (pPlayer->GiveAmmo(1, "rockets", ROCKET_MAX_CARRY))
+	{
+		EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_backpack.wav", 0.5, ATTN_NORM);
+	}
 }
 
 int CRpg::AddToPlayer( CBasePlayer *pPlayer )
@@ -475,7 +483,7 @@ void CRpg::PrimaryAttack()
 
 		int flags;
 #if defined( CLIENT_WEAPONS )
-	flags = FEV_NOTHOST;
+	flags = UTIL_DefaultPlaybackFlags();
 #else
 	flags = 0;
 #endif

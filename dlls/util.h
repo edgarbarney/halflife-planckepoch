@@ -258,6 +258,7 @@ extern void			UTIL_MakeInvVectors		( const Vector &vec, globalvars_t *pgv );
 
 extern void			UTIL_SetEdictOrigin			( edict_t *pEdict, const Vector &vecOrigin );
 extern void			UTIL_SetOrigin			( CBaseEntity* pEntity, const Vector &vecOrigin );
+extern void			UTIL_SetOrigin			( entvars_t* pev, const Vector& vecOrigin );
 
 extern void			UTIL_EmitAmbientSound	( edict_t *entity, const Vector &vecOrigin, const char *samp, float vol, float attenuation, int fFlags, int pitch );
 extern void			UTIL_ParticleEffect		( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount );
@@ -333,7 +334,6 @@ extern void ClientPrint( entvars_t *client, int msg_dest, const char *msg_name, 
 // prints a message to the HUD say (chat)
 extern void			UTIL_SayText( const char *pText, CBaseEntity *pEntity );
 extern void			UTIL_SayTextAll( const char *pText, CBaseEntity *pEntity );
-
 
 typedef struct hudtextparms_s
 {
@@ -570,3 +570,183 @@ CBaseEntity* UTIL_FollowReference( CBaseEntity* pStartEntity, const char* szName
 
 // for trigger_viewset
 int HaveCamerasInPVS( edict_t* edict );
+bool UTIL_IsMultiplayer();
+bool UTIL_IsCTF();
+
+inline void WRITE_COORD_VECTOR( const Vector& vec )
+{
+	WRITE_COORD( vec.x );
+	WRITE_COORD( vec.y );
+	WRITE_COORD( vec.z );
+}
+
+struct MinuteSecondTime
+{
+	const int Minutes;
+	const int Seconds;
+};
+
+/**
+*	@brief Converts seconds to minutes and seconds
+*/
+inline MinuteSecondTime SecondsToTime( const int seconds )
+{
+	const auto minutes = seconds / 60;
+	return { minutes, seconds - ( minutes * 60 ) };
+}
+
+template<typename T>
+struct FindByClassnameFunctor
+{
+	static T* Find( T* pStartEntity, const char* pszClassname )
+	{
+		return static_cast<T*>( UTIL_FindEntityByClassname( pStartEntity, pszClassname ) );
+	}
+};
+
+template<typename T>
+struct FindByTargetnameFunctor
+{
+	static T* Find( T* pStartEntity, const char* pszName )
+	{
+		return static_cast<T*>( UTIL_FindEntityByTargetname( pStartEntity, pszName ) );
+	}
+};
+
+template<typename T, typename FINDER>
+class CEntityIterator
+{
+public:
+	CEntityIterator()
+		: m_pszName( "" )
+		, m_pEntity( nullptr )
+	{
+	}
+
+	CEntityIterator( const CEntityIterator& ) = default;
+
+	CEntityIterator( const char* const pszName, T* pEntity )
+		: m_pszName( pszName )
+		, m_pEntity( pEntity )
+	{
+	}
+
+	CEntityIterator& operator=( const CEntityIterator& ) = default;
+
+	const T* operator*() const { return m_pEntity; }
+
+	T* operator*() { return m_pEntity; }
+
+	T* operator->() { return m_pEntity; }
+
+	void operator++()
+	{
+		m_pEntity = static_cast<T*>( FINDER::Find( m_pEntity, m_pszName ) );
+	}
+
+	void operator++( int )
+	{
+		++*this;
+	}
+
+	bool operator==( const CEntityIterator& other ) const
+	{
+		return m_pEntity == other.m_pEntity;
+	}
+
+	bool operator!=( const CEntityIterator& other ) const
+	{
+		return !( *this == other );
+	}
+
+private:
+	const char* const m_pszName;
+	T* m_pEntity;
+};
+
+/**
+*	@brief Entity enumerator optimized for iteration from start
+*/
+template<typename T, typename FINDER>
+class CEntityEnumerator
+{
+public:
+	using Functor = FINDER;
+	using iterator = CEntityIterator<T, Functor>;
+
+public:
+	CEntityEnumerator( const char* pszClassName )
+		: m_pszName( pszClassName )
+	{
+	}
+
+	iterator begin()
+	{
+		return { m_pszName, static_cast<T*>( Functor::Find( nullptr, m_pszName ) ) };
+	}
+
+	iterator end()
+	{
+		return { m_pszName, nullptr };
+	}
+
+private:
+	const char* const m_pszName;
+};
+
+/**
+*	@brief Entity enumerator for iteration from a given start entity
+*/
+template<typename T, typename FINDER>
+class CEntityEnumeratorWithStart
+{
+public:
+	using Functor = FINDER;
+	using iterator = CEntityIterator<T, Functor>;
+
+public:
+	CEntityEnumeratorWithStart( const char* pszClassName, T* pStartEntity )
+		: m_pszName( pszClassName )
+		, m_pStartEntity( pStartEntity )
+	{
+	}
+
+	iterator begin()
+	{
+		return { m_pszName, static_cast< T* >( Functor::Find( m_pStartEntity, m_pszName ) ) };
+	}
+
+	iterator end()
+	{
+		return { m_pszName, nullptr };
+	}
+
+private:
+	const char* const m_pszName;
+	T* m_pStartEntity = nullptr;
+};
+
+template<typename T = CBaseEntity>
+inline CEntityEnumerator<T, FindByClassnameFunctor<T>> UTIL_FindEntitiesByClassname( const char* pszClassName )
+{
+	return { pszClassName };
+}
+
+template<typename T = CBaseEntity>
+inline CEntityEnumeratorWithStart<T, FindByClassnameFunctor<T>> UTIL_FindEntitiesByClassname( const char* pszClassName, T* pStartEntity )
+{
+	return { pszClassName, pStartEntity };
+}
+
+template<typename T = CBaseEntity>
+inline CEntityEnumerator<T, FindByTargetnameFunctor<T>> UTIL_FindEntitiesByTargetname( const char* pszName )
+{
+	return { pszName };
+}
+
+
+template<typename T = CBaseEntity>
+inline CEntityEnumeratorWithStart<T, FindByTargetnameFunctor<T>> UTIL_FindEntitiesByTargetname( const char* pszName, T* pStartEntity )
+{
+	return { pszName, pStartEntity };
+}

@@ -220,6 +220,9 @@ class CItemSuit : public CItem
 
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
 
+//Unused alias of the suit
+LINK_ENTITY_TO_CLASS( item_vest, CItemSuit );
+
 
 
 class CItemBattery : public CItem

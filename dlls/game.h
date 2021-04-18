@@ -16,7 +16,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-extern void GameDLLInit( void );
+extern void GameDLLInit();
 
 
 extern cvar_t	displaysoundlist;
@@ -36,6 +36,14 @@ extern cvar_t	teamlist;
 extern cvar_t	teamoverride;
 extern cvar_t	defaultteam;
 extern cvar_t	allowmonsters;
+
+extern cvar_t	ctf_capture;
+extern cvar_t	oldweapons;
+extern cvar_t	multipower;
+extern cvar_t	ctf_autoteam;
+extern cvar_t coopplay;
+extern cvar_t coopweprespawn;
+extern cvar_t spamdelay;
 
 // Engine Cvars
 extern cvar_t	*g_psv_gravity;

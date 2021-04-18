@@ -76,4 +76,20 @@ extern int gmsgCreateSystem;
 
 //RENDERERS END
 
+extern int gmsgSpectator;
+extern int gmsgPlayerBrowse;
+extern int gmsgHudColor;
+extern int gmsgFlagIcon;
+extern int gmsgFlagTimer;
+extern int gmsgPlayerIcon;
+extern int gmsgVGUIMenu;
+extern int gmsgAllowSpec;
+extern int gmsgSetMenuTeam;
+extern int gmsgCTFScore;
+extern int gmsgStatsInfo;
+extern int gmsgStatsPlayer;
+extern int gmsgTeamFull;
+extern int gmsgOldWeapon;
+extern int gmsgCustomIcon;
+
 void LinkUserMessages();

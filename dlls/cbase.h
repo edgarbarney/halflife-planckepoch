@@ -124,9 +124,9 @@ typedef void (CBaseEntity::*USEPTR)( CBaseEntity *pActivator, CBaseEntity *pCall
 #define CLASS_PLAYER_ALLY		11
 #define CLASS_PLAYER_BIOWEAPON	12 // hornets and snarks.launched by players
 #define CLASS_ALIEN_BIOWEAPON	13 // hornets and snarks.launched by the alien menace
-#define CLASS_FACTION_A			14 //LRC - very simple new classes, for use with Behaves As
-#define CLASS_FACTION_B			15
-#define CLASS_FACTION_C			16
+#define CLASS_HUMAN_MILITARY_FRIENDLY 14	// Opposing Force friendlies
+#define CLASS_ALIEN_RACE_X		15
+#define CLASS_CTFITEM			30
 #define	CLASS_BARNACLE			99 // special because no one pays attention to it, and it eats a wide cross-section of creatures.
 
 class CBaseEntity;
@@ -134,6 +134,7 @@ class CBaseMonster;
 class CBasePlayerItem;
 class CSquadMonster;
 class CThinker;
+class COFSquadTalkMonster;
 
 
 #define	SF_NORESPAWN	( 1 << 30 )// !!!set this bit on guns and stuff that should never respawn.
@@ -154,6 +155,12 @@ public:
 
 	CBaseEntity * operator = (CBaseEntity *pEntity);
 	CBaseEntity * operator ->();
+
+	template<typename T>
+	T* Entity()
+	{
+		return static_cast<T*>( operator CBaseEntity *() );
+	}
 };
 
 
@@ -309,6 +316,7 @@ public:
 //	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return TRUE;}
 	virtual CBaseMonster *MyMonsterPointer() { return NULL;}
 	virtual CSquadMonster *MySquadMonsterPointer() { return NULL;}
+	virtual COFSquadTalkMonster *MySquadTalkMonsterPointer() { return nullptr; }
 	virtual	int		GetToggleState() { return TS_AT_TOP; }
 	virtual void	AddPoints( int score, BOOL bAllowNegativeScore ) {}
 	virtual void	AddPointsToTeam( int score, BOOL bAllowNegativeScore ) {}
@@ -411,6 +419,18 @@ public:
 
 	static CBaseEntity *Instance( int eoffset) { return Instance( ENT( eoffset) ); }
 
+	template<typename T>
+	static T* Instance( edict_t *pent )
+	{
+		if( !pent )
+			pent = ENT( 0 );
+		CBaseEntity *pEnt = ( CBaseEntity * ) GET_PRIVATE( pent );
+		return static_cast<T*>( pEnt );
+	}
+
+	template<typename T>
+	static T* Instance( entvars_t *pev ) { return Instance<T>( ENT( pev ) ); }
+
 	CBaseMonster *GetMonsterPointer( entvars_t *pevMonster ) 
 	{ 
 		CBaseEntity *pEntity = Instance( pevMonster );
@@ -496,6 +516,8 @@ public:
 	int ammo_uranium;
 	int ammo_hornets;
 	int ammo_argrens;
+	int ammo_spores;
+	int ammo_762;
 	//Special stuff for grenades and satchels.
 	float m_flStartThrow;
 	float m_flReleaseThrow;

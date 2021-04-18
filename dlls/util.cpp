@@ -30,6 +30,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "gamerules.h"
+#include "game.h"
 #include "UserMessages.h"
 #include "movewith.h"
 #include "locus.h"
@@ -37,7 +38,14 @@
 float UTIL_WeaponTimeBase()
 {
 #if defined( CLIENT_WEAPONS )
-	return 0.0;
+	if (oldweapons.value == 1)
+	{
+		return gpGlobals->time;
+	}
+	else
+	{
+		return 0.0;
+	}
 #else
 	return gpGlobals->time;
 #endif
@@ -1302,6 +1310,13 @@ void UTIL_SetOrigin( CBaseEntity *pEntity, const Vector &vecOrigin )
 	SET_ORIGIN(ENT(pEntity->pev), vecOrigin );
 }
 
+void UTIL_SetOrigin( entvars_t* pev, const Vector& vecOrigin )
+{
+	edict_t* ent = ENT(pev);
+	if (ent)
+		SET_ORIGIN(ent, vecOrigin);
+}
+
 void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount )
 {
 	PARTICLE_EFFECT( vecOrigin, vecDirection, (float)ulColor, (float)ulCount );
@@ -2460,6 +2475,17 @@ void CSave :: WriteFunction(const char* cname, const char* pname, void** data, i
 		ALERT( at_error, "Member \"%s\" of \"%s\" contains an invalid function pointer %p!", pname, cname, *data );
 }
 
+void CSave::WriteFunction(const char* pname, void** data, int count)
+{
+	const char* functionName;
+
+	functionName = NAME_FOR_FUNCTION((uint32)*data);
+	if (functionName)
+		BufferField(pname, strlen(functionName) + 1, functionName);
+	else
+		ALERT(at_error, "Invalid function pointer in entity!");
+}
+
 
 void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd )
 {
@@ -2510,7 +2536,6 @@ void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd )
 }
 
 
-
 int CSave :: WriteEntVars( const char *pname, entvars_t *pev )
 {
 	if (pev->targetname)
@@ -2520,6 +2545,114 @@ int CSave :: WriteEntVars( const char *pname, entvars_t *pev )
 }
 
 
+int CSave::WriteFields(const char* pname, void* pBaseData, TYPEDESCRIPTION* pFields, int fieldCount)
+{
+	int				i, j, actualCount, emptyCount;
+	TYPEDESCRIPTION* pTest;
+	int				entityArray[MAX_ENTITYARRAY];
+
+	// Precalculate the number of empty fields
+	emptyCount = 0;
+	for (i = 0; i < fieldCount; i++)
+	{
+		void* pOutputData;
+		pOutputData = ((char*)pBaseData + pFields[i].fieldOffset);
+		if (DataEmpty((const char*)pOutputData, pFields[i].fieldSize * gSizes[pFields[i].fieldType]))
+			emptyCount++;
+	}
+
+	// Empty fields will not be written, write out the actual number of fields to be written
+	actualCount = fieldCount - emptyCount;
+	WriteInt(pname, &actualCount, 1);
+
+	for (i = 0; i < fieldCount; i++)
+	{
+		void* pOutputData;
+		pTest = &pFields[i];
+		pOutputData = ((char*)pBaseData + pTest->fieldOffset);
+
+		// UNDONE: Must we do this twice?
+		if (DataEmpty((const char*)pOutputData, pTest->fieldSize * gSizes[pTest->fieldType]))
+			continue;
+
+		switch (pTest->fieldType)
+		{
+		case FIELD_FLOAT:
+			WriteFloat(pTest->fieldName, (float*)pOutputData, pTest->fieldSize);
+			break;
+		case FIELD_TIME:
+			WriteTime(pTest->fieldName, (float*)pOutputData, pTest->fieldSize);
+			break;
+		case FIELD_MODELNAME:
+		case FIELD_SOUNDNAME:
+		case FIELD_STRING:
+			WriteString(pTest->fieldName, (int*)pOutputData, pTest->fieldSize);
+			break;
+		case FIELD_CLASSPTR:
+		case FIELD_EVARS:
+		case FIELD_EDICT:
+		case FIELD_ENTITY:
+		case FIELD_EHANDLE:
+			if (pTest->fieldSize > MAX_ENTITYARRAY)
+				ALERT(at_error, "Can't save more than %d entities in an array!!!\n", MAX_ENTITYARRAY);
+			for (j = 0; j < pTest->fieldSize; j++)
+			{
+				switch (pTest->fieldType)
+				{
+				case FIELD_EVARS:
+					entityArray[j] = EntityIndex(((entvars_t**)pOutputData)[j]);
+					break;
+				case FIELD_CLASSPTR:
+					entityArray[j] = EntityIndex(((CBaseEntity**)pOutputData)[j]);
+					break;
+				case FIELD_EDICT:
+					entityArray[j] = EntityIndex(((edict_t**)pOutputData)[j]);
+					break;
+				case FIELD_ENTITY:
+					entityArray[j] = EntityIndex(((EOFFSET*)pOutputData)[j]);
+					break;
+				case FIELD_EHANDLE:
+					entityArray[j] = EntityIndex((CBaseEntity*)(((EHANDLE*)pOutputData)[j]));
+					break;
+				}
+			}
+			WriteInt(pTest->fieldName, entityArray, pTest->fieldSize);
+			break;
+		case FIELD_POSITION_VECTOR:
+			WritePositionVector(pTest->fieldName, (float*)pOutputData, pTest->fieldSize);
+			break;
+		case FIELD_VECTOR:
+			WriteVector(pTest->fieldName, (float*)pOutputData, pTest->fieldSize);
+			break;
+
+		case FIELD_BOOLEAN:
+		case FIELD_INTEGER:
+			WriteInt(pTest->fieldName, (int*)pOutputData, pTest->fieldSize);
+			break;
+
+		case FIELD_SHORT:
+			WriteData(pTest->fieldName, 2 * pTest->fieldSize, ((char*)pOutputData));
+			break;
+
+		case FIELD_CHARACTER:
+			WriteData(pTest->fieldName, pTest->fieldSize, ((char*)pOutputData));
+			break;
+
+			// For now, just write the address out, we're not going to change memory while doing this yet!
+		case FIELD_POINTER:
+			WriteInt(pTest->fieldName, (int*)(char*)pOutputData, pTest->fieldSize);
+			break;
+
+		case FIELD_FUNCTION:
+			WriteFunction(pTest->fieldName, (void**)pOutputData, pTest->fieldSize);
+			break;
+		default:
+			ALERT(at_error, "Bad field type\n");
+		}
+	}
+
+	return 1;
+}
 
 int CSave :: WriteFields( const char *cname, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount )
 {
@@ -3112,3 +3245,13 @@ void UTIL_Particle(char* szName, Vector vecOrigin, Vector vDirection, int iType)
 	MESSAGE_END();
 }
 //RENDERERS END
+
+
+bool UTIL_IsMultiplayer()
+{
+	return g_pGameRules->IsMultiplayer();
+}
+bool UTIL_IsCTF()
+{
+	return g_pGameRules->IsCTF();
+}

@@ -202,6 +202,7 @@ public:
     STATE GetState() override { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
 	void	FireAtPoint( Vector startpos, TraceResult &point );
+	void	FireAtPoint( TraceResult& tr );
 
 	void	EXPORT StrikeThink();
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;

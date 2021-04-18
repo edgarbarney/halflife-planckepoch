@@ -1356,6 +1356,10 @@ void CLaser::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTyp
 	}
 }
 
+void CLaser::FireAtPoint(TraceResult &tr)
+{
+	FireAtPoint(GetStartPos(), tr);
+}
 
 void CLaser::FireAtPoint( Vector startpos, TraceResult &tr )
 {
@@ -3787,80 +3791,6 @@ TYPEDESCRIPTION	CClientFog::m_SaveData[] =
 };
 
 IMPLEMENT_SAVERESTORE( CClientFog, CBaseEntity );
-//=========================================================
-// Generic Item
-//=========================================================
-class CItemGeneric : public CBaseAnimating
-{
-public:
-	void	Spawn( void );
-	void	Precache( void );
-	void	KeyValue( KeyValueData *pkvd );
-
-	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-
-	BOOL m_fDisableShadows;
-	BOOL m_fDisableDrawing;
-};
-
-LINK_ENTITY_TO_CLASS( item_generic, CItemGeneric );
-LINK_ENTITY_TO_CLASS( item_prop, CItemGeneric );
-
-TYPEDESCRIPTION	CItemGeneric::m_SaveData[] = 
-{
-	DEFINE_FIELD( CItemGeneric, m_fDisableShadows, FIELD_BOOLEAN ),
-	DEFINE_FIELD( CItemGeneric, m_fDisableDrawing, FIELD_BOOLEAN ),
-};
-
-IMPLEMENT_SAVERESTORE( CItemGeneric, CBaseAnimating );
-
-void CItemGeneric :: KeyValue( KeyValueData *pkvd )
-{
-	if (FStrEq(pkvd->szKeyName, "DisableShadows"))
-	{
-		m_fDisableShadows = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else if (FStrEq(pkvd->szKeyName, "DisableDrawing"))
-	{
-		m_fDisableDrawing = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else
-		CBaseAnimating::KeyValue( pkvd );
-}
-
-void CItemGeneric :: Precache ( void )
-{
-	PRECACHE_MODEL( (char *)STRING(pev->model) );
-}
-
-void CItemGeneric::Spawn( void )
-{
-	if ( pev->targetname )
-	{
-		Precache();
-		SET_MODEL( ENT(pev), STRING(pev->model));
-	}
-	else
-	{
-		UTIL_Remove(this);
-	}
-
-	pev->movetype = MOVETYPE_NONE;
-
-	if ( m_fDisableShadows == TRUE )
-		pev->effects |= FL_NOSHADOW;
-
-	if ( m_fDisableDrawing == TRUE )
-		pev->effects |= FL_NOMODEL;
-
-	pev->framerate = 1.0;
-}
 //===============================================
 // Dynamic Light - Used to create dynamic lights in
 // the level. Can be either entity, world or shadow

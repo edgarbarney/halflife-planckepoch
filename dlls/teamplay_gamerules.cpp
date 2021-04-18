@@ -22,6 +22,7 @@
 #include	"weapons.h"
 #include	"gamerules.h"
 #include	"teamplay_gamerules.h"
+#include "ctf/ctfplay_gamerules.h"
 #include	"game.h"
 #include "UserMessages.h"
 
@@ -296,9 +297,23 @@ void CHalfLifeTeamplay::ChangePlayerTeam( CBasePlayer *pPlayer, const char *pTea
 		WRITE_BYTE( clientIndex );
 		WRITE_SHORT( pPlayer->pev->frags );
 		WRITE_SHORT( pPlayer->m_iDeaths );
+		/*
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( g_pGameRules->GetTeamIndex( pPlayer->m_szTeamName ) + 1 );
+		*/
 	MESSAGE_END();
+
+	auto nickName = STRING(pPlayer->pev->netname);
+
+	if (nickName && *nickName)
+	{
+		UTIL_LogPrintf("\"%s<%i><%u><%s>\" changed role to \"%s\"\n",
+			nickName,
+			GETPLAYERUSERID(pPlayer->edict()),
+			g_engfuncs.pfnGetPlayerWONId(pPlayer->edict()),
+			GetTeamName(pPlayer->edict()),
+			pTeamName);
+	}
 }
 
 

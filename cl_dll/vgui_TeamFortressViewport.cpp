@@ -53,6 +53,7 @@
 #include "vgui_TeamFortressViewport.h"
 #include "vgui_ScorePanel.h"
 #include "vgui_SpectatorPanel.h"
+#include "vgui_StatsMenuPanel.h"
 
 #include "shake.h"
 #include "screenfade.h"
@@ -111,36 +112,64 @@ const char *sTFClasses[] =
 	"CIVILIAN",
 };
 
-const char *sLocalisedClasses[] = 
+char *sLocalisedClasses[][7] = 
 {
-	"#Civilian",
-	"#Scout",
-	"#Sniper",
-	"#Soldier",
-	"#Demoman",
-	"#Medic",
-	"#HWGuy",
-	"#Pyro",
-	"#Spy",
-	"#Engineer",
-	"#Random",
-	"#Civilian",
+	{
+		"#Barney",
+		"#Cleansuit",
+		"#Gina",
+		"#Gordon",
+		"#Otis",
+		"#Scientist",
+		"#Civ_Random"
+	},
+	{
+		"#SquadLeader",
+		"#DrillSgt",
+		"#Grunt",
+		"#Recruit",
+		"#Adrian",
+		"#Tower",
+		"#Op4_Random"
+	}
 };
 
-const char *sTFClassSelection[] = 
+char * sCTFClassSelection[][7] =
 {
-	"civilian",
-	"scout",
-	"sniper",
-	"soldier",
-	"demoman",
-	"medic",
-	"hwguy",
-	"pyro",
-	"spy",
-	"engineer",
-	"randompc",
-	"civilian",
+	{
+		"Barney",
+		"Cleansuit",
+		"Gina",
+		"Gordon",
+		"Otis",
+		"Scientist",
+		"Civ_Random"
+	},
+	{
+		"SquadLeader",
+		"DrillSgt",
+		"Grunt",
+		"Recruit",
+		"Adrian",
+		"Tower",
+		"Op4_Random"
+	}
+};
+
+const char* sLocalisedStatsTeams[StatsTeamsCount] =
+{
+	"#CTFTitleStats_Both",
+	"#CTFTitleStats_BlackMesa",
+	"#CTFTitleStats_OpposingForce",
+	"#CTFTitleStats_Individual",
+};
+
+const char* sCTFStatsSelection[StatsTeamsCount] =
+{
+	"Both",
+	"BlackMesa",
+	"OpposingForce",
+	"Individual"
 };
 
 char *sLocalisedInventory[MAX_ITEMS] = //AJH Inventory system
@@ -572,6 +601,7 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 	m_iInitialized = false;
 	m_pTeamMenu = NULL;
 	m_pClassMenu = NULL;
+	m_pStatsMenu = NULL;
 	m_pScoreBoard = NULL;
 	m_pSpectatorPanel = NULL;
 	m_pCurrentMenu = NULL;
@@ -633,6 +663,7 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 	CreateTeamMenu();
 	CreateClassMenu();
 	CreateSpectatorMenu();
+	CreateStatsMenu();
 	CreateScoreBoard();
 	// Init command menus
 	m_iNumMenus = 0;
@@ -680,6 +711,11 @@ void TeamFortressViewport::Initialize()
 	{
 		// Spectator menu doesn't need initializing
 		m_pSpectatorPanel->setVisible( false );
+	}
+
+	if (m_pStatsMenu)
+	{
+		m_pStatsMenu->Initialize();
 	}
 
 	// Make sure all menus are hidden
@@ -1335,6 +1371,67 @@ CommandButton *TeamFortressViewport::CreateCustomButton( char *pButtonText, char
 	return pButton;
 }
 
+void TeamFortressViewport::SaveStatsMenu()
+{
+	m_pStatsMenu->SaveStats();
+}
+
+CMenuPanel* TeamFortressViewport::ShowStatsMenu()
+{
+	if (gEngfuncs.pDemoAPI->IsPlayingback())
+	{
+		return nullptr;
+	}
+
+	m_pStatsMenu->Reset();
+	m_pStatsMenu->m_pSaveButton->setVisible(true);
+
+	return m_pStatsMenu;
+}
+
+void TeamFortressViewport::SwitchToStatsMenu()
+{
+	m_pScoreBoard->setVisible(false);
+	m_pStatsMenu->setVisible(true);
+
+	g_iVisibleMouse = true;
+	App::getInstance()->setCursorOveride(App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow));
+}
+
+void TeamFortressViewport::SwitchToScoreBoard()
+{
+	m_pStatsMenu->setVisible(false);
+	m_pScoreBoard->Update();
+	m_pScoreBoard->setVisible(true);
+
+	g_iVisibleMouse = true;
+	App::getInstance()->setCursorOveride(App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow));
+}
+
+void TeamFortressViewport::HideScoreStatsWindow()
+{
+	if (m_pScoreBoard)
+	{
+		if (m_pScoreBoard->isVisible())
+		{
+			m_pScoreBoard->setVisible(false);
+		}
+	}
+
+	if (m_pStatsMenu)
+	{
+		if (m_pStatsMenu->isVisible())
+		{
+			m_pStatsMenu->setVisible(false);
+		}
+	}
+
+	IN_ResetMouse();
+
+	g_iVisibleMouse = false;
+	App::getInstance()->setCursorOveride(App::getInstance()->getScheme()->getCursor(Scheme::scu_none));
+}
+
 //=======================================================================
 void TeamFortressViewport::ShowCommandMenu(int menuIndex)
 {
@@ -1912,13 +2009,6 @@ void TeamFortressViewport::ShowVGUIMenu( int iMenu )
 
 	switch ( iMenu )
 	{
-
-	case MENU_CUSTOM:	//AJH New customizable menu HUD system
-		
-		CreateCustomMenu();	//AJH new customizable menu system
-		pNewMenu = ShowCustomMenu();
-		break;
-
 	case MENU_TEAM:		
 		pNewMenu = ShowTeamMenu(); 
 		break;
@@ -1936,9 +2026,20 @@ void TeamFortressViewport::ShowVGUIMenu( int iMenu )
 		pNewMenu = CreateTextWindow( SHOW_CLASSDESC );
 		break;
 
+		/*
 	case MENU_SPECHELP:
 		pNewMenu = CreateTextWindow( SHOW_SPECHELP );
 		break;
+		*/
+	case MENU_STATSMENU:
+		SwitchToStatsMenu();
+		m_pStatsMenu->m_pSaveButton->setVisible(true);
+		return;
+
+	case MENU_SCOREBOARD:
+		SwitchToScoreBoard();
+		return;
+
 	case MENU_CLASS:
 		pNewMenu = ShowClassMenu();
 		break;
@@ -2043,28 +2144,6 @@ void TeamFortressViewport::CreateTeamMenu()
 }
 
 //======================================================================================
-// CUSTOM MENU //AJH New customizable menu system
-//======================================================================================
-// Bring up the Custom Menu
-CMenuPanel* TeamFortressViewport::ShowCustomMenu()
-{
-	// Don't open menus in demo playback
-	if ( gEngfuncs.pDemoAPI->IsPlayingback() )
-		return NULL;
-
-	m_pCustomMenu->Reset();
-	return m_pCustomMenu;
-}
-
-void TeamFortressViewport::CreateCustomMenu()
-{
-	// Create the panel
-	m_pCustomMenu = new CCustomMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pCustomMenu->setParent(this);
-	m_pCustomMenu->setVisible( false );
-}
-
-//======================================================================================
 // CLASS MENU
 //======================================================================================
 // Bring up the Class selection Menu
@@ -2098,6 +2177,14 @@ void TeamFortressViewport::CreateSpectatorMenu()
 	m_pSpectatorPanel->setParent(this);
 	m_pSpectatorPanel->setVisible(false);
 	m_pSpectatorPanel->Initialize();
+}
+
+void TeamFortressViewport::CreateStatsMenu()
+{
+	// Create the panel
+	m_pStatsMenu = new CStatsMenuPanel(100, false, 0, 0, ScreenWidth, ScreenHeight);
+	m_pStatsMenu->setParent(this);
+	m_pStatsMenu->setVisible(false);
 }
 
 //======================================================================================
@@ -2497,6 +2584,7 @@ int TeamFortressViewport::MsgFunc_ScoreInfo( const char *pszName, int iSize, voi
 	short cl = READ_BYTE();
 	short frags = READ_SHORT();
 	short deaths = READ_SHORT();
+	//TODO: not written by Op4
 	short playerclass = READ_SHORT();
 	short teamnumber = READ_SHORT();
 
@@ -2701,4 +2789,27 @@ int TeamFortressViewport::MsgFunc_SpecFade( const char *pszName, int iSize, void
 #endif
 
 	return 1;
+}
+
+int TeamFortressViewport::MsgFunc_TeamFull( const char *pszName, int iSize, void *pbuf )
+{
+	m_pTeamMenu->MsgFunc_TeamFull( pszName, iSize, pbuf );
+	return 1;
+}
+
+int TeamFortressViewport::MsgFunc_SetMenuTeam( const char *pszName, int iSize, void *pbuf )
+{
+	BEGIN_READ( pbuf, iSize );
+	m_iCTFTeamNumber = READ_BYTE();
+	return 1;
+}
+
+int TeamFortressViewport::MsgFunc_StatsInfo(const char* pszName, int iSize, void* pbuf)
+{
+	return m_pStatsMenu->MsgFunc_StatsInfo(pszName, iSize, pbuf);
+}
+
+int TeamFortressViewport::MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
+{
+	return m_pStatsMenu->MsgFunc_StatsPlayer(pszName, iSize, pbuf);
 }

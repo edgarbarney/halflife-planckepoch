@@ -181,7 +181,7 @@ void CGib :: SpawnHeadGib( entvars_t *pevVictim, const char* szGibModel )
 	pGib->LimitVelocity();
 }
 
-void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int human )
+void CGib::SpawnRandomGibs( entvars_t *pevVictim, int cGibs, const GibData& gibData )
 {
 	if ( g_Language == LANGUAGE_GERMAN )
 		SpawnRandomGibs(pevVictim, cGibs, 1, "models/germangibs.mdl");
@@ -220,34 +220,34 @@ void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int notfirst, con
 		else
 			pGib->pev->body = RANDOM_LONG(0, pbodypart->nummodels - 1);
 
-		if ( pevVictim )
+		if( pevVictim )
 		{
 			// spawn the gib somewhere in the monster's bounding volume
-			pGib->pev->origin.x = pevVictim->absmin.x + pevVictim->size.x * (RANDOM_FLOAT ( 0 , 1 ) );
-			pGib->pev->origin.y = pevVictim->absmin.y + pevVictim->size.y * (RANDOM_FLOAT ( 0 , 1 ) );
-			pGib->pev->origin.z = pevVictim->absmin.z + pevVictim->size.z * (RANDOM_FLOAT ( 0 , 1 ) ) + 1;	// absmin.z is in the floor because the engine subtracts 1 to enlarge the box
+			pGib->pev->origin.x = pevVictim->absmin.x + pevVictim->size.x * ( RANDOM_FLOAT( 0, 1 ) );
+			pGib->pev->origin.y = pevVictim->absmin.y + pevVictim->size.y * ( RANDOM_FLOAT( 0, 1 ) );
+			pGib->pev->origin.z = pevVictim->absmin.z + pevVictim->size.z * ( RANDOM_FLOAT( 0, 1 ) ) + 1;	// absmin.z is in the floor because the engine subtracts 1 to enlarge the box
 
 			// make the gib fly away from the attack vector
 			pGib->pev->velocity = g_vecAttackDir * -1;
 
 			// mix in some noise
-			pGib->pev->velocity.x += RANDOM_FLOAT ( -0.25, 0.25 );
-			pGib->pev->velocity.y += RANDOM_FLOAT ( -0.25, 0.25 );
-			pGib->pev->velocity.z += RANDOM_FLOAT ( -0.25, 0.25 );
+			pGib->pev->velocity.x += RANDOM_FLOAT( -0.25, 0.25 );
+			pGib->pev->velocity.y += RANDOM_FLOAT( -0.25, 0.25 );
+			pGib->pev->velocity.z += RANDOM_FLOAT( -0.25, 0.25 );
 
-			pGib->pev->velocity = pGib->pev->velocity * RANDOM_FLOAT ( 300, 400 );
+			pGib->pev->velocity = pGib->pev->velocity * RANDOM_FLOAT( 300, 400 );
 
-			pGib->pev->avelocity.x = RANDOM_FLOAT ( 100, 200 );
-			pGib->pev->avelocity.y = RANDOM_FLOAT ( 100, 300 );
+			pGib->pev->avelocity.x = RANDOM_FLOAT( 100, 200 );
+			pGib->pev->avelocity.y = RANDOM_FLOAT( 100, 300 );
 
 			// copy owner's blood color
-			pGib->m_bloodColor = (CBaseEntity::Instance(pevVictim))->BloodColor();
-			
-			if ( pevVictim->health > -50)
+			pGib->m_bloodColor = ( CBaseEntity::Instance( pevVictim ) )->BloodColor();
+
+			if( pevVictim->health > -50 )
 			{
 				pGib->pev->velocity = pGib->pev->velocity * 0.7;
 			}
-			else if ( pevVictim->health > -200)
+			else if( pevVictim->health > -200 )
 			{
 				pGib->pev->velocity = pGib->pev->velocity * 2;
 			}
@@ -257,11 +257,13 @@ void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int notfirst, con
 			}
 
 			pGib->pev->solid = SOLID_BBOX;
-			UTIL_SetSize ( pGib->pev, Vector( 0 , 0 , 0 ), Vector ( 0, 0, 0 ) );
+			UTIL_SetSize( pGib->pev, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ) );
 		}
 		pGib->LimitVelocity();
 		pGib = NULL; //LRC
 	}
+
+	stackfree( pLimitTracking );
 }
 
 //LRC - work out gibs from blood colour, instead of from class.
@@ -682,6 +684,8 @@ void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 	//pev->enemy = ENT( pevAttacker );//why? (sjb)
 	
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
+
+	ClearShockEffect();
 }
 
 //
@@ -1531,6 +1535,14 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 			} 
 			else switch(iBulletType)
 			{
+			case BULLET_PLAYER_MP5:
+				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgMP5, vecDir, &tr, DMG_BULLET);
+				break;
+
+			case BULLET_PLAYER_357:
+				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET);
+				break;
+
 			case BULLET_PLAYER_BUCKSHOT:
 				// make distance based!
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgBuckshot, vecDir, &tr, DMG_BULLET);
@@ -1673,6 +1685,53 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 			
 			case BULLET_PLAYER_357:		
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET); 
+				break;
+
+			case BULLET_PLAYER_556:
+				pEntity->TraceAttack( pevAttacker, gSkillData.plrDmg556, vecDir, &tr, DMG_BULLET );
+				break;
+
+			case BULLET_PLAYER_762:
+				pEntity->TraceAttack( pevAttacker, gSkillData.plrDmg762, vecDir, &tr, DMG_BULLET );
+				
+				if( tr.pHit && tr.pHit->v.takedamage != DAMAGE_NO )
+				{
+					EMIT_SOUND_DYN( tr.pHit, CHAN_BODY, "weapons/xbow_hitbod2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM );
+				
+					auto pHitEntity = Instance( tr.pHit );
+
+					if( pHitEntity->BloodColor() != DONT_BLEED )
+					{
+						MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, EyePosition() );
+						WRITE_BYTE( TE_BLOODSTREAM );
+
+						WRITE_COORD( tr.vecEndPos.x );
+						WRITE_COORD( tr.vecEndPos.y );
+						WRITE_COORD( tr.vecEndPos.z );
+
+						const auto direction = vecSrc - tr.vecEndPos;
+
+						WRITE_COORD( direction.x );
+						WRITE_COORD( direction.y );
+						WRITE_COORD( direction.z );
+
+						if( pHitEntity->BloodColor() == BLOOD_COLOR_RED )
+						{
+							WRITE_BYTE( 70 );
+						}
+						else
+						{
+							WRITE_BYTE( pHitEntity->BloodColor() );
+						}
+						
+						WRITE_BYTE( 150 );
+						MESSAGE_END();
+					}
+				}
+				break;
+
+			case BULLET_PLAYER_EAGLE:
+				pEntity->TraceAttack( pevAttacker, gSkillData.plrDmgEagle, vecDir, &tr, DMG_BULLET );
 				break;
 				
 			case BULLET_NONE: // FIX 
