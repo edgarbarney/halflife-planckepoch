@@ -1,14 +1,4 @@
-So, basically: Spirit 1.8 + Trinity.
-
-Removed Features:
-- Fog. 
-  - Obviously. Trinity has it's own.
-  
-- Mirrors and Shiniy Surfaces. 
-  - Ditto.
-  
-- Particle System. 
-  - Ditto.
+Merged version of My Spirinty Repo and Solokiller's OP4 Repo. Unfinished for now.
 
 Half Life 1 SDK LICENSE
 ======================
