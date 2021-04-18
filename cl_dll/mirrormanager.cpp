@@ -61,8 +61,9 @@ Init
 */
 void CMirrorManager::Init( void ) 
 {
-	m_pCvarDrawMirrors = gEngfuncs.pfnRegisterVariable( "te_mirrors", "1", 0 );
+	m_pCvarDrawMirrors = gEngfuncs.pfnRegisterVariable( "te_mirrors", "1", FCVAR_ARCHIVE );
 	m_pCvarMirrorPlayer = gEngfuncs.pfnRegisterVariable( "te_mirror_player", "0", FCVAR_ARCHIVE );
+	m_pCvarMirrorResolution = gEngfuncs.pfnRegisterVariable( "te_mirror_resolution", "512", FCVAR_ARCHIVE ); //MAX:1024
 }
 
 /*
@@ -343,7 +344,7 @@ void CMirrorManager::SetupMirrorPass( void )
 	glRotatef(-m_pMirrorParams.viewangles[1], 0, 0, 1);
 	glTranslatef(-m_pMirrorParams.vieworg[0], -m_pMirrorParams.vieworg[1], -m_pMirrorParams.vieworg[2]);
 
-	glViewport(GL_ZERO, GL_ZERO, MIRROR_RESOLUTION, MIRROR_RESOLUTION);
+	glViewport(GL_ZERO, GL_ZERO, m_pCvarMirrorResolution->value, m_pCvarMirrorResolution->value);
 
 	glCullFace(GL_FRONT);
 	glColor4f(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
@@ -362,7 +363,7 @@ void CMirrorManager::FinishMirrorPass( void )
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurrentMirror->texture);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, WATER_RESOLUTION, WATER_RESOLUTION, 0);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_pCvarMirrorResolution->value, m_pCvarMirrorResolution->value, 0);
 
 	//Completely clear everything
 	glClearColor(GL_ZERO, GL_ZERO, GL_ZERO, GL_ONE);

@@ -68,6 +68,7 @@ public:
 
 	cvar_t			*m_pCvarWaterShader;
 	cvar_t			*m_pCvarWaterDebug;
+	cvar_t			*m_pCvarWaterResolution;
 
 	cl_texture_t	*m_pNormalTexture;
 	cl_water_t		*m_pCurWater;

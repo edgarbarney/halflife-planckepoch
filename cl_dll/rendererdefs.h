@@ -463,7 +463,7 @@ struct cl_dlight_t
 #define MAX_WATER_ENTITIES			64
 #define	MAX_WATER_VERTEX_SHADERS	2
 #define MAX_WATER_FRAGMENT_SHADERS	4
-#define	WATER_RESOLUTION			512
+//#define	WATER_RESOLUTION			1024
 
 //==================================================
 //				WATER SHADER STRUCTS
@@ -494,7 +494,7 @@ struct cl_water_t
 //
 //==================================================
 #define MAX_MIRRORS			32
-#define	MIRROR_RESOLUTION	512
+//#define	MIRROR_RESOLUTION	1024
 
 //==================================================
 //				MIRROR MANAGER STRUCTS

@@ -57,6 +57,7 @@ public:
 public:
 	cvar_t *m_pCvarDrawMirrors;
 	cvar_t *m_pCvarMirrorPlayer;
+	cvar_t* m_pCvarMirrorResolution;
 
 	cl_entity_t *m_pTempEntities[512];
 	int m_iNumTempEntities;
@@ -67,6 +68,7 @@ public:
 	cl_mirror_t *m_pCurrentMirror;
 	cl_mirror_t m_pMirrors[MAX_MIRRORS];
 	int m_iNumMirrors;
+
 };
 
 extern CMirrorManager gMirrorManager;
