@@ -18,109 +18,75 @@
 
 const auto SF_ITEMGENERIC_DROP_TO_FLOOR = 1 << 0;
 
-class CGenericItem : public CBaseAnimating
+
+class CItemGeneric : public CBaseAnimating
 {
 public:
-	void KeyValue( KeyValueData* pkvd ) override;
-	void Precache() override;
-	void Spawn() override;
+	void	Spawn(void);
+	void	Precache(void);
+	void	KeyValue(KeyValueData* pkvd);
 
-	void EXPORT StartItem();
-	void EXPORT AnimateThink();
+	virtual int		ObjectCaps(void) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value ) override;
+	virtual int		Save(CSave& save);
+	virtual int		Restore(CRestore& restore);
+	static	TYPEDESCRIPTION m_SaveData[];
 
-	float m_lastTime;
-	int m_iSequence;
+	BOOL m_fDisableShadows;
+	BOOL m_fDisableDrawing;
 };
 
-LINK_ENTITY_TO_CLASS( item_generic, CGenericItem );
+LINK_ENTITY_TO_CLASS(item_generic, CItemGeneric);
+LINK_ENTITY_TO_CLASS(item_prop, CItemGeneric);
 
-void CGenericItem::KeyValue( KeyValueData* pkvd )
+TYPEDESCRIPTION	CItemGeneric::m_SaveData[] =
 {
-	if( FStrEq( "sequencename", pkvd->szKeyName ) )
+	DEFINE_FIELD(CItemGeneric, m_fDisableShadows, FIELD_BOOLEAN),
+	DEFINE_FIELD(CItemGeneric, m_fDisableDrawing, FIELD_BOOLEAN),
+};
+
+IMPLEMENT_SAVERESTORE(CItemGeneric, CBaseAnimating);
+
+void CItemGeneric::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "DisableShadows"))
 	{
-		m_iSequence = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		m_fDisableShadows = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
 	}
-	else if( FStrEq( "skin", pkvd->szKeyName ) )
+	else if (FStrEq(pkvd->szKeyName, "DisableDrawing"))
 	{
-		pev->skin = static_cast<int>( atof( pkvd->szValue ) );
-		pkvd->fHandled = true;
+		m_fDisableDrawing = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
 	}
-	else if( FStrEq( "body", pkvd->szKeyName ) )
+	else
+		CBaseAnimating::KeyValue(pkvd);
+}
+
+void CItemGeneric::Precache(void)
+{
+	PRECACHE_MODEL((char*)STRING(pev->model));
+}
+
+void CItemGeneric::Spawn(void)
+{
+	if (pev->targetname)
 	{
-		pev->body = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		Precache();
+		SET_MODEL(ENT(pev), STRING(pev->model));
 	}
 	else
 	{
-		CBaseDelay::KeyValue( pkvd );
-	}
-}
-
-void CGenericItem::Precache()
-{
-	PRECACHE_MODEL( const_cast<char*>( STRING( pev->model ) ) );
-}
-
-void CGenericItem::Spawn()
-{
-	pev->solid = 0;
-	pev->movetype = 0;
-	pev->effects = 0;
-	pev->frame = 0;
-
-	Precache();
-
-	SET_MODEL( edict(), STRING( pev->model ) );
-
-	if( m_iSequence )
-	{
-		SetThink( &CGenericItem::StartItem );
-		pev->nextthink = gpGlobals->time + 0.1;
+		UTIL_Remove(this);
 	}
 
-	if( pev->spawnflags & SF_ITEMGENERIC_DROP_TO_FLOOR )
-	{
-		if( !g_engfuncs.pfnDropToFloor( pev->pContainingEntity ) )
-		{
-			ALERT( at_error, "Item %s fell out of level at %f,%f,%f", STRING( pev->classname ), pev->origin.x, pev->origin.y, pev->origin.z );
-			UTIL_Remove( this );
-		}
-	}
-}
+	pev->movetype = MOVETYPE_NONE;
 
-void CGenericItem::StartItem()
-{
-	pev->effects = 0;
+	if (m_fDisableShadows == TRUE)
+		pev->effects |= FL_NOSHADOW;
 
-	pev->sequence = LookupSequence( STRING( m_iSequence ) );
-	pev->frame = 0;
-	ResetSequenceInfo();
+	if (m_fDisableDrawing == TRUE)
+		pev->effects |= FL_NOMODEL;
 
-	SetThink( &CGenericItem::AnimateThink );
-	pev->nextthink = gpGlobals->time + 0.1;
-	pev->frame = 0;
-}
-
-void CGenericItem::AnimateThink()
-{
-	DispatchAnimEvents();
-	StudioFrameAdvance();
-
-	if( m_fSequenceFinished && !m_fSequenceLoops )
-	{
-		pev->frame = 0;
-		ResetSequenceInfo();
-	}
-
-	pev->nextthink = gpGlobals->time + 0.1;
-	m_lastTime = gpGlobals->time;
-}
-
-void CGenericItem::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
-{
-	SetThink( &CGenericItem::SUB_Remove );
-	pev->nextthink = gpGlobals->time + 0.1;
+	pev->framerate = 1.0;
 }

@@ -33,7 +33,6 @@
 #include "locus.h" //LRC
 //#include "hgrunt.h"
 //#include "islave.h"
-#include "skill.h"
 #include "ctf/ctfplay_gamerules.h"
 #include "ctf/CTFGoalFlag.h"
 #include "UserMessages.h"

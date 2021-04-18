@@ -385,7 +385,6 @@ public:
 	int		viewEntity; // string
 	int		viewFlags;	// 1-active, 2-draw hud
 	int		viewNeedsUpdate; // precache sets to 1, UpdateClientData() sets to 0	
-	float m_flNextChatTime;
 	
 	void Player_Menu();
 

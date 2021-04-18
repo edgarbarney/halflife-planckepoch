@@ -958,7 +958,7 @@ void CBaseMonster :: StartTask ( Task_t *pTask )
 				TaskComplete();
 			else
 			{
-				if ( pTask->iTask == TASK_WALK_TO_SCRIPT )
+				if ( pTask->iTask == TASK_WALK_TO_TARGET )
 					newActivity = ACT_WALK;
 				else
 					newActivity = ACT_RUN;
