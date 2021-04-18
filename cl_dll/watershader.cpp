@@ -330,6 +330,7 @@ void CWaterShader::Init( void )
 	// Set up cvar
 	m_pCvarWaterShader = gEngfuncs.pfnRegisterVariable( "te_water", "1", FCVAR_ARCHIVE );
 	m_pCvarWaterDebug = gEngfuncs.pfnRegisterVariable( "te_water_debug", "0", 0 );
+	m_pCvarWaterResolution = gEngfuncs.pfnRegisterVariable("te_water_resolution", "512", FCVAR_ARCHIVE); //MAX:1024
 
 	if(!gBSPRenderer.m_bShaderSupport)
 		return;
@@ -979,7 +980,7 @@ void CWaterShader::SetupRefract( void )
 	glRotatef(-m_pViewParams->viewangles[1], 0, 0, 1);
 	glTranslatef(-m_vViewOrigin[0], -m_vViewOrigin[1], -m_vViewOrigin[2]);
 
-	glViewport(GL_ZERO, GL_ZERO, WATER_RESOLUTION, WATER_RESOLUTION);
+	glViewport(GL_ZERO, GL_ZERO, m_pCvarWaterResolution->value, m_pCvarWaterResolution->value);
 
 	if(m_pCurWater->origin[2] < m_vViewOrigin[2])
 	{
@@ -1012,7 +1013,7 @@ void CWaterShader::FinishRefract( void )
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurWater->refract);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, WATER_RESOLUTION, WATER_RESOLUTION, 0);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_pCvarWaterResolution->value, m_pCvarWaterResolution->value, 0);
 
 	//Completely clear everything
 	glClearColor(GL_ZERO, GL_ZERO, GL_ZERO, GL_ONE);
@@ -1069,7 +1070,7 @@ void CWaterShader::SetupReflect( void )
 	glRotatef(-m_pWaterParams.viewangles[1], 0, 0, 1);
 	glTranslatef(-m_pWaterParams.vieworg[0], -m_pWaterParams.vieworg[1], -m_pWaterParams.vieworg[2]);
 
-	glViewport(GL_ZERO, GL_ZERO, WATER_RESOLUTION, WATER_RESOLUTION);
+	glViewport(GL_ZERO, GL_ZERO, m_pCvarWaterResolution->value, m_pCvarWaterResolution->value);
 
 	// Cull everything below the water plane
 	VectorCopy(gBSPRenderer.m_pWorld->maxs, vMaxs);
@@ -1091,7 +1092,7 @@ void CWaterShader::FinishReflect( void )
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurWater->reflect);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, WATER_RESOLUTION, WATER_RESOLUTION, 0);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, m_pCvarWaterResolution->value, m_pCvarWaterResolution->value, 0);
 
 	//Completely clear everything
 	glClearColor(GL_ZERO, GL_ZERO, GL_ZERO, GL_ONE);
