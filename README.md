@@ -2,7 +2,7 @@ Merged version of My Spirinty Repo and Solokiller's OP4 Repo. Unfinished for now
 
 Differences:
 - Spirit's m_iHUDColor removed
-- Spirit's Placeholder A B C Fations are removed (for re-implementing later)
+- Spirit's Placeholder A B C Factions are removed (for re-implementing later)
 - Removed AJH Custom Menu
 
 Half Life 1 SDK LICENSE
