@@ -274,7 +274,7 @@ public:
 
 	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
 
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return nullptr; }
 
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
@@ -481,7 +481,7 @@ class CWeaponBox : public CBaseEntity
 	void Touch( CBaseEntity *pOther ) override;
 	void KeyValue( KeyValueData *pkvd ) override;
 	BOOL IsEmpty();
-	int  GiveAmmo( int iCount, const char *szName, int iMax, int *pIndex = NULL );
+	int  GiveAmmo( int iCount, const char *szName, int iMax, int *pIndex = nullptr );
 	void SetObjectCollisionBox() override;
 
 public:
@@ -1282,7 +1282,7 @@ public:
 	int m_fSpotActive;
 	void UpdateSpot( void );
 */
-    BOOL UseDecrement( void ) override
+    BOOL UseDecrement( ) override
     { 
 #if defined( CLIENT_WEAPONS )
 	return TRUE;

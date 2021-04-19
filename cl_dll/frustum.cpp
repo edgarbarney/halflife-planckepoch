@@ -166,7 +166,7 @@ DisableExtraCullBox
 
 =====================
 */
-void FrustumCheck::DisableExtraCullBox( void )
+void FrustumCheck::DisableExtraCullBox( )
 {
 	m_bExtraCull = false;
 }

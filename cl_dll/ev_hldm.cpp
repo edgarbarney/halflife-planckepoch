@@ -69,8 +69,8 @@ extern engine_studio_api_t IEngineStudio;
 //RENDERERS START
 char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecEnd )
 {
-	if(gEngfuncs.PM_PointContents( ptr->endpos, NULL ) == CONTENT_SKY)
-		return 0;
+	if(gEngfuncs.PM_PointContents( ptr->endpos, nullptr ) == CONTENT_SKY)
+		return nullptr;
 
 	// hit the world, try to play sound based on texture material type
 	char chTextureType = 0;
@@ -86,7 +86,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 	if ( pe && pe->solid == SOLID_BSP )
 	{
 		// Nothing
-		if ( vecSrc == 0 && vecEnd == 0 )
+		if ( vecSrc == nullptr && vecEnd == nullptr )
 		{
 			// hit body
 			chTextureType = 0;
@@ -129,7 +129,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 	}
 
 	if(pStart[0] == '{')
-		return 0;
+		return nullptr;
 
 	cl_entity_t *pHit = gEngfuncs.GetEntityByIndex(gEngfuncs.pEventAPI->EV_IndexFromTrace(ptr));
 
@@ -660,7 +660,7 @@ void EV_FireGlock1( event_args_t *args )
 	
 	VectorCopy( forward, vecAiming );
 
-	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_9MM, 0, 0, args->fparam1, args->fparam2 );
+	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_9MM, 0, nullptr, args->fparam1, args->fparam2 );
 }
 
 void EV_FireGlock2( event_args_t *args )
@@ -988,7 +988,7 @@ void EV_FirePython( event_args_t *args )
 	
 	VectorCopy( forward, vecAiming );
 
-	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2 );
+	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, nullptr, args->fparam1, args->fparam2 );
 }
 //======================
 //	    PHYTON END 
@@ -1156,14 +1156,14 @@ void EV_FireGauss( event_args_t *args )
 		}
 
 		pEntity = gEngfuncs.pEventAPI->EV_GetPhysent( tr.ent );
-		if ( pEntity == NULL )
+		if ( pEntity == nullptr )
 			break;
 
 		if ( pEntity->solid == SOLID_BSP )
 		{
 			float n;
 
-			pentIgnore = NULL;
+			pentIgnore = nullptr;
 
 			n = -DotProduct( tr.plane.normal, forward );
 
@@ -1389,7 +1389,7 @@ void EV_FireCrossbow2( event_args_t *args )
 			gEngfuncs.pEventAPI->EV_PlaySound( 0, tr.endpos, CHAN_BODY, "weapons/xbow_hit1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, PITCH_NORM );
 		
 			//Not underwater, do some sparks...
-			if ( gEngfuncs.PM_PointContents( tr.endpos, NULL ) != CONTENTS_WATER)
+			if ( gEngfuncs.PM_PointContents( tr.endpos, nullptr ) != CONTENTS_WATER)
 				 gEngfuncs.pEfxAPI->R_SparkShower( tr.endpos );
 
 			Vector vBoltAngles;
@@ -1603,14 +1603,14 @@ void EV_EgonStop( event_args_t *args )
 		if ( pBeam )
 		{
 			pBeam->die = 0.0;
-			pBeam = NULL;
+			pBeam = nullptr;
 		}
 			
 		
 		if ( pBeam2 )
 		{
 			pBeam2->die = 0.0;
-			pBeam2 = NULL;
+			pBeam2 = nullptr;
 		}
 
 		if (pFlare)	// Vit_amiN: egon beam flare
@@ -1630,7 +1630,7 @@ void EV_EgonStop( event_args_t *args )
 				}
 			}
 
-			pFlare = NULL;
+			pFlare = nullptr;
 		}
 	}
 }
@@ -1684,7 +1684,7 @@ void EV_TripmineFire( event_args_t *args )
 	VectorCopy( args->origin, vecSrc );
 	VectorCopy( args->angles, angles );
 
-	AngleVectors ( angles, forward, NULL, NULL );
+	AngleVectors ( angles, forward, nullptr, nullptr );
 		
 	if ( !EV_IsLocal ( idx ) )
 		return;
@@ -1725,7 +1725,7 @@ void EV_SnarkFire( event_args_t *args )
 	VectorCopy( args->origin, vecSrc );
 	VectorCopy( args->angles, angles );
 
-	AngleVectors ( angles, forward, NULL, NULL );
+	AngleVectors ( angles, forward, nullptr, nullptr );
 		
 	if ( !EV_IsLocal ( idx ) )
 		return;

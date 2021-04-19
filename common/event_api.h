@@ -27,14 +27,14 @@ typedef struct event_api_s
 	void	( *EV_StopSound ) ( int ent, int channel, const char *sample );
 	int		( *EV_FindModelIndex )( const char *pmodel );
 	int		( *EV_IsLocal ) ( int playernum );
-	int		( *EV_LocalPlayerDucking ) ( void );
+	int		( *EV_LocalPlayerDucking ) ( );
 	void	( *EV_LocalPlayerViewheight ) ( float * );
 	void	( *EV_LocalPlayerBounds ) ( int hull, float *mins, float *maxs );
 	int		( *EV_IndexFromTrace) ( struct pmtrace_s *pTrace );
 	struct physent_s *( *EV_GetPhysent ) ( int idx );
 	void	( *EV_SetUpPlayerPrediction ) ( int dopred, int bIncludeLocalClient );
-	void	( *EV_PushPMStates ) ( void );
-	void	( *EV_PopPMStates ) ( void );
+	void	( *EV_PushPMStates ) ( );
+	void	( *EV_PopPMStates ) ( );
 	void	( *EV_SetSolidPlayers ) (int playernum);
 	void	( *EV_SetTraceHull ) ( int hull );
 	void	( *EV_PlayerTrace ) ( float *start, float *end, int traceFlags, int ignore_pe, struct pmtrace_s *tr );

@@ -1917,22 +1917,22 @@ CStudioModelRenderer::CStudioModelRenderer()
 {
 	m_fDoInterp			= 1;
 	m_fGaitEstimation	= 1;
-	m_pCurrentEntity	= NULL;
-	m_pCvarHiModels		= NULL;
-	m_pCvarDeveloper	= NULL;
-	m_pCvarDrawEntities	= NULL;
-	m_pChromeSprite		= NULL;
-	m_pStudioModelCount	= NULL;
-	m_pModelsDrawn		= NULL;
-	m_protationmatrix	= NULL;
-	m_paliastransform	= NULL;
-	m_pbonetransform	= NULL;
-	m_plighttransform	= NULL;
-	m_pStudioHeader		= NULL;
-	m_pBodyPart			= NULL;
-	m_pSubModel			= NULL;
-	m_pPlayerInfo		= NULL;
-	m_pRenderModel		= NULL;
+	m_pCurrentEntity	= nullptr;
+	m_pCvarHiModels		= nullptr;
+	m_pCvarDeveloper	= nullptr;
+	m_pCvarDrawEntities	= nullptr;
+	m_pChromeSprite		= nullptr;
+	m_pStudioModelCount	= nullptr;
+	m_pModelsDrawn		= nullptr;
+	m_protationmatrix	= nullptr;
+	m_paliastransform	= nullptr;
+	m_pbonetransform	= nullptr;
+	m_plighttransform	= nullptr;
+	m_pStudioHeader		= nullptr;
+	m_pBodyPart			= nullptr;
+	m_pSubModel			= nullptr;
+	m_pPlayerInfo		= nullptr;
+	m_pRenderModel		= nullptr;
 }
 
 /*
@@ -2216,7 +2216,7 @@ mstudioanim_t *CStudioModelRenderer::StudioGetAnim( model_t *m_pSubModel, mstudi
 
 	paSequences = (cache_user_t *)m_pSubModel->submodels;
 
-	if (paSequences == NULL)
+	if (paSequences == nullptr)
 	{
 		paSequences = (cache_user_t *)IEngineStudio.Mem_Calloc( 16, sizeof( cache_user_t ) ); // UNDONE: leak!
 		m_pSubModel->submodels = (dmodel_t *)paSequences;
@@ -3114,7 +3114,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		return 0;
 
 	m_pRenderModel = m_pCurrentEntity->model;
-	if (m_pRenderModel == NULL)
+	if (m_pRenderModel == nullptr)
 		return 0;
 
 	m_pStudioHeader = (studiohdr_t *)IEngineStudio.Mod_Extradata (m_pRenderModel);
@@ -3148,7 +3148,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		StudioProcessGait( pplayer );
 
 		m_pPlayerInfo->gaitsequence = pplayer->gaitsequence;
-		m_pPlayerInfo = NULL;
+		m_pPlayerInfo = nullptr;
 
 		StudioSetUpTransform( 0 );
 		VectorCopy( orig_angles, m_pCurrentEntity->angles );
@@ -3175,7 +3175,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 	StudioSaveBones( );
 	m_pPlayerInfo->renderframe = m_nFrameCount;
 
-	m_pPlayerInfo = NULL;
+	m_pPlayerInfo = nullptr;
 
 	if (flags & STUDIO_EVENTS)
 	{
@@ -3223,7 +3223,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		IEngineStudio.StudioSetRemapColors( m_nTopColor, m_nBottomColor );
 
 		StudioRenderModel( );
-		m_pPlayerInfo = NULL;
+		m_pPlayerInfo = nullptr;
 
 		if (pplayer->weaponmodel)
 		{
@@ -3433,8 +3433,8 @@ entextrainfo_t *CStudioModelRenderer::StudioAllocExtraInfo()
 
 	if(m_pExtraInfo[m_iNumExtraInfo].pEntity)
 	{
-		m_pExtraInfo[m_iNumExtraInfo].pEntity->topnode = NULL;
-		m_pExtraInfo[m_iNumExtraInfo].pEntity = NULL;
+		m_pExtraInfo[m_iNumExtraInfo].pEntity->topnode = nullptr;
+		m_pExtraInfo[m_iNumExtraInfo].pEntity = nullptr;
 		memset(&m_pExtraInfo[m_iNumExtraInfo], 0, sizeof(entextrainfo_t));
 	}
 
@@ -4204,7 +4204,7 @@ void CStudioModelRenderer::StudioSetTextureFlags()
 			k = 0; j++;
 			strcat(szPath, "/");
 			strcat(szPath, szFolder);
-			CreateDirectory(szPath, NULL); 
+			CreateDirectory(szPath, nullptr); 
 
 			if(j >= iLength)
 				break;
@@ -4453,7 +4453,7 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 
 	if(ptex->flags & STUDIO_NF_CHROME || m_bChromeShell)
 	{
-		while (i = *(ptricmds++))
+		while ((i = *(ptricmds++)))
 		{
 			if (i < 0)
 			{
@@ -4476,7 +4476,7 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 	}
 	else
 	{
-		while (i = *(ptricmds++))
+		while ((i = *(ptricmds++)))
 		{
 			if (i < 0)
 			{
@@ -4831,7 +4831,7 @@ void CStudioModelRenderer::StudioSaveModelData( modeldata_t *pExtraData )
 
 				int j = 0;
 				short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[l].triindex);
-				while (j = *(ptricmds++))
+				while ((j = *(ptricmds++)))
 				{	
 					if (j > 0) 
 					{
@@ -5282,7 +5282,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot()
 	if(pDecal->numverts)
 	{
 		delete [] pDecal->verts;
-		pDecal->verts = NULL;
+		pDecal->verts = nullptr;
 		pDecal->numverts = 0;
 	}
 
@@ -5292,7 +5292,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot()
 			delete [] pDecal->polys[i].verts;
 
 		delete [] pDecal->polys;
-		pDecal->polys = NULL;
+		pDecal->polys = nullptr;
 		pDecal->numpolys = 0;
 	}
 
@@ -5342,7 +5342,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal()
 			if(pnext->numverts)
 			{
 				delete [] pnext->verts;
-				pnext->verts = NULL;
+				pnext->verts = nullptr;
 				pnext->numverts = 0;
 			}
 
@@ -5352,7 +5352,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal()
 					delete [] pnext->polys[k].verts;
 
 				delete [] pnext->polys;
-				pnext->polys = NULL;
+				pnext->polys = nullptr;
 				pnext->numpolys = 0;
 			}
 
@@ -5371,7 +5371,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal()
 		studiodecal_t *next = pnext->next;
 		pnext = next;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -5571,7 +5571,7 @@ void CStudioModelRenderer::StudioDecalForSubModel( Vector position, Vector norma
 		short *ptricmds = (short *)((byte *)m_pStudioHeader + pmesh->triindex);
 
 		int j;
-		while (j = *(ptricmds++))
+		while ((j = *(ptricmds++)))
 		{	
 			if (j > 0) 
 			{
@@ -5968,7 +5968,7 @@ model_t *CStudioModelRenderer::Mod_LoadModel( char *szName )
 	byte *pFile = gEngfuncs.COM_LoadFile(szName, 5, &iSize);
 
 	if(!pFile)
-		return NULL;
+		return nullptr;
 
 	// Copy over and free the file
 	byte *pBuffer = new byte[iSize];
@@ -5982,7 +5982,7 @@ model_t *CStudioModelRenderer::Mod_LoadModel( char *szName )
 		&& strncmp ((const char *) pBuffer, "IDSQ", 4))
 	{
 		delete [] pBuffer;
-		return NULL;
+		return nullptr;
 	}
 
 	if(pHdr->textureindex)
@@ -6243,7 +6243,7 @@ void CStudioModelRenderer::StudioDrawPointsSolid ()
 			int i;
 			short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[j].triindex);
 
-			while (i = *(ptricmds++))
+			while ((i = *(ptricmds++)))
 			{
 				if (i < 0)
 				{
@@ -6276,7 +6276,7 @@ void CStudioModelRenderer::StudioDrawPointsSolid ()
 			int i;
 			short *ptricmds = (short *)((byte *)m_pStudioHeader + pmeshes[j].triindex);
 
-			while (i = *(ptricmds++))
+			while ((i = *(ptricmds++)))
 			{
 				if (i < 0)
 				{

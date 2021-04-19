@@ -27,11 +27,11 @@ public:
 	virtual void setInset(int left,int top,int right,int bottom);
 	virtual void getInset(int& left,int& top,int& right,int& bottom);
 protected:
-	virtual void drawFilledRect(int x0,int y0,int x1,int y1);
-	virtual void drawOutlinedRect(int x0,int y0,int x1,int y1);
-	virtual void drawSetTextPos(int x,int y);
-	virtual void drawPrintText(int x,int y,const char* str,int strlen);
-	virtual void drawPrintChar(int x,int y,char ch);
+	void drawFilledRect(int x0,int y0,int x1,int y1) override;
+	void drawOutlinedRect(int x0,int y0,int x1,int y1) override;
+	void drawSetTextPos(int x,int y) override;
+	void drawPrintText(int x,int y,const char* str,int strlen) override;
+	void drawPrintChar(int x,int y,char ch) override;
 protected:
 	int _inset[4];
 private:

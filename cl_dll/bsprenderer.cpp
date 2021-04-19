@@ -165,7 +165,7 @@ Shutdown
 
 ====================
 */
-void CBSPRenderer::Shutdown( void )
+void CBSPRenderer::Shutdown( )
 {	
 	FreeBuffer();
 }
@@ -176,7 +176,7 @@ Init
 
 ====================
 */
-void CBSPRenderer::Init( void ) 
+void CBSPRenderer::Init( ) 
 {
 	//
 	// Check extensions
@@ -184,14 +184,14 @@ void CBSPRenderer::Init( void )
 	if (!ExtensionSupported("GL_ARB_multitexture"))
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: Your hardware does not support multitexturing!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support multitexturing!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");	
 	}
 
 	if (!ExtensionSupported("ARB_vertex_buffer_object"))
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: Your hardware does not support vertex buffer objects!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support vertex buffer objects!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");	
 	}
 
@@ -199,7 +199,7 @@ void CBSPRenderer::Init( void )
 	if (m_iTUSupport < 3)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: Your hardware does not support enough multitexture units!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support enough multitexture units!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");
 	}
 
@@ -391,18 +391,18 @@ VidInit
 
 ====================
 */
-void CBSPRenderer::VidInit( void )
+void CBSPRenderer::VidInit( )
 {
 	if (!IEngineStudio.IsHardware())
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: This game does not support Software mode!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: This game does not support Software mode!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 	if (IEngineStudio.IsHardware() == 2)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: This game does not support DirectX!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: This game does not support DirectX!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -463,7 +463,7 @@ void CBSPRenderer::VidInit( void )
 			current_ext_texture_id++;
 
 			glBindTexture(GL_TEXTURE_2D, m_pDynLights[i].depth);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTHMAP_RESOLUTION, DEPTHMAP_RESOLUTION, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTHMAP_RESOLUTION, DEPTHMAP_RESOLUTION, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -480,7 +480,7 @@ void CBSPRenderer::VidInit( void )
 	m_pFirstELight			= gEngfuncs.pEfxAPI->CL_AllocElight(0);
 	m_pFirstDLight			= gEngfuncs.pEfxAPI->CL_AllocDlight(0);
 	m_fSkySpeed				= NULL;
-	m_pWorld				= NULL;
+	m_pWorld				= nullptr;
 	m_iNumDetailTextures	= NULL;
 	m_iFrameCount			= NULL;
 	m_iVisFrame				= NULL;
@@ -509,7 +509,7 @@ bool CBSPRenderer::ExtensionSupported( const char *ext )
 	const char * start = extensions;
 	const char * ptr;
 
-	while ( ( ptr = strstr ( start, ext ) ) != NULL )
+	while ( ( ptr = strstr ( start, ext ) ) != nullptr )
 	{
 		// we've found, ensure name is exactly ext
 		const char * end = ptr + strlen ( ext );
@@ -527,7 +527,7 @@ GetRenderEnts
 
 ====================
 */
-void CBSPRenderer::GetRenderEnts( void )
+void CBSPRenderer::GetRenderEnts( )
 {
 	// Clear counters
 	m_iNumRenderEntities = NULL;
@@ -730,7 +730,7 @@ void CBSPRenderer::GetRenderEnts( void )
 		{
 			Vector vAngles = dl->angles;
 			FixVectorForSpotlight(vAngles);
-			AngleVectors(vAngles, mlight->forward, NULL, NULL);
+			AngleVectors(vAngles, mlight->forward, nullptr, nullptr);
 			mlight->spotcos = dl->cone_size;
 			mlight->frustum = &dl->frustum;
 		}
@@ -760,7 +760,7 @@ GetAdditionalLights
 
 ====================
 */
-void CBSPRenderer::GetAdditionalLights( void )
+void CBSPRenderer::GetAdditionalLights( )
 {
 	if(m_bGotAdditional)
 		return;
@@ -869,7 +869,7 @@ SetupSpotlightVis
 
 ====================
 */
-void CBSPRenderer::SetupSpotlightVis( void )
+void CBSPRenderer::SetupSpotlightVis( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value < 1)
 		return;
@@ -895,7 +895,7 @@ CheckTextures
 
 ====================
 */
-void CBSPRenderer::CheckTextures ( void )
+void CBSPRenderer::CheckTextures ( )
 {
 	char szFile[64];
 	char szTexture[32];
@@ -939,7 +939,7 @@ SetupRenderer
 
 ====================
 */
-void CBSPRenderer::SetupRenderer ( void )
+void CBSPRenderer::SetupRenderer ( )
 {
 	if (!m_bReloaded)
 		return;
@@ -951,7 +951,7 @@ void CBSPRenderer::SetupRenderer ( void )
 	if(!m_pWorld)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -1035,7 +1035,7 @@ RestoreWorldDrawing
 
 ====================
 */
-void CBSPRenderer::RestoreWorldDrawing( void )
+void CBSPRenderer::RestoreWorldDrawing( )
 {
 	memcpy(m_pWorld->nodes[0].minmaxs, m_fSavedMinsMaxs, 6 * sizeof(float));
 };
@@ -1046,7 +1046,7 @@ RemoveSky
 
 ====================
 */
-void CBSPRenderer::RemoveSky( void )
+void CBSPRenderer::RemoveSky( )
 {
 	bool foundSky = false;
 	msurface_t* surfaces = m_pWorld->surfaces;
@@ -1070,7 +1070,7 @@ ClearDetailObjects
 
 ====================
 */
-void CBSPRenderer::ClearDetailObjects( void )
+void CBSPRenderer::ClearDetailObjects( )
 {
 	for(int i = 0; i < m_iNumDetailObjects; i++)
 	{
@@ -1100,7 +1100,7 @@ LoadDetailFile
 Comment: BLARGH
 ====================
 */
-void CBSPRenderer::LoadDetailFile( void )
+void CBSPRenderer::LoadDetailFile( )
 {
 	char szPath[64];
 	char szFile[64];
@@ -1108,7 +1108,7 @@ void CBSPRenderer::LoadDetailFile( void )
 	strcpy(&szFile[strlen(szFile)-3], "edd");
 
 	int iOffset = 0;
-	byte *pFile = gEngfuncs.COM_LoadFile(szFile, 5, NULL);
+	byte *pFile = gEngfuncs.COM_LoadFile(szFile, 5, nullptr);
 	if(!pFile) 
 		return;
 
@@ -1148,7 +1148,7 @@ void CBSPRenderer::LoadDetailFile( void )
 			psurfaces[j].polys = (glpoly_t *)malloc(sizeof(glpoly_t)+sizeof(float)*VERTEXSIZE*iPlusVerts);
 			
 			glpoly_t *pPoly = psurfaces[j].polys;
-			pPoly->chain = NULL; pPoly->flags = NULL; pPoly->next = NULL; pPoly->numverts = NULL;
+			pPoly->chain = nullptr; pPoly->flags = NULL; pPoly->next = nullptr; pPoly->numverts = NULL;
 			memset(pPoly->verts, 0, sizeof(float)*VERTEXSIZE*4);
 			pPoly->numverts = iVertnum;
 
@@ -1177,7 +1177,7 @@ void CBSPRenderer::LoadDetailFile( void )
 
 			if(k == m_iNumTextures)
 			{
-				cl_texture_t *pTexture = NULL;
+				cl_texture_t *pTexture = nullptr;
 				psurfaces[j].texinfo->texture = &m_pNormalTextureList[m_iNumTextures];
 				texture_t *pMultiPass = &m_pMultiPassTextureList[m_iNumTextures];
 				m_iNumTextures++;
@@ -1257,7 +1257,7 @@ CreateTextures
 
 ====================
 */
-void CBSPRenderer::CreateTextures( void )
+void CBSPRenderer::CreateTextures( )
 {
 	//
 	// Load flashlight texture
@@ -1268,7 +1268,7 @@ void CBSPRenderer::CreateTextures( void )
 	if(!m_pFlashlightTextures[0])
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "ERROR: Failed to load gfx/textures/flashlight.tga.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "ERROR: Failed to load gfx/textures/flashlight.tga.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -1422,7 +1422,7 @@ FreeBuffer
 
 ====================
 */
-void CBSPRenderer::FreeBuffer( void )
+void CBSPRenderer::FreeBuffer( )
 {
 	if (m_uiBufferIndex)
 	{
@@ -1433,13 +1433,13 @@ void CBSPRenderer::FreeBuffer( void )
 	if (m_pBufferData)
 	{
 		delete[] m_pBufferData;
-		m_pBufferData = NULL;
+		m_pBufferData = nullptr;
 	}
 
 	if (m_pFacesExtraData)
 	{
 		delete[] m_pFacesExtraData;
-		m_pFacesExtraData = NULL;
+		m_pFacesExtraData = nullptr;
 	}
 }
 
@@ -1450,7 +1450,7 @@ GenerateVertexArray
 
 ====================
 */
-void CBSPRenderer::GenerateVertexArray( void )
+void CBSPRenderer::GenerateVertexArray( )
 {
 	int iNumFaces = 0;
 	int iCurFace = 0;
@@ -1537,7 +1537,7 @@ void CBSPRenderer::GenerateVertexArray( void )
 			}
 		}
 
-		detailtexentry_t *dtex = NULL;
+		detailtexentry_t *dtex = nullptr;
 		if(m_pSurfaces[ext->index].regtexture)
 		{
 			if(m_pSurfaces[ext->index].regtexture->offsets[3])
@@ -1695,7 +1695,7 @@ void CBSPRenderer::GenerateVertexArray( void )
 					}
 				}
 
-				detailtexentry_t *dtex = NULL;
+				detailtexentry_t *dtex = nullptr;
 				if(m_pSurfaces[ext->index].regtexture)
 				{
 					if(m_pSurfaces[ext->index].regtexture->offsets[3])
@@ -1831,7 +1831,7 @@ EnableVertexArray
 
 ====================
 */
-void CBSPRenderer::EnableVertexArray( void )
+void CBSPRenderer::EnableVertexArray( )
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -1848,7 +1848,7 @@ DisableVertexArray
 
 ====================
 */
-void CBSPRenderer::DisableVertexArray( void )
+void CBSPRenderer::DisableVertexArray( )
 {
 	glDisableClientState(GL_VERTEX_ARRAY);
 	if(m_bSpecialFog)
@@ -1918,7 +1918,7 @@ ResetRenderer
 
 ====================
 */
-void CBSPRenderer::ResetRenderer( void )
+void CBSPRenderer::ResetRenderer( )
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -1942,7 +1942,7 @@ SaveMultiTexture
 
 ====================
 */
-void CBSPRenderer::SaveMultiTexture( void )
+void CBSPRenderer::SaveMultiTexture( )
 {
 	RenderFog();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -2017,7 +2017,7 @@ RestoreMultiTexture
 
 ====================
 */
-void CBSPRenderer::RestoreMultiTexture( void )
+void CBSPRenderer::RestoreMultiTexture( )
 {
 	glPopAttrib();
 	glActiveTextureARB( GL_TEXTURE0_ARB );
@@ -2091,7 +2091,7 @@ ResetCache
 
 ====================
 */
-void CBSPRenderer::ResetCache( void )
+void CBSPRenderer::ResetCache( )
 {
 	for(int i = 0; i < 3; i++)
 		m_uiCurrentBinds[i] = 0;
@@ -2109,7 +2109,7 @@ HasDynLights
 
 ====================
 */
-bool CBSPRenderer::HasDynLights( void )
+bool CBSPRenderer::HasDynLights( )
 {
 	float time	= gEngfuncs.GetClientTime();
 	cl_dlight_t *dl = m_pDynLights;
@@ -2141,7 +2141,7 @@ PrepareRenderer
 
 ====================
 */
-void CBSPRenderer::PrepareRenderer( void )
+void CBSPRenderer::PrepareRenderer( )
 {
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
@@ -2157,8 +2157,8 @@ void CBSPRenderer::PrepareRenderer( void )
 	// clear all chains
 	for(int i = 0; i < m_iNumTextures; i++)
 	{
-		m_pNormalTextureList[i].texturechain = NULL;
-		m_pMultiPassTextureList[i].texturechain = NULL;
+		m_pNormalTextureList[i].texturechain = nullptr;
+		m_pMultiPassTextureList[i].texturechain = nullptr;
 	}
 };
 
@@ -2168,7 +2168,7 @@ DrawNormalTriangles
 
 ====================
 */
-void CBSPRenderer::DrawNormalTriangles( void )
+void CBSPRenderer::DrawNormalTriangles( )
 {
 	if (!m_bCanDraw)
 		return;
@@ -2199,7 +2199,7 @@ DrawTransparentTriangles
 
 ====================
 */
-void CBSPRenderer::DrawTransparentTriangles( void )
+void CBSPRenderer::DrawTransparentTriangles( )
 {
 	if(!m_pCvarDrawWorld->value)
 		return;
@@ -2231,7 +2231,7 @@ DrawWorld
 
 ====================
 */
-void CBSPRenderer::DrawWorld( void )
+void CBSPRenderer::DrawWorld( )
 {
 	// Restore mins/maxs
 	RestoreWorldDrawing();
@@ -2277,8 +2277,8 @@ void CBSPRenderer::DrawWorld( void )
 	// clear texture chains
 	for(int i = 0; i < m_iNumTextures; i++)
 	{
-		m_pNormalTextureList[i].texturechain = NULL;
-		m_pMultiPassTextureList[i].texturechain = NULL;
+		m_pNormalTextureList[i].texturechain = nullptr;
+		m_pMultiPassTextureList[i].texturechain = nullptr;
 	}
 };
 
@@ -2288,7 +2288,7 @@ DrawDetails
 
 ====================
 */
-void CBSPRenderer::DrawDetails( void )
+void CBSPRenderer::DrawDetails( )
 {
 	if(!m_iNumDetailObjects)
 		return;
@@ -2533,7 +2533,7 @@ RenderFinalPasses
 
 ====================
 */
-void CBSPRenderer::RenderFinalPasses( void )
+void CBSPRenderer::RenderFinalPasses( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -2996,7 +2996,7 @@ void CBSPRenderer::SurfaceToChain(msurface_t *s, bool dynlit)
 	brushface_t *pFace = &m_pFacesExtraData[s->polys->flags];
 	clientsurfdata_t *pData = &m_pSurfaces[pFace->index];
 
-	for (int i = 1; i < MAXLIGHTMAPS && s->styles[i] != 255 || s->dlightframe; i++)
+	for (int i = 1; (i < MAXLIGHTMAPS && s->styles[i] != 255) || s->dlightframe; i++)
 	{
 		if (m_iLightStyleValue[s->styles[i]] != m_pSurfaces[pFace->index].cached_light[i] || s->dlightframe)
 		{
@@ -3203,7 +3203,7 @@ PushDynLights
 
 ====================
 */
-void CBSPRenderer::PushDynLights( void )
+void CBSPRenderer::PushDynLights( )
 {
 	if(m_bShaderSupport && m_pCvarWorldShaders->value >= 1)
 		return;
@@ -3227,7 +3227,7 @@ AnimateLight
 
 ====================
 */
-void CBSPRenderer::AnimateLight( void )
+void CBSPRenderer::AnimateLight( )
 {
 	int			i,j,k;
 	
@@ -3420,7 +3420,7 @@ UploadLightmaps
 
 ====================
 */
-void CBSPRenderer::UploadLightmaps( void )
+void CBSPRenderer::UploadLightmaps( )
 {
 	memset(m_iLightStyleValue, 0, sizeof(m_iLightStyleValue));
 	memset(m_pEngineLightmaps, 0, sizeof(m_pEngineLightmaps));
@@ -3703,7 +3703,7 @@ cl_texture_t *CBSPRenderer::LoadDetailTexture( char *texname )
 	cl_texture_t *pTexture = gTextureLoader.LoadTexture(szPath);
 
 	if ( !pTexture )
-		return 0;
+		return nullptr;
 	
 	return pTexture;
 };
@@ -3714,7 +3714,7 @@ ParseDetailTextureFile
 
 ====================
 */
-void CBSPRenderer::ParseDetailTextureFile( void )
+void CBSPRenderer::ParseDetailTextureFile( )
 {
 	char szLevelName[256];
 	m_iNumDetailTextures = 0;
@@ -3727,7 +3727,7 @@ void CBSPRenderer::ParseDetailTextureFile( void )
 	szLevelName[strlen(szLevelName)-4] = 0;
 	strcat(szLevelName, "_detail.txt");
 
-	char *pfile = (char *)gEngfuncs.COM_LoadFile( szLevelName, 5, NULL);
+	char *pfile = (char *)gEngfuncs.COM_LoadFile( szLevelName, 5, nullptr);
 	if (!pfile)
 	{
 		gEngfuncs.Con_Printf("BSP Renderer: Failed to load detail texture file for %s\n", szLevelName);
@@ -3806,7 +3806,7 @@ LoadDetailTextures
 
 ====================
 */
-void CBSPRenderer::LoadDetailTextures( void )
+void CBSPRenderer::LoadDetailTextures( )
 {
 	ParseDetailTextureFile();
 
@@ -3999,7 +3999,7 @@ cl_texture_t *CBSPRenderer::LoadDecalTexture( const char *texname )
 	if (!pTexture)
 	{
 		gEngfuncs.Con_Printf("BSP Renderer: Missing decal texture %s!\n", path);
-		return NULL;
+		return nullptr;
 	}
 
 	// ALWAYS Bind
@@ -4016,9 +4016,9 @@ LoadDecals
 
 ====================
 */
-void CBSPRenderer::LoadDecals( void )
+void CBSPRenderer::LoadDecals( )
 {
-	char *pfile = (char *)gEngfuncs.COM_LoadFile("gfx/textures/decals/decalinfo.txt", 5, NULL);
+	char *pfile = (char *)gEngfuncs.COM_LoadFile("gfx/textures/decals/decalinfo.txt", 5, nullptr);
 	if (!pfile)
 	{
 		gEngfuncs.Con_Printf("BSP Renderer: Cannot open file \"gfx/textures/decals/decalinfo.txt\"\n");
@@ -4113,7 +4113,7 @@ AllocDecal
 
 ====================
 */
-customdecal_t *CBSPRenderer::AllocDecal( void )
+customdecal_t *CBSPRenderer::AllocDecal( )
 {
 	customdecal_t *ret = &m_pDecals[m_iCurDecal];
 
@@ -4143,7 +4143,7 @@ AllocStaticDecal
 
 ====================
 */
-customdecal_t *CBSPRenderer::AllocStaticDecal( void )
+customdecal_t *CBSPRenderer::AllocStaticDecal( )
 {
 	if (m_iNumStaticDecals < MAX_STATICDECALS)
 	{
@@ -4151,7 +4151,7 @@ customdecal_t *CBSPRenderer::AllocStaticDecal( void )
 		m_iNumStaticDecals++;
 		return ret;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -4173,7 +4173,7 @@ decalgroupentry_t *CBSPRenderer::FindDecalByName( const char *szName )
 				return &m_pDecalGroups[i].entries[j];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -4185,7 +4185,7 @@ GetRandomDecal
 decalgroupentry_t *CBSPRenderer::GetRandomDecal( decalgroup_t *group )
 {
 	if (group->iSize == 0)
-		return NULL;
+		return nullptr;
 
 	if (group->iSize == 1)
 		return &group->entries[0];
@@ -4209,7 +4209,7 @@ decalgroup_t *CBSPRenderer::FindGroup(const char *_name)
 			return &m_pDecalGroups[i];
 	}
 
-	return NULL; // nothing found
+	return nullptr; // nothing found
 }
 
 /*
@@ -4296,7 +4296,7 @@ void CBSPRenderer::CreateDecal( Vector endpos, Vector pnormal, const char *name,
 	m_vDecalMaxs[1] = endpos[1] + radius;
 	m_vDecalMaxs[2] = endpos[2] + radius;
 
-	customdecal_t *pDecal = NULL;
+	customdecal_t *pDecal = nullptr;
 	if (persistent)
 	{
 		pDecal = AllocStaticDecal();
@@ -4511,7 +4511,7 @@ void CBSPRenderer::RecursiveCreateDecal( mnode_t *node, decalgroupentry_t *texpt
 				if( DotProduct(normal,pnormal) < 0.01 )
 					continue;
 
-				DecalSurface(surf, texptr, NULL, pDecal, endpos, pnormal);
+				DecalSurface(surf, texptr, nullptr, pDecal, endpos, pnormal);
 			}
 		}
 	}
@@ -4611,7 +4611,7 @@ CreateCachedDecals
 
 ====================
 */
-void CBSPRenderer::CreateCachedDecals( void )
+void CBSPRenderer::CreateCachedDecals( )
 {
 	for (int i = 0; i < gPropManager.m_iNumDecals; i++)
 	{
@@ -4734,7 +4734,7 @@ DrawDecals
 
 ====================
 */
-void CBSPRenderer::DrawDecals( void )
+void CBSPRenderer::DrawDecals( )
 {
 	CreateCachedDecals();
 
@@ -4822,7 +4822,7 @@ DeleteDecals
 
 ====================
 */
-void CBSPRenderer::DeleteDecals( void )
+void CBSPRenderer::DeleteDecals( )
 {
 	m_iCurDecal = 0;
 
@@ -4863,7 +4863,7 @@ SetDynLightBBox
 
 ====================
 */
-void CBSPRenderer::SetDynLightBBox( void )
+void CBSPRenderer::SetDynLightBBox( )
 {
 	m_vDLightMins[0] = m_vCurDLightOrigin[0] - m_pCurrentDynLight->radius;
 	m_vDLightMins[1] = m_vCurDLightOrigin[1] - m_pCurrentDynLight->radius;
@@ -4908,7 +4908,7 @@ SetupDynLight
 
 ====================
 */
-void CBSPRenderer::SetupDynLight( void )
+void CBSPRenderer::SetupDynLight( )
 {
 	glBlendFunc(GL_ONE, GL_ONE);
 	glColor3fv(m_pCurrentDynLight->color);
@@ -4947,7 +4947,7 @@ FinishDynLight
 
 ====================
 */
-void CBSPRenderer::FinishDynLight( void )
+void CBSPRenderer::FinishDynLight( )
 {
 	glActiveTextureARB( GL_TEXTURE0_ARB );
 	glDisable(GL_TEXTURE_3D);
@@ -4964,7 +4964,7 @@ LightCanShadow
 
 ====================
 */
-bool CBSPRenderer::LightCanShadow( void )
+bool CBSPRenderer::LightCanShadow( )
 {
 	if(!m_bShadowSupport)
 		return false;
@@ -4990,7 +4990,7 @@ SetupSpotLight
 
 ====================
 */
-void CBSPRenderer::SetupSpotLight( void )
+void CBSPRenderer::SetupSpotLight( )
 {
 	glBlendFunc(GL_ONE, GL_ONE);
 
@@ -5104,7 +5104,7 @@ FinishSpotLight
 
 ====================
 */
-void CBSPRenderer::FinishSpotLight( void )
+void CBSPRenderer::FinishSpotLight( )
 {
 	glActiveTextureARB( GL_TEXTURE0_ARB );
 	glMatrixMode(GL_TEXTURE);
@@ -5147,7 +5147,7 @@ DrawDynamicLightsForDetails
 
 ====================
 */
-void CBSPRenderer::DrawDynamicLightsForDetails( void )
+void CBSPRenderer::DrawDynamicLightsForDetails( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5183,7 +5183,7 @@ void CBSPRenderer::DrawDynamicLightsForDetails( void )
 		{
 			Vector lightangles = m_pCurrentDynLight->angles;
 			FixVectorForSpotlight(lightangles);
-			AngleVectors(lightangles, m_vCurSpotForward, NULL, NULL);
+			AngleVectors(lightangles, m_vCurSpotForward, nullptr, nullptr);
 			SetupSpotLight();
 		}
 		else
@@ -5248,7 +5248,7 @@ DrawDynamicLightsForWorld
 
 ====================
 */
-void CBSPRenderer::DrawDynamicLightsForWorld( void )
+void CBSPRenderer::DrawDynamicLightsForWorld( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5284,7 +5284,7 @@ void CBSPRenderer::DrawDynamicLightsForWorld( void )
 		{
 			Vector lightangles = m_pCurrentDynLight->angles;
 			FixVectorForSpotlight(lightangles);
-			AngleVectors(lightangles, m_vCurSpotForward, NULL, NULL);
+			AngleVectors(lightangles, m_vCurSpotForward, nullptr, nullptr);
 			SetupSpotLight();
 		}
 		else
@@ -5542,7 +5542,7 @@ void CBSPRenderer::DrawDynamicLightsForEntity (cl_entity_t *pEntity)
 			if(m_pCurrentDynLight->frustum.CullBox(tmins, tmaxs))
 				continue;
 
-			AngleVectors(m_pCurrentDynLight->angles, m_vCurSpotForward, NULL, NULL);
+			AngleVectors(m_pCurrentDynLight->angles, m_vCurSpotForward, nullptr, nullptr);
 			if (rotated)
 			{
 				VectorCopy (m_vCurSpotForward, temp);
@@ -5617,7 +5617,7 @@ InitSky
 
 ====================
 */
-void CBSPRenderer::InitSky( void )
+void CBSPRenderer::InitSky( )
 {
 	m_bDrawSky = true;
 	if (m_szSkyName[0] == 0)
@@ -5669,7 +5669,7 @@ DrawSky
 
 ====================
 */
-void CBSPRenderer::DrawSky( void )
+void CBSPRenderer::DrawSky( )
 {
 	fog_settings_t pSaved;
 	static float projection[16];
@@ -5831,7 +5831,7 @@ DecayLights
 
 ====================
 */
-void CBSPRenderer::DecayLights( void )
+void CBSPRenderer::DecayLights( )
 {
 	static float lasttime = 0;
 
@@ -5936,7 +5936,7 @@ DrawShadowPasses
 
 ====================
 */
-void CBSPRenderer::DrawShadowPasses( void )
+void CBSPRenderer::DrawShadowPasses( )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -5968,7 +5968,7 @@ CreateShadowMap
 
 ====================
 */
-void CBSPRenderer::CreateShadowMap( void )
+void CBSPRenderer::CreateShadowMap( )
 {
 	float flProj[16];
 	float flModel[16];
@@ -6007,7 +6007,7 @@ void CBSPRenderer::CreateShadowMap( void )
 	// Asscawks
 	Vector vAngles = m_pCurrentDynLight->angles;
 	FixVectorForSpotlight(vAngles);
-	AngleVectors(vAngles, m_vCurSpotForward, NULL, NULL);
+	AngleVectors(vAngles, m_vCurSpotForward, nullptr, nullptr);
 
 	int bReversed = IsPitchReversed(m_pCurrentDynLight->angles[PITCH]);
 	Vector vTarget = m_pCurrentDynLight->origin + (m_vCurSpotForward * m_pCurrentDynLight->radius);
@@ -6054,7 +6054,7 @@ DrawWorldSolid
 
 ====================
 */
-void CBSPRenderer::DrawWorldSolid( void )
+void CBSPRenderer::DrawWorldSolid( )
 {
 	gHUD.viewFrustum.SetFrustum(m_pCurrentDynLight->angles, m_pCurrentDynLight->origin, m_pCurrentDynLight->cone_size, m_pCurrentDynLight->radius);
 	VectorCopy(m_pCurrentDynLight->angles, m_vViewAngles);
@@ -6194,7 +6194,7 @@ DrawDetailsSolid
 
 ====================
 */
-void CBSPRenderer::DrawDetailsSolid( void )
+void CBSPRenderer::DrawDetailsSolid( )
 {
 	if(!m_iNumDetailObjects)
 		return;

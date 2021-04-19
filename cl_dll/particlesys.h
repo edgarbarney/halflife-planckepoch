@@ -77,7 +77,7 @@ public:
 class ParticleType
 {
 public:
-	ParticleType( ParticleType *pNext = NULL );
+	ParticleType( ParticleType *pNext = nullptr );
 	ParticleType(char *szFilename);
 
 	bool m_bIsDefined; // is this ParticleType just a placeholder?
@@ -144,7 +144,7 @@ class ParticleSystem
 public:
 	ParticleSystem( int entindex, char *szFilename );//int iParticles );
 //	ParticleSystem( int iParticles );
-	~ParticleSystem( void );
+	~ParticleSystem( );
 	void AllocateParticles( int iParticles );
 	void CalculateDistance();
 

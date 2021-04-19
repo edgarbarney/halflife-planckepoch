@@ -26,10 +26,10 @@ Merged and given some nicer CVARs by FragBait0, tlevi@tpg.com.au
 #include "particlemgr.h"
 //End tri.cpp
 
-#include <GL/gl.h>
+#include <gl/gl.h>
 #include <gl/glext.h>
-#include <Cg/cg.h>
-#include <Cg/cgGL.h>
+#include <cg/cg.h>
+#include <cg/cgGL.h>
 #include "r_studioint.h"
 
 #define DLLEXPORT __declspec( dllexport )
@@ -42,7 +42,7 @@ bool bGlowShaderInitialised = false;
 bool bGlowLowEndInitialised = false;
 
 #ifdef _WIN32
-PFNGLACTIVETEXTUREARBPROC glActiveTextureARB = NULL;
+PFNGLACTIVETEXTUREARBPROC glActiveTextureARB = nullptr;
 #endif
 
 CGcontext g_cgContext;
@@ -72,12 +72,12 @@ unsigned int g_uiScreenTex = 0;
 unsigned int g_uiGlowTex = 0;
 
 // FUNCTIONS
-void InitScreenGlow(void);
-void InitScreenGlowShader(void);
-void InitScreenGlowLowEnd(void);
-void RenderScreenGlow(void);
-void RenderScreenGlowShader(void);
-void RenderScreenGlowLowEnd(void);
+void InitScreenGlow();
+void InitScreenGlowShader();
+void InitScreenGlowLowEnd();
+void RenderScreenGlow();
+void RenderScreenGlowShader();
+void RenderScreenGlowLowEnd();
 bool LoadProgram(CGprogram* pDest, CGprofile profile, const char* szFile);
 
 
@@ -139,7 +139,7 @@ inline bool LoadProgram(CGprogram* pDest, CGprofile profile, const char* szFile)
      char file[512];
      sprintf(file, "%s/%s", szGameDir, szFile);
 
-     *pDest = cgCreateProgramFromFile(g_cgContext, CG_SOURCE, file, profile, "main", 0);
+     *pDest = cgCreateProgramFromFile(g_cgContext, CG_SOURCE, file, profile, "main", nullptr);
      if (!(*pDest)) {
           CONPRINT(cgGetErrorString(cgGetError()));
           CONPRINT("\n");
@@ -151,7 +151,7 @@ inline bool LoadProgram(CGprogram* pDest, CGprofile profile, const char* szFile)
      return true;
 }
 
-void InitScreenGlowShader(void)
+void InitScreenGlowShader()
 {
 	 bGlowShaderInitialised = false;
     
@@ -267,7 +267,7 @@ void DoBlur(unsigned int uiSrcTex, unsigned int uiTargetTex, int srcTexWidth, in
 	glCopyTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGB, 0, 0, destTexWidth, destTexHeight, 0);
 }
 
-void RenderScreenGlowShader(void)
+void RenderScreenGlowShader()
 {
 	// check to see if we can render it.
 	if (IEngineStudio.IsHardware() != 1){
@@ -389,7 +389,7 @@ void RenderScreenGlowShader(void)
 //END shader glow effect --FragBait0
 
 //START lowend glow effect --FragBait0
-void InitScreenGlowLowEnd(void)
+void InitScreenGlowLowEnd()
 {
      bGlowLowEndInitialised = false;
 
@@ -417,7 +417,7 @@ void InitScreenGlowLowEnd(void)
      bGlowLowEndInitialised = true;
 }
 
-void RenderScreenGlowLowEnd(void)
+void RenderScreenGlowLowEnd()
 {
 
      // check to see if we can render it.

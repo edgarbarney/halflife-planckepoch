@@ -359,8 +359,8 @@ public:
 	int	Rain_needsUpdate;
 	//RENDERERS START
 	BOOL m_bUpdateEffects;
-	void ClearEffects( void );
-	void SendInitMessages( void );
+	void ClearEffects( );
+	void SendInitMessages( );
 	//RENDERERS END
 };
 

@@ -32,7 +32,7 @@ private:
 public:
 	BorderLayout(int inset);
 public:
-	virtual void        performLayout(Panel* panel);
+	void        performLayout(Panel* panel) override;
 	virtual LayoutInfo* createLayoutInfo(Alignment alignment);
 };
 

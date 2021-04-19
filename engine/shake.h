@@ -28,7 +28,7 @@ typedef struct
 } ScreenShake;
 
 extern void V_ApplyShake( float *origin, float *angles, float factor );
-extern void V_CalcShake( void );
+extern void V_CalcShake( );
 extern int V_ScreenShake( const char *pszName, int iSize, void *pbuf );
 extern int V_ScreenFade( const char *pszName, int iSize, void *pbuf );
 

@@ -24,10 +24,10 @@ private:
 public:
 	Bitmap();
 protected:
-	virtual void setSize(int wide,int tall);
+	void setSize(int wide,int tall) override;
 	virtual void setRGBA(int x,int y,uchar r,uchar g,uchar b,uchar a);
 public:
-	virtual void paint(Panel* panel);
+	void paint(Panel* panel) override;
 protected:
 	uchar* _rgba;
 };

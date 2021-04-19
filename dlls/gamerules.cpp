@@ -29,7 +29,7 @@
 
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
-DLL_GLOBAL CGameRules*	g_pGameRules = NULL;
+DLL_GLOBAL CGameRules*	g_pGameRules = nullptr;
 extern DLL_GLOBAL BOOL	g_fGameOver;
 
 int g_teamplay = 0;

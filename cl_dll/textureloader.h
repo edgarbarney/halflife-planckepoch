@@ -106,15 +106,15 @@ CTextureLoader
 class CTextureLoader
 {
 public:
-	void			Init ( void );
-	void			VidInit( void );
-	void			Shutdown( void );
+	void			Init ( );
+	void			VidInit( );
+	void			Shutdown( );
 	
 	bool			IsPowerOfTwo( int iWidth, int iHeight );
 	void			WriteTGA( byte *pixels, int bpp, int width, int height, char *szpath );
 
-	void			LoadWADFiles( void );
-	void			FreeWADFiles( void );
+	void			LoadWADFiles( );
+	void			FreeWADFiles( );
 
 	cl_texture_t	*LoadTexture( char* szFile, int iAltIndex = 0, bool bPrompt = false, bool bNoMip = false, bool bBorder = false );
 	cl_texture_t	*LoadWADTexture( char *szTexture, int iAltIndex = 0 );
@@ -124,7 +124,7 @@ public:
 	bool			LoadDDSFile( byte *pFile, cl_texture_t *pTexture, bool bNoMip );
 	void			LoadPallettedTexture( byte *data, byte *pal, cl_texture_t *pTexture );
 
-	void			LoadTextureScript( void );
+	void			LoadTextureScript( );
 	bool			TextureHasFlag( char *szModel, char *szTexture, int iFlag );
 public:
 	PFNGLCOMPRESSEDTEXIMAGE2DARBPROC	glCompressedTexImage2DARB;

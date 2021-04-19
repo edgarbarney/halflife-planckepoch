@@ -28,7 +28,7 @@ public:
 	virtual int  vprintf(const char* format,va_list argList);
 	virtual int  printf(const char* format,...);
 protected:
-	virtual void paintBackground();
+	void paintBackground() override;
 protected:
 	int   _xy[2];
 	int   _bgColor[3];

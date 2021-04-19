@@ -19,7 +19,7 @@ int CMP3::Initialize()
 	
 	m_hFMod = LOAD_LIBRARY( fmodlib );
 
-	if( m_hFMod != NULL )
+	if( m_hFMod != nullptr )
 	{
 		// fill in the function pointers
 	//	GET_FUNCTION(VER, m_hFMod, FSOUND_GetVersion, 0);
@@ -58,7 +58,7 @@ int CMP3::Shutdown()
 		fmodInit = false;
 
 		UNLOAD_LIBRARY( m_hFMod );
-		m_hFMod = NULL;
+		m_hFMod = nullptr;
 		m_iIsPlaying = 0;
 		return 1;
 	}
@@ -66,7 +66,7 @@ int CMP3::Shutdown()
 		return 0;
 }
 
-int CMP3::StopMP3( void )
+int CMP3::StopMP3( )
 {
 	SCL( m_Stream );
 	m_iIsPlaying = 0;

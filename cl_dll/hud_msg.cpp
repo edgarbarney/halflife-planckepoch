@@ -148,8 +148,8 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 
 #if !defined( _TFC )
 	//Probably not a good place to put this.
-	pBeam = pBeam2 = NULL;
-	pFlare = NULL;	// Vit_amiN: clear egon's beam flare
+	pBeam = pBeam2 = nullptr;
+	pFlare = nullptr;	// Vit_amiN: clear egon's beam flare
 #endif
 }
 
@@ -368,7 +368,7 @@ int CHud ::MsgFunc_FreeEnt(const char *pszName, int iSize, void *pbuf)
 	if(!pEntity)
 		return 1;
 
-	pEntity->efrag = NULL;
+	pEntity->efrag = nullptr;
 	return 1;
 }
 //RENDERERS END

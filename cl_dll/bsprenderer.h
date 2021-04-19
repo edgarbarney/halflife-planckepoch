@@ -38,67 +38,67 @@ CBSPRenderer
 class CBSPRenderer
 {
 public:
-	void Init( void );
-	void VidInit( void );
-	void Shutdown( void );
-	void SetupRenderer( void );
+	void Init( );
+	void VidInit( );
+	void Shutdown( );
+	void SetupRenderer( );
 	void SetupPreFrame( ref_params_t *vieworg );
-	void CheckTextures( void );
+	void CheckTextures( );
 
-	void DrawShadowPasses( void );
-	void CreateShadowMap( void );
-	void DrawWorldSolid( void );
-	void SetupSpotlightVis( void );
+	void DrawShadowPasses( );
+	void CreateShadowMap( );
+	void DrawWorldSolid( );
+	void SetupSpotlightVis( );
 
-	void DrawDetailsSolid ( void );
+	void DrawDetailsSolid ( );
 	void RecursiveWorldNodeSolid( mnode_t *node );
 	void DrawBrushModelSolid( cl_entity_t *pEntity );
 
-	void ClearDetailObjects( void );
-	void LoadDetailFile( void );
-	void DrawDetails( void );
+	void ClearDetailObjects( );
+	void LoadDetailFile( );
+	void DrawDetails( );
 
 	void RendererRefDef ( ref_params_t *pparams );
-	void DrawNormalTriangles( void );
-	void DrawTransparentTriangles( void );
+	void DrawNormalTriangles( );
+	void DrawTransparentTriangles( );
 	void RenderFirstPass( bool bSecond = false );
-	void RenderFinalPasses( void );
-	void DrawWorld( void );
+	void RenderFinalPasses( );
+	void DrawWorld( );
 
-	void GetRenderEnts ( void );
+	void GetRenderEnts ( );
 	void AddEntity( cl_entity_t *pEntity );
 	int FilterEntities ( int type, struct cl_entity_s *pEntity,const char *modelname );//
 
-	void DecayLights( void );
-	bool HasDynLights( void );
-	void GetAdditionalLights( void );
+	void DecayLights( );
+	bool HasDynLights( );
+	void GetAdditionalLights( );
 	cl_dlight_t *CL_AllocDLight( int key );
 	int MsgDynLight( const char *pszName, int iSize, void *pbuf );
 
-	void SetupDynLight( void );
-	void FinishDynLight( void );
-	void SetDynLightBBox( void );
-	void SetupSpotLight( void );
-	void FinishSpotLight( void );
-	bool LightCanShadow( void );
+	void SetupDynLight( );
+	void FinishDynLight( );
+	void SetDynLightBBox( );
+	void SetupSpotLight( );
+	void FinishSpotLight( );
+	bool LightCanShadow( );
 	int	CullDynLightBBox (Vector mins, Vector maxs);
 
-	void PushDynLights ( void );
+	void PushDynLights ( );
 	void MarkLights( cl_dlight_t *pLight, int iBit, mnode_t *node);
 	void MarkBrushFaces( Vector mins, Vector maxs );
 	void AddDynamicLights( msurface_t *surf );
 
 	void DisableWorldDrawing( ref_params_t *pparam );
-	void RestoreWorldDrawing( void );
+	void RestoreWorldDrawing( );
 
-	void CreateTextures( void );
-	void SaveMultiTexture( void );
-	void RestoreMultiTexture( void );
+	void CreateTextures( );
+	void SaveMultiTexture( );
+	void RestoreMultiTexture( );
 
-	void FreeBuffer( void );
-	void GenerateVertexArray( void );
-	void EnableVertexArray( void );
-	void DisableVertexArray( void );
+	void FreeBuffer( );
+	void GenerateVertexArray( );
+	void EnableVertexArray( );
+	void DisableVertexArray( );
 
 	void DrawBrushModel ( cl_entity_t *pEntity, bool bStatic = false );
 	void RecursiveWorldNode ( mnode_t *node );
@@ -109,29 +109,29 @@ public:
 	void DrawPolyFromArray( glpoly_t *p );
 
 	bool DynamicLighted( const Vector &vmins, const Vector &vmaxs );
-	void DrawDynamicLightsForWorld( void );
-	void DrawDynamicLightsForDetails( void );
+	void DrawDynamicLightsForWorld( );
+	void DrawDynamicLightsForDetails( );
 	void RecursiveWorldNodeLight (mnode_t *node);
 	void DrawDynamicLightsForEntity( cl_entity_t *pEntity );
 	void DrawEntityFacesForLight( cl_entity_t *pEntity );
 
-	void InitSky ( void );
-	void DrawSky( void );
-	void RemoveSky ( void );
+	void InitSky ( );
+	void DrawSky( );
+	void RemoveSky ( );
 	int MsgSkyMarker_Sky( const char *pszName, int iSize, void *pbuf );
 	int MsgSkyMarker_World( const char *pszName, int iSize, void *pbuf );
 
-	void PrepareRenderer ( void );
-	void ResetRenderer( void );
-	void ResetCache( void );
+	void PrepareRenderer ( );
+	void ResetRenderer( );
+	void ResetCache( );
 
 	bool ExtensionSupported( const char *ext );
 	cl_texture_t *LoadDetailTexture( char *texname );
-	void ParseDetailTextureFile( void );
-	void LoadDetailTextures( void );
+	void ParseDetailTextureFile( );
+	void LoadDetailTextures( );
 
-	void AnimateLight( void );
-	void UploadLightmaps( void );
+	void AnimateLight( );
+	void UploadLightmaps( );
 	void BuildLightmap( msurface_t *surf, int surfindex, color24 *out );
 	void AddLightStyle( int iNum, char *szStyle );
 
@@ -143,9 +143,9 @@ public:
 	texture_t *TextureAnimation( texture_t *base, int frame );
 
 public:
-	void DrawDecals( void );
-	void LoadDecals( void );
-	void DeleteDecals( void );
+	void DrawDecals( );
+	void LoadDecals( );
+	void DeleteDecals( );
 
 	decalgroup_t *FindGroup(const char *_name);
 	cl_texture_t *LoadDecalTexture(const char *texname);
@@ -159,11 +159,11 @@ public:
 	
 	int MsgCustomDecal(const char *pszName, int iSize, void *pbuf);
 
-	void CreateCachedDecals( void );
+	void CreateCachedDecals( );
 	void DrawSingleDecal(customdecal_t *decal);
 
-	customdecal_t *AllocDecal( void );
-	customdecal_t *AllocStaticDecal( void );
+	customdecal_t *AllocDecal( );
+	customdecal_t *AllocStaticDecal( );
 
 	void GetUpRight(Vector forward, Vector &up, Vector &right);
 	int ClipPolygonByPlane (const Vector *arrIn, int numpoints, Vector normal, Vector planepoint, Vector *arrOut);

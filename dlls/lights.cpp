@@ -102,13 +102,13 @@ class CLight : public CPointEntity
 {
 public:
 	// TODO - Modernize
-	virtual void	KeyValue(KeyValueData* pkvd);
-	virtual void	SendInitMessage(CBasePlayer* player);
-	void EXPORT	LightStyleThink(void);
-	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	void	KeyValue(KeyValueData* pkvd) override;
+	void	SendInitMessage(CBasePlayer* player) override;
+	void EXPORT	LightStyleThink();
+	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 
-	virtual int		Save(CSave& save);
-	virtual int		Restore(CRestore& restore);
+	int		Save(CSave& save) override;
+	int		Restore(CRestore& restore) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -146,9 +146,9 @@ void CLight::SendInitMessage(CBasePlayer* player)
 			strcpy(szPattern, "m");
 
 		if (player)
-			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, nullptr, player->pev);
 		else
-			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, nullptr);
 
 		WRITE_BYTE(m_iStyle);
 		WRITE_STRING(szPattern);
@@ -204,7 +204,7 @@ void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType
 		}
 	}
 
-	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, nullptr);
 	WRITE_BYTE(m_iStyle);
 	WRITE_STRING(szPattern);
 	MESSAGE_END();

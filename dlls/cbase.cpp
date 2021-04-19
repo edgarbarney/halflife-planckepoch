@@ -214,7 +214,7 @@ void DispatchKeyValue( edict_t *pentKeyvalue, KeyValueData *pkvd )
 
 	// If the key was an entity variable, or there's no class set yet, don't look for the object, it may
 	// not exist yet.
-	if ( pkvd->fHandled || pkvd->szClassName == NULL )
+	if ( pkvd->fHandled || pkvd->szClassName == nullptr )
 		return;
 
 	// Get the actualy entity object
@@ -324,13 +324,13 @@ void OnFreeEntPrivateData(edict_s* pEdict)
 // different classes with the same global name
 CBaseEntity *FindGlobalEntity( string_t classname, string_t globalname )
 {
-	CBaseEntity *pReturn = UTIL_FindEntityByString( NULL, "globalname", STRING(globalname) );
+	CBaseEntity *pReturn = UTIL_FindEntityByString( nullptr, "globalname", STRING(globalname) );
 	if ( pReturn )
 	{
 		if ( !FClassnameIs( pReturn->pev, STRING(classname) ) )
 		{
 			ALERT( at_debug, "Global entity found %s, wrong class %s\n", STRING(globalname), STRING(pReturn->pev->classname) );
-			pReturn = NULL;
+			pReturn = nullptr;
 		}
 	}
 
@@ -485,9 +485,9 @@ edict_t * EHANDLE::Get()
 		if (m_pent->serialnumber == m_serialnumber) 
 			return m_pent; 
 		else
-			return NULL;
+			return nullptr;
 	}
-	return NULL; 
+	return nullptr; 
 };
 
 edict_t * EHANDLE::Set( edict_t *pent ) 
@@ -515,7 +515,7 @@ CBaseEntity * EHANDLE :: operator = (CBaseEntity *pEntity)
 	}
 	else
 	{
-		m_pent = NULL;
+		m_pent = nullptr;
 		m_serialnumber = 0;
 	}
 	return pEntity;
@@ -552,7 +552,7 @@ void CBaseEntity::InitMoveWith()
 {
 	if (!m_MoveWith) return;
 
-	m_pMoveWith = UTIL_FindEntityByTargetname(NULL, STRING(m_MoveWith));
+	m_pMoveWith = UTIL_FindEntityByTargetname(nullptr, STRING(m_MoveWith));
 	if (!m_pMoveWith)
 	{
 		ALERT(at_debug,"Missing movewith entity %s\n", STRING(m_MoveWith));
@@ -609,7 +609,7 @@ void CBaseEntity::InitMoveWith()
 void CBaseEntity::DontThink()
 {
 	m_fNextThink = 0;
-	if (m_pMoveWith == NULL && m_pChildMoveWith == NULL)
+	if (m_pMoveWith == nullptr && m_pChildMoveWith == nullptr)
 	{
 		pev->nextthink = 0;
 		m_fPevNextThink = 0;
@@ -633,7 +633,7 @@ void CBaseEntity :: SetEternalThink()
 	}
 
 	CBaseEntity *pChild;
-	for (pChild = m_pChildMoveWith; pChild != NULL; pChild = pChild->m_pSiblingMoveWith)
+	for (pChild = m_pChildMoveWith; pChild != nullptr; pChild = pChild->m_pSiblingMoveWith)
 		pChild->SetEternalThink( );
 }
 
@@ -797,8 +797,8 @@ void CBaseEntity :: Killed( entvars_t *pevAttacker, int iGib )
 CBaseEntity *CBaseEntity::GetNextTarget()
 {
 	if ( FStringNull( pev->target ) )
-		return NULL;
-	return UTIL_FindEntityByTargetname( NULL, STRING(pev->target));
+		return nullptr;
+	return UTIL_FindEntityByTargetname( nullptr, STRING(pev->target));
 }
 
 // Global Savedata for Delay
@@ -1001,7 +1001,7 @@ BOOL CBaseEntity::ShouldToggle( USE_TYPE useType )
 char *CBaseEntity :: DamageDecal( int bitsDamageType )
 {
 	if ( pev->rendermode == kRenderTransAlpha )
-		return 0;
+		return nullptr;
 
 	if ( pev->rendermode != kRenderNormal )
 		return "shot_glass";
@@ -1022,7 +1022,7 @@ CBaseEntity * CBaseEntity::Create( const char *szName, const Vector &vecOrigin, 
 	if ( FNullEnt( pent ) )
 	{
 		ALERT ( at_debug, "NULL Ent in Create!\n" );
-		return NULL;
+		return nullptr;
 	}
 	pEntity = Instance( pent );
 	pEntity->pev->owner = pentOwner;

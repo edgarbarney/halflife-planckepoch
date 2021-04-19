@@ -158,7 +158,7 @@ public:
 	void	KeyValue( KeyValueData *pkvd ) override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	BOOL	IsLockedByMaster() { return !UTIL_IsMasterTriggered(m_sMaster, NULL); };
+	BOOL	IsLockedByMaster() { return !UTIL_IsMasterTriggered(m_sMaster, nullptr); };
 
     int		Save( CSave &save ) override;
     int		Restore( CRestore &restore ) override;
@@ -427,9 +427,9 @@ void CMultiSource::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		// the change disabled me and I have a "fire on disable" field
 		ALERT( at_aiconsole, "Multisource %s deactivated (%d inputs)\n", STRING(pev->targetname), m_iTotal );
 		if ( m_globalstate )
-			FireTargets( STRING(pev->netname), NULL, this, USE_OFF, 0 );
+			FireTargets( STRING(pev->netname), nullptr, this, USE_OFF, 0 );
 		else
-			FireTargets( STRING(pev->netname), NULL, this, USE_TOGGLE, 0 );
+			FireTargets( STRING(pev->netname), nullptr, this, USE_TOGGLE, 0 );
 	}
 	else if ( s == STATE_OFF )
 	{
@@ -438,7 +438,7 @@ void CMultiSource::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		USE_TYPE useType = USE_TOGGLE;
 		if ( m_globalstate )
 			useType = USE_ON;
-		SUB_UseTargets( NULL, useType, 0 );
+		SUB_UseTargets( nullptr, useType, 0 );
 	}
 }
 
@@ -478,7 +478,7 @@ void CMultiSource::Register()
 
 	// search for all entities which target this multisource (pev->targetname)
 
-	CBaseEntity *pTarget = UTIL_FindEntityByTarget( NULL, STRING(pev->targetname) );
+	CBaseEntity *pTarget = UTIL_FindEntityByTarget( nullptr, STRING(pev->targetname) );
 	while (pTarget && (m_iTotal < MS_MAX_TARGETS))
 	{
 		m_rgEntities[m_iTotal++] = pTarget;
@@ -486,7 +486,7 @@ void CMultiSource::Register()
 		pTarget = UTIL_FindEntityByTarget( pTarget, STRING(pev->targetname));
 	}
 
-	pTarget = UTIL_FindEntityByClassname(NULL, "multi_manager");
+	pTarget = UTIL_FindEntityByClassname(nullptr, "multi_manager");
 	while (pTarget && (m_iTotal < MS_MAX_TARGETS))
 	{
 		if ( pTarget->HasTarget(pev->targetname) )
@@ -647,10 +647,10 @@ int CBaseButton::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 	if ( code == BUTTON_NOTHING )
 		return 0;
 	// Temporarily disable the touch function, until movement is finished.
-	SetTouch( NULL );
+	SetTouch( nullptr );
 
 	m_hActivator = CBaseEntity::Instance( pevAttacker );
-	if ( m_hActivator == NULL )
+	if ( m_hActivator == nullptr )
 		return 0;
 
 	if ( code == BUTTON_RETURN )
@@ -764,7 +764,7 @@ void CBaseButton::Spawn( )
 	}
 	else 
 	{
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 		if ( FBitSet ( pev->spawnflags, SF_BUTTON_USEKEY ) )
 			SetUse	 ( &CBaseButton::ButtonUse_IgnorePlayer );
 		else
@@ -935,7 +935,7 @@ void CBaseButton:: ButtonTouch( CBaseEntity *pOther )
 	}
 
 	// Temporarily disable the touch function, until movement is finished.
-	SetTouch( NULL );
+	SetTouch( nullptr );
 
 	if ( code == BUTTON_RETURN )
 	{
@@ -1012,7 +1012,7 @@ void CBaseButton::TriggerAndWait()
 		if ( !FBitSet ( pev->spawnflags, SF_BUTTON_TOUCH_ONLY ) ) // this button only works if USED, not touched!
 		{
 		    // ALL buttons are now use only
-		    SetTouch ( NULL );
+		    SetTouch ( nullptr );
 		}
 		else
 			SetTouch( &CBaseButton::ButtonTouch );
@@ -1079,7 +1079,7 @@ void CBaseButton::ButtonBackHome()
 
 	if (!FStringNull(pev->target))
 	{
-		CBaseEntity *pTarget = NULL;
+		CBaseEntity *pTarget = nullptr;
 		for (;;)
 		{
 			pTarget = UTIL_FindEntityByTargetname(pTarget, STRING(pev->target), m_hActivator);
@@ -1099,7 +1099,7 @@ void CBaseButton::ButtonBackHome()
 	if ( !FBitSet ( pev->spawnflags, SF_BUTTON_TOUCH_ONLY ) ) // this button only works if USED, not touched!
 	{
 	// All buttons are now use only	
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 	}
 	else
 		SetTouch( &CBaseButton::ButtonTouch );
@@ -1191,7 +1191,7 @@ void CRotButton::Spawn()
 	// if the button is flagged for USE button activation only, take away it's touch function and add a use function
 	if ( !FBitSet ( pev->spawnflags, SF_BUTTON_TOUCH_ONLY ) )
 	{
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 		if ( FBitSet ( pev->spawnflags, SF_BUTTON_USEKEY ) )
 			SetUse	 ( &CRotButton::ButtonUse_IgnorePlayer );
 		else
@@ -1349,7 +1349,7 @@ void CMomentaryRotButton::UpdateAllButtons( float value, int start )
 {
 	// Update all rot buttons attached to my target
 	// (this includes myself)
-	CBaseEntity *pTarget = NULL;
+	CBaseEntity *pTarget = nullptr;
 	for (;;)
 	{
 		pTarget = UTIL_FindEntityByTarget(pTarget, STRING(pev->target));
@@ -1417,7 +1417,7 @@ void CMomentaryRotButton::UpdateTarget( float value )
 {
 	if (!FStringNull(pev->target))
 	{
-		CBaseEntity* pTarget = NULL;
+		CBaseEntity* pTarget = nullptr;
 		for (;;)
 		{
 			pTarget = UTIL_FindEntityByTargetname(pTarget, STRING(pev->target));
@@ -1439,7 +1439,7 @@ void CMomentaryRotButton::Off()
 		m_direction = -1;
 	}
 	else
-		SetThink( NULL );
+		SetThink( nullptr );
 }
 
 void CMomentaryRotButton::Return()
@@ -1459,7 +1459,7 @@ void CMomentaryRotButton::UpdateSelfReturn( float value )
 		pev->avelocity = g_vecZero;
 		pev->angles = m_start;
 		DontThink();
-		SetThink( NULL );
+		SetThink( nullptr );
 	}
 	else
 	{
@@ -1509,8 +1509,8 @@ LINK_ENTITY_TO_CLASS(env_debris, CEnvSpark);
 
 void CEnvSpark::Spawn()
 {
-	SetThink( NULL );
-	SetUse( NULL );
+	SetThink( nullptr );
+	SetUse( nullptr );
 	
 	if (FBitSet(pev->spawnflags, 16))
 	{
@@ -1571,7 +1571,7 @@ void CEnvSpark::KeyValue( KeyValueData *pkvd )
 
 void EXPORT CEnvSpark::SparkCyclic(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if (m_pfnThink == NULL)
+	if (m_pfnThink == nullptr)
 	{
 		DoSpark( pev, pev->origin );
 		SetThink( &CEnvSpark::SparkWait );
@@ -1585,7 +1585,7 @@ void EXPORT CEnvSpark::SparkCyclic(CBaseEntity *pActivator, CBaseEntity *pCaller
 
 void EXPORT CEnvSpark::SparkWait()
 {
-	SetThink( NULL );
+	SetThink( nullptr );
 }
 
 void EXPORT CEnvSpark::SparkThink()
@@ -1593,7 +1593,7 @@ void EXPORT CEnvSpark::SparkThink()
 	DoSpark( pev, pev->origin );
 	if (pev->spawnflags & 16)
 	{
-		SetThink( NULL );
+		SetThink( nullptr );
 	}
 	else
 	{
@@ -1612,7 +1612,7 @@ void EXPORT CEnvSpark::SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller,
 void EXPORT CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	SetUse(&CEnvSpark::SparkStart);
-	SetThink(NULL);
+	SetThink(nullptr);
 	m_iState = STATE_OFF; //LRC
 }
 //G-Cont. flag 16 is removed - we don't need this

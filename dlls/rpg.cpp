@@ -34,7 +34,7 @@ LINK_ENTITY_TO_CLASS( laser_spot, CLaserSpot );
 //=========================================================
 CLaserSpot *CLaserSpot::CreateSpot()
 {
-	CLaserSpot *pSpot = GetClassPtr( (CLaserSpot *)NULL );
+	CLaserSpot *pSpot = GetClassPtr( (CLaserSpot *)nullptr );
 	pSpot->Spawn();
 
 	pSpot->pev->classname = MAKE_STRING("laser_spot");
@@ -77,7 +77,7 @@ void CLaserSpot::Suspend( float flSuspendTime )
 	//LRC: -1 means suspend indefinitely
 	if (flSuspendTime == -1)
 	{
-		SetThink( NULL );
+		SetThink( nullptr );
 	}
 	else
 	{
@@ -93,7 +93,7 @@ void CLaserSpot::Revive()
 {
 	pev->effects &= ~EF_NODRAW;
 
-	SetThink( NULL );
+	SetThink( nullptr );
 }
 
 void CLaserSpot::Precache()
@@ -107,7 +107,7 @@ LINK_ENTITY_TO_CLASS( rpg_rocket, CRpgRocket );
 //=========================================================
 CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher )
 {
-	CRpgRocket *pRocket = GetClassPtr( (CRpgRocket *)NULL );
+	CRpgRocket *pRocket = GetClassPtr( (CRpgRocket *)nullptr );
 
 	UTIL_SetOrigin( pRocket, vecOrigin );
 	pRocket->pev->angles = vecAngles;
@@ -209,7 +209,7 @@ void CRpgRocket :: IgniteThink()
 
 void CRpgRocket :: FollowThink()
 {
-	CBaseEntity *pOther = NULL;
+	CBaseEntity *pOther = nullptr;
 	Vector vecTarget;
 	Vector vecDir;
 	float flDist, flMax, flDot;
@@ -221,7 +221,7 @@ void CRpgRocket :: FollowThink()
 	flMax = 4096;
 	
 	// Examine all entities within a reasonable radius
-	while ((pOther = UTIL_FindEntityByClassname( pOther, "laser_spot" )) != NULL)
+	while ((pOther = UTIL_FindEntityByClassname( pOther, "laser_spot" )) != nullptr)
 	{
 		UTIL_TraceLine ( pev->origin, pOther->pev->origin, dont_ignore_monsters, ENT(pev), &tr );
 		// ALERT( at_console, "%f\n", tr.flFraction );
@@ -381,7 +381,7 @@ int CRpg::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "rockets";
 	p->iMaxAmmo1 = ROCKET_MAX_CARRY;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = RPG_MAX_CLIP;
 	p->iSlot = 3;
@@ -397,7 +397,7 @@ int CRpg::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
+		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, nullptr, pPlayer->pev );
 			WRITE_BYTE( m_iId );
 		MESSAGE_END();
 		return TRUE;
@@ -441,8 +441,8 @@ void CRpg::Holster( int skiplocal /* = 0 */ )
 #ifndef CLIENT_DLL
 	if (m_pSpot)
 	{
-		m_pSpot->Killed( NULL, GIB_NEVER );
-		m_pSpot = NULL;
+		m_pSpot->Killed( nullptr, GIB_NEVER );
+		m_pSpot = nullptr;
 	}
 #endif
 
@@ -502,8 +502,8 @@ void CRpg::SecondaryAttack()
 #ifndef CLIENT_DLL
 	if (!m_fSpotActive && m_pSpot)
 	{
-		m_pSpot->Killed( NULL, GIB_NORMAL );
-		m_pSpot = NULL;
+		m_pSpot->Killed( nullptr, GIB_NORMAL );
+		m_pSpot = nullptr;
 	}
 #endif
 

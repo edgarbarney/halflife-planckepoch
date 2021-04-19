@@ -29,7 +29,7 @@ private:
 public:
 	ScrollPanel(int x,int y,int wide,int tall);
 protected:
-	virtual void setSize(int wide,int tall);
+	void setSize(int wide,int tall) override;
 public:
 	virtual void   setScrollBarVisible(bool horizontal,bool vertical);
 	virtual void   setScrollBarAutoVisible(bool horizontal,bool vertical);

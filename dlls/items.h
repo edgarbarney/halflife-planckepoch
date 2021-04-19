@@ -47,7 +47,7 @@ public:
 	void Precache() override;
 	int MyTouch( CBasePlayer *pPlayer ) override;
 	void EXPORT ItemTouch(CBaseEntity *pOther);
-	void CItemMedicalKit::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 };
 
@@ -57,7 +57,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	BOOL MyTouch( CBasePlayer *pPlayer ) override;
-	void CItemAntiRad::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 };
 
 class CItemAntidote : public CItem //AJH new anti radiation syringe
@@ -66,7 +66,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	BOOL MyTouch( CBasePlayer *pPlayer ) override;
-	void CItemAntidote::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 };
 
 class CItemFlare : public CItem //AJH new anti radiation syringe
@@ -75,7 +75,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	BOOL MyTouch( CBasePlayer *pPlayer ) override;
-	void CItemFlare::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 };
 
 class CItemCamera : public CItem //AJH new inventory camera (can be placed anywhere in a level by the player)
@@ -89,7 +89,7 @@ public:
 	int MyTouch( CBasePlayer *pPlayer ) override;
 	//CBaseEntity* Respawn(void);
 	//void Materialize(void);
-	void StripFromPlayer(void);
+	void StripFromPlayer();
 	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 
 

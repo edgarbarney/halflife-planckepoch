@@ -37,26 +37,26 @@ CWaterShader
 class CWaterShader
 {
 public:
-	void	Init( void );
-	void	VidInit( void );
-	void	Restore( void );
+	void	Init( );
+	void	VidInit( );
+	void	Restore( );
 
 	void	AddEntity( cl_entity_t *entity );
-	void	DrawWater( void );
+	void	DrawWater( );
 
 	void	DrawWaterPasses( ref_params_t *pparams );
 	void	DrawScene( ref_params_t *pparams, bool forcemodels );
 
-	void	SetupRefract( void );
-	void	FinishRefract( void );
+	void	SetupRefract( );
+	void	FinishRefract( );
 
-	void	SetupReflect( void );
-	void	FinishReflect( void );
+	void	SetupReflect( );
+	void	FinishReflect( );
 
 	void	SetupClipping( ref_params_t *pparams, bool isrefracting );
-	void	LoadScript( void );
+	void	LoadScript( );
 
-	bool	ViewInWater( void );
+	bool	ViewInWater( );
 	bool	ShouldReflect( int index );
 
 public:

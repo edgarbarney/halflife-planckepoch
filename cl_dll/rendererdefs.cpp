@@ -82,7 +82,7 @@ char *stristr( const char *string, const char *string2 )
 			string++;
 		}
 		else {
-			return NULL;
+			return nullptr;
 		}
 	}
 	return (char *)string;
@@ -399,7 +399,7 @@ int IsPitchReversed(float pitch)
 //	BlackFog
 //
 //==========================
-void BlackFog ( void )
+void BlackFog ( )
 {
 	if (gHUD.m_pFogSettings.active)
 		glFogfv (GL_FOG_COLOR,  g_vecZero);
@@ -411,7 +411,7 @@ void BlackFog ( void )
 //	RenderFog
 //
 //==========================
-void RenderFog( void )
+void RenderFog( )
 {
 	if ( gHUD.m_pFogSettings.active )
 	{
@@ -440,7 +440,7 @@ void RenderFog( void )
 //
 //	Thanks to Laurie
 //==========================
-void ClearToFogColor( void )
+void ClearToFogColor( )
 {
 	if(!gHUD.m_pFogSettings.active)
 		return;
@@ -453,7 +453,7 @@ void ClearToFogColor( void )
 //	DisableFog
 //
 //==========================
-void DisableFog ( void )
+void DisableFog ( )
 {
 	glDisable(GL_FOG);
 }
@@ -547,7 +547,7 @@ mleaf_t *Mod_PointInLeaf (Vector p, model_t *model)
 			node = node->children[1];
 	}
 
-	return NULL;	// never reached
+	return nullptr;	// never reached
 }
 int BoxOnPlaneSideTrin(Vector emins, Vector emaxs, mplane_t *p)
 {
@@ -695,7 +695,7 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 byte *Mod_LeafPVS (mleaf_t *leaf, model_t *model)
 {
 	if (leaf == model->leafs)
-		return Mod_DecompressVis(NULL, model);
+		return Mod_DecompressVis(nullptr, model);
 
 	return Mod_DecompressVis (leaf->compressed_vis, model);
 }
@@ -747,7 +747,7 @@ HUD_PrintSpeeds
 
 =================
 */
-void HUD_PrintSpeeds ( void )
+void HUD_PrintSpeeds ( )
 {
 	if( gBSPRenderer.m_pCvarSpeeds->value <= 0 )
 		return;
@@ -803,7 +803,7 @@ R_DrawNormalTriangles
 
 =================
 */
-void R_DrawNormalTriangles( void )
+void R_DrawNormalTriangles( )
 {
 	// Set this at start
 	RenderFog();
@@ -842,7 +842,7 @@ R_DrawTransparentTriangles
 
 =================
 */
-void R_DrawTransparentTriangles( void )
+void R_DrawTransparentTriangles( )
 {
 	// Set basic fog, and then turn it black for sprites
 	RenderFog();
@@ -864,7 +864,7 @@ void R_DrawTransparentTriangles( void )
 	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE0_ARB);
 }
 
-void RenderersDumpInfo( void )
+void RenderersDumpInfo( )
 {
 	gEngfuncs.Con_Printf("Engine Data Dump:\n");
 	gEngfuncs.Con_Printf("Number of models in client cache: %i of 4096 max.\n", g_StudioRenderer.m_iNumStudioModels);
@@ -883,7 +883,7 @@ void RenderersDumpInfo( void )
 	else gEngfuncs.Con_Printf("Radial fog not supported.\n");
 }
 
-void GenDetail( void )
+void GenDetail( )
 {
 	char szLevelName[64];
 	char szPathOut[128];
@@ -1000,7 +1000,7 @@ void GenDetail( void )
 			continue;
 		}
 
-		texture_t *pTexture = NULL;
+		texture_t *pTexture = nullptr;
 		
 		char maptexture[16];
 		strLower(szTexture);
@@ -1034,8 +1034,8 @@ void GenDetail( void )
 	gEngfuncs.COM_FreeFile(pFile);
 	fclose(fout);
 
-	char *pPrevious = NULL;
-	char *pPrevFile = (char *)gEngfuncs.COM_LoadFile( "detail_failures.txt", 5, NULL );
+	char *pPrevious = nullptr;
+	char *pPrevFile = (char *)gEngfuncs.COM_LoadFile( "detail_failures.txt", 5, nullptr );
 
 	if(pPrevFile)
 	{
@@ -1138,7 +1138,7 @@ void SetupFlashlight(Vector origin, Vector angles, float time, float frametime)
 
 		// Shitpickle
 		FixVectorForSpotlight(angles);
-		AngleVectors(angles, pLight->forward, NULL, NULL);
+		AngleVectors(angles, pLight->forward, nullptr, nullptr);
 	}
 	else
 	{
@@ -1176,7 +1176,7 @@ float VectorNormalizeFast (float *v)
 }
 
 // not finished
-void ExportWorld( void )
+void ExportWorld( )
 {
 	model_t *pWorld = IEngineStudio.GetModelByIndex(1);
 

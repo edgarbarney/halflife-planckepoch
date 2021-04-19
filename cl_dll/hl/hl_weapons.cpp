@@ -242,7 +242,7 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 
 	for ( ULONG iShot = 1; iShot <= cShots; iShot++ )
 	{
-		if ( pevAttacker == NULL )
+		if ( pevAttacker == nullptr )
 		{
 			// get circular gaussian spread
 			do {
@@ -277,7 +277,7 @@ void CBasePlayer::SelectItem(const char *pstr)
 	if (!pstr)
 		return;
 
-	CBasePlayerItem *pItem = NULL;
+	CBasePlayerItem *pItem = nullptr;
 
 	if (!pItem)
 		return;
@@ -308,7 +308,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	if ( m_pActiveItem )
 		 m_pActiveItem->Holster( );
 
-	m_pNextItem = NULL;
+	m_pNextItem = nullptr;
 	
 	g_irunninggausspred = false;
 }
@@ -326,7 +326,7 @@ void CBasePlayer::Spawn()
 		m_pActiveItem = m_pNextItem;
 		m_pActiveItem->Deploy();
 		m_pActiveItem->UpdateItemInfo();
-		m_pNextItem = NULL;
+		m_pNextItem = nullptr;
 	}
 	g_irunninggausspred = false;
 }
@@ -460,7 +460,7 @@ void HUD_InitClientWeapons()
 	g_engfuncs.pfnCVarGetFloat		= gEngfuncs.pfnGetCvarFloat;
 
 	// Allocate a slot for the local player
-	HUD_PrepEntity( &player		, NULL );
+	HUD_PrepEntity( &player		, nullptr );
 
 	// Allocate slot(s) for each weapon that we are going to be predicting
 	HUD_PrepEntity( &g_Glock	, &player );
@@ -526,7 +526,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 {
 	int i;
 	int buttonsChanged;
-	CBasePlayerWeapon *pWeapon = NULL;
+	CBasePlayerWeapon *pWeapon = nullptr;
 	CBasePlayerWeapon *pCurrent;
 	weapon_data_t nulldata, *pfrom, *pto;
 	static int lasthealth;
@@ -610,7 +610,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	{
 		if ( to->client.health <= 0 && lasthealth > 0 )
 		{
-			player.Killed( NULL, 0 );
+			player.Killed( nullptr, 0 );
 			
 		}
 		else if ( to->client.health > 0 && lasthealth <= 0 )
@@ -888,7 +888,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	HUD_SetLastOrg();
 
 	// Wipe it so we can't use it after this frame
-	g_finalstate = NULL;
+	g_finalstate = nullptr;
 }
 
 /*
@@ -922,7 +922,7 @@ void DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s 
 	if ( g_irunninggausspred == 1 )
 	{
 		Vector forward;
-		gEngfuncs.pfnAngleVectors( v_angles, forward, NULL, NULL );
+		gEngfuncs.pfnAngleVectors( v_angles, forward, nullptr, nullptr );
 		to->client.velocity = to->client.velocity - forward * g_flApplyVel * 5; 
 		g_irunninggausspred = false;
 	}

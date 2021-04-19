@@ -32,16 +32,16 @@ Transparency code by Neil "Jed" Jedrzejewski
 class CPropManager
 {
 public:
-	void Init( void );
-	void Shutdown( void );
+	void Init( );
+	void Shutdown( );
 
-	void GenerateEntityList( void );
-	void SetupVBO( void );
+	void GenerateEntityList( );
+	void SetupVBO( );
 
-	void Reset( void );
-	void RenderProps( void );
-	void RenderSkyProps( void );
-	void RenderPropsSolid( void );
+	void Reset( );
+	void RenderProps( );
+	void RenderSkyProps( );
+	void RenderPropsSolid( );
 
 	// Models
 	bool PostLoadModel( char *modelname, studiohdr_t *hdr, cl_entity_t *pEntity );
@@ -49,10 +49,10 @@ public:
 	modeldata_t *GetHeader( const char *name );
 
 	bool SetupCable( cabledata_t *cable, entity_t *entity );
-	void DrawCables( void );
+	void DrawCables( );
 
-	void ParseEntities( void );
-	void LoadEntVars( void );
+	void ParseEntities( );
+	void LoadEntVars( );
 	char *ValueForKey (entity_t *ent, char *key);
 public:
 

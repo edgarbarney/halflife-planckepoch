@@ -50,7 +50,7 @@ Shutdown
 
 ====================
 */
-void CPropManager::Shutdown( void )
+void CPropManager::Shutdown( )
 {
 	Reset();
 }
@@ -61,7 +61,7 @@ Reset
 
 ====================
 */
-void CPropManager::Reset( void )
+void CPropManager::Reset( )
 {
 	if ( m_iNumEntities )
 	{
@@ -85,7 +85,7 @@ void CPropManager::Reset( void )
 	{
 		memset(m_pExtraData, 0, sizeof(m_pExtraData));
 		memset(m_pExtraInfo, 0, sizeof(m_pExtraInfo));
-		m_pCurrentExtraData = NULL;
+		m_pCurrentExtraData = nullptr;
 		m_iNumExtraData = 0;
 	}
 
@@ -104,13 +104,13 @@ void CPropManager::Reset( void )
 			if(m_pHeaders[i].pVBOHeader.pBufferData)
 			{
 				delete [] m_pHeaders[i].pVBOHeader.pBufferData;
-				m_pHeaders[i].pVBOHeader.pBufferData = NULL;
+				m_pHeaders[i].pVBOHeader.pBufferData = nullptr;
 			}
 
 			if(m_pHeaders[i].pVBOHeader.indexes)
 			{
 				delete [] m_pHeaders[i].pVBOHeader.indexes;
-				m_pHeaders[i].pVBOHeader.indexes = NULL;
+				m_pHeaders[i].pVBOHeader.indexes = nullptr;
 			}
 		}
 				
@@ -139,21 +139,21 @@ void CPropManager::Reset( void )
 
 	if(m_pEntData)
 	{
-		m_pEntData = NULL;
+		m_pEntData = nullptr;
 		m_iEntDataSize = NULL;
 	}
 
 	if(m_pVertexData)
 	{
 		delete [] m_pVertexData;
-		m_pVertexData = NULL;
+		m_pVertexData = nullptr;
 		m_iNumTotalVerts = NULL;
 	}
 
 	if(m_pIndexBuffer)
 	{
 		delete [] m_pIndexBuffer;
-		m_pIndexBuffer = NULL;
+		m_pIndexBuffer = nullptr;
 	}
 
 	if(m_iNumCables)
@@ -169,7 +169,7 @@ Init
 
 ====================
 */
-void CPropManager::Init( void )
+void CPropManager::Init( )
 {
 	m_pCvarDrawClientEntities = CVAR_CREATE( "te_client_entities", "1", 0 );
 }
@@ -180,7 +180,7 @@ LoadBSPFile
 
 ====================
 */
-void CPropManager::GenerateEntityList ( void )
+void CPropManager::GenerateEntityList ( )
 {
 	// reset all entity data
 	Reset();
@@ -190,7 +190,7 @@ void CPropManager::GenerateEntityList ( void )
 	if(!pWorld)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -219,7 +219,7 @@ modeldata_t *CPropManager::GetHeader( const char *name )
 				return &m_pHeaders[i];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -235,7 +235,7 @@ char *CPropManager::ValueForKey (entity_t *ent, char *key)
       if (!strcmp (pEPair->key, key) )
          return pEPair->value;
    }
-   return NULL;
+   return nullptr;
 }
 
 /*
@@ -244,7 +244,7 @@ ParseEntities
 
 ====================
 */
-void CPropManager::ParseEntities ( void )
+void CPropManager::ParseEntities ( )
 {
 	// Entity parser done by me, parses nicely, no errors detected ever.
 	char *pCurText = m_pEntData;
@@ -389,7 +389,7 @@ LoadEntVars
 
 ====================
 */
-void CPropManager::LoadEntVars( void )
+void CPropManager::LoadEntVars( )
 {
 	for(int i = 0; i < m_iNumBSPEntities; i++)
 	{
@@ -637,7 +637,7 @@ SetupVBO
 
 ====================
 */
-void CPropManager::SetupVBO( void )
+void CPropManager::SetupVBO( )
 {
 	if(!m_iNumHeaders)
 		return;
@@ -693,7 +693,7 @@ RenderModels
 
 ====================
 */
-void CPropManager::RenderProps( void )
+void CPropManager::RenderProps( )
 {
 	if(m_pCvarDrawClientEntities->value < 1)
 		return;
@@ -784,7 +784,7 @@ LoadMDL
 */
 bool CPropManager::LoadMDL( char *name, cl_entity_t *pEntity, entity_t *pBSPEntity )
 {
-	if( m_pCurrentExtraData->pModelData = GetHeader( name ))
+	if( (m_pCurrentExtraData->pModelData = GetHeader( name )))
 		return true;
 
 	if ( m_iNumHeaders == MAXRENDERENTS )
@@ -828,8 +828,8 @@ bool CPropManager::LoadMDL( char *name, cl_entity_t *pEntity, entity_t *pBSPEnti
 
 	g_StudioRenderer.StudioSaveModelData(&m_pHeaders[m_iNumHeaders]);
 
-	delete[] pTempEnt;
-	delete[] pTempModel;
+	delete pTempEnt;
+	delete pTempModel;
 
 	m_pCurrentExtraData->pModelData = &m_pHeaders[m_iNumHeaders];
 	m_iNumHeaders++;
@@ -960,7 +960,7 @@ DrawCables
 
 ====================
 */
-void CPropManager::DrawCables( void )
+void CPropManager::DrawCables( )
 {
 	Vector vVertex;
 	Vector vTangent;
@@ -1019,7 +1019,7 @@ RenderPropsSolid
 
 ====================
 */
-void CPropManager::RenderPropsSolid( void )
+void CPropManager::RenderPropsSolid( )
 {
 	if(m_pCvarDrawClientEntities->value < 1)
 		return;
@@ -1073,7 +1073,7 @@ RenderSkyProps
 
 ====================
 */
-void CPropManager::RenderSkyProps( void )
+void CPropManager::RenderSkyProps( )
 {
 	if(m_pCvarDrawClientEntities->value < 1)
 		return;

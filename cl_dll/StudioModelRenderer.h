@@ -38,12 +38,12 @@ class CStudioModelRenderer
 {
 public:
 	// Construction/Destruction
-	CStudioModelRenderer( void );
-	virtual ~CStudioModelRenderer( void );
+	CStudioModelRenderer( );
+	virtual ~CStudioModelRenderer( );
 
 	// Initialization
-	virtual void Init( void );
-	virtual void VidInit( void );
+	virtual void Init( );
+	virtual void VidInit( );
 
 public:  
 	// Public Interfaces
@@ -61,13 +61,13 @@ public:
 	virtual void StudioSetUpTransform ( int trivial_accept );
 
 	// Set up model bone positions
-	virtual void StudioSetupBones ( void );	
+	virtual void StudioSetupBones ( );	
 
 	// Find final attachment points
-	virtual void StudioCalcAttachments ( void );
+	virtual void StudioCalcAttachments ( );
 
 	// Determine interpolation fraction
-	virtual float StudioEstimateInterpolant( void );
+	virtual float StudioEstimateInterpolant( );
 
 	// Determine current frame for rendering
 	virtual float StudioEstimateFrame ( mstudioseqdesc_t *pseqdesc );
@@ -91,12 +91,12 @@ public:
 	virtual void StudioCalcRotations ( float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
 
 	// Send bones and verts to renderer
-	virtual void StudioRenderModel ( void );
+	virtual void StudioRenderModel ( );
 
 	// Finalize rendering
-	virtual void StudioRenderFinal (void);
+	virtual void StudioRenderFinal ();
 
-	virtual void StudioSaveBones( void );
+	virtual void StudioSaveBones( );
 	virtual void StudioMergeBones ( model_t *m_pSubModel );
 
 	// Player specific data
@@ -194,32 +194,32 @@ public:
 
 public:
 	virtual void	StudioSetupModel( int bodypart );
-	virtual void	StudioDrawPoints( void );
+	virtual void	StudioDrawPoints( );
 	virtual void	StudioDrawMesh( mstudiomesh_t *pmesh, mstudiotexture_t *ptex );
-	virtual void	StudioDrawWireframe( void );
+	virtual void	StudioDrawWireframe( );
 
-	virtual void	StudioSetupTextureHeader( void );
+	virtual void	StudioSetupTextureHeader( );
 	virtual void	StudioSetupRenderer( int rendermode );
-	virtual void	StudioRestoreRenderer( void );
-	virtual qboolean	StudioCheckBBox( void );
+	virtual void	StudioRestoreRenderer( );
+	virtual qboolean	StudioCheckBBox( );
 
-	virtual void	StudioEntityLight( void );
+	virtual void	StudioEntityLight( );
 	virtual bool	StudioCullBBox( const Vector &mins, const Vector &maxs );
 
-	virtual void	StudioSetupLighting( void );
+	virtual void	StudioSetupLighting( );
 	virtual int		StudioRecursiveLightPoint( entextrainfo_t *ext, mnode_t *node, const Vector &start, const Vector &end, Vector &color );
 	
-	virtual void	StudioSetTextureFlags( void );
-	virtual void	StudioSetChromeVectors( void );
+	virtual void	StudioSetTextureFlags( );
+	virtual void	StudioSetChromeVectors( );
 	virtual void	StudioChromeForMesh( int j, mstudiomesh_t *pmesh );
 
-	virtual void	StudioSwapEngineCache( void );
+	virtual void	StudioSwapEngineCache( );
 
-	virtual entextrainfo_t *StudioAllocExtraInfo( void );
+	virtual entextrainfo_t *StudioAllocExtraInfo( );
 
-	virtual void	StudioDrawBBox( void );
-	virtual void	StudioDrawModelSolid( void );
-	virtual void	StudioDrawPointsSolid( void );
+	virtual void	StudioDrawBBox( );
+	virtual void	StudioDrawModelSolid( );
+	virtual void	StudioDrawPointsSolid( );
 
 	float			m_fChrome[MAXSTUDIOVERTS][2];
 	Vector			m_vChromeUp[MAXSTUDIOBONES];
@@ -273,13 +273,13 @@ public:
 
 public:
 	virtual void	StudioDrawExternalEntity( cl_entity_t *pEntity );
-	virtual void	StudioRenderModelEXT( void );
-	virtual void	StudioDrawPointsEXT( void );
+	virtual void	StudioRenderModelEXT( );
+	virtual void	StudioDrawPointsEXT( );
 	virtual void	StudioDrawMeshEXT( mstudiotexture_t *ptex, vbomesh_t *pmesh );
-	virtual void	StudioDrawWireframeEXT( void );
+	virtual void	StudioDrawWireframeEXT( );
 	
 	virtual void	StudioDrawExternalEntitySolid( cl_entity_t *pEntity );
-	virtual void	StudioDrawPointsSolidEXT( void );
+	virtual void	StudioDrawPointsSolidEXT( );
 
 	virtual void	StudioSaveModelData( modeldata_t *pExtraData );
 	virtual void	StudioSaveUniqueData( entextradata_t *pExtraData );
@@ -307,9 +307,9 @@ public:
 	int				m_iCurStart;
 
 public:
-	virtual void	StudioDrawDecals( void );
-	virtual studiodecal_t *StudioAllocDecal( void );
-	virtual studiodecal_t *StudioAllocDecalSlot( void );
+	virtual void	StudioDrawDecals( );
+	virtual studiodecal_t *StudioAllocDecal( );
+	virtual studiodecal_t *StudioAllocDecalSlot( );
 
 	virtual void	StudioDecalExternal( Vector vpos, Vector vnorm, const char *name );
 	virtual void	StudioDecalForEntity( Vector position, Vector normal, const char *szName, cl_entity_t *pEntity );

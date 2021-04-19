@@ -58,7 +58,7 @@ extern engine_studio_api_t IEngineStudio;
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 CMP3 gMP3; //AJH - Killars MP3player
-TeamFortressViewport *gViewPort = NULL;
+TeamFortressViewport *gViewPort = nullptr;
 
 //RENDERERS START
 CBSPRenderer gBSPRenderer;
@@ -70,9 +70,9 @@ CPropManager gPropManager;
 CMirrorManager gMirrorManager;
 //RENDERERS END
 
-void InitInput (void);
-void EV_HookEvents( void );
-void IN_Commands( void );
+void InitInput ();
+void EV_HookEvents( );
+void IN_Commands( );
 
 // SCREEN GLOW FragBait0
 extern void InitScreenGlow(); // FragBait0 - Glow Effect
@@ -227,7 +227,7 @@ redraw the HUD.
 ===========================
 */
 //RENDERERS START
-extern void HUD_PrintSpeeds( void );
+extern void HUD_PrintSpeeds( );
 //RENDERERS END
 int DLLEXPORT HUD_Redraw( float time, int intermission )
 {

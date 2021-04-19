@@ -600,7 +600,7 @@ extern DECLSPEC int SDLCALL SDL_atoi(const char *str);
 #ifdef HAVE_ATOI
 SDL_FORCE_INLINE int SDL_atoi_inline(const char *str) { return atoi(str); }
 #else
-SDL_FORCE_INLINE int SDL_atoi_inline(const char *str) { return SDL_strtol(str, NULL, 0); }
+SDL_FORCE_INLINE int SDL_atoi_inline(const char *str) { return SDL_strtol(str, nullptr, 0); }
 #endif
 #define SDL_atoi SDL_atoi_inline
 
@@ -608,7 +608,7 @@ extern DECLSPEC double SDLCALL SDL_atof(const char *str);
 #ifdef HAVE_ATOF
 SDL_FORCE_INLINE double SDL_atof_inline(const char *str) { return (double) atof(str); }
 #else
-SDL_FORCE_INLINE double SDL_atof_inline(const char *str) { return SDL_strtod(str, NULL); }
+SDL_FORCE_INLINE double SDL_atof_inline(const char *str) { return SDL_strtod(str, nullptr); }
 #endif
 #define SDL_atof SDL_atof_inline
 
