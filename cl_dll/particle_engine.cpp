@@ -17,7 +17,6 @@ Written by Andrew Lucas
 #include "windows.h"
 #include "hud.h"
 #include "cl_util.h"
-#include "gl/gl.h"
 #include <gl/glu.h>
 
 #include "const.h"
@@ -50,7 +49,7 @@ Init
 
 ====================
 */
-void CParticleEngine::Init( void ) 
+void CParticleEngine::Init( ) 
 {
 	m_pCvarDrawParticles = CVAR_CREATE( "te_particles", "1", 0 );
 	m_pCvarParticleDebug = CVAR_CREATE( "te_particles_debug", "0", 0 );
@@ -63,7 +62,7 @@ VidInit
 
 ====================
 */
-void CParticleEngine::VidInit( void ) 
+void CParticleEngine::VidInit( ) 
 {
 	if(m_pSystemHeader)
 	{
@@ -87,7 +86,7 @@ void CParticleEngine::VidInit( void )
 			delete [] pfree;
 		}
 
-		m_pSystemHeader = NULL;
+		m_pSystemHeader = nullptr;
 	}
 };
 
@@ -97,7 +96,7 @@ AllocSystem
 
 ====================
 */
-particle_system_t *CParticleEngine::AllocSystem( void ) 
+particle_system_t *CParticleEngine::AllocSystem( ) 
 {
 	// Allocate memory
 	particle_system_t *pSystem = new particle_system_t;
@@ -151,7 +150,7 @@ void CParticleEngine::CreateCluster( char *szPath, Vector origin, Vector dir, in
 	strcpy(szFilePath, "/scripts/particles/");
 	strcat(szFilePath, szPath);
 
-	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFilePath, 5, NULL);
+	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFilePath, 5, nullptr);
 	
 	if(!pFile)
 	{
@@ -183,18 +182,18 @@ CreateSystem
 particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent ) 
 {
 	if(!strlen(szPath))
-		return NULL;
+		return nullptr;
 
 	char szFilePath[64];
 	strcpy(szFilePath, "/scripts/particles/");
 	strcat(szFilePath, szPath);
 
-	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFilePath, 5, NULL);
+	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFilePath, 5, nullptr);
 	
 	if(!pFile)
 	{
 		gEngfuncs.Con_Printf("Could not load particle definitions file: %s!\n", szPath);
-		return NULL;
+		return nullptr;
 	}
 		
 	particle_system_t *pSystem = AllocSystem();
@@ -203,7 +202,7 @@ particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, V
 	{
 		gEngfuncs.Con_Printf("Warning! Exceeded max number of particle systems!\n");
 		gEngfuncs.COM_FreeFile(pFile);
-		return NULL;
+		return nullptr;
 	}
 
 	// Fill in default values
@@ -311,11 +310,11 @@ particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, V
 			{
 				// Remove system
 				m_pSystemHeader = pSystem->next;
-				m_pSystemHeader->prev = NULL;
+				m_pSystemHeader->prev = nullptr;
 				delete [] pSystem;
 
 				gEngfuncs.COM_FreeFile(pFile);
-				return NULL;
+				return nullptr;
 			}
 
 			glBindTexture(GL_TEXTURE_2D, pSystem->texture->iIndex);
@@ -349,14 +348,14 @@ particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, V
 		gEngfuncs.pEventAPI->EV_SetTraceHull(2);
 		gEngfuncs.pEventAPI->EV_PlayerTrace(origin, origin + Vector(0, 0, 8496), PM_WORLD_ONLY, -1, &tr);
 
-		if(tr.fraction == 1.0 || gEngfuncs.PM_PointContents(tr.endpos, NULL) != CONTENTS_SKY)
+		if(tr.fraction == 1.0 || gEngfuncs.PM_PointContents(tr.endpos, nullptr) != CONTENTS_SKY)
 		{
 			// Remove system
 			m_pSystemHeader = pSystem->next;
-			m_pSystemHeader->prev = NULL;
+			m_pSystemHeader->prev = nullptr;
 			delete [] pSystem;
 
-			return NULL;
+			return nullptr;
 		}
 
 		pSystem->skyheight = tr.endpos.z;
@@ -665,7 +664,7 @@ Update
 
 ====================
 */
-void CParticleEngine::Update( void ) 
+void CParticleEngine::Update( ) 
 {
 	if(m_pCvarParticleDebug->value)
 	{
@@ -706,7 +705,7 @@ void CParticleEngine::Update( void )
 				if(!pfree->prev)
 				{
 					psystem->particleheader = pparticle;
-					if(pparticle) pparticle->prev = NULL;
+					if(pparticle) pparticle->prev = nullptr;
 				}
 				else
 				{
@@ -733,7 +732,7 @@ UpdateSystems
 
 ====================
 */
-void CParticleEngine::UpdateSystems( void ) 
+void CParticleEngine::UpdateSystems( ) 
 {
 	float flTime = gEngfuncs.GetClientTime();
 
@@ -765,10 +764,10 @@ void CParticleEngine::UpdateSystems( void )
 
 		// Unparent these and let the engine handle them
 		if(next->createsystem)
-			next->createsystem->parentsystem = NULL;
+			next->createsystem->parentsystem = nullptr;
 
 		if(next->watersystem)
-			next->watersystem->parentsystem = NULL;
+			next->watersystem->parentsystem = nullptr;
 
 		particle_system_t *pfree = next;
 		next = pfree->next;
@@ -776,7 +775,7 @@ void CParticleEngine::UpdateSystems( void )
 		if(!pfree->prev)
 		{
 			m_pSystemHeader = next;
-			if(next) next->prev = NULL;
+			if(next) next->prev = nullptr;
 		}
 		else
 		{
@@ -897,7 +896,7 @@ Vector CParticleEngine::LightForParticle( cl_particle_t *pParticle )
 	Vector vEndPos = pParticle->origin - Vector(0, 0, 8964);
 	Vector vColor = Vector(0, 0, 0);
 
-	g_StudioRenderer.StudioRecursiveLightPoint(NULL, pWorld->nodes, pParticle->origin, vEndPos, vColor);
+	g_StudioRenderer.StudioRecursiveLightPoint(nullptr, pWorld->nodes, pParticle->origin, vEndPos, vColor);
 	cl_dlight_t *pLight = gBSPRenderer.m_pDynLights;
 
 	for(int i = 0; i < MAX_DYNLIGHTS; i++, pLight++)
@@ -912,7 +911,7 @@ Vector CParticleEngine::LightForParticle( cl_particle_t *pParticle )
 
 			Vector vAngles = pLight->angles;
 			FixVectorForSpotlight(vAngles);
-			AngleVectors(vAngles, vForward, NULL, NULL);
+			AngleVectors(vAngles, vForward, nullptr, nullptr);
 		}
 		else
 		{
@@ -1069,7 +1068,7 @@ bool CParticleEngine::UpdateParticle( cl_particle_t *pParticle )
 			
 		if(pSystem->colwater)
 		{
-			if(gEngfuncs.PM_PointContents(pParticle->origin + vFinalVelocity*m_flFrameTime, 0) == CONTENTS_WATER)
+			if(gEngfuncs.PM_PointContents(pParticle->origin + vFinalVelocity*m_flFrameTime, nullptr) == CONTENTS_WATER)
 			{
 				pmtrace.endpos = pParticle->origin + vFinalVelocity*m_flFrameTime;
 				int iEntity = gEngfuncs.PM_WaterEntity(pParticle->origin + vFinalVelocity*m_flFrameTime);
@@ -1090,7 +1089,7 @@ bool CParticleEngine::UpdateParticle( cl_particle_t *pParticle )
 		{
 			if(pSystem->collision == PARTICLE_COLLISION_STUCK)
 			{
-				if(gEngfuncs.PM_PointContents(pmtrace.endpos, NULL) == CONTENTS_SKY)
+				if(gEngfuncs.PM_PointContents(pmtrace.endpos, nullptr) == CONTENTS_SKY)
 					return false;
 
 				if(pParticle->life == -1 && pSystem->stuckdie)
@@ -1137,7 +1136,7 @@ bool CParticleEngine::UpdateParticle( cl_particle_t *pParticle )
 					for(int i = 0; i < pSystem->watersystem->startparticles; i++)
 						CreateParticle(pSystem->watersystem, pmtrace.endpos, pmtrace.plane.normal);
 				}
-				if(gEngfuncs.PM_PointContents(pmtrace.endpos, NULL) != CONTENTS_SKY && pSystem->create[0] != 0)
+				if(gEngfuncs.PM_PointContents(pmtrace.endpos, nullptr) != CONTENTS_SKY && pSystem->create[0] != 0)
 				{
 					for(int i = 0; i < pSystem->createsystem->startparticles; i++)
 						CreateParticle(pSystem->createsystem, pmtrace.endpos, pmtrace.plane.normal);
@@ -1396,7 +1395,7 @@ void CParticleEngine::RenderParticle( cl_particle_t *pParticle, float flUp, floa
 		if(pParticle->roty) vAngles[1] = pParticle->roty;
 		if(pParticle->rotation) vAngles[2] = pParticle->rotation;
 
-		AngleVectors(vAngles, NULL, m_vRRight, m_vRUp);
+		AngleVectors(vAngles, nullptr, m_vRRight, m_vRUp);
 	}
 
 	if(pParticle->pSystem->displaytype == SYSTEM_DISPLAY_PARALELL)
@@ -1515,7 +1514,7 @@ DrawParticles
 
 ====================
 */
-void CParticleEngine::DrawParticles( void ) 
+void CParticleEngine::DrawParticles( ) 
 {
 	if(m_pCvarDrawParticles->value <= 0)
 		return;
@@ -1666,16 +1665,16 @@ void CParticleEngine::RemoveSystem( int iId )
 
 		// Unlink this
 		if(psystem->createsystem)
-			psystem->createsystem->parentsystem = NULL;
+			psystem->createsystem->parentsystem = nullptr;
 
 		// Unlink this
 		if(psystem->watersystem)
-			psystem->watersystem->parentsystem = NULL;
+			psystem->watersystem->parentsystem = nullptr;
 
 		if(!psystem->prev)
 		{
 			m_pSystemHeader = psystem->next;
-			if(psystem->next) psystem->next->prev = NULL;
+			if(psystem->next) psystem->next->prev = nullptr;
 		}
 		else
 		{
