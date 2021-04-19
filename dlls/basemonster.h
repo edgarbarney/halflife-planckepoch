@@ -113,7 +113,7 @@ public:
 	int		Save( CSave &save ) override; 
 	int		Restore( CRestore &restore ) override;
 
-	STATE GetState( void ) override { return (pev->deadflag == DEAD_DEAD)?STATE_OFF:STATE_ON; }
+	STATE GetState( ) override { return (pev->deadflag == DEAD_DEAD)?STATE_OFF:STATE_ON; }
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 

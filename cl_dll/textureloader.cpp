@@ -26,7 +26,7 @@ Init
 
 ====================
 */
-void CTextureLoader::Init( void )
+void CTextureLoader::Init( )
 {
 	glCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
 }
@@ -37,7 +37,7 @@ VidInit
 
 ====================
 */
-void CTextureLoader::VidInit( void )
+void CTextureLoader::VidInit( )
 {
 	if(!m_iNumTextures)
 		return;
@@ -55,7 +55,7 @@ Shutdown
 
 ====================
 */
-void CTextureLoader::Shutdown( void )
+void CTextureLoader::Shutdown( )
 {
 	VidInit();
 }
@@ -94,16 +94,16 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 {
 	int iType = 0;
 	char szAlt[64];
-	byte *pFile = NULL;
+	byte *pFile = nullptr;
 
 	if(strlen(szFile) >= 64)
 	{
 		gEngfuncs.Con_Printf("Token too large on %s.\n", szFile);
-		return NULL;
+		return nullptr;
 	}
 
 	// Try and find a match
-	cl_texture_t *pTexture = NULL;
+	cl_texture_t *pTexture = nullptr;
 	
 	if(!iAltIndex)
 		pTexture = HasTexture(szFile);
@@ -116,7 +116,7 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 
 	// Some files need to be .tga
 	if(!strcmp(&szFile[strlen(szFile)-3], "dds"))
-		pFile = (byte *)gEngfuncs.COM_LoadFile(szFile, 5, NULL);
+		pFile = (byte *)gEngfuncs.COM_LoadFile(szFile, 5, nullptr);
 
 	if(!pFile)
 	{	
@@ -124,7 +124,7 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 		strcpy(szAlt, szFile);
 		strcpy(&szAlt[strlen(szAlt)-3], "tga");
 
-		pFile = (byte *)gEngfuncs.COM_LoadFile(szAlt, 5, NULL);
+		pFile = (byte *)gEngfuncs.COM_LoadFile(szAlt, 5, nullptr);
 		iType = 1;
 	}
 
@@ -132,7 +132,7 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 	{	
 		if(bPrompt) gEngfuncs.Con_Printf("Failed to load image: %s\n", szFile);
 		else gEngfuncs.Con_DPrintf("Failed to load image: %s\n", szFile);
-		return NULL;
+		return nullptr;
 	}
 
 	//
@@ -164,7 +164,7 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 
 			memset(pTexture, 0, sizeof(cl_texture_t));
 			m_iNumTextures--;
-			return NULL;
+			return nullptr;
 		}
 	}
 	else if(iType == 1)
@@ -176,7 +176,7 @@ cl_texture_t *CTextureLoader::LoadTexture(char *szFile, int iAltIndex, bool bPro
 
 			memset(pTexture, 0, sizeof(cl_texture_t));
 			m_iNumTextures--;
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -194,8 +194,8 @@ bool CTextureLoader::LoadTGAFile( byte *pFile, cl_texture_t *pTexture, bool bNoM
 {
 	// Set basic information
 	tga_header_t *pHeader = (tga_header_t *)pFile;
-	if(pHeader->datatypecode != 2 && pHeader->datatypecode != 10
-		|| pHeader->bitsperpixel != 24 && pHeader->bitsperpixel != 32)
+	if((pHeader->datatypecode != 2 && pHeader->datatypecode != 10)
+		|| (pHeader->bitsperpixel != 24 && pHeader->bitsperpixel != 32))
 	{
 		gEngfuncs.Con_Printf("Error! %s is using a non-supported format. Only 24 bit and 32 bit true color formats are supported.\n", pTexture->szName);
 		return false;
@@ -460,7 +460,7 @@ cl_texture_t *CTextureLoader::HasTexture( char *szFile )
 		if(!strcmp(m_pTextures[i].szName, szFile))
 			return &m_pTextures[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -469,7 +469,7 @@ LoadWADFiles
 
 ====================
 */
-void CTextureLoader::LoadWADFiles( void )
+void CTextureLoader::LoadWADFiles( )
 {
 	char szWAD[64];
 	char szFile[32];
@@ -532,7 +532,7 @@ FreeWADFiles
 
 ====================
 */
-void CTextureLoader::FreeWADFiles( void )
+void CTextureLoader::FreeWADFiles( )
 {
 	if(!m_iNumWADFiles)
 		return;
@@ -556,7 +556,7 @@ LoadWADTexture
 cl_texture_t *CTextureLoader::LoadWADTexture( char *szTexture, int iAltIndex )
 {
 	char szName[32];
-	cl_texture_t *pTexture = NULL;
+	cl_texture_t *pTexture = nullptr;
 
 	for(int i = 0; i < m_iNumWADFiles; i++)
 	{
@@ -598,7 +598,7 @@ cl_texture_t *CTextureLoader::LoadWADTexture( char *szTexture, int iAltIndex )
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -698,7 +698,7 @@ LoadTextureScript
 
 ====================
 */
-void CTextureLoader::LoadTextureScript( void )
+void CTextureLoader::LoadTextureScript( )
 {
 	int iFlags = 0;
 	char szFlag[32];

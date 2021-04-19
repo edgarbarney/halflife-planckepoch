@@ -54,7 +54,7 @@
 
 
 
-#include <Cg/cg.h>
+#include <cg/cg.h>
 
 /* Set up for either Win32 import/export/lib. */
 #ifndef CGGLDLL_API
@@ -75,7 +75,7 @@
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #else
-#include <GL/gl.h>
+#include <gl/gl.h>
 #endif
 
 #ifdef __cplusplus

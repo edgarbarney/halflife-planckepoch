@@ -35,6 +35,8 @@
 #include "cl_dll.h"
 #include "ammo.h"
 
+#include <SDL2/SDL.h>
+
 //RENDERERS START
 #include "frustum.h"
 #include "particle_engine.h"
@@ -94,6 +96,8 @@ public:
 	virtual void Think() {}
 	virtual void Reset() {}
 	virtual void InitHUDData() {}		// called every time a server is connected to
+
+
 
 };
 
@@ -423,7 +427,7 @@ public:
 	int Init() override;
 	static char *LocaliseTextString( const char *msg, char *dst_buffer, int buffer_size );
 	static char *BufferedLocaliseTextString( const char *msg );
-	const char *LookupString( const char *msg_name, int *msg_dest = NULL );
+	const char *LookupString( const char *msg_name, int *msg_dest = nullptr );
 	int MsgFunc_TextMsg(const char *pszName, int iSize, void *pbuf);
 };
 
@@ -769,6 +773,12 @@ public:
 
 	int m_iHUDColor; //LRC
 
+	//Borderless Things
+	//BOOL brd_isFullscreen;
+	SDL_Window* BRD_GetWindow();
+	void BRD_SetBorderless(SDL_Window* brd_windowArg);
+	//SDL_Window* brd_window;
+
 private:
 	// the memory for these arrays are allocated in the first call to CHud::VidInit(), when the hud.txt and associated sprites are loaded.
 	// freed in ~CHud()
@@ -818,7 +828,7 @@ public:
 	int Redraw( float flTime, int intermission );
 	int UpdateClientData( client_data_t *cdata, float time );
 	
-	CHud() : m_iSpriteCount(0), m_pHudList(NULL) {}
+	CHud() : m_iSpriteCount(0), m_pHudList(nullptr) {}
 	~CHud();			// destructor, frees allocated memory
 
 	// user messages

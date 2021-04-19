@@ -105,7 +105,7 @@ static CHLVoiceStatusHelper g_VoiceStatusHelper;
 extern client_sprite_t *GetSpriteList(client_sprite_t *pList, const char *psz, int iRes, int iCount);
 
 extern cvar_t *sensitivity;
-cvar_t *cl_lw = NULL;
+cvar_t *cl_lw = nullptr;
 cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
@@ -267,7 +267,7 @@ void __CmdFunc_ForceCloseCommandMenu()
 	}
 }
 
-void __CmdFunc_StopMP3( void )
+void __CmdFunc_StopMP3( )
 {
 	gMP3.StopMP3();
 }
@@ -547,6 +547,10 @@ void CHud :: Init()
 	CVAR_CREATE("r_glowdark", "2", FCVAR_ARCHIVE );
 	//end glow effect
 
+	//Borderless Things
+	CVAR_CREATE("r_borderless", "1", FCVAR_ARCHIVE);
+	CVAR_CREATE("r_ignoreborderless", "0", FCVAR_ARCHIVE);
+
 	viewEntityIndex = 0; // trigger_viewset stuff
 	viewFlags = 0;
 	m_iLogo = 0;
@@ -565,7 +569,7 @@ void CHud :: Init()
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
 
 	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
-	m_pSpriteList = NULL;
+	m_pSpriteList = nullptr;
 
 	// Clear any old HUD list
 	if ( m_pHudList )
@@ -577,7 +581,7 @@ void CHud :: Init()
 			m_pHudList = m_pHudList->pNext;
 			free( pList );
 		}
-		m_pHudList = NULL;
+		m_pHudList = nullptr;
 	}
 
 	// In case we get messages before the first update -- time will be valid
@@ -604,7 +608,7 @@ void CHud :: Init()
 
 	m_Menu.Init();
 
-	MsgFunc_ResetHUD(0, 0, NULL );
+	MsgFunc_ResetHUD(nullptr, 0, nullptr );
 }
 
 // CHud destructor
@@ -628,7 +632,7 @@ CHud :: ~CHud()
 			m_pHudList = m_pHudList->pNext;
 			free( pList );
 		}
-		m_pHudList = NULL;
+		m_pHudList = nullptr;
 	}
 
 	//RENDERERS START
@@ -653,6 +657,37 @@ int CHud :: GetSpriteIndex( const char *SpriteName )
 	return -1; // invalid sprite
 }
 
+void CHud::BRD_SetBorderless(SDL_Window* brd_windowArg)
+{
+	SDL_DisplayMode dm;
+	int weg, heg;
+	if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+	{
+		gEngfuncs.Con_Printf("\nCould not switch to borderless mode!! Err: %s", SDL_GetError());
+		return;
+	}
+	weg = dm.w;
+	heg = dm.h;
+	//gEngfuncs.pfnClientCmd("r_borderless 1\n");
+	//gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+	SDL_SetWindowFullscreen(brd_windowArg, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowSize(brd_windowArg, weg, heg);
+	SDL_SetWindowBordered(brd_windowArg, SDL_FALSE);
+	SDL_RaiseWindow(brd_windowArg);
+	gEngfuncs.Con_Printf("\nBorderless mode initialised.\n");
+}
+
+SDL_Window* CHud::BRD_GetWindow()
+{
+	for (Uint32 id = 0; id < UINT32_MAX; ++id)
+	{
+			auto brd_window = SDL_GetWindowFromID(id);
+			if (brd_window)
+				return brd_window;
+	}
+	return nullptr;
+}
+
 void CHud :: VidInit()
 {
 #ifdef ENGINE_DEBUG
@@ -674,6 +709,32 @@ void CHud :: VidInit()
 		m_iRes = 320;
 	else
 		m_iRes = 640;
+
+	if (CVAR_GET_FLOAT("r_ignoreborderless") == 0)
+	{
+		auto brd_window = BRD_GetWindow();
+		if (brd_window)
+		{
+			if (SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN)
+			{
+				gEngfuncs.pfnClientCmd("escape\n");
+				if (MessageBox(nullptr, "Renderer works best at borderless windowed mode.\nIf you want to enable it, go to windowed mode at your native resolution.\n\nYou can disable this message by pressing no or from the advanced tab.", "Warning", MB_YESNO) == IDNO)
+				{
+					gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+				}
+			}
+		}
+	}
+
+	if (CVAR_GET_FLOAT("r_borderless") == 1)
+	{
+		auto brd_window = BRD_GetWindow();
+		if (brd_window)
+		{
+			if (!(SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN))
+				BRD_SetBorderless(BRD_GetWindow());
+		}		
+	}
 
 	// Only load this once
 	if ( !m_pSpriteList )

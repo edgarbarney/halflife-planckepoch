@@ -37,27 +37,27 @@ CParticleEngine
 class CParticleEngine
 {
 public:
-	void Init( void );
-	void VidInit( void );
+	void Init( );
+	void VidInit( );
 
 	void CreateCluster( char *szPath, Vector origin, Vector dir, int iId );
-	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = NULL );
+	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = nullptr );
 	void RemoveSystem( int iId );
 
-	particle_system_t *AllocSystem( void );
+	particle_system_t *AllocSystem( );
 	cl_particle_t *AllocParticle( particle_system_t *pSystem );
 
-	void Update( void );
-	void DrawParticles( void );
-	void CullSystems( void );
-	void UpdateSystems( void );
+	void Update( );
+	void DrawParticles( );
+	void CullSystems( );
+	void UpdateSystems( );
 
 	Vector LightForParticle( cl_particle_t *pParticle );
 	bool CheckLightBBox( cl_particle_t *pParticle, cl_dlight_t *pLight );
 
 	void EnvironmentCreateFirst( particle_system_t *pSystem );
 
-	void CreateParticle( particle_system_t *pSystem, float *flOrigin = NULL, float *flNormal = NULL );
+	void CreateParticle( particle_system_t *pSystem, float *flOrigin = nullptr, float *flNormal = nullptr );
 	bool UpdateParticle( cl_particle_t *pParticle );
 	void RenderParticle( cl_particle_t *pParticle, float flUp, float flRight );
 

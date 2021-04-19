@@ -156,7 +156,7 @@ void CFuncWallToggle :: TurnOn()
 }
 
 
-BOOL CFuncWallToggle :: IsOn( void )
+BOOL CFuncWallToggle :: IsOn( )
 {
 	if ( pev->solid == SOLID_NOT )
 		return FALSE;
@@ -242,13 +242,13 @@ void CFuncConveyor :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 class CFuncMirror : public CFuncWall
 {
 public:
-	void	Spawn( void );
+	void	Spawn( ) override;
 };
 
 LINK_ENTITY_TO_CLASS( func_mirror, CFuncMirror );
 LINK_ENTITY_TO_CLASS( func_detail_ext, CFuncWall );
 
-void CFuncMirror :: Spawn( void )
+void CFuncMirror :: Spawn( )
 {
 	CFuncWall::Spawn();
 	pev->effects |= FL_MIRROR;

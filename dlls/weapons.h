@@ -325,7 +325,7 @@ public:
 
 	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
 
-	virtual CBasePlayerItem *GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem *GetWeaponPtr() { return nullptr; }
 
 	virtual void GetWeaponData( weapon_data_t& data ) {}
 
@@ -538,7 +538,7 @@ class CWeaponBox : public CBaseEntity
 	void Touch( CBaseEntity *pOther ) override;
 	void KeyValue( KeyValueData *pkvd ) override;
 	BOOL IsEmpty();
-	int  GiveAmmo( int iCount, const char *szName, int iMax, int *pIndex = NULL );
+	int  GiveAmmo( int iCount, const char *szName, int iMax, int *pIndex = nullptr );
 	void SetObjectCollisionBox() override;
 
 public:

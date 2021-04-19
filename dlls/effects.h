@@ -265,23 +265,23 @@ public:
 class CClientFog : public CBaseEntity
 {
 public:
-	void Spawn( void );
-	void KeyValue( KeyValueData *pkvd );
-	void SendInitMessage( CBasePlayer *player );
+	void Spawn( ) override;
+	void KeyValue( KeyValueData *pkvd ) override;
+	void SendInitMessage( CBasePlayer *player ) override;
 
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	float m_iStartDist;
 	float m_iEndDist;
 
 	BOOL  m_fActive;
 	BOOL  m_bDontAffectSky;
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 public:
-	static CClientFog *FogCreate( void );
+	static CClientFog *FogCreate( );
 };
 
 //=======================
@@ -290,14 +290,14 @@ public:
 class CItemProp : public CBaseAnimating
 {
 public:
-	void	Spawn( void );
-	void	Precache( void );
-	void	KeyValue( KeyValueData *pkvd );
+	void	Spawn( ) override;
+	void	Precache( ) override;
+	void	KeyValue( KeyValueData *pkvd ) override;
 
-	virtual int		ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int		ObjectCaps( ) override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	int		Save( CSave &save ) override;
+	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_fDisableShadows;

@@ -215,10 +215,10 @@ void COsprey::CommandUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 void COsprey :: FindAllThink()
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
 
 	m_iUnits = 0;
-	while (m_iUnits < MAX_CARRY && (pEntity = UTIL_FindEntityByClassname( pEntity, "monster_human_grunt" )) != NULL)
+	while (m_iUnits < MAX_CARRY && (pEntity = UTIL_FindEntityByClassname( pEntity, "monster_human_grunt" )) != nullptr)
 	{
 		if (pEntity->IsAlive())
 		{
@@ -278,7 +278,7 @@ BOOL COsprey :: HasDead( )
 {
 	for (int i = 0; i < m_iUnits; i++)
 	{
-		if (m_hGrunt[i] == NULL || !m_hGrunt[i]->IsAlive())
+		if (m_hGrunt[i] == nullptr || !m_hGrunt[i]->IsAlive())
 		{
 			return TRUE;
 		}
@@ -299,13 +299,13 @@ CBaseMonster *COsprey :: MakeGrunt( Vector vecSrc )
 	TraceResult tr;
 	UTIL_TraceLine( vecSrc, vecSrc + Vector( 0, 0, -4096.0), dont_ignore_monsters, ENT(pev), &tr);
 	if ( tr.pHit && Instance( tr.pHit )->pev->solid != SOLID_BSP) 
-		return NULL;
+		return nullptr;
 
 	for (int i = 0; i < m_iUnits; i++)
 	{
-		if (m_hGrunt[i] == NULL || !m_hGrunt[i]->IsAlive())
+		if (m_hGrunt[i] == nullptr || !m_hGrunt[i]->IsAlive())
 		{
-			if (m_hGrunt[i] != NULL && m_hGrunt[i]->pev->rendermode == kRenderNormal)
+			if (m_hGrunt[i] != nullptr && m_hGrunt[i]->pev->rendermode == kRenderNormal)
 			{
 				m_hGrunt[i]->SUB_StartFadeOut( );
 			}
@@ -329,7 +329,7 @@ CBaseMonster *COsprey :: MakeGrunt( Vector vecSrc )
 		}
 	}
 	// ALERT( at_console, "none dead\n");
-	return NULL;
+	return nullptr;
 }
 
 
@@ -338,7 +338,7 @@ void COsprey :: HoverThink()
 	int i;
 	for (i = 0; i < 4; i++)
 	{
-		if (m_hRepel[i] != NULL && m_hRepel[i]->pev->health > 0 && !(m_hRepel[i]->pev->flags & FL_ONGROUND))
+		if (m_hRepel[i] != nullptr && m_hRepel[i]->pev->health > 0 && !(m_hRepel[i]->pev->flags & FL_ONGROUND))
 		{
 			break;
 		}
@@ -408,7 +408,7 @@ void COsprey::FlyThink()
 
 	if ( m_pGoalEnt == NULL && !FStringNull(pev->target) )// this monster has a target
 	{
-		m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( pev->target ) );
+		m_pGoalEnt = UTIL_FindEntityByTargetname( nullptr, STRING( pev->target ) );
 		UpdateGoal( );
 	}
 
@@ -420,7 +420,7 @@ void COsprey::FlyThink()
 		}
 		int loopbreaker = 100; //LRC - <slap> don't loop indefinitely!
  		do {
-			m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( m_pGoalEnt->pev->target ) );
+			m_pGoalEnt = UTIL_FindEntityByTargetname( nullptr, STRING( m_pGoalEnt->pev->target ) );
 			loopbreaker--; //LRC
 		} while (m_pGoalEnt->pev->speed < 400 && !HasDead() && loopbreaker > 0);
 		UpdateGoal( );
@@ -478,9 +478,9 @@ void COsprey::Flight( )
 	}
 	else
 	{
-		CBaseEntity *pPlayer = NULL;
+		CBaseEntity *pPlayer = nullptr;
 
-		pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+		pPlayer = UTIL_FindEntityByClassname( nullptr, "player" );
 		// UNDONE: this needs to send different sounds to every player for multiplayer.	
 		if (pPlayer)
 		{
@@ -558,7 +558,7 @@ void COsprey::CrashTouch( CBaseEntity *pOther )
 	// only crash if we hit something solid
 	if ( pOther->pev->solid == SOLID_BSP) 
 	{
-		SetTouch( NULL );
+		SetTouch( nullptr );
 		m_startTime = gpGlobals->time;
 		SetNextThink( 0 );
 		m_velocity = pev->velocity;

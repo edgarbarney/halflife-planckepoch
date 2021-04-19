@@ -21,13 +21,13 @@ typedef struct engine_studio_api_s
 	// Retrieve indexed model from client side model precache list
 	struct model_s	*( *GetModelByIndex )			( int index );
 	// Get entity that is set for rendering
-	struct cl_entity_s * ( *GetCurrentEntity )		( void );
+	struct cl_entity_s * ( *GetCurrentEntity )		( );
 	// Get referenced player_info_t
 	struct player_info_s *( *PlayerInfo )			( int index );
 	// Get most recently received player state data from network system
 	struct entity_state_s *( *GetPlayerState )		( int index );
 	// Get viewentity
-	struct cl_entity_s * ( *GetViewEntity )			( void );
+	struct cl_entity_s * ( *GetViewEntity )			( );
 	// Get current frame count, and last two timestampes on client
 	void			( *GetTimes )					( int *framecount, double *current, double *old );
 	// Get a pointer to a cvar by name
@@ -35,36 +35,36 @@ typedef struct engine_studio_api_s
 	// Get current render origin and view vectors ( up, right and vpn )
 	void			( *GetViewInfo )				( float *origin, float *upv, float *rightv, float *vpnv );
 	// Get sprite model used for applying chrome effect
-	struct model_s	*( *GetChromeSprite )			( void );
+	struct model_s	*( *GetChromeSprite )			( );
 	// Get model counters so we can incement instrumentation
 	void			( *GetModelCounters )			( int **s, int **a );
 	// Get software scaling coefficients
 	void			( *GetAliasScale )				( float *x, float *y );
 
 	// Get bone, light, alias, and rotation matrices
-	float			****( *StudioGetBoneTransform ) ( void );
-	float			****( *StudioGetLightTransform )( void );
-	float			***( *StudioGetAliasTransform ) ( void );
-	float			***( *StudioGetRotationMatrix ) ( void );
+	float			****( *StudioGetBoneTransform ) ( );
+	float			****( *StudioGetLightTransform )( );
+	float			***( *StudioGetAliasTransform ) ( );
+	float			***( *StudioGetRotationMatrix ) ( );
 
 	// Set up body part, and get submodel pointers
 	void			( *StudioSetupModel )			( int bodypart, void **ppbodypart, void **ppsubmodel );
 	// Check if entity's bbox is in the view frustum
-	int				( *StudioCheckBBox )			( void );
+	int				( *StudioCheckBBox )			( );
 	// Apply lighting effects to model
 	void			( *StudioDynamicLight )			( struct cl_entity_s *ent, struct alight_s *plight );
 	void			( *StudioEntityLight )			( struct alight_s *plight );
 	void			( *StudioSetupLighting )		( struct alight_s *plighting );
 
 	// Draw mesh vertices
-	void			( *StudioDrawPoints )			( void );
+	void			( *StudioDrawPoints )			( );
 
 	// Draw hulls around bones
-	void			( *StudioDrawHulls )			( void );
+	void			( *StudioDrawHulls )			( );
 	// Draw bbox around studio models
-	void			( *StudioDrawAbsBBox )			( void );
+	void			( *StudioDrawAbsBBox )			( );
 	// Draws bones
-	void			( *StudioDrawBones )			( void );
+	void			( *StudioDrawBones )			( );
 	// Loads in appropriate texture for model
 	void			( *StudioSetupSkin )			( void *ptexturehdr, int index );
 	// Sets up for remapped colors
@@ -72,9 +72,9 @@ typedef struct engine_studio_api_s
 	// Set's player model and returns model pointer
 	struct model_s	*( *SetupPlayerModel )			( int index );
 	// Fires any events embedded in animation
-	void			( *StudioClientEvents )			( void );
+	void			( *StudioClientEvents )			( );
 	// Retrieve/set forced render effects flags
-	int				( *GetForceFaceFlags )			( void );
+	int				( *GetForceFaceFlags )			( );
 	void			( *SetForceFaceFlags )			( int flags );
 	// Tell engine the value of the studio model header
 	void			( *StudioSetHeader )			( void *header );
@@ -83,16 +83,16 @@ typedef struct engine_studio_api_s
 
 	// Final state setup and restore for rendering
 	void			( *SetupRenderer )				( int rendermode );
-	void			( *RestoreRenderer )			( void );
+	void			( *RestoreRenderer )			( );
 
 	// Set render origin for applying chrome effect
-	void			( *SetChromeOrigin )			( void );
+	void			( *SetChromeOrigin )			( );
 
 	// True if using D3D/OpenGL
-	int				( *IsHardware )					( void );
+	int				( *IsHardware )					( );
 	
 	// Only called by hardware interface
-	void			( *GL_StudioDrawShadow )		( void );
+	void			( *GL_StudioDrawShadow )		( );
 	void			( *GL_SetRenderMode )			( int mode );
 
 	void			( *StudioSetRenderamt )			(int iRenderamt); 	//!!!CZERO added for rendering glass on viewmodels

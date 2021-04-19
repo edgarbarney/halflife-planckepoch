@@ -490,7 +490,7 @@ void DLLEXPORT HUD_TempEntUpdate (
 		goto finish;
 	}
 
-	pprev = NULL;
+	pprev = nullptr;
 	freq = client_time * 0.01;
 	fastFreq = client_time * 5.5;
 	gravity = -frametime * cl_gravity;
@@ -835,7 +835,7 @@ cl_entity_t DLLEXPORT *HUD_GetUserEntity( int index )
 		return NULL;
 	}
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 

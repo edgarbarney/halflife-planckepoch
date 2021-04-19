@@ -120,7 +120,7 @@ extern "C"
 };
 
 
-extern CreateInterfaceFn	Sys_GetFactoryThis( void );
+extern CreateInterfaceFn	Sys_GetFactoryThis( );
 
 
 //-----------------------------------------------------------------------------

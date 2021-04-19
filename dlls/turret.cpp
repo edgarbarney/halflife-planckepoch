@@ -417,7 +417,7 @@ void CBaseTurret::TurretUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 
 	if (m_iOn)
 	{
-		m_hEnemy = NULL;
+		m_hEnemy = nullptr;
 		SetNextThink( 0.1 );
 		m_iAutoStart = FALSE;// switching off a turret disables autostart
 		//!!!! this should spin down first!!BUGBUG
@@ -494,7 +494,7 @@ void CBaseTurret::ActiveThink()
 
 	if ((!m_iOn) || (m_hEnemy == NULL))
 	{
-		m_hEnemy = NULL;
+		m_hEnemy = nullptr;
 		m_flLastSight = gpGlobals->time + m_flMaxWait;
 		SetThink(&CBaseTurret::SearchThink);
 		return;
@@ -511,7 +511,7 @@ void CBaseTurret::ActiveThink()
 		{
 			if (gpGlobals->time > m_flLastSight)
 			{	
-				m_hEnemy = NULL;
+				m_hEnemy = nullptr;
 				m_flLastSight = gpGlobals->time + m_flMaxWait;
 				SetThink(&CBaseTurret::SearchThink);
 				return;
@@ -540,7 +540,7 @@ void CBaseTurret::ActiveThink()
 			// Should we look for a new target?
 			if (gpGlobals->time > m_flLastSight)
 			{
-				m_hEnemy = NULL;
+				m_hEnemy = nullptr;
 				m_flLastSight = gpGlobals->time + m_flMaxWait;
 				SetThink(&CBaseTurret::SearchThink);
 				return;
@@ -863,22 +863,22 @@ void CBaseTurret::SearchThink()
 	Ping( );
 
 	// If we have a target and we're still healthy
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		if (!m_hEnemy->IsAlive() )
-			m_hEnemy = NULL;// Dead enemy forces a search for new one
+			m_hEnemy = nullptr;// Dead enemy forces a search for new one
 	}
 
 
 	// Acquire Target
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		Look(TURRET_RANGE);
 		m_hEnemy = BestVisibleEnemy();
 	}
 
 	// If we've found a target, spin up the barrel and start to attack
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		m_flLastSight = 0;
 		m_flSpinUpTime = 0;
@@ -923,21 +923,21 @@ void CBaseTurret::AutoSearchThink()
 
 	// If we have a target and we're still healthy
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		if (!m_hEnemy->IsAlive() )
-			m_hEnemy = NULL;// Dead enemy forces a search for new one
+			m_hEnemy = nullptr;// Dead enemy forces a search for new one
 	}
 
 	// Acquire Target
 
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		Look( TURRET_RANGE );
 		m_hEnemy = BestVisibleEnemy();
 	}
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		SetThink(&CBaseTurret::Deploy);
 		EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_alert.wav", TURRET_MACHINE_VOLUME, ATTN_NORM);
@@ -1007,7 +1007,7 @@ void CBaseTurret ::	TurretDeath()
 	if (m_fSequenceFinished && !MoveTurret( ) && pev->dmgtime + 5 < gpGlobals->time)
 	{
 		pev->framerate = 0;
-		SetThink( NULL );
+		SetThink( nullptr );
 	}
 }
 
@@ -1052,7 +1052,7 @@ int CBaseTurret::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 
 		ClearBits (pev->flags, FL_MONSTER); // why are they set in the first place???
 
-		SetUse(NULL);
+		SetUse(nullptr);
 		SetThink(&CBaseTurret::TurretDeath);
 		SUB_UseTargets( this, USE_ON, 0 ); // wake up others
 		SetNextThink( 0.1 );
@@ -1242,7 +1242,7 @@ int CSentry::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float f
 	if (!m_iOn)
 	{
 		SetThink( &CSentry::Deploy );
-		SetUse( NULL );
+		SetUse( nullptr );
 		SetNextThink( 0.1 );
 	}
 
@@ -1255,7 +1255,7 @@ int CSentry::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float f
 
 		ClearBits (pev->flags, FL_MONSTER); // why are they set in the first place???
 
-		SetUse(NULL);
+		SetUse(nullptr);
 		SetThink( &CSentry::SentryDeath);
 		SUB_UseTargets( this, USE_ON, 0 ); // wake up others
 		SetNextThink( 0.1 );
@@ -1336,7 +1336,7 @@ void CSentry ::	SentryDeath()
 	if (m_fSequenceFinished && pev->dmgtime + 5 < gpGlobals->time)
 	{
 		pev->framerate = 0;
-		SetThink( NULL );
+		SetThink( nullptr );
 	}
 }
 

@@ -5,7 +5,7 @@
 #include	"saverestore.h"
 #include	"player.h"
 
-CWorld *g_pWorld = NULL; //LRC
+CWorld *g_pWorld = nullptr; //LRC
 
 BOOL g_doingDesired = FALSE; //LRC - marks whether the Desired functions are currently
 									// being processed.
@@ -29,7 +29,7 @@ void UTIL_AddToAssistList( CBaseEntity *pEnt )
 	CBaseEntity *pListMember = g_pWorld;
 
 	// find the last entry in the list...
-	while (pListMember->m_pAssistLink != NULL)
+	while (pListMember->m_pAssistLink != nullptr)
 		pListMember = pListMember->m_pAssistLink;
 
 	if (pListMember == pEnt)
@@ -75,7 +75,7 @@ void HandlePostAssist( CBaseEntity *pEnt )
 		pEnt->m_iLFlags &= ~LF_POSTASSISTAVEL;
 	}
 	CBaseEntity *pChild;
-	for (pChild = pEnt->m_pChildMoveWith; pChild != NULL; pChild = pChild->m_pSiblingMoveWith)
+	for (pChild = pEnt->m_pChildMoveWith; pChild != nullptr; pChild = pChild->m_pSiblingMoveWith)
 		HandlePostAssist( pChild );
 }
 
@@ -124,7 +124,7 @@ int ApplyDesiredSettings( CBaseEntity *pListMember )
 void AssistChildren( CBaseEntity *pEnt, Vector vecAdjustVel, Vector vecAdjustAVel )
 {
 	CBaseEntity *pChild;
-	for(pChild = pEnt->m_pChildMoveWith; pChild != NULL; pChild = pChild->m_pSiblingMoveWith)
+	for(pChild = pEnt->m_pChildMoveWith; pChild != nullptr; pChild = pChild->m_pSiblingMoveWith)
 	{
 		if (!(pChild->m_iLFlags & LF_POSTASSISTVEL))
 		{
@@ -293,7 +293,7 @@ void CheckAssistList()
 //			ALERT(at_console, "Removing %s \"%s\" from assistList\n", STRING(pListMember->m_pAssistLink->pev->classname), STRING(pListMember->m_pAssistLink->pev->targetname));
 			CBaseEntity *pTemp = pListMember->m_pAssistLink;
 			pListMember->m_pAssistLink = pListMember->m_pAssistLink->m_pAssistLink;
-			pTemp->m_pAssistLink = NULL;
+			pTemp->m_pAssistLink = nullptr;
 		}
 		else
 		{

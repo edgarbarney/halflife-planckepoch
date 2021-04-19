@@ -167,7 +167,7 @@ BOOL CHalfLifeTeamplay :: ClientCommand( CBasePlayer *pPlayer, const char *pcmd 
 
 void CHalfLifeTeamplay :: UpdateGameMode( CBasePlayer *pPlayer )
 {
-	MESSAGE_BEGIN( MSG_ONE, gmsgGameMode, NULL, pPlayer->edict() );
+	MESSAGE_BEGIN( MSG_ONE, gmsgGameMode, nullptr, pPlayer->edict() );
 		WRITE_BYTE( 1 );  // game mode teamplay
 	MESSAGE_END();
 }
@@ -184,7 +184,7 @@ const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 	// update the current player of the team he is joining
 	if ( pPlayer->m_szTeamName[0] == '\0' || !IsValidTeam( pPlayer->m_szTeamName ) || defaultteam.value )
 	{
-		const char *pTeamName = NULL;
+		const char *pTeamName = nullptr;
 		
 		if ( defaultteam.value )
 		{
@@ -212,7 +212,7 @@ void CHalfLifeTeamplay::InitHUD( CBasePlayer *pPlayer )
 	CHalfLifeMultiplay::InitHUD( pPlayer );
 
 	// Send down the team names
-	MESSAGE_BEGIN( MSG_ONE, gmsgTeamNames, NULL, pPlayer->edict() );  
+	MESSAGE_BEGIN( MSG_ONE, gmsgTeamNames, nullptr, pPlayer->edict() );  
 		WRITE_BYTE( num_teams );
 		for ( i = 0; i < num_teams; i++ )
 		{
@@ -245,7 +245,7 @@ void CHalfLifeTeamplay::InitHUD( CBasePlayer *pPlayer )
 		CBaseEntity *plr = UTIL_PlayerByIndex( i );
 		if ( plr && IsValidTeam( plr->TeamID() ) )
 		{
-			MESSAGE_BEGIN( MSG_ONE, gmsgTeamInfo, NULL, pPlayer->edict() );
+			MESSAGE_BEGIN( MSG_ONE, gmsgTeamInfo, nullptr, pPlayer->edict() );
 				WRITE_BYTE( plr->entindex() );
 				WRITE_STRING( plr->TeamID() );
 			MESSAGE_END();
@@ -484,7 +484,7 @@ int CHalfLifeTeamplay::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKil
 //=========================================================
 const char *CHalfLifeTeamplay::GetTeamID( CBaseEntity *pEntity )
 {
-	if ( pEntity == NULL || pEntity->pev == NULL )
+	if ( pEntity == nullptr || pEntity->pev == nullptr )
 		return "";
 
 	// return their team name
@@ -530,7 +530,7 @@ const char *CHalfLifeTeamplay::TeamWithFewestPlayers()
 	int i;
 	int minPlayers = MAX_TEAMS;
 	int teamCount[ MAX_TEAMS ];
-	char *pTeamName = NULL;
+	char *pTeamName = nullptr;
 
 	memset( teamCount, 0, MAX_TEAMS * sizeof(int) );
 	
@@ -576,14 +576,14 @@ void CHalfLifeTeamplay::RecountTeams( bool bResendInfo )
 	strcpy( teamlist, m_szTeamList );
 	pName = teamlist;
 	pName = strtok( pName, ";" );
-	while ( pName != NULL && *pName )
+	while ( pName != nullptr && *pName )
 	{
 		if ( GetTeamIndex( pName ) < 0 )
 		{
 			strcpy( team_names[num_teams], pName );
 			num_teams++;
 		}
-		pName = strtok( NULL, ";" );
+		pName = strtok( nullptr, ";" );
 	}
 
 	if ( num_teams < 2 )
@@ -627,7 +627,7 @@ void CHalfLifeTeamplay::RecountTeams( bool bResendInfo )
 			{
 				if ( plr && IsValidTeam( plr->TeamID() ) )
 				{
-					MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo, NULL );
+					MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo, nullptr );
 						WRITE_BYTE( plr->entindex() );
 						WRITE_STRING( plr->TeamID() );
 					MESSAGE_END();

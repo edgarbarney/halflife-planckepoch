@@ -63,9 +63,9 @@ cvar_t	cvar_user8={"user8","0", FCVAR_SERVER };
 cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
 // Engine Cvars
-cvar_t 	*g_psv_gravity = NULL;
-cvar_t	*g_psv_aim = NULL;
-cvar_t	*g_footsteps = NULL;
+cvar_t 	*g_psv_gravity = nullptr;
+cvar_t	*g_psv_aim = nullptr;
+cvar_t	*g_footsteps = nullptr;
 cvar_t* g_psv_cheats = nullptr;
 
 //Macros to make skill cvars easier to define

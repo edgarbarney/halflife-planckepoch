@@ -32,7 +32,7 @@ int	g_runfuncs = 0;
 // During our weapon prediction processing, we'll need to reference some data that is part of
 //  the final state passed into the postthink functionality.  We'll set this pointer and then
 //  reset it to NULL as appropriate
-struct local_state_s *g_finalstate = NULL;
+struct local_state_s *g_finalstate = nullptr;
 
 /*
 ====================

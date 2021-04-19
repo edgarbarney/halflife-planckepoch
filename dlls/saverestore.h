@@ -97,7 +97,7 @@ public:
 	short	ReadShort();
 	int		ReadNamedInt( const char *pName );
 	char	*ReadNamedString( const char *pName );
-	int		Empty() { return (m_pdata == NULL) || ((m_pdata->pCurrentData-m_pdata->pBaseData)>=m_pdata->bufferSize); }
+	int		Empty() { return (m_pdata == nullptr) || ((m_pdata->pCurrentData-m_pdata->pBaseData)>=m_pdata->bufferSize); }
 	inline	void SetGlobalMode( int global ) { m_global = global; }
 	void	PrecacheMode( BOOL mode ) { m_precache = mode; }
 
@@ -159,7 +159,7 @@ public:
 	void			EntityUpdate( string_t globalname, string_t mapname );
 	const globalentity_t	*EntityFromTable( string_t globalname );
 	GLOBALESTATE	EntityGetState( string_t globalname );
-	int				EntityInTable( string_t globalname ) { return (Find( globalname ) != NULL) ? 1 : 0; }
+	int				EntityInTable( string_t globalname ) { return (Find( globalname ) != nullptr) ? 1 : 0; }
 	int				Save( CSave &save );
 	int				Restore( CRestore &restore );
 	static TYPEDESCRIPTION m_SaveData[];

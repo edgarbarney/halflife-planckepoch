@@ -67,7 +67,7 @@ public:
 // Panel overrides.
 public:
 
-	virtual void	internalMousePressed(MouseCode code);	
+	void	internalMousePressed(MouseCode code) override;	
 
 
 protected:
@@ -77,7 +77,7 @@ protected:
 
 // InputSignal overrides.
 protected:
-	virtual void mousePressed(MouseCode code,Panel* panel);
+	void mousePressed(MouseCode code,Panel* panel) override;
 
 
 public:

@@ -196,7 +196,7 @@ void CApache::StartupUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	SetThink( &CApache::HuntThink );
 	SetTouch( &CApache::FlyTouch );
 	SetNextThink( 0.1 );
-	SetUse( NULL );
+	SetUse( nullptr );
 }
 
 void CApache :: Killed( entvars_t *pevAttacker, int iGib )
@@ -435,7 +435,7 @@ void CApache::CrashTouch( CBaseEntity *pOther )
 	// only crash if we hit something solid
 	if ( pOther->pev->solid == SOLID_BSP) 
 	{
-		SetTouch( NULL );
+		SetTouch( nullptr );
 		m_flNextRocket = gpGlobals->time;
 		SetNextThink( 0 );
 	}
@@ -458,9 +458,9 @@ void CApache :: HuntThink()
 
 	ShowDamage( );
 
-	if ( m_pGoalEnt == NULL && !FStringNull(pev->target) )// this monster has a target
+	if ( m_pGoalEnt == nullptr && !FStringNull(pev->target) )// this monster has a target
 	{
-		m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( pev->target ) );
+		m_pGoalEnt = UTIL_FindEntityByTargetname( nullptr, STRING( pev->target ) );
 		if (m_pGoalEnt)
 		{
 			m_posDesired = m_pGoalEnt->pev->origin;
@@ -479,7 +479,7 @@ void CApache :: HuntThink()
 	if (m_flGoalSpeed < 800)
 		m_flGoalSpeed += 5;
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		// ALERT( at_console, "%s\n", STRING( m_hEnemy->pev->classname ) );
 		if (FVisible( m_hEnemy ))
@@ -491,7 +491,7 @@ void CApache :: HuntThink()
 		}
 		else
 		{
-			m_hEnemy = NULL;
+			m_hEnemy = nullptr;
 		}
 	}
 
@@ -505,7 +505,7 @@ void CApache :: HuntThink()
 
 		if (flLength < 128)
 		{
-			m_pGoalEnt = UTIL_FindEntityByTargetname( NULL, STRING( m_pGoalEnt->pev->target ) );
+			m_pGoalEnt = UTIL_FindEntityByTargetname( nullptr, STRING( m_pGoalEnt->pev->target ) );
 			if (m_pGoalEnt)
 			{
 				m_posDesired = m_pGoalEnt->pev->origin;
@@ -573,7 +573,7 @@ void CApache :: HuntThink()
 	{
 		if (m_flLastSeen + 60 > gpGlobals->time)
 		{
-			if (m_hEnemy != NULL)
+			if (m_hEnemy != nullptr)
 			{
 				// make sure it's a good shot
 				if (DotProduct( m_vecTarget, vecEst) > .965)
@@ -723,9 +723,9 @@ void CApache :: Flight()
 	}
 	else
 	{
-		CBaseEntity *pPlayer = NULL;
+		CBaseEntity *pPlayer = nullptr;
 
-		pPlayer = UTIL_FindEntityByClassname( NULL, "player" );
+		pPlayer = UTIL_FindEntityByClassname( nullptr, "player" );
 		// UNDONE: this needs to send different sounds to every player for multiplayer.	
 		if (pPlayer)
 		{
@@ -870,7 +870,7 @@ BOOL CApache :: FireGun( )
 		if (m_pBeam)
 		{
 			UTIL_Remove( m_pBeam );
-			m_pBeam = NULL;
+			m_pBeam = nullptr;
 		}
 	}
 	return FALSE;

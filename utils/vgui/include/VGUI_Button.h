@@ -41,10 +41,10 @@ public:
 	virtual void setMouseClickEnabled(MouseCode code,bool state);
 	virtual bool isMouseClickEnabled(MouseCode code);
 	virtual void fireActionSignal();
-	virtual Panel* createPropertyPanel();
+	Panel* createPropertyPanel() override;
 protected:
 	virtual void setButtonController(ButtonController* _buttonController);
-	virtual void paintBackground();
+	void paintBackground() override;
 protected:
 	char*              _text;
 	bool               _armed;

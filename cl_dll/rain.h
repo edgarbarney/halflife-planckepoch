@@ -69,9 +69,9 @@ typedef struct cl_rainfx
 	cl_rainfx*		p_Prev;		// previous fx in chain
 } cl_rainfx_t;
 
-void ProcessRain( void );
-void ProcessFXObjects( void );
-void ResetRain( void );
-void InitRain( void );
+void ProcessRain( );
+void ProcessFXObjects( );
+void ResetRain( );
+void InitRain( );
 
 #endif

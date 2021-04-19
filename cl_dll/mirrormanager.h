@@ -38,21 +38,21 @@ CMirrorManager
 class CMirrorManager
 {
 public:
-	void Init( void );
-	void VidInit( void );
+	void Init( );
+	void VidInit( );
 
-	void DrawMirrors( void );
+	void DrawMirrors( );
 	void DrawMirrorPasses( ref_params_t *pparams );
 
-	void SetupMirrorPass( void );
-	void FinishMirrorPass( void );
-	void DrawMirrorPass( void );
+	void SetupMirrorPass( );
+	void FinishMirrorPass( );
+	void DrawMirrorPass( );
 
-	void GetEntityList ( void );
+	void GetEntityList ( );
 	void AddTempEntity( cl_entity_t *pEntity );
 
 	void AllocNewMirror( cl_entity_t *entity );
-	void SetupClipping( void );
+	void SetupClipping( );
 
 public:
 	cvar_t *m_pCvarDrawMirrors;

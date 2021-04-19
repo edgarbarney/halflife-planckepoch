@@ -30,12 +30,12 @@ public:
 	virtual void setText(const char* text);
 	virtual void setFont(vgui::Scheme::SchemeFont schemeFont);
 	virtual void setFont(vgui::Font* font);
-	virtual void setSize(int wide,int tall);
-	virtual void setFgColor(int r,int g,int b,int a);
-	virtual void setFgColor(Scheme::SchemeColor sc);
+	void setSize(int wide,int tall) override;
+	void setFgColor(int r,int g,int b,int a) override;
+	void setFgColor(Scheme::SchemeColor sc) override;
 	virtual TextImage* getTextImage();
 protected:
-	virtual void paint();
+	void paint() override;
 };
 
 }

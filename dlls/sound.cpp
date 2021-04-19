@@ -257,7 +257,7 @@ void CAmbientGeneric :: Precache()
 
 	if (pev->target)
 	{
-		CBaseEntity *pTarget = UTIL_FindEntityByTargetname( NULL, STRING(pev->target));
+		CBaseEntity *pTarget = UTIL_FindEntityByTargetname( nullptr, STRING(pev->target));
 		if (!pTarget)
 		{
 			ALERT(at_debug, "WARNING: ambient_generic \"%s\" can't find \"%s\", its entity to play from.\n",
@@ -728,7 +728,7 @@ void CAmbientGeneric :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCalle
 
 		// AJH / MJB - [LN] volume field:
 		if (!FStringNull(pev->noise))
-			m_dpv.vol = CalcLocus_Number(this, STRING(pev->noise), 0);
+			m_dpv.vol = CalcLocus_Number(this, STRING(pev->noise), nullptr);
 				
 		if (m_pPlayFrom)
 		{
@@ -1035,7 +1035,7 @@ void CEnvSound :: Think()
 	// cycle through visible clients on consecutive calls.
 
 	edict_t *pentPlayer = FIND_CLIENT_IN_PVS(edict());
-	CBasePlayer *pPlayer = NULL;
+	CBasePlayer *pPlayer = nullptr;
 
 	if (FNullEnt(pentPlayer))
 		goto env_sound_Think_slow; // no player in pvs of sound entity, slow it down
@@ -1095,7 +1095,7 @@ void CEnvSound :: Think()
 
 			//CLIENT_COMMAND(pentPlayer, "room_type %f", m_flRoomtype);
 			
-			MESSAGE_BEGIN( MSG_ONE, SVC_ROOMTYPE, NULL, pentPlayer );		// use the magic #1 for "one client"
+			MESSAGE_BEGIN( MSG_ONE, SVC_ROOMTYPE, nullptr, pentPlayer );		// use the magic #1 for "one client"
 				WRITE_SHORT( (short)m_flRoomtype );					// sequence number
 			MESSAGE_END();
 
@@ -1187,7 +1187,7 @@ void CTriggerSound :: Touch( CBaseEntity *pOther )
 			pPlayer->m_flSndRoomtype = m_flRoomtype;
 			pPlayer->m_flSndRange = 0;
 
-			MESSAGE_BEGIN( MSG_ONE, SVC_ROOMTYPE, NULL, pPlayer->edict() );		// use the magic #1 for "one client"
+			MESSAGE_BEGIN( MSG_ONE, SVC_ROOMTYPE, nullptr, pPlayer->edict() );		// use the magic #1 for "one client"
 				WRITE_SHORT( (short)m_flRoomtype );					// sequence number
 			MESSAGE_END();
 
@@ -1504,7 +1504,7 @@ void SENTENCEG_Init()
 		return;
 
 	// for each line in the file...
-	while ( memfgets(pMemFile, fileSize, filePos, buffer, 511) != NULL )
+	while ( memfgets(pMemFile, fileSize, filePos, buffer, 511) != nullptr )
 	{
 		// skip whitespace
 		i = 0;
@@ -1706,10 +1706,10 @@ static char *memfgets( byte *pMemFile, int fileSize, int &filePos, char *pBuffer
 {
 	// Bullet-proofing
 	if ( !pMemFile || !pBuffer )
-		return NULL;
+		return nullptr;
 
 	if ( filePos >= fileSize )
-		return NULL;
+		return nullptr;
 
 	int i = filePos;
 	int last = fileSize;
@@ -1747,7 +1747,7 @@ static char *memfgets( byte *pMemFile, int fileSize, int &filePos, char *pBuffer
 	}
 
 	// No data read, bail
-	return NULL;
+	return nullptr;
 }
 
 
@@ -1772,7 +1772,7 @@ void TEXTURETYPE_Init()
 		return;
 
 	// for each line in the file...
-	while (memfgets(pMemFile, fileSize, filePos, buffer, 511) != NULL && (gcTextures < CTEXTURESMAX))
+	while (memfgets(pMemFile, fileSize, filePos, buffer, 511) != nullptr && (gcTextures < CTEXTURESMAX))
 	{
 		// skip whitespace
 		i = 0;
