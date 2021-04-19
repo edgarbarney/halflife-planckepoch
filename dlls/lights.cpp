@@ -101,7 +101,6 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
-	// TODO - Modernize
 	void	KeyValue(KeyValueData* pkvd) override;
 	void	SendInitMessage(CBasePlayer* player) override;
 	void EXPORT	LightStyleThink();
