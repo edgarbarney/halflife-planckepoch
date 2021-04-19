@@ -452,7 +452,7 @@ void CSAS::JustSpoke()
 //=========================================================
 void CSAS::PrescheduleThink()
 {
-	if (InSquad() && m_hEnemy != NULL)
+	if (InSquad() && m_hEnemy != nullptr)
 	{
 		if (HasConditions(bits_COND_SEE_ENEMY))
 		{
@@ -502,7 +502,7 @@ BOOL CSAS::CheckMeleeAttack1(float flDot, float flDist)
 {
 	CBaseMonster* pEnemy;
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		pEnemy = m_hEnemy->MyMonsterPointer();
 
@@ -755,7 +755,7 @@ int CSAS::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDa
 
 		// This is a heurstic to determine if the player intended to harm me
 		// If I have an enemy, we can't establish intent (may just be crossfire)
-		if (m_hEnemy == NULL)
+		if (m_hEnemy == nullptr)
 		{
 			// Hey, be careful with that
 			Remember(bits_MEMORY_SUSPICIOUS);
@@ -832,9 +832,9 @@ void CSAS::SetYawSpeed()
 
 int CSAS::GetCount() 
 {
-	CBaseEntity* pMate = NULL;
+	CBaseEntity* pMate = nullptr;
 	int totCount = 0;
-	while ((pMate = UTIL_FindEntityByClassname(pMate, "monster_sas")) != NULL)
+	while ((pMate = UTIL_FindEntityByClassname(pMate, "monster_sas")) != nullptr)
 	{
 		ALERT(at_console, "Found one. Count is now %d\n", totCount);
 		totCount += pMate->IsAlive();
@@ -942,7 +942,7 @@ CBaseEntity* CSAS::Kick()
 		return pEntity;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //=========================================================
@@ -966,7 +966,7 @@ Vector CSAS::GetGunPosition()
 //=========================================================
 void CSAS::Shoot()
 {
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		return;
 	}
@@ -993,7 +993,7 @@ void CSAS::Shoot()
 //=========================================================
 void CSAS::Shotgun()
 {
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		return;
 	}
@@ -1017,7 +1017,7 @@ void CSAS::Shotgun()
 
 void CSAS::ShootAR16()
 {
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		return;
 	}
@@ -2490,7 +2490,7 @@ Schedule_t* CSAS::GetSchedule()
 		CSound* pSound;
 		pSound = PBestSound();
 
-		ASSERT(pSound != NULL);
+		ASSERT(pSound != nullptr);
 		if (pSound)
 		{
 			if (pSound->m_iType & bits_SOUND_DANGER)
@@ -2570,10 +2570,10 @@ Schedule_t* CSAS::GetSchedule()
 					// before he starts pluggin away.
 					if (FOkToSpeak())// && RANDOM_LONG(0,1))
 					{
-						if ((m_hEnemy != NULL) && m_hEnemy->IsPlayer())
+						if ((m_hEnemy != nullptr) && m_hEnemy->IsPlayer())
 							// player
 							SENTENCEG_PlayRndSz(ENT(pev), "SAS_ALERT", HSAS_SENTENCE_VOLUME, SAS_ATTN, 0, m_voicePitch);
-						else if ((m_hEnemy != NULL) &&
+						else if ((m_hEnemy != nullptr) &&
 							(m_hEnemy->Classify() != CLASS_PLAYER_ALLY) &&
 							(m_hEnemy->Classify() != CLASS_HUMAN_PASSIVE) &&
 							(m_hEnemy->Classify() != CLASS_MACHINE))
@@ -2617,7 +2617,7 @@ Schedule_t* CSAS::GetSchedule()
 			// 10% chance of flinch.
 			int iPercent = RANDOM_LONG(0, 99);
 
-			if (iPercent <= 90 && m_hEnemy != NULL)
+			if (iPercent <= 90 && m_hEnemy != nullptr)
 			{
 				// only try to take cover if we actually have an enemy!
 
@@ -2770,7 +2770,7 @@ Schedule_t* CSAS::GetSchedule()
 			}
 		}
 
-		if (m_hEnemy == NULL && IsFollowing())
+		if (m_hEnemy == nullptr && IsFollowing())
 		{
 			if (!m_hTargetEnt->IsAlive())
 			{
@@ -2947,7 +2947,7 @@ Schedule_t* CSAS::GetScheduleOfType(int Type)
 	}
 	case SCHED_FAIL:
 	{
-		if (m_hEnemy != NULL)
+		if (m_hEnemy != nullptr)
 		{
 			// grunt has an enemy, so pick a different default fail schedule most likely to help recover.
 			return &slGruntAllyCombatFail[0];
@@ -3028,8 +3028,8 @@ void CSAS::TalkInit()
 	m_szGrp[TLK_PLHURT2] = "!SAS_CUREB";
 	m_szGrp[TLK_PLHURT3] = "!SAS_CUREC";
 
-	m_szGrp[TLK_PHELLO] = NULL;	//"BA_PHELLO";		// UNDONE
-	m_szGrp[TLK_PIDLE] = NULL;	//"BA_PIDLE";			// UNDONE
+	m_szGrp[TLK_PHELLO] = nullptr;	//"BA_PHELLO";		// UNDONE
+	m_szGrp[TLK_PIDLE] = nullptr;	//"BA_PIDLE";			// UNDONE
 	m_szGrp[TLK_PQUESTION] = "SAS_PQUEST";		// UNDONE
 
 	m_szGrp[TLK_SMELL] = "SAS_SMELL";

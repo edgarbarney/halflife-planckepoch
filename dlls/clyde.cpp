@@ -365,7 +365,7 @@ void CClyde :: RunTask( Task_t *pTask )
 	switch ( pTask->iTask )
 	{
 	case TASK_RANGE_ATTACK1:
-		if (m_hEnemy != NULL && (m_hEnemy->IsPlayer()))
+		if (m_hEnemy != nullptr && (m_hEnemy->IsPlayer()))
 		{
 			pev->framerate = 8;
 		}
@@ -409,7 +409,7 @@ int	CClyde :: Classify ( )
 //=========================================================
 void CClyde :: AlertSound( )
 {
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 		if ( FOkToSpeak() )
 		{
@@ -475,7 +475,7 @@ BOOL CClyde :: CheckRangeAttack1 ( float flDot, float flDist )
 			UTIL_TraceLine( shootOrigin, shootTarget, dont_ignore_monsters, ENT(pev), &tr );
 			//m_checkAttackTime = gpGlobals->time + m_fireRate;
 			m_checkAttackTime = gpGlobals->time + 1;
-			if ( tr.flFraction == 1.0 || (tr.pHit != NULL && CBaseEntity::Instance(tr.pHit) == pEnemy) )
+			if ( tr.flFraction == 1.0 || (tr.pHit != nullptr && CBaseEntity::Instance(tr.pHit) == pEnemy) )
 				m_lastAttackCheck = TRUE;
 			else
 				m_lastAttackCheck = FALSE;
@@ -495,7 +495,7 @@ BOOL CClyde :: CheckRangeAttack1 ( float flDot, float flDist )
 
 void CClyde::ClydeFireAR16()
 {
-	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	if (m_hEnemy == nullptr && m_pCine == nullptr) //LRC - scripts may fire when you have no enemy
 	{
 		return;
 	}
@@ -551,7 +551,7 @@ void CClyde::ClydeFireAR16()
 
 void CClyde::ClydeFireMP5()
 {
-	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	if (m_hEnemy == nullptr && m_pCine == nullptr) //LRC - scripts may fire when you have no enemy
 	{
 		return;
 	}
@@ -606,7 +606,7 @@ void CClyde::ClydeFireMP5()
 //=========================================================
 void CClyde :: ClydeFirePistol ( )
 {
-	if (m_hEnemy == NULL && m_pCine == NULL) //LRC - scripts may fire when you have no enemy
+	if (m_hEnemy == nullptr && m_pCine == nullptr) //LRC - scripts may fire when you have no enemy
 	{
 		return;
 	}
@@ -915,8 +915,8 @@ void CClyde :: TalkInit()
 		m_szGrp[TLK_PLHURT2] =	"!CY_CUREB"; 
 		m_szGrp[TLK_PLHURT3] =	"!CY_CUREC";
 
-		m_szGrp[TLK_PHELLO] =	NULL;	//"CY_PHELLO";		// UNDONE
-		m_szGrp[TLK_PIDLE] =	NULL;	//"CY_PIDLE";			// UNDONE
+		m_szGrp[TLK_PHELLO] =	nullptr;	//"CY_PHELLO";		// UNDONE
+		m_szGrp[TLK_PIDLE] =	nullptr;	//"CY_PIDLE";			// UNDONE
 		m_szGrp[TLK_PQUESTION] = "CY_PQUEST";		// UNDONE
 
 		m_szGrp[TLK_SMELL] =	"CY_SMELL";
@@ -946,7 +946,7 @@ int CClyde :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float
 
 		// This is a heurstic to determine if the player intended to harm me
 		// If I have an enemy, we can't establish intent (may just be crossfire)
-		if ( m_hEnemy == NULL )
+		if ( m_hEnemy == nullptr )
 		{
 			// If the player was facing directly at me, or I'm already suspicious, get mad
 			//if ( ((m_afMemory & bits_MEMORY_SUSPICIOUS) && IsFacing( pevAttacker, pev->origin)) || ((m_afMemory & bits_MEMORY_SUSPICIOUS) && m_flPlayerDamage >= 40) )
@@ -1122,7 +1122,7 @@ void CClyde::Killed( entvars_t *pevAttacker, int iGib )
 		}
 	}
 
-	SetUse( NULL );	
+	SetUse( nullptr );	
 	CTalkMonster::Killed( pevAttacker, iGib );
 }
 
@@ -1214,7 +1214,7 @@ Schedule_t* CClyde :: GetScheduleOfType ( int Type )
 	switch( Type )
 	{
 	case SCHED_ARM_WEAPON:
-		if ( m_hEnemy != NULL )
+		if ( m_hEnemy != nullptr )
 		{
 			// face enemy, then draw.
 			return slClydeEnemyDraw;
@@ -1288,7 +1288,7 @@ Schedule_t *CClyde :: GetSchedule ( )
 		CSound *pSound;
 		pSound = PBestSound();
 
-		ASSERT( pSound != NULL );
+		ASSERT( pSound != nullptr );
 		if ( pSound && (pSound->m_iType & bits_SOUND_DANGER) )
 			return GetScheduleOfType( SCHED_TAKE_COVER_FROM_BEST_SOUND );
 	}
@@ -1340,7 +1340,7 @@ Schedule_t *CClyde :: GetSchedule ( )
 			return GetScheduleOfType( SCHED_SMALL_FLINCH );
 		}
 
-		if ( m_hEnemy == NULL && IsFollowing() )
+		if ( m_hEnemy == nullptr && IsFollowing() )
 		{
 			if ( !m_hTargetEnt->IsAlive() )
 			{

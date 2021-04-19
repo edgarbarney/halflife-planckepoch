@@ -75,7 +75,7 @@ typedef union DLONG {
 extern DLONG	dlong;
 
 #ifdef _WIN32
-void __inline set_fpu_cw(void)
+void __inline set_fpu_cw()
 {
 _asm	
 	{		wait
@@ -98,7 +98,7 @@ int __inline quick_ftol(float f)
 	return dlong.i[0];
 }
 
-void __inline restore_fpu_cw(void)
+void __inline restore_fpu_cw()
 {
 	_asm	fldcw	old_cw
 }

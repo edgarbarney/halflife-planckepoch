@@ -110,13 +110,13 @@ void CBaseEntity::UpdateOnRemove()
 	}
 
 	//LRC - remove this from the AssistList.
-	for (pTemp = g_pWorld; pTemp->m_pAssistLink != NULL; pTemp = pTemp->m_pAssistLink)
+	for (pTemp = g_pWorld; pTemp->m_pAssistLink != nullptr; pTemp = pTemp->m_pAssistLink)
 	{
 		if (this == pTemp->m_pAssistLink)
 		{
 //			ALERT(at_console,"REMOVE: %s removed from the Assist List.\n", STRING(pev->classname));
 			pTemp->m_pAssistLink = this->m_pAssistLink;
-			this->m_pAssistLink = NULL;
+			this->m_pAssistLink = nullptr;
 			break;
 		}
 	}
@@ -151,14 +151,14 @@ void CBaseEntity::UpdateOnRemove()
 	{
 		CBaseEntity* pCur = m_pChildMoveWith;
 		CBaseEntity* pNext;
-		while (pCur != NULL)
+		while (pCur != nullptr)
 		{
 			pNext = pCur->m_pSiblingMoveWith;
 			// bring children to a stop
 			UTIL_SetMoveWithVelocity(pCur, g_vecZero, 100);
 			UTIL_SetMoveWithAvelocity(pCur, g_vecZero, 100);
-			pCur->m_pMoveWith = NULL;
-			pCur->m_pSiblingMoveWith = NULL;
+			pCur->m_pMoveWith = nullptr;
+			pCur->m_pSiblingMoveWith = nullptr;
 			pCur = pNext;
 		}
 	}
@@ -172,7 +172,7 @@ void CBaseEntity::UpdateOnRemove()
 			if ( WorldGraph.m_pLinkPool [ i ].m_pLinkEnt == pev )
 			{
 				// if this link has a link ent which is the same ent that is removing itself, remove it!
-				WorldGraph.m_pLinkPool [ i ].m_pLinkEnt = NULL;
+				WorldGraph.m_pLinkPool [ i ].m_pLinkEnt = nullptr;
 			}
 		}
 	}
@@ -273,7 +273,7 @@ void FireTargets( const char *targetName, CBaseEntity *pActivator, CBaseEntity *
 {
 	const char *inputTargetName = targetName;
 	CBaseEntity *inputActivator = pActivator;
-	CBaseEntity *pTarget = NULL;
+	CBaseEntity *pTarget = nullptr;
 	int i,j, found = false;
 	char szBuf[80];
 
@@ -348,7 +348,7 @@ void FireTargets( const char *targetName, CBaseEntity *pActivator, CBaseEntity *
 		strncpy(szBuf, targetName, i-1);
 		szBuf[i-1] = 0;
 		targetName = szBuf;
-		pTarget = UTIL_FindEntityByTargetname(NULL, targetName, inputActivator);
+		pTarget = UTIL_FindEntityByTargetname(nullptr, targetName, inputActivator);
 
 		if (!pTarget) return; // it's a locus specifier all right, but the target's invalid.
 	}
@@ -392,7 +392,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 	if (m_flDelay != 0)
 	{
 		// create a temp object to fire at a later time
-		CBaseDelay *pTemp = GetClassPtr( (CBaseDelay *)NULL);
+		CBaseDelay *pTemp = GetClassPtr( (CBaseDelay *)nullptr);
 		pTemp->pev->classname = MAKE_STRING("DelayedUse");
 
 		pTemp->SetNextThink( m_flDelay );
@@ -419,7 +419,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 
 	if ( m_iszKillTarget )
 	{
-		edict_t *pentKillTarget = NULL;
+		edict_t *pentKillTarget = nullptr;
 
 		ALERT( at_aiconsole, "KillTarget: %s\n", STRING(m_iszKillTarget) );
 		//LRC- now just USE_KILLs its killtarget, for consistency.
@@ -474,7 +474,7 @@ Vector GetMovedir( Vector vecAngles )
 
 void CBaseDelay::DelayThink()
 {
-	CBaseEntity *pActivator = NULL;
+	CBaseEntity *pActivator = nullptr;
 
 	// The use type is cached (and stashed) in pev->button
 	//LRC - now using m_hActivator.
@@ -1019,8 +1019,8 @@ void CInfoMoveWith :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 				return;
 			}
 		}
-		m_pMoveWith = NULL;
-		m_pSiblingMoveWith = NULL;
+		m_pMoveWith = nullptr;
+		m_pSiblingMoveWith = nullptr;
 	}
 
 	if (pev->spawnflags & SF_IMW_INACTIVE)
@@ -1041,7 +1041,7 @@ void CInfoMoveWith :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 		return;
 	}
 
-	m_pMoveWith = UTIL_FindEntityByTargetname(NULL, STRING(m_MoveWith));
+	m_pMoveWith = UTIL_FindEntityByTargetname(nullptr, STRING(m_MoveWith));
 	if (!m_pMoveWith)
 	{
 		ALERT(at_debug,"Missing movewith entity %s\n", STRING(m_MoveWith));

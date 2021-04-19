@@ -40,7 +40,7 @@ public:
 	void VidInit( );
 
 	void CreateCluster( char *szPath, Vector origin, Vector dir, int iId );
-	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = NULL );
+	particle_system_t *CreateSystem( char *szPath, Vector origin, Vector dir, int iId, particle_system_t *parent = nullptr );
 	void RemoveSystem( int iId );
 
 	particle_system_t *AllocSystem( );
@@ -56,7 +56,7 @@ public:
 
 	void EnvironmentCreateFirst( particle_system_t *pSystem );
 
-	void CreateParticle( particle_system_t *pSystem, float *flOrigin = NULL, float *flNormal = NULL );
+	void CreateParticle( particle_system_t *pSystem, float *flOrigin = nullptr, float *flNormal = nullptr );
 	bool UpdateParticle( cl_particle_t *pParticle );
 	void RenderParticle( cl_particle_t *pParticle, float flUp, float flRight );
 

@@ -330,7 +330,7 @@ void CFuncTank :: Spawn()
 
 	if (m_iszLocusFire) //LRC - locus trigger
 	{
-		m_pFireProxy = GetClassPtr( (CPointEntity*)NULL );
+		m_pFireProxy = GetClassPtr( (CPointEntity*)nullptr );
 	}
 }
 
@@ -506,7 +506,7 @@ BOOL CFuncTank :: StartControl( CBasePlayer* pController, CFuncTankControls *pCo
 {
 //	ALERT(at_console, "StartControl\n");
 	// we're already being controlled or playing a sequence
-	if ( m_pControls != NULL || m_pSequence != NULL )
+	if ( m_pControls != nullptr || m_pSequence != nullptr )
 {
 //		ALERT(at_debug,"StartControl failed, already in use\n");
 		return FALSE;
@@ -555,7 +555,7 @@ void CFuncTank :: StopControl( CFuncTankControls* pControls)
 
 	DontThink();
 	UTIL_SetAvelocity(this, g_vecZero);
-	m_pControls = NULL;
+	m_pControls = nullptr;
 
 	if ( IsActive() )
 	{
@@ -574,7 +574,7 @@ void CFuncTank::UpdateSpot()
 		}
 
 		Vector vecAiming;
-		UTIL_MakeVectorsPrivate( pev->angles, vecAiming, NULL, NULL );
+		UTIL_MakeVectorsPrivate( pev->angles, vecAiming, nullptr, nullptr );
 		Vector vecSrc = BarrelPosition( );
 
 		TraceResult tr;
@@ -683,7 +683,7 @@ CBaseEntity *CFuncTank:: BestVisibleEnemy ()
 	int			iLookDist = m_maxRange?m_maxRange:512; //thanks to Waldo for this.
 
 	iNearest = 8192;// so first visible entity will become the closest.
-	pReturn = NULL;
+	pReturn = nullptr;
 	iBestRelationship = R_DL;
 
 	CBaseEntity *pList[100];
@@ -818,8 +818,8 @@ void CFuncTank :: StopSequence( )
 	StopRotSound();
 	DontThink();
 	pev->avelocity = g_vecZero;
-	m_pSequence = NULL;
-	m_pSequenceEnemy = NULL;
+	m_pSequence = nullptr;
+	m_pSequenceEnemy = nullptr;
 }
 
 // NB: tracktarget updates nextthink
@@ -842,7 +842,7 @@ void CFuncTank::TrackTarget()
 	Vector angles, direction, targetPosition, barrelEnd;
 	Vector v_right, v_up;
 	CBaseEntity *pTarget;
-	CBasePlayer* pController = NULL;
+	CBasePlayer* pController = nullptr;
 
 //	ALERT(at_console,"TrackTarget\n");
 
@@ -850,7 +850,7 @@ void CFuncTank::TrackTarget()
 	if (m_pFireProxy)
 	{
 		m_pFireProxy->pev->origin = BarrelPosition();
-		UTIL_MakeVectorsPrivate( pev->angles, m_pFireProxy->pev->velocity, NULL, NULL );
+		UTIL_MakeVectorsPrivate( pev->angles, m_pFireProxy->pev->velocity, nullptr, nullptr );
 	}
 
 	// Get a position to aim for
@@ -897,7 +897,7 @@ void CFuncTank::TrackTarget()
 			// first, get the player's angles
 			angles = pController->pev->v_angle;
 			// Work out what point the player is looking at
-			UTIL_MakeVectorsPrivate(angles, direction,NULL,NULL);
+			UTIL_MakeVectorsPrivate(angles, direction,nullptr,nullptr);
 
 			targetPosition = pController->EyePosition() + direction * 1000;
 
@@ -1088,7 +1088,7 @@ void CFuncTank::TrackTarget()
 		if ( pev->spawnflags & SF_TANK_SEQFIRE ) // does the sequence want me to fire?
 		{
 			Vector forward;
-			UTIL_MakeVectorsPrivate( pev->angles, forward, NULL, NULL );
+			UTIL_MakeVectorsPrivate( pev->angles, forward, nullptr, nullptr );
 
 			// to make sure the gun doesn't fire too many bullets
 			m_fireLast = gpGlobals->time - (1/m_fireRate) - 0.01;
@@ -1111,7 +1111,7 @@ void CFuncTank::TrackTarget()
 		if ( pController->pev->button & IN_ATTACK )
 		{
 			Vector forward;
-			UTIL_MakeVectorsPrivate( pev->angles, forward, NULL, NULL );
+			UTIL_MakeVectorsPrivate( pev->angles, forward, nullptr, nullptr );
 
 			// to make sure the gun doesn't fire too many bullets
 			m_fireLast = gpGlobals->time - (1/m_fireRate) - 0.01;
@@ -1130,7 +1130,7 @@ void CFuncTank::TrackTarget()
 	{
 		BOOL fire = FALSE;
 		Vector forward;
-		UTIL_MakeVectorsPrivate( pev->angles, forward, NULL, NULL );
+		UTIL_MakeVectorsPrivate( pev->angles, forward, nullptr, nullptr );
 
 		if ( pev->spawnflags & SF_TANK_LINEOFSIGHT )
 		{
@@ -1181,7 +1181,7 @@ void CFuncTank::AdjustAnglesForBarrel( Vector &angles, float distance )
 void CFuncTank::TryFire( const Vector &barrelEnd, const Vector &forward, entvars_t *pevAttacker )
 {
 //	ALERT(at_console, "TryFire\n");
-	if (UTIL_IsMasterTriggered(m_iszFireMaster, NULL))
+	if (UTIL_IsMasterTriggered(m_iszFireMaster, nullptr))
 	{
 //		ALERT(at_console, "Fire is %p, rocketfire %p, tankfire %p\n", this->Fire, CFuncTankRocket::Fire, CFuncTank::Fire);
 		Fire( barrelEnd, forward, pevAttacker );
@@ -1374,7 +1374,7 @@ CLaser *CFuncTankLaser::GetLaser()
 
 	CBaseEntity	*pEntity;
 
-	pEntity = UTIL_FindEntityByTargetname( NULL, STRING(pev->message) );
+	pEntity = UTIL_FindEntityByTargetname( nullptr, STRING(pev->message) );
 	while ( pEntity )
 	{
 		// Found the laser
@@ -1426,7 +1426,7 @@ void CFuncTankLaser::Fire( const Vector &barrelEnd, const Vector &forward, entva
 
 				//LRC - tripbeams
 				CBaseEntity* pTrip;
-				if (!FStringNull(m_pLaser->pev->target) && (pTrip = m_pLaser->GetTripEntity( &tr )) != NULL)
+				if (!FStringNull(m_pLaser->pev->target) && (pTrip = m_pLaser->GetTripEntity( &tr )) != nullptr)
 					FireTargets(STRING(m_pLaser->pev->target), pTrip, m_pLaser, USE_TOGGLE, 0);
 
 				m_pLaser->DontThink();
@@ -1602,7 +1602,7 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 {
 // LRC- rewritten to allow TankControls to be the thing that handles the relationship
 // between the player and one or more faithful tanks.
-	CBaseEntity *tryTank = NULL;
+	CBaseEntity *tryTank = nullptr;
 
 //	ALERT(at_console,"controls %p triggered by \"%s\" %p\n", this, STRING(pCaller->pev->classname), pCaller);
 
@@ -1613,7 +1613,7 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 			return;
 		// if I've already got a controller, or the player's already using
 		// another controls, then forget it.
-		if (m_active != FALSE || ((CBasePlayer*)pActivator)->m_pTank != NULL)
+		if (m_active != FALSE || ((CBasePlayer*)pActivator)->m_pTank != nullptr)
 			return;
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.
@@ -1677,9 +1677,9 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 			m_pController->m_pActiveItem->Deploy();
 
 		m_pController->m_iHideHUD &= ~ (HIDEHUD_CUSTOMCROSSHAIR | HIDEHUD_WEAPONS);
-		m_pController->m_pTank = NULL;				
+		m_pController->m_pTank = nullptr;				
 
-		m_pController = NULL;
+		m_pController = nullptr;
 		m_active = false;
 		((CBasePlayer *)pActivator)->m_iFOV = 0;//reset FOV
 		((CBasePlayer *)pActivator)->viewEntity = 0;
@@ -1827,7 +1827,7 @@ void CTankSequence :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	{
 		// take control of the tank, start the sequence
 
-		CBaseEntity* pEnt = UTIL_FindEntityByTargetname(NULL, STRING(m_iszEntity));
+		CBaseEntity* pEnt = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszEntity));
 		if (!pEnt || !FStrEq(STRING(pEnt->pev->classname), "func_tank"))
 		{
 			ALERT(at_error, "Invalid or missing tank \"%s\" for scripted_tanksequence!\n", STRING(m_iszEntity));
@@ -1946,7 +1946,7 @@ void CTankSequence :: StopSequence()
 	{
 		m_pTank->m_fireLast = gpGlobals->time - 1/m_pTank->m_fireRate; // exactly one shot.
 		Vector forward;
-		UTIL_MakeVectorsPrivate( m_pTank->pev->angles, forward, NULL, NULL );	
+		UTIL_MakeVectorsPrivate( m_pTank->pev->angles, forward, nullptr, nullptr );	
 		m_pTank->TryFire( m_pTank->BarrelPosition(), forward, m_pTank->pev );
 	}
 
@@ -1990,5 +1990,5 @@ void CTankSequence :: StopSequence()
 		if (m_pTank->m_pSpot) m_pTank->m_pSpot->Revive();
 	}
 
-	m_pTank = NULL;
+	m_pTank = nullptr;
 }

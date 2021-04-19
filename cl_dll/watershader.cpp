@@ -325,7 +325,7 @@ Init
 
 ====================
 */
-void CWaterShader::Init( void ) 
+void CWaterShader::Init( ) 
 {
 	// Set up cvar
 	m_pCvarWaterShader = gEngfuncs.pfnRegisterVariable( "te_water", "1", FCVAR_ARCHIVE );
@@ -439,7 +439,7 @@ VidInit
 
 ====================
 */
-void CWaterShader::VidInit( void ) 
+void CWaterShader::VidInit( ) 
 {
 	int iCurrentBinding;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &iCurrentBinding);
@@ -451,7 +451,7 @@ void CWaterShader::VidInit( void )
 	if(!m_pNormalTexture)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(NULL, "VIDEO ERROR: Could not load 'gfx/textures/watershader.tga'!\n", "ERROR", MB_OK);
+		MessageBox(nullptr, "VIDEO ERROR: Could not load 'gfx/textures/watershader.tga'!\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");
 	}
 
@@ -472,7 +472,7 @@ Restore
 
 ====================
 */
-void CWaterShader::Restore( void ) 
+void CWaterShader::Restore( ) 
 {
 	if(m_pCvarWaterShader->value < 1)
 		return;
@@ -496,7 +496,7 @@ LoadScript
 
 ====================
 */
-void CWaterShader::LoadScript( void ) 
+void CWaterShader::LoadScript( ) 
 {
 	char szFile[64];
 	char szMapName[64];
@@ -505,10 +505,10 @@ void CWaterShader::LoadScript( void )
 	FilenameFromPath((char*)levelname, szMapName);
 	sprintf(szFile, "scripts/water_%s.txt", szMapName);
 
-	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFile, 5, NULL);
+	char *pFile = (char *)gEngfuncs.COM_LoadFile(szFile, 5, nullptr);
 
 	if(!pFile)
-		pFile = (char *)gEngfuncs.COM_LoadFile("scripts/water_default.txt", 5, NULL);
+		pFile = (char *)gEngfuncs.COM_LoadFile("scripts/water_default.txt", 5, nullptr);
 
 	if(!pFile)
 	{
@@ -792,7 +792,7 @@ ViewInWater
 
 ====================
 */
-bool CWaterShader::ViewInWater( void )
+bool CWaterShader::ViewInWater( )
 {
 	if(m_vViewOrigin[0] > m_pCurWater->entity->curstate.mins[0]
 	&& m_vViewOrigin[1] > m_pCurWater->entity->curstate.mins[1]
@@ -965,7 +965,7 @@ SetupRefract
 
 ====================
 */
-void CWaterShader::SetupRefract( void ) 
+void CWaterShader::SetupRefract( ) 
 {
 	glCullFace(GL_FRONT);
 	glColor4f(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
@@ -1009,7 +1009,7 @@ FinishRefract
 
 ====================
 */
-void CWaterShader::FinishRefract( void ) 
+void CWaterShader::FinishRefract( ) 
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurWater->refract);
@@ -1038,11 +1038,11 @@ SetupReflect
 
 ====================
 */
-void CWaterShader::SetupReflect( void ) 
+void CWaterShader::SetupReflect( ) 
 {
 	Vector vForward;
 	Vector vMins, vMaxs;
-	AngleVectors(m_pViewParams->viewangles, vForward, NULL, NULL);
+	AngleVectors(m_pViewParams->viewangles, vForward, nullptr, nullptr);
 
 	float flDist = abs(m_pCurWater->origin[2] - m_vViewOrigin[2]);
 	VectorMASSE(m_vViewOrigin, -2*flDist, m_pCurWater->wplane.normal, m_pWaterParams.vieworg);
@@ -1088,7 +1088,7 @@ FinishReflect
 
 ====================
 */
-void CWaterShader::FinishReflect( void ) 
+void CWaterShader::FinishReflect( ) 
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurWater->reflect);
@@ -1115,7 +1115,7 @@ DrawWater
 
 ====================
 */
-void CWaterShader::DrawWater( void ) 
+void CWaterShader::DrawWater( ) 
 {
 	if(m_pCvarWaterShader->value < 1)
 		return;

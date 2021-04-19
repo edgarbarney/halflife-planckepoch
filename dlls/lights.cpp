@@ -146,9 +146,9 @@ void CLight :: SendInitMessage( CBasePlayer *player )
 			strcpy(szPattern,"m");
 
 		if(player)
-			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, NULL, player->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, nullptr, player->pev);
 		else
-			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, nullptr);
 
 			WRITE_BYTE( m_iStyle );
 			WRITE_STRING( szPattern );
@@ -204,7 +204,7 @@ void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		}
 	}
 
-	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, NULL);
+	MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, nullptr);
 			WRITE_BYTE(m_iStyle);
 			WRITE_STRING(szPattern);
 	MESSAGE_END();

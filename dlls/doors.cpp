@@ -419,7 +419,7 @@ void CBaseDoor::Spawn( )
 	if ( FBitSet ( pev->spawnflags, SF_DOOR_USE_ONLY ) &&
 			!FBitSet ( pev->spawnflags, SF_DOOR_FORCETOUCHABLE ))
 	{
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 	}
 	else // touchable button
 		SetTouch( &CBaseDoor::DoorTouch );
@@ -660,7 +660,7 @@ void CBaseDoor::DoorTouch( CBaseEntity *pOther )
 	m_hActivator = pOther;// remember who activated the door
 
 	if (DoorActivate( ))
-		SetTouch( NULL ); // Temporarily disable the touch function, until movement is finished.
+		SetTouch( nullptr ); // Temporarily disable the touch function, until movement is finished.
 }
 
 
@@ -728,7 +728,7 @@ int CBaseDoor::DoorActivate( )
 	else
 	{// door should open
 
-		if ( m_hActivator != NULL && m_hActivator->IsPlayer() )
+		if ( m_hActivator != nullptr && m_hActivator->IsPlayer() )
 		{// give health if player opened the door (medikit)
 		// VARS( m_eoActivator )->health += m_bHealthValue;
 	
@@ -782,7 +782,7 @@ void CBaseDoor::DoorGoUp()
 	{
 		float	sign = 1.0;
 
-		if ( m_hActivator != NULL )
+		if ( m_hActivator != nullptr )
 		{
 			pevActivator = m_hActivator->pev;
 			
@@ -935,7 +935,7 @@ void CBaseDoor::DoorHitBottom()
 	if ( FBitSet ( pev->spawnflags, SF_DOOR_USE_ONLY ) &&
 			!FBitSet ( pev->spawnflags, SF_DOOR_FORCETOUCHABLE ) )
 	{// use only door
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 	}
 	else // touchable door
 		SetTouch( &CBaseDoor::DoorTouch );
@@ -975,8 +975,8 @@ void CBaseDoor::DoorHitBottom()
 
 void CBaseDoor::Blocked( CBaseEntity *pOther )
 {
-	CBaseEntity	*pTarget	= NULL;
-	CBaseDoor	*pDoor		= NULL;
+	CBaseEntity	*pTarget	= nullptr;
+	CBaseDoor	*pDoor		= nullptr;
 	
 //	ALERT(at_debug, "%s blocked\n", STRING(pev->targetname));
 
@@ -1141,7 +1141,7 @@ void CRotDoor::Spawn()
 	
 	if ( FBitSet ( pev->spawnflags, SF_DOOR_USE_ONLY ) && !FBitSet(pev->spawnflags, SF_DOOR_FORCETOUCHABLE) )
 	{
-		SetTouch ( NULL );
+		SetTouch ( nullptr );
 	}
 	else // touchable button
 		SetTouch( &CRotDoor::DoorTouch );
@@ -1246,7 +1246,7 @@ void CMomentaryDoor::Spawn()
 	}
 
 	Precache();
-	SetTouch( NULL );
+	SetTouch( nullptr );
 	
 }
 

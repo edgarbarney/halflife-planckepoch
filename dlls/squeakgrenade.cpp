@@ -85,7 +85,7 @@ int CSqueakGrenade :: Classify ()
 	if (m_iMyClass != 0)
 		return m_iMyClass; // protect against recursion
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		m_iMyClass = CLASS_INSECT; // no one cares about it
 		switch( m_hEnemy->Classify( ) )
@@ -157,7 +157,7 @@ void CSqueakGrenade :: Killed( entvars_t *pevAttacker, int iGib )
 {
 	pev->model = iStringNull;// make invisible
 	SetThink( &CSqueakGrenade::SUB_Remove );
-	SetTouch( NULL );
+	SetTouch( nullptr );
 	SetNextThink( 0.1 );
 
 	// since squeak grenades never leave a body behind, clear out their takedamage now.
@@ -172,13 +172,13 @@ void CSqueakGrenade :: Killed( entvars_t *pevAttacker, int iGib )
 
 	UTIL_BloodDrips( pev->origin, g_vecZero, BloodColor(), 80 );
 
-	if (m_hOwner != NULL)
+	if (m_hOwner != nullptr)
 		RadiusDamage ( pev, m_hOwner->pev, pev->dmg, CLASS_NONE, DMG_BLAST );
 	else
 		RadiusDamage ( pev, pev, pev->dmg, CLASS_NONE, DMG_BLAST );
 
 	// reset owner so death message happens
-	if (m_hOwner != NULL)
+	if (m_hOwner != nullptr)
 		pev->owner = m_hOwner->edict();
 
 	CBaseMonster :: Killed( pevAttacker, GIB_ALWAYS );
@@ -197,7 +197,7 @@ void CSqueakGrenade::HuntThink()
 
 	if (!IsInWorld())
 	{
-		SetTouch( NULL );
+		SetTouch( nullptr );
 		UTIL_Remove( this );
 		return;
 	}
@@ -235,7 +235,7 @@ void CSqueakGrenade::HuntThink()
 
 	m_flNextHunt = gpGlobals->time + 2.0;
 	
-	CBaseEntity *pOther = NULL;
+	CBaseEntity *pOther = nullptr;
 	Vector vecDir;
 	TraceResult tr;
 
@@ -245,7 +245,7 @@ void CSqueakGrenade::HuntThink()
 
 	UTIL_MakeVectors( pev->angles );
 
-	if (m_hEnemy == NULL || !m_hEnemy->IsAlive())
+	if (m_hEnemy == nullptr || !m_hEnemy->IsAlive())
 	{
 		// find target, bounce a bit towards it.
 		Look( 512 );
@@ -264,7 +264,7 @@ void CSqueakGrenade::HuntThink()
 	if (flpitch < 80)
 		flpitch = 80;
 
-	if (m_hEnemy != NULL)
+	if (m_hEnemy != nullptr)
 	{
 		if (FVisible( m_hEnemy ))
 		{
@@ -322,7 +322,7 @@ void CSqueakGrenade::SuperBounceTouch( CBaseEntity *pOther )
 		return;
 
 	// at least until we've bounced once
-	pev->owner = NULL;
+	pev->owner = nullptr;
 
 	pev->angles.x = 0;
 	pev->angles.z = 0;
@@ -347,7 +347,7 @@ void CSqueakGrenade::SuperBounceTouch( CBaseEntity *pOther )
 				// ALERT( at_console, "hit enemy\n");
 				ClearMultiDamage( );
 				pOther->TraceAttack(pev, gSkillData.snarkDmgBite, gpGlobals->v_forward, &tr, DMG_SLASH ); 
-				if (m_hOwner != NULL)
+				if (m_hOwner != nullptr)
 					ApplyMultiDamage( pev, m_hOwner->pev );
 				else
 					ApplyMultiDamage( pev, pev );
@@ -440,7 +440,7 @@ int CSqueak::GetItemInfo(ItemInfo *p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "Snarks";
 	p->iMaxAmmo1 = SNARK_MAX_CARRY;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 4;
@@ -510,7 +510,7 @@ void CSqueak::PrimaryAttack()
 		}
 
 		// find place to toss monster
-		UTIL_TraceLine( trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, NULL, &tr );
+		UTIL_TraceLine( trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, nullptr, &tr );
 
 	int flags;
 #ifdef CLIENT_WEAPONS

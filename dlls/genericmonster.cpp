@@ -331,7 +331,7 @@ void CGenericMonster :: KillGas( )
 	if ( m_pBeam )
 	{
 		UTIL_Remove( m_pBeam );
-		m_pBeam = NULL;
+		m_pBeam = nullptr;
 	}
 }
 

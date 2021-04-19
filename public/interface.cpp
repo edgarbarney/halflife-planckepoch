@@ -37,7 +37,7 @@ void *GetModuleHandle(const char *name)
 // ------------------------------------------------------------------------------------ //
 // InterfaceReg.
 // ------------------------------------------------------------------------------------ //
-InterfaceReg *InterfaceReg::s_pInterfaceRegs = NULL;
+InterfaceReg *InterfaceReg::s_pInterfaceRegs = nullptr;
 
 
 InterfaceReg::InterfaceReg( InstantiateInterfaceFn fn, const char *pName ) :
@@ -73,7 +73,7 @@ EXPORT_FUNCTION IBaseInterface *CreateInterface( const char *pName, int *pReturn
 	{
 		*pReturnCode = IFACE_FAILED;
 	}
-	return NULL;	
+	return nullptr;	
 }
 
 #ifdef LINUX
@@ -218,7 +218,7 @@ void Sys_UnloadModule( CSysModule *pModule )
 CreateInterfaceFn Sys_GetFactory( CSysModule *pModule )
 {
 	if ( !pModule )
-		return NULL;
+		return nullptr;
 
 	HMODULE	hDLL = reinterpret_cast<HMODULE>(pModule);
 #if defined ( _WIN32 )

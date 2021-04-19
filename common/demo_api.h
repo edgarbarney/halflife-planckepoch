@@ -20,9 +20,9 @@
 
 typedef struct demo_api_s
 {
-	int		( *IsRecording )	( void );
-	int		( *IsPlayingback )	( void );
-	int		( *IsTimeDemo )		( void );
+	int		( *IsRecording )	( );
+	int		( *IsPlayingback )	( );
+	int		( *IsTimeDemo )		( );
 	void	( *WriteBuffer )	( int size, unsigned char *buffer );
 } demo_api_t;
 

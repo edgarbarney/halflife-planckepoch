@@ -59,7 +59,7 @@ Init
 
 ====================
 */
-void CMirrorManager::Init( void ) 
+void CMirrorManager::Init( ) 
 {
 	m_pCvarDrawMirrors = gEngfuncs.pfnRegisterVariable( "te_mirrors", "1", FCVAR_ARCHIVE );
 	m_pCvarMirrorPlayer = gEngfuncs.pfnRegisterVariable( "te_mirror_player", "0", FCVAR_ARCHIVE );
@@ -72,7 +72,7 @@ VidInit
 
 ====================
 */
-void CMirrorManager::VidInit( void ) 
+void CMirrorManager::VidInit( ) 
 {
 	for(int i = 0; i < m_iNumMirrors; i++)
 		glDeleteTextures(1, &m_pMirrors[i].texture);
@@ -202,7 +202,7 @@ SetupClipping
 
 ====================
 */
-void CMirrorManager::SetupClipping( void )
+void CMirrorManager::SetupClipping( )
 {
 	float	dot;
 	float	eq1[4];
@@ -263,7 +263,7 @@ DrawMirrorPass
 
 ====================
 */
-void CMirrorManager::DrawMirrorPass( void ) 
+void CMirrorManager::DrawMirrorPass( ) 
 {
 	// Set world renderer
 	gBSPRenderer.RendererRefDef(&m_pMirrorParams);
@@ -308,10 +308,10 @@ SetupMirrorPass
 
 ====================
 */
-void CMirrorManager::SetupMirrorPass( void ) 
+void CMirrorManager::SetupMirrorPass( ) 
 {
 	Vector forward;
-	AngleVectors(m_pViewParams->viewangles, forward, NULL, NULL);
+	AngleVectors(m_pViewParams->viewangles, forward, nullptr, nullptr);
 
 	float flDist = DotProduct(m_pViewParams->vieworg, m_pCurrentMirror->surface->plane->normal) -  m_pCurrentMirror->surface->plane->dist;
 	VectorMASSE(m_pViewParams->vieworg, -2*flDist, m_pCurrentMirror->surface->plane->normal, m_pMirrorParams.vieworg);
@@ -359,7 +359,7 @@ FinishMirrorPass
 
 ====================
 */
-void CMirrorManager::FinishMirrorPass( void ) 
+void CMirrorManager::FinishMirrorPass( ) 
 {
 	//Save mirrored image
 	glBindTexture(GL_TEXTURE_2D, m_pCurrentMirror->texture);
@@ -384,7 +384,7 @@ DrawMirrors
 
 ====================
 */
-void CMirrorManager::DrawMirrors( void ) 
+void CMirrorManager::DrawMirrors( ) 
 {
 	if(m_pCvarDrawMirrors->value < 1)
 		return;

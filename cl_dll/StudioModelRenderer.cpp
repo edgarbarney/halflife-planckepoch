@@ -1556,7 +1556,7 @@ Init
 
 ====================
 */
-void CStudioModelRenderer::Init( void )
+void CStudioModelRenderer::Init( )
 {
 	// Set up some variables shared with engine
 	m_pCvarHiModels			= IEngineStudio.GetCvar( "cl_himodels" );
@@ -1848,7 +1848,7 @@ VidInit
 
 ====================
 */
-void CStudioModelRenderer::VidInit( void )
+void CStudioModelRenderer::VidInit( )
 {
 	int iCurrentBinding;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &iCurrentBinding);
@@ -1913,26 +1913,26 @@ CStudioModelRenderer
 
 ====================
 */
-CStudioModelRenderer::CStudioModelRenderer( void )
+CStudioModelRenderer::CStudioModelRenderer( )
 {
 	m_fDoInterp			= 1;
 	m_fGaitEstimation	= 1;
-	m_pCurrentEntity	= NULL;
-	m_pCvarHiModels		= NULL;
-	m_pCvarDeveloper	= NULL;
-	m_pCvarDrawEntities	= NULL;
-	m_pChromeSprite		= NULL;
-	m_pStudioModelCount	= NULL;
-	m_pModelsDrawn		= NULL;
-	m_protationmatrix	= NULL;
-	m_paliastransform	= NULL;
-	m_pbonetransform	= NULL;
-	m_plighttransform	= NULL;
-	m_pStudioHeader		= NULL;
-	m_pBodyPart			= NULL;
-	m_pSubModel			= NULL;
-	m_pPlayerInfo		= NULL;
-	m_pRenderModel		= NULL;
+	m_pCurrentEntity	= nullptr;
+	m_pCvarHiModels		= nullptr;
+	m_pCvarDeveloper	= nullptr;
+	m_pCvarDrawEntities	= nullptr;
+	m_pChromeSprite		= nullptr;
+	m_pStudioModelCount	= nullptr;
+	m_pModelsDrawn		= nullptr;
+	m_protationmatrix	= nullptr;
+	m_paliastransform	= nullptr;
+	m_pbonetransform	= nullptr;
+	m_plighttransform	= nullptr;
+	m_pStudioHeader		= nullptr;
+	m_pBodyPart			= nullptr;
+	m_pSubModel			= nullptr;
+	m_pPlayerInfo		= nullptr;
+	m_pRenderModel		= nullptr;
 }
 
 /*
@@ -1941,7 +1941,7 @@ CStudioModelRenderer::CStudioModelRenderer( void )
 
 ====================
 */
-CStudioModelRenderer::~CStudioModelRenderer( void )
+CStudioModelRenderer::~CStudioModelRenderer( )
 {
 }
 
@@ -2216,7 +2216,7 @@ mstudioanim_t *CStudioModelRenderer::StudioGetAnim( model_t *m_pSubModel, mstudi
 
 	paSequences = (cache_user_t *)m_pSubModel->submodels;
 
-	if (paSequences == NULL)
+	if (paSequences == nullptr)
 	{
 		paSequences = (cache_user_t *)IEngineStudio.Mem_Calloc( 16, sizeof( cache_user_t ) ); // UNDONE: leak!
 		m_pSubModel->submodels = (dmodel_t *)paSequences;
@@ -2372,7 +2372,7 @@ StudioEstimateInterpolant
 
 ====================
 */
-float CStudioModelRenderer::StudioEstimateInterpolant( void )
+float CStudioModelRenderer::StudioEstimateInterpolant( )
 {
 	float dadt = 1.0;
 
@@ -2584,7 +2584,7 @@ StudioSetupBones
 
 ====================
 */
-void CStudioModelRenderer::StudioSetupBones ( void )
+void CStudioModelRenderer::StudioSetupBones ( )
 {
 	int					i;
 	double				f;
@@ -2748,7 +2748,7 @@ StudioSaveBones
 
 ====================
 */
-void CStudioModelRenderer::StudioSaveBones( void )
+void CStudioModelRenderer::StudioSaveBones( )
 {
 	int		i;
 
@@ -3114,7 +3114,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		return 0;
 
 	m_pRenderModel = m_pCurrentEntity->model;
-	if (m_pRenderModel == NULL)
+	if (m_pRenderModel == nullptr)
 		return 0;
 
 	m_pStudioHeader = (studiohdr_t *)IEngineStudio.Mod_Extradata (m_pRenderModel);
@@ -3148,7 +3148,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		StudioProcessGait( pplayer );
 
 		m_pPlayerInfo->gaitsequence = pplayer->gaitsequence;
-		m_pPlayerInfo = NULL;
+		m_pPlayerInfo = nullptr;
 
 		StudioSetUpTransform( 0 );
 		VectorCopy( orig_angles, m_pCurrentEntity->angles );
@@ -3175,7 +3175,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 	StudioSaveBones( );
 	m_pPlayerInfo->renderframe = m_nFrameCount;
 
-	m_pPlayerInfo = NULL;
+	m_pPlayerInfo = nullptr;
 
 	if (flags & STUDIO_EVENTS)
 	{
@@ -3223,7 +3223,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		IEngineStudio.StudioSetRemapColors( m_nTopColor, m_nBottomColor );
 
 		StudioRenderModel( );
-		m_pPlayerInfo = NULL;
+		m_pPlayerInfo = nullptr;
 
 		if (pplayer->weaponmodel)
 		{
@@ -3255,7 +3255,7 @@ StudioCalcAttachments
 
 ====================
 */
-void CStudioModelRenderer::StudioCalcAttachments( void )
+void CStudioModelRenderer::StudioCalcAttachments( )
 {
 	int i;
 	mstudioattachment_t *pattachment;
@@ -3280,7 +3280,7 @@ StudioRenderModel
 
 ====================
 */
-void CStudioModelRenderer::StudioRenderModel( void )
+void CStudioModelRenderer::StudioRenderModel( )
 {
 	if ( m_pCurrentEntity->curstate.renderfx == kRenderFxGlowShell )
 	{
@@ -3309,7 +3309,7 @@ StudioRenderFinal
 
 ====================
 */
-void CStudioModelRenderer::StudioRenderFinal( void )
+void CStudioModelRenderer::StudioRenderFinal( )
 {
 	StudioSetupRenderer( m_pCurrentEntity->curstate.rendermode );
 	StudioSetChromeVectors();
@@ -3341,7 +3341,7 @@ StudioDrawWireframe
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawWireframe( void )
+void CStudioModelRenderer::StudioDrawWireframe( )
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_TEXTURE_2D);
@@ -3426,15 +3426,15 @@ StudioAllocExtraInfo
 
 ====================
 */
-entextrainfo_t *CStudioModelRenderer::StudioAllocExtraInfo( void )
+entextrainfo_t *CStudioModelRenderer::StudioAllocExtraInfo( )
 {
 	if(m_iNumExtraInfo == MAXRENDERENTS)
 		m_iNumExtraInfo = NULL;
 
 	if(m_pExtraInfo[m_iNumExtraInfo].pEntity)
 	{
-		m_pExtraInfo[m_iNumExtraInfo].pEntity->topnode = NULL;
-		m_pExtraInfo[m_iNumExtraInfo].pEntity = NULL;
+		m_pExtraInfo[m_iNumExtraInfo].pEntity->topnode = nullptr;
+		m_pExtraInfo[m_iNumExtraInfo].pEntity = nullptr;
 		memset(&m_pExtraInfo[m_iNumExtraInfo], 0, sizeof(entextrainfo_t));
 	}
 
@@ -3448,7 +3448,7 @@ StudioSetupTextureHeader
 
 ====================
 */
-void CStudioModelRenderer::StudioSetupTextureHeader( void )
+void CStudioModelRenderer::StudioSetupTextureHeader( )
 {
 	if(m_pStudioHeader->numtextures && m_pStudioHeader->textureindex)
 	{
@@ -3482,7 +3482,7 @@ StudioSwapEngineCache
 
 ====================
 */
-void CStudioModelRenderer::StudioSwapEngineCache( void )
+void CStudioModelRenderer::StudioSwapEngineCache( )
 {
 	char szFile[256];
 	char szModelName[64];
@@ -3739,7 +3739,7 @@ StudioRestoreRenderer
 
 ====================
 */
-void CStudioModelRenderer::StudioRestoreRenderer( void )
+void CStudioModelRenderer::StudioRestoreRenderer( )
 {
 	if (m_bUseBlending || m_bChromeShell)
 	{
@@ -3779,7 +3779,7 @@ StudioSetupLighting
 
 ====================
 */
-void CStudioModelRenderer::StudioSetupLighting ( void )
+void CStudioModelRenderer::StudioSetupLighting ( )
 {
 	int iret = 0;
 	Vector color;
@@ -4030,7 +4030,7 @@ StudioEntityLight
 
 ====================
 */
-void CStudioModelRenderer::StudioEntityLight( void )
+void CStudioModelRenderer::StudioEntityLight( )
 {
 	pmtrace_t pmtrace;
 	gEngfuncs.pEventAPI->EV_SetTraceHull(2);
@@ -4090,7 +4090,7 @@ StudioSetTextureFlags
 
 ====================
 */
-void CStudioModelRenderer::StudioSetTextureFlags( void )
+void CStudioModelRenderer::StudioSetTextureFlags( )
 {
 	char szModel[32];
 	char szTexture[32];
@@ -4204,7 +4204,7 @@ void CStudioModelRenderer::StudioSetTextureFlags( void )
 			k = 0; j++;
 			strcat(szPath, "/");
 			strcat(szPath, szFolder);
-			CreateDirectory(szPath, NULL); 
+			CreateDirectory(szPath, nullptr); 
 
 			if(j >= iLength)
 				break;
@@ -4237,7 +4237,7 @@ StudioSetChromeVectors
 
 ====================
 */
-void CStudioModelRenderer::StudioSetChromeVectors( void )
+void CStudioModelRenderer::StudioSetChromeVectors( )
 {
 	Vector tmp;
 	Vector chromeupvec;
@@ -4297,7 +4297,7 @@ StudioDrawPoints
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawPoints ( void )
+void CStudioModelRenderer::StudioDrawPoints ( )
 {
 	if (!m_pTextureHeader)
 		return;
@@ -4530,7 +4530,7 @@ StudioCheckBBox
 
 ====================
 */
-qboolean CStudioModelRenderer::StudioCheckBBox( void )
+qboolean CStudioModelRenderer::StudioCheckBBox( )
 {
 	// Build full bounding box
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)m_pStudioHeader + m_pStudioHeader->seqindex) + m_pCurrentEntity->curstate.sequence;
@@ -4650,7 +4650,7 @@ StudioDrawBBox
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawBBox( void )
+void CStudioModelRenderer::StudioDrawBBox( )
 {
 	Vector v[8];
 
@@ -5037,7 +5037,7 @@ StudioRenderModelEXT
 
 ====================
 */
-void CStudioModelRenderer::StudioRenderModelEXT( void )
+void CStudioModelRenderer::StudioRenderModelEXT( )
 {
 	// I don't give a shit, make sure
 	glPushMatrix();
@@ -5081,7 +5081,7 @@ StudioDrawPointsEXT
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawPointsEXT( void )
+void CStudioModelRenderer::StudioDrawPointsEXT( )
 {
 	if ( !m_pTextureHeader )
 		return;
@@ -5220,7 +5220,7 @@ StudioDrawWireframeEXT
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawWireframeEXT( void )
+void CStudioModelRenderer::StudioDrawWireframeEXT( )
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_TEXTURE_2D);
@@ -5271,7 +5271,7 @@ StudioAllocDecalSlot
 
 ====================
 */
-studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot( void )
+studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot( )
 {
 	if(m_iNumStudioDecals == MAX_CUSTOMDECALS)
 		m_iNumStudioDecals = NULL;
@@ -5282,7 +5282,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot( void )
 	if(pDecal->numverts)
 	{
 		delete [] pDecal->verts;
-		pDecal->verts = NULL;
+		pDecal->verts = nullptr;
 		pDecal->numverts = 0;
 	}
 
@@ -5292,7 +5292,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecalSlot( void )
 			delete [] pDecal->polys[i].verts;
 
 		delete [] pDecal->polys;
-		pDecal->polys = NULL;
+		pDecal->polys = nullptr;
 		pDecal->numpolys = 0;
 	}
 
@@ -5313,7 +5313,7 @@ StudioAllocDecal
 
 ====================
 */
-studiodecal_t *CStudioModelRenderer::StudioAllocDecal( void )
+studiodecal_t *CStudioModelRenderer::StudioAllocDecal( )
 {
 	if(!m_pCurrentEntity->efrag)
 	{
@@ -5342,7 +5342,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal( void )
 			if(pnext->numverts)
 			{
 				delete [] pnext->verts;
-				pnext->verts = NULL;
+				pnext->verts = nullptr;
 				pnext->numverts = 0;
 			}
 
@@ -5352,7 +5352,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal( void )
 					delete [] pnext->polys[k].verts;
 
 				delete [] pnext->polys;
-				pnext->polys = NULL;
+				pnext->polys = nullptr;
 				pnext->numpolys = 0;
 			}
 
@@ -5371,7 +5371,7 @@ studiodecal_t *CStudioModelRenderer::StudioAllocDecal( void )
 		studiodecal_t *next = pnext->next;
 		pnext = next;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -5656,7 +5656,7 @@ StudioDrawDecals
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawDecals( void )
+void CStudioModelRenderer::StudioDrawDecals( )
 {
 	if(m_pCvarModelDecals->value < 1)
 		return;
@@ -5968,7 +5968,7 @@ model_t *CStudioModelRenderer::Mod_LoadModel( char *szName )
 	byte *pFile = gEngfuncs.COM_LoadFile(szName, 5, &iSize);
 
 	if(!pFile)
-		return NULL;
+		return nullptr;
 
 	// Copy over and free the file
 	byte *pBuffer = new byte[iSize];
@@ -5982,7 +5982,7 @@ model_t *CStudioModelRenderer::Mod_LoadModel( char *szName )
 		&& strncmp ((const char *) pBuffer, "IDSQ", 4))
 	{
 		delete [] pBuffer;
-		return NULL;
+		return nullptr;
 	}
 
 	if(pHdr->textureindex)
@@ -6156,7 +6156,7 @@ StudioDrawModelSolid
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawModelSolid( void )
+void CStudioModelRenderer::StudioDrawModelSolid( )
 {
 	if(IsEntityTransparent(m_pCurrentEntity) && m_pCurrentEntity->curstate.renderamt == NULL)
 		return;
@@ -6196,7 +6196,7 @@ StudioDrawPointsSolid
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawPointsSolid ( void )
+void CStudioModelRenderer::StudioDrawPointsSolid ( )
 {
 	mstudiomesh_t *pmeshes = (mstudiomesh_t *)((byte *)m_pStudioHeader + m_pSubModel->meshindex);
 	Vector *pstudioverts = (Vector *)((byte *)m_pStudioHeader + m_pSubModel->vertindex);
@@ -6362,7 +6362,7 @@ StudioDrawPointsSolidEXT
 
 ====================
 */
-void CStudioModelRenderer::StudioDrawPointsSolidEXT( void )
+void CStudioModelRenderer::StudioDrawPointsSolidEXT( )
 {
 	if ( !m_pTextureHeader )
 		return;

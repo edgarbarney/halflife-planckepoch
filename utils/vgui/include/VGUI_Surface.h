@@ -33,7 +33,7 @@ public:
 	bool isWithin(int x,int y) override;
 	void GetMousePos( int &x, int &y ) override;
 protected:
-	int  createNewTextureID(void) override;
+	int  createNewTextureID() override;
 	void drawSetColor(int r,int g,int b,int a) override;
 	void drawFilledRect(int x0,int y0,int x1,int y1) override;
 	void drawOutlinedRect(int x0,int y0,int x1,int y1) override;

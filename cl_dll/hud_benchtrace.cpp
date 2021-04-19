@@ -106,7 +106,7 @@ int Trace_GetHopCount( char *pServer, int nMaxHops )
 		memset( &traceReturn, 0, sizeof( traceReturn ) );
 
 		// Send echo request, 2000 milliseconds maximum waiting time
-		pfnICMPSendEcho ( hIP, *dwIPAddr, 0, 0, &traceOptions, &traceReturn, sizeof(traceReturn), 2000 );
+		pfnICMPSendEcho ( hIP, *dwIPAddr, nullptr, 0, &traceOptions, &traceReturn, sizeof(traceReturn), 2000 );
 		
 		// Found requrested remote address, c contains the correct hopcount
 		if ( traceReturn.dwAddress == *dwIPAddr )
@@ -151,13 +151,13 @@ void Trace_Cleanup()
 	{
 		TerminateThread( tp.hThread, 0 );
 		CloseHandle( tp.hThread );
-		tp.hThread = (HANDLE)0;
+		tp.hThread = (HANDLE)nullptr;
 	}
 
 	if ( tp.hEventDone )
 	{
 		CloseHandle( tp.hEventDone );
-		tp.hEventDone = (HANDLE)0;
+		tp.hEventDone = (HANDLE)nullptr;
 	}
 #endif
 }
@@ -201,7 +201,7 @@ void Trace_StartTrace( int *results, int *finished, const char *server )
 
 	Trace_Cleanup();
 
-	tp.hEventDone = CreateEvent( NULL, TRUE, FALSE, NULL );
+	tp.hEventDone = CreateEvent( nullptr, TRUE, FALSE, nullptr );
 	if ( !tp.hEventDone )
 	{
 		return;
@@ -210,7 +210,7 @@ void Trace_StartTrace( int *results, int *finished, const char *server )
 	tp.p_ndone = finished;
 	*tp.p_ndone = 0;
 
-	tp.hThread = CreateThread( NULL, 0, Trace_ThreadFunction, results, 0, &tp.hThreadId );
+	tp.hThread = CreateThread( nullptr, 0, Trace_ThreadFunction, results, 0, &tp.hThreadId );
 #endif
 }
 

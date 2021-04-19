@@ -266,7 +266,7 @@ void CInfoGroup :: KeyValue( KeyValueData *pkvd )
 
 void CInfoGroup::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	CBaseEntity *pTarget = UTIL_FindEntityByTargetname( NULL, STRING( pev->target ) );
+	CBaseEntity *pTarget = UTIL_FindEntityByTargetname( nullptr, STRING( pev->target ) );
 
 	if (pTarget && pTarget->IsMutableAlias())
 	{
@@ -361,7 +361,7 @@ void CMultiAlias :: KeyValue( KeyValueData *pkvd )
 
 CBaseEntity *CMultiAlias::FollowAlias( CBaseEntity *pStartEntity )
 {
-	CBaseEntity* pBestEntity = NULL; // the entity we're currently planning to return.
+	CBaseEntity* pBestEntity = nullptr; // the entity we're currently planning to return.
 	int iBestOffset = -1; // the offset of that entity.
 	CBaseEntity* pTempEntity;
 	int iTempOffset;
@@ -453,7 +453,7 @@ void CTriggerChangeAlias::Spawn()
 
 void CTriggerChangeAlias::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	CBaseEntity *pTarget = UTIL_FindEntityByTargetname( NULL, STRING( pev->target ), pActivator );
+	CBaseEntity *pTarget = UTIL_FindEntityByTargetname( nullptr, STRING( pev->target ), pActivator );
 
 	if (pTarget && pTarget->IsMutableAlias())
 	{
@@ -465,7 +465,7 @@ void CTriggerChangeAlias::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 		}
 		else if (pev->spawnflags & SF_CHANGEALIAS_RESOLVE)
 		{
-			pValue = UTIL_FollowReference(NULL, STRING(pev->netname));
+			pValue = UTIL_FollowReference(nullptr, STRING(pev->netname));
 		}
 
 		if (pValue)

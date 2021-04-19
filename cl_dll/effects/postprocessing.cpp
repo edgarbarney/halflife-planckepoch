@@ -17,13 +17,13 @@ void CPostProcessing::ChangeRes(GLsizei w, GLsizei h)
 
 ///Draw Post-Processing
 ///Called Every Frame
-void CPostProcessing::Draw(void)
+void CPostProcessing::Draw()
 {
 
 }
 
 ///Free Resources used by Post-Processing
-void CPostProcessing::UnDraw(void)
+void CPostProcessing::UnDraw()
 {
 
 }

@@ -203,12 +203,12 @@ void CController::Killed( entvars_t *pevAttacker, int iGib )
 	if (m_pBall[0])
 	{
 		m_pBall[0]->SUB_StartFadeOut();
-		m_pBall[0] = NULL;
+		m_pBall[0] = nullptr;
 	}
 	if (m_pBall[1])
 	{
 		m_pBall[1]->SUB_StartFadeOut();
-		m_pBall[1] = NULL;
+		m_pBall[1] = nullptr;
 	}
 
 	CSquadMonster::Killed( pevAttacker, iGib );
@@ -221,12 +221,12 @@ void CController::GibMonster()
 	if (m_pBall[0])
 	{
 		UTIL_Remove( m_pBall[0] );
-		m_pBall[0] = NULL;
+		m_pBall[0] = nullptr;
 	}
 	if (m_pBall[1])
 	{
 		UTIL_Remove( m_pBall[1] );
-		m_pBall[1] = NULL;
+		m_pBall[1] = nullptr;
 	}
 	CSquadMonster::GibMonster( );
 }
@@ -543,7 +543,7 @@ void CController :: StartTask ( Task_t *pTask )
 		{
 			CBaseEntity *pEnemy = m_hEnemy;
 
-			if ( pEnemy == NULL )
+			if ( pEnemy == nullptr )
 			{
 				TaskFail();
 				return;
@@ -658,11 +658,11 @@ void CController :: RunTask ( Task_t *pTask )
 			Vector vecSrc = vecHand + pev->velocity * (m_flShootTime - gpGlobals->time);
 			Vector vecDir;
 			
-			if (m_pCine != NULL || m_hEnemy != NULL)
+			if (m_pCine != nullptr || m_hEnemy != nullptr)
 			{
-				if (m_pCine != NULL) // LRC- is this a script that's telling it to fire?
+				if (m_pCine != nullptr) // LRC- is this a script that's telling it to fire?
 				{
-					if (m_hTargetEnt != NULL && m_pCine->PreciseAttack())
+					if (m_hTargetEnt != nullptr && m_pCine->PreciseAttack())
 					{
 						vecDir = (m_hTargetEnt->pev->origin - pev->origin).Normalize() * gSkillData.controllerSpeedBall;
 					}
@@ -672,7 +672,7 @@ void CController :: RunTask ( Task_t *pTask )
 						vecDir = gpGlobals->v_forward * gSkillData.controllerSpeedBall;
 					}
 				}
-				else if (m_hEnemy != NULL)
+				else if (m_hEnemy != nullptr)
 			    {
 				    if (HasConditions( bits_COND_SEE_ENEMY ))
 				    {
@@ -881,7 +881,7 @@ void CController :: RunAI()
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (m_pBall[i] == NULL)
+		if (m_pBall[i] == nullptr)
 		{
 			m_pBall[i] = CSprite::SpriteCreate( "sprites/xspark4.spr", pev->origin, TRUE );
 			m_pBall[i]->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation );
@@ -967,7 +967,7 @@ void CController :: Move ( float flInterval )
 
 	// if the monster is moving directly towards an entity (enemy for instance), we'll set this pointer
 	// to that entity for the CheckLocalMove and Triangulate functions.
-	pTargetEnt = NULL;
+	pTargetEnt = nullptr;
 
 	if (m_flGroundSpeed == 0)
 	{
@@ -1246,9 +1246,9 @@ void CControllerHeadBall :: HuntThink()
 	MESSAGE_END();
 
 	// check world boundaries
-	if (gpGlobals->time - pev->dmgtime > 5 || pev->renderamt < 64 || m_hEnemy == NULL || m_hOwner == NULL || pev->origin.x < -4096 || pev->origin.x > 4096 || pev->origin.y < -4096 || pev->origin.y > 4096 || pev->origin.z < -4096 || pev->origin.z > 4096)
+	if (gpGlobals->time - pev->dmgtime > 5 || pev->renderamt < 64 || m_hEnemy == nullptr || m_hOwner == nullptr || pev->origin.x < -4096 || pev->origin.x > 4096 || pev->origin.y < -4096 || pev->origin.y > 4096 || pev->origin.z < -4096 || pev->origin.z > 4096)
 	{
-		SetTouch( NULL );
+		SetTouch( nullptr );
 		UTIL_Remove( this );
 		return;
 	}
@@ -1262,7 +1262,7 @@ void CControllerHeadBall :: HuntThink()
 		UTIL_TraceLine( pev->origin, m_hEnemy->Center(), dont_ignore_monsters, ENT(pev), &tr );
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
-		if (pEntity != NULL && pEntity->pev->takedamage)
+		if (pEntity != nullptr && pEntity->pev->takedamage)
 		{
 			ClearMultiDamage( );
 			pEntity->TraceAttack( m_hOwner->pev, gSkillData.controllerDmgZap, pev->velocity, &tr, DMG_SHOCK );
@@ -1424,7 +1424,7 @@ void CControllerZapBall :: AnimateThink()
 
 	if (gpGlobals->time - pev->dmgtime > 5 || pev->velocity.Length() < 10)
 	{
-		SetTouch( NULL );
+		SetTouch( nullptr );
 		UTIL_Remove( this );
 	}
 }
@@ -1437,7 +1437,7 @@ void CControllerZapBall::ExplodeTouch( CBaseEntity *pOther )
 		TraceResult tr = UTIL_GetGlobalTrace( );
 
 		entvars_t	*pevOwner;
-		if (m_hOwner != NULL)
+		if (m_hOwner != nullptr)
 		{
 			pevOwner = m_hOwner->pev;
 		}

@@ -11,8 +11,8 @@ public:
 	void	Init(GLsizei w, GLsizei h);
 
 	void	ChangeRes(GLsizei w, GLsizei h);
-	void	Draw(void);
-	void	UnDraw(void);
+	void	Draw();
+	void	UnDraw();
 };
 
 #endif

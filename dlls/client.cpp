@@ -156,7 +156,7 @@ void ExportDetails( )
 
 	for(int i = 0; i < iNumDetailEnts; i++)
 	{
-		void *pVModel = NULL;
+		void *pVModel = nullptr;
 		ClientGetModelByIndex(pEdicts[i]->v.modelindex, &pVModel);
 
 		if(!pVModel)
@@ -249,7 +249,7 @@ void ClientDisconnect( edict_t *pEntity )
 	if ( pEntity->v.netname )
 		_snprintf( text, sizeof(text), "- %s has left the game\n", STRING(pEntity->v.netname) );
 	text[ sizeof(text) - 1 ] = 0;
-	MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
+	MESSAGE_BEGIN( MSG_ALL, gmsgSayText, nullptr );
 		WRITE_BYTE( ENTINDEX(pEntity) );
 		WRITE_STRING( text );
 	MESSAGE_END();
@@ -273,10 +273,10 @@ void ClientDisconnect( edict_t *pEntity )
 
 	if (pPlayer)
 	{
-		if (pPlayer->m_pTank != NULL)
+		if (pPlayer->m_pTank != nullptr)
 		{
 			pPlayer->m_pTank->Use(pPlayer, pPlayer, USE_OFF, 0);
-			pPlayer->m_pTank = NULL;
+			pPlayer->m_pTank = nullptr;
 		}
 	}
 
@@ -562,8 +562,8 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	// This may return the world in single player if the client types something between levels or during spawn
 	// so check it, or it will infinite loop
 
-	client = NULL;
-	while ( ((client = (CBasePlayer*)UTIL_FindEntityByClassname( client, "player" )) != NULL) && (!FNullEnt(client->edict())) )
+	client = nullptr;
+	while ( ((client = (CBasePlayer*)UTIL_FindEntityByClassname( client, "player" )) != nullptr) && (!FNullEnt(client->edict())) )
 	{
 		if ( !client->pev )
 			continue;
@@ -578,7 +578,7 @@ void Host_Say( edict_t *pEntity, int teamonly )
 		if ( g_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
 			continue;
 
-		MESSAGE_BEGIN( MSG_ONE, gmsgSayText, NULL, client->pev );
+		MESSAGE_BEGIN( MSG_ONE, gmsgSayText, nullptr, client->pev );
 			WRITE_BYTE( ENTINDEX(pEntity) );
 			WRITE_STRING( text );
 		MESSAGE_END();
@@ -586,7 +586,7 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	}
 
 	// print to the sending client
-	MESSAGE_BEGIN( MSG_ONE, gmsgSayText, NULL, &pEntity->v );
+	MESSAGE_BEGIN( MSG_ONE, gmsgSayText, nullptr, &pEntity->v );
 		WRITE_BYTE( ENTINDEX(pEntity) );
 		WRITE_STRING( text );
 	MESSAGE_END();
@@ -658,7 +658,7 @@ void ClientCommand( edict_t *pEntity )
 			int col = (atoi(CMD_ARGV(1)) & 255) << 16;
 			col += (atoi(CMD_ARGV(2)) & 255) << 8;
 			col += (atoi(CMD_ARGV(3)) & 255);
-			MESSAGE_BEGIN( MSG_ONE, gmsgHUDColor, NULL, &pEntity->v );
+			MESSAGE_BEGIN( MSG_ONE, gmsgHUDColor, nullptr, &pEntity->v );
 				WRITE_LONG(col);
 			MESSAGE_END();
 		}
@@ -712,7 +712,7 @@ void ClientCommand( edict_t *pEntity )
 	}
 	else if ( FStrEq(pcmd, "playaudio" ) )  //AJH - MP3/OGG player (based on killars MP3)
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgPlayMP3, NULL, ENT(pev) );
+		MESSAGE_BEGIN( MSG_ONE, gmsgPlayMP3, nullptr, ENT(pev) );
 			WRITE_STRING( (char *)CMD_ARGV(1) );
 		MESSAGE_END();
 	}
@@ -723,22 +723,22 @@ void ClientCommand( edict_t *pEntity )
 		{
 			if(FStrEq(CMD_ARGV(1),"1")){
 			//	ALERT(at_debug,"DEBUG: calling medkit::use()\n");
-				GetClassPtr((CItemMedicalKit *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+				GetClassPtr((CItemMedicalKit *)nullptr)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
 			}
 			else if(FStrEq(CMD_ARGV(1),"2")){
 			//	ALERT(at_debug,"DEBUG: calling antitox::use()\n");
-				GetClassPtr((CItemAntidote *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+				GetClassPtr((CItemAntidote *)nullptr)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
 			}
 			else if(FStrEq(CMD_ARGV(1),"3")){
 			//	ALERT(at_debug,"DEBUG: calling antirad::use()\n");
-				GetClassPtr((CItemAntiRad *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+				GetClassPtr((CItemAntiRad *)nullptr)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
 			}
 			else if(FStrEq(CMD_ARGV(1),"6")){
 				//	ALERT(at_debug,"DEBUG: calling flare::use()\n");
-				GetClassPtr((CItemFlare *)NULL)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
+				GetClassPtr((CItemFlare *)nullptr)->Use(pPlayer,pPlayer,USE_TOGGLE,0);	
 			}
 			else if(FStrEq(CMD_ARGV(1),"7")){
-				if(pPlayer->m_pItemCamera!= NULL){
+				if(pPlayer->m_pItemCamera!= nullptr){
 
 					if (CMD_ARGC() > 2) // If we have a specific usetype command
 					{	// (possibly consider letting the player jump between active cameras using a third parameter)
@@ -809,7 +809,7 @@ void ClientCommand( edict_t *pEntity )
 	{
 		player->SelectItem((char *)CMD_ARGV(1));
 	}
-          else if (((pstr = strstr(pcmd, "weapon_")) != NULL)  && (pstr == pcmd))
+          else if (((pstr = strstr(pcmd, "weapon_")) != nullptr)  && (pstr == pcmd))
 	{
 		player->SelectItem(pcmd);
 	}
@@ -865,7 +865,7 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 		sName[ sizeof(sName) - 1 ] = '\0';
 
 		// First parse the name and remove any %'s
-		for ( char *pApersand = sName; pApersand != NULL && *pApersand != 0; pApersand++ )
+		for ( char *pApersand = sName; pApersand != nullptr && *pApersand != 0; pApersand++ )
 		{
 			// Replace it with a space
 			if ( *pApersand == '%' )
@@ -879,7 +879,7 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 		{
 			char text[256];
 			sprintf( text, "* %s changed name to %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
-			MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
+			MESSAGE_BEGIN( MSG_ALL, gmsgSayText, nullptr );
 				WRITE_BYTE( ENTINDEX(pEntity) );
 				WRITE_STRING( text );
 			MESSAGE_END();
@@ -914,7 +914,7 @@ static int g_serveractive = 0;
 void ServerDeactivate()
 {
 	// make sure they reinitialise the World in the next server
-	g_pWorld = NULL;
+	g_pWorld = nullptr;
 
 	// It's possible that the engine will call this function more times than is necessary
 	//  Therefore, only run it one time for each call to ServerActivate
@@ -1268,7 +1268,7 @@ void SetupVisibility( edict_t *pViewEntity, edict_t *pClient, unsigned char **pv
 	CBasePlayer * pPlayer = (CBasePlayer *)CBaseEntity::Instance((struct edict_s *)pClient);
 	if (pPlayer->viewFlags & 1) // custom view active
 	{
-		CBaseEntity *pViewEnt = UTIL_FindEntityByTargetname(NULL,STRING(pPlayer->viewEntity));
+		CBaseEntity *pViewEnt = UTIL_FindEntityByTargetname(nullptr,STRING(pPlayer->viewEntity));
 		if (!FNullEnt(pViewEnt))
 		{
 		//	ALERT(at_console, "setting PAS/PVS to entity %s\n", STRING(pPlayer->viewEntity));
@@ -1279,8 +1279,8 @@ void SetupVisibility( edict_t *pViewEntity, edict_t *pClient, unsigned char **pv
 	}
 	if ( pClient->v.flags & FL_PROXY )
 	{
-		*pvs = NULL;	// the spectator proxy sees
-		*pas = NULL;	// and hears everything
+		*pvs = nullptr;	// the spectator proxy sees
+		*pas = nullptr;	// and hears everything
 		return;
 	}
 
@@ -1879,7 +1879,7 @@ void UpdateClientData ( const edict_t *ent, int sendweapons, struct clientdata_s
 		return;
 	entvars_t *		pev	= (entvars_t *)&ent->v;
 	CBasePlayer *	pl	= dynamic_cast< CBasePlayer *>(CBasePlayer::Instance( pev ));
-	entvars_t *		pevOrg = NULL;
+	entvars_t *		pevOrg = nullptr;
 
 	cd->flags			= pev->flags;
 	cd->health			= pev->health;

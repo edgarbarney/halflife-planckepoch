@@ -23,7 +23,7 @@ void DLLEXPORT CAM_Think( void )
 {
 }
 
-void CAM_Init( void )
+void CAM_Init( )
 {
 }
 
