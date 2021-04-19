@@ -406,7 +406,7 @@ void COsprey::FlyThink()
 
 	UpdateShockEffect();
 
-	if ( m_pGoalEnt == NULL && !FStringNull(pev->target) )// this monster has a target
+	if ( m_pGoalEnt == nullptr && !FStringNull(pev->target) )// this monster has a target
 	{
 		m_pGoalEnt = UTIL_FindEntityByTargetname( nullptr, STRING( pev->target ) );
 		UpdateGoal( );

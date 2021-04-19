@@ -2145,7 +2145,7 @@ void EV_SniperRifle( event_args_t* args )
 		8192.0,
 		BULLET_PLAYER_762,
 		0,
-		0,
+		nullptr,
 		args->fparam1,
 		args->fparam2 );
 }

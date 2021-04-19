@@ -972,7 +972,7 @@ void DLLEXPORT HUD_PostRunCmd(struct local_state_s* from, struct local_state_s* 
 	if (g_irunninggausspred == 1)
 	{
 		Vector forward;
-		gEngfuncs.pfnAngleVectors(v_angles, forward, NULL, NULL);
+		gEngfuncs.pfnAngleVectors(v_angles, forward, nullptr, nullptr);
 		to->client.velocity = to->client.velocity - forward * g_flApplyVel * 5;
 		g_irunninggausspred = false;
 	}

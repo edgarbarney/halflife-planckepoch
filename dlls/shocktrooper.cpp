@@ -386,7 +386,7 @@ void CShockTrooper :: JustSpoke()
 //=========================================================
 void CShockTrooper :: PrescheduleThink ()
 {
-	if ( InSquad() && m_hEnemy != NULL )
+	if ( InSquad() && m_hEnemy != nullptr )
 	{
 		if ( HasConditions ( bits_COND_SEE_ENEMY ) )
 		{
@@ -436,7 +436,7 @@ BOOL CShockTrooper :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	CBaseMonster *pEnemy;
 
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 		pEnemy = m_hEnemy->MyMonsterPointer();
 
@@ -770,7 +770,7 @@ CBaseEntity *CShockTrooper :: Kick()
 		return pEntity;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //=========================================================
@@ -793,7 +793,7 @@ Vector CShockTrooper :: GetGunPosition( )
 //=========================================================
 void CShockTrooper :: Shoot ()
 {
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		return;
 	}
@@ -1896,7 +1896,7 @@ Schedule_t *CShockTrooper :: GetSchedule()
 		CSound *pSound;
 		pSound = PBestSound();
 
-		ASSERT( pSound != NULL );
+		ASSERT( pSound != nullptr );
 		if ( pSound)
 		{
 			if (pSound->m_iType & bits_SOUND_DANGER)
@@ -1958,10 +1958,10 @@ Schedule_t *CShockTrooper :: GetSchedule()
 						// before he starts pluggin away.
 						if (FOkToSpeak())// && RANDOM_LONG(0,1))
 						{
-							if ((m_hEnemy != NULL) && m_hEnemy->IsPlayer())
+							if ((m_hEnemy != nullptr) && m_hEnemy->IsPlayer())
 								// player
 								SENTENCEG_PlayRndSz( ENT(pev), "ST_ALERT", ShockTrooper_SENTENCE_VOLUME, GRUNT_ATTN, 0, m_voicePitch);
-							else if ((m_hEnemy != NULL) &&
+							else if ((m_hEnemy != nullptr) &&
 									(m_hEnemy->Classify() != CLASS_PLAYER_ALLY) && 
 									(m_hEnemy->Classify() != CLASS_HUMAN_PASSIVE) && 
 									(m_hEnemy->Classify() != CLASS_MACHINE))
@@ -1999,7 +1999,7 @@ Schedule_t *CShockTrooper :: GetSchedule()
 				// 10% chance of flinch.
 				int iPercent = RANDOM_LONG(0,99);
 
-				if ( iPercent <= 90 && m_hEnemy != NULL )
+				if ( iPercent <= 90 && m_hEnemy != nullptr )
 				{
 					// only try to take cover if we actually have an enemy!
 
@@ -2226,7 +2226,7 @@ Schedule_t* CShockTrooper :: GetScheduleOfType ( int Type )
 		}
 	case SCHED_FAIL:
 		{
-			if ( m_hEnemy != NULL )
+			if ( m_hEnemy != nullptr )
 			{
 				// grunt has an enemy, so pick a different default fail schedule most likely to help recover.
 				return &slShockTrooperCombatFail[ 0 ];

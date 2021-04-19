@@ -580,7 +580,7 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 
 			pPlayer->RemoveAllItems( TRUE );// destroy all of the players weapons and items
 
-			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgSpectator, 0, 0);
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgSpectator, nullptr, nullptr);
 			g_engfuncs.pfnWriteByte(ENTINDEX(pClient));
 			g_engfuncs.pfnWriteByte(0);
 			g_engfuncs.pfnMessageEnd();

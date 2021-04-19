@@ -229,7 +229,7 @@ void COFShockRoach :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			UTIL_MakeVectors ( pev->angles );
 
 			Vector vecJumpDir;
-			if (m_hEnemy != NULL)
+			if (m_hEnemy != nullptr)
 			{
 				float gravity = g_psv_gravity->value;
 				if (gravity <= 1)
@@ -336,7 +336,7 @@ void COFShockRoach :: RunTask ( Task_t *pTask )
 			if ( m_fSequenceFinished )
 			{
 				TaskComplete();
-				SetTouch( NULL );
+				SetTouch( nullptr );
 				m_IdealActivity = ACT_IDLE;
 			}
 			break;
@@ -372,7 +372,7 @@ void COFShockRoach :: LeapTouch ( CBaseEntity *pOther )
 		if( !pPlayer->HasNamedPlayerItem( "weapon_shockrifle" ) )
 		{
 			pPlayer->GiveNamedItem( "weapon_shockrifle" );
-			SetTouch( NULL );
+			SetTouch( nullptr );
 			UTIL_Remove( this );
 			return;
 		}
@@ -386,7 +386,7 @@ void COFShockRoach :: LeapTouch ( CBaseEntity *pOther )
 		pOther->TakeDamage( pev, pev, GetDamageAmount(), DMG_SLASH );
 	}
 
-	SetTouch( NULL );
+	SetTouch( nullptr );
 }
 
 //=========================================================

@@ -197,7 +197,7 @@ void CGib::SpawnRandomGibs( entvars_t *pevVictim, int cGibs, const GibData& gibD
 
 	for( cSplat = 0; cSplat < cGibs; cSplat++ )
 	{
-		CGib *pGib = GetClassPtr( ( CGib * ) NULL );
+		CGib *pGib = GetClassPtr( ( CGib * ) nullptr );
 
 		if( g_Language == LANGUAGE_GERMAN )
 		{

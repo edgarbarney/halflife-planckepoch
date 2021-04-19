@@ -48,7 +48,7 @@ public:
 
 private:
 	void RecountTeams( bool bResendInfo = FALSE );
-	const char *TeamWithFewestPlayers();
+	const char *TeamWithFewestPlayers() override;
 
 	BOOL m_DisableDeathMessages;
 	BOOL m_DisableDeathPenalty;

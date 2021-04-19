@@ -608,10 +608,10 @@ public:
 class CHudFlagIcons : public CHudBase
 {
 public:
-	int Init();
-	int VidInit();
-	void InitHUDData();
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	void InitHUDData() override;
+	int Draw(float flTime) override;
 	void EnableFlag(const char* pszFlagName, unsigned char team_idx, unsigned char red, unsigned char green, unsigned char blue, unsigned char score);
 	void DisableFlag(const char* pszFlagName, unsigned char team_idx);
 
@@ -648,10 +648,10 @@ private:
 class CHudPlayerBrowse : public CHudBase
 {
 public:
-	int Init();
-	int VidInit();
-	void InitHUDData();
-	int Draw(float flTime);
+	int Init() override;
+	int VidInit() override;
+	void InitHUDData() override;
+	int Draw(float flTime) override;
 
 	int MsgFunc_PlyrBrowse(const char* pszName, int iSize, void* pbuf);
 
@@ -692,11 +692,11 @@ private:
 class CHudScoreboard : public CHudBase
 {
 public:
-	int Init();
-	void InitHUDData();
-	int VidInit();
-	int Draw(float flTime);
-	int DrawPlayers(int xoffset, float listslot, int nameoffset = 0, char* team = NULL); // returns the ypos where it finishes drawing
+	int Init() override;
+	void InitHUDData() override;
+	int VidInit() override;
+	int Draw(float flTime) override;
+	int DrawPlayers(int xoffset, float listslot, int nameoffset = 0, char* team = nullptr); // returns the ypos where it finishes drawing
 	void UserCmd_ShowScores();
 	void UserCmd_HideScores();
 	int MsgFunc_ScoreInfo(const char* pszName, int iSize, void* pbuf);

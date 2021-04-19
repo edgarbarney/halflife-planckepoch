@@ -26,7 +26,7 @@ public:
 
 	void Spawn() override;
 
-	BOOL CTFSpawn::IsTriggered(CBaseEntity* pEntity) override;
+	BOOL IsTriggered(CBaseEntity* pEntity) override;
 
 	CTFTeam team_no;
 	bool m_fState;

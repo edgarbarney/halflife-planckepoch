@@ -511,11 +511,11 @@ private:
 	int			 m_iUser3;
 
 	// VGUI Menus
-	void		 CreateTeamMenu( void );
-	CMenuPanel*	 ShowTeamMenu( void );
-	void		 CreateClassMenu( void );
-	CMenuPanel*	 ShowClassMenu( void );
-	void		 CreateSpectatorMenu( void );
+	void		 CreateTeamMenu( );
+	CMenuPanel*	 ShowTeamMenu( );
+	void		 CreateClassMenu( );
+	CMenuPanel*	 ShowClassMenu( );
+	void		 CreateSpectatorMenu( );
 	void CreateStatsMenu();
 	
 	// Scheme handler

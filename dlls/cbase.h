@@ -315,8 +315,8 @@ public:
 	//LRC- WAS superceded by GetState ( pActivator ) but respawned by OP4
 	//TODO - Replace IsTriggered with GetState
 	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return TRUE;}
-	virtual CBaseMonster *MyMonsterPointer() { return NULL;}
-	virtual CSquadMonster *MySquadMonsterPointer() { return NULL;}
+	virtual CBaseMonster *MyMonsterPointer() { return nullptr;}
+	virtual CSquadMonster *MySquadMonsterPointer() { return nullptr;}
 	virtual COFSquadTalkMonster *MySquadTalkMonsterPointer() { return nullptr; }
 	virtual	int		GetToggleState() { return TS_AT_TOP; }
 	virtual void	AddPoints( int score, BOOL bAllowNegativeScore ) {}

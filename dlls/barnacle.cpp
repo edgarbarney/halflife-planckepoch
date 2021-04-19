@@ -155,7 +155,7 @@ void CBarnacle :: BarnacleThink ()
 
 	UpdateShockEffect();
 
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 // barnacle has prey.
 
@@ -336,7 +336,7 @@ void CBarnacle :: Killed( entvars_t *pevAttacker, int iGib )
 
 	ClearShockEffect();
 
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 		pVictim = m_hEnemy->MyMonsterPointer();
 

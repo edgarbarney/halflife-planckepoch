@@ -22,14 +22,14 @@ const auto SF_ITEMGENERIC_DROP_TO_FLOOR = 1 << 0;
 class CItemGeneric : public CBaseAnimating
 {
 public:
-	void	Spawn(void);
-	void	Precache(void);
-	void	KeyValue(KeyValueData* pkvd);
+	void	Spawn() override;
+	void	Precache() override;
+	void	KeyValue(KeyValueData* pkvd) override;
 
-	virtual int		ObjectCaps(void) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int		ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	virtual int		Save(CSave& save);
-	virtual int		Restore(CRestore& restore);
+	int		Save(CSave& save) override;
+	int		Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL m_fDisableShadows;
@@ -63,12 +63,12 @@ void CItemGeneric::KeyValue(KeyValueData* pkvd)
 		CBaseAnimating::KeyValue(pkvd);
 }
 
-void CItemGeneric::Precache(void)
+void CItemGeneric::Precache()
 {
 	PRECACHE_MODEL((char*)STRING(pev->model));
 }
 
-void CItemGeneric::Spawn(void)
+void CItemGeneric::Spawn()
 {
 	if (pev->targetname)
 	{

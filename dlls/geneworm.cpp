@@ -173,7 +173,7 @@ void COFGeneWormCloud::TurnOn()
 {
 	pev->effects = 0;
 
-	if( pev->framerate != 0 && m_maxFrame > 1.0 || pev->spawnflags & 2 )
+	if( (pev->framerate != 0 && m_maxFrame > 1.0) || pev->spawnflags & 2 )
 	{
 		SetThink( &COFGeneWormCloud::GeneWormCloudThink );
 		pev->nextthink = gpGlobals->time;
@@ -441,7 +441,7 @@ void COFGeneWormSpawn::TurnOn()
 {
 	pev->effects = 0;
 
-	if( pev->framerate != 0 && m_maxFrame > 1.0 || pev->spawnflags & 2 )
+	if( (pev->framerate != 0 && m_maxFrame > 1.0) || pev->spawnflags & 2 )
 	{
 		SetThink( &COFGeneWormSpawn::GeneWormSpawnThink );
 		pev->nextthink = gpGlobals->time;
@@ -1446,7 +1446,7 @@ void COFGeneWorm::TraceAttack( entvars_t* pevAttacker, float flDamage, Vector ve
 			return;
 		}
 
-		if( m_fLeftEyeHit && m_fRightEyeHit || m_fGetMad )
+		if( (m_fLeftEyeHit && m_fRightEyeHit) || m_fGetMad )
 			return;
 	}
 
@@ -1578,7 +1578,7 @@ BOOL COFGeneWorm::FVisible( const Vector& vecOrigin )
 
 void FireHurtTargets( const char *targetName, CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	edict_t *pentTarget = NULL;
+	edict_t *pentTarget = nullptr;
 	if( !targetName )
 		return;
 

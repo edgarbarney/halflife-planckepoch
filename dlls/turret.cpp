@@ -492,7 +492,7 @@ void CBaseTurret::ActiveThink()
 
 	UpdateShockEffect();
 
-	if ((!m_iOn) || (m_hEnemy == NULL))
+	if ((!m_iOn) || (m_hEnemy == nullptr))
 	{
 		m_hEnemy = nullptr;
 		m_flLastSight = gpGlobals->time + m_flMaxWait;

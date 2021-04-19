@@ -599,13 +599,13 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 {
 	gViewPort = this;
 	m_iInitialized = false;
-	m_pTeamMenu = NULL;
-	m_pClassMenu = NULL;
-	m_pStatsMenu = NULL;
-	m_pScoreBoard = NULL;
-	m_pSpectatorPanel = NULL;
-	m_pCurrentMenu = NULL;
-	m_pCurrentCommandMenu = NULL;
+	m_pTeamMenu = nullptr;
+	m_pClassMenu = nullptr;
+	m_pStatsMenu = nullptr;
+	m_pScoreBoard = nullptr;
+	m_pSpectatorPanel = nullptr;
+	m_pCurrentMenu = nullptr;
+	m_pCurrentCommandMenu = nullptr;
 
 	Initialize();
 	addInputSignal( new CViewPortInputHandler );

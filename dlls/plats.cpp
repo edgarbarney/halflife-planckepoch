@@ -1599,7 +1599,7 @@ void CSpriteTrain::Activate()
 	if( !m_activated )
 	{
 		m_activated = TRUE;
-		entvars_t	*pevTarg = VARS( FIND_ENTITY_BY_TARGETNAME( NULL, STRING( pev->target ) ) );
+		entvars_t	*pevTarg = VARS( FIND_ENTITY_BY_TARGETNAME( nullptr, STRING( pev->target ) ) );
 
 		pev->target = pevTarg->target;
 		m_pevCurrentTarget = pevTarg;// keep track of this since path corners change our target for us.
