@@ -115,7 +115,12 @@ int ApplyDesiredSettings( CBaseEntity *pListMember )
 	{
 		pListMember->m_iLFlags &= ~LF_DESIRED_THINK;
 		//ALERT(at_console, "DesiredThink %s\n", STRING(pListMember->pev->targetname));
-		pListMember->Think();
+
+		//	!!!BUGBUG - pListMember->Think() is throwing a weird exception
+		//	from an entity that has no classname in of1a2
+		//	this branch prevents that
+		if (STRING(pListMember->pev->classname)[0] != '\0')
+			pListMember->Think();
 	}
 
 	return 1;
