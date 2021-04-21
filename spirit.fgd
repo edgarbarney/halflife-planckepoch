@@ -1,6 +1,6 @@
-// Spirit of Half-Life v1.8 FGD with Trinity
-// For WorldCraft 3.5+ and Half-Life 1.1.0.8+
-// Last update: 31th March 2021
+// Spirit of Opposing Force FGD with Trinity
+// Based on SoHL 1.8
+// Last update: 21st April 2021
 
 // In textpad use regular expression ^[\t ]*//.*\n to remove ALL comments
 
@@ -58,6 +58,12 @@
 	[
 		0 : "Fewest Players"
 		1 : "First Team"
+	]
+	//OP4
+	defaultctf(choices) : "Default CTF" : 0 =
+	[
+    0 : "Not CTF map"
+    1 : "CTF map"
 	]
 	//NEW 0.3
 	//* Yes means the player will start this level wearing an HEV suit.
@@ -1113,11 +1119,14 @@
 		//* Even if the animation makes the monster look like it's walking around, DON'T shift
 		//* the monster to its apparent new location when the animation ends.
 		128: "No Script Movement" : 0
+		//OP4
+		256: "No Reset Entity" : 0
 		//NEW 0.4
 		//* Some death sequences kill the monster automatically (e.g. "herodie" in loader.mdl)
 		//* but for most you'll have to tick this box. This is affected by Leave Corpse in the
 		//* obvious way.
-		256: "Monster Dies" : 0
+		//* Its 512 instead of SoHL's 256 because it conflicts with OP4's No Reset Entity
+		512: "Monster Dies" : 0
 	]
 ]
 
@@ -2664,7 +2673,7 @@
 	frags(integer) : "Number of lightning bolts" : 12
 ]
 
-@SolidClass base(Breakable, MoveWith, RenderFields, ZHLTLightKeys, SwitchTexLight) = func_breakable : "Breakable Object" 
+@SolidClass base(Breakable, MoveWith, RenderFields, Angles, ZHLTLightKeys, SwitchTexLight) = func_breakable : "Breakable Object" 
 [
 	_minlight(string) : "Minimum light level"
 ]
@@ -3580,6 +3589,12 @@
 @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx) studio("models/w_security.mdl")= item_security : "Security card" []
 @PointClass size(-16 -16 0, 16 16 36) base(Weapon, Targetx) studio("models/w_suit.mdl")= item_suit : "HEV Suit" 
 [
+	//OP4
+	body(Choices) : "Body" : 0 =
+	[
+		0 : "Standing"
+		1 : "Laying Flat"
+	]
 	spawnflags(Flags) =
 	[
 		1 : "Short Logon" : 0
@@ -3862,6 +3877,12 @@
 @PointClass base(Targetname, RenderFields) size(-16 -16 -36, 16 16 0) studio("models/barnacle.mdl") = monster_barnacle : "Barnacle Monster" []
 @PointClass base(Monster, TalkMonster) size(-16 -16 0, 16 16 72) studio("models/barney.mdl") = monster_barney : "Barney"
 [
+	//OP4
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 	frags(choices) : "Weapon" : 0 =
 	[
 		0 : "Glock (normal)"
@@ -4267,7 +4288,13 @@
 @PointClass base(Weapon,Targetx,RenderFields) studio("models/w_satchel.mdl") = monster_satchelcharge : "Live Satchel Charge" []
 @PointClass base(Monster, TalkMonster) size(-16 -16 0, 16 16 72) studio("models/scientist.mdl") = monster_scientist : "Scared Scientist" 
 [
-      body(Choices) : "Body" : -1 =
+	//OP4
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+    body(Choices) : "Body" : -1 =
 	[
 		-1: "Random"
 		0 : "Glasses"
@@ -5936,6 +5963,8 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	message(target_destination) : "Landmark entity"
 	//NEW 0.6
 	noise(target_destination) : "Fire on teleporting"
+	//OP4
+	telesound(string) : "Teleport Sound"
 ]
 
 @SolidClass base(Targetname) = trigger_transition : "Trigger: Select Transition Area" []
@@ -6170,3 +6199,768 @@ m_flWindY(integer) : "Wind Y" : 0
 m_flRandX(integer) : "Rand X" : 0 
 m_flRandY(integer) : "Rand Y" : 0 
 ] 
+
+
+//////////////////////////////////////////////////////////////////////////////
+// OP4							          									//
+//////////////////////////////////////////////////////////////////////////////
+
+
+//
+//AMMO
+//
+
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/W_saw_clip.mdl") = ammo_556 : "M249 Ammo" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_m40a1clip.mdl") = ammo_762 : "Sniper Ammo" []
+
+//Spore ammo orientation refers to the direction that the base of the plant faces
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/spore_ammo.mdl") = ammo_spore : "Spore" []
+
+
+
+//
+// ENV ENTITIES
+//
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_blowercannon : "Blower Cannon"
+[
+  delay(string) : "Delay" : "0"
+  zoffset(integer) : "Z Offset" : 0
+  target(string) : "Target" : ""
+  weaptype(choices) :"Weapon Type" : 1 =
+  [
+    1: "Spore (Rocket)"
+    2: "Spore (Grenade)"
+    3: "Shock Beam"
+    4: "Displacer Ball"
+  ]
+  firetype(choices) :"Fire Type" : 1 =
+  [
+    1: "Toggle On/Off"
+    2: "Fire When Triggered"
+  ]
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_electrified_wire : "Electrified Wire"
+[
+  segments(integer) : "Segments" : 16
+  sparkfrequency(integer) : "Spark Frequency" : 3
+  bodysparkfrequency(integer) : "Body Spark Frequency" : 3
+  lightningfrequency(integer) : "Lightning Frequency" : 3
+  xforce(integer) : "X Force" : 80000
+  yforce(integer) : "Y Force" : 80000
+  zforce(integer) : "Z Force" : 80000
+  disable(choices) :"Disable Use" : 0 =
+  [
+    0: "Not Disabled"
+    1: "Disabled"
+  ]
+  endingmodel(studio) : "Ending Model" : "models/wire_copper16.mdl"
+  bodymodel(studio) : "Body Model" : "models/wire_black16.mdl"
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_rope : "Rope"
+[
+  segments(integer) : "Segments" : 16
+  disable(choices) :"Disable Use" : 0 =
+  [
+    0: "Not Disabled"
+    1: "Disabled"
+  ]
+  endingmodel(studio) : "Ending Model" : "models/rope16.mdl"
+  bodymodel(studio) : "Body Model" : "models/rope16.mdl"
+]
+
+
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) color(0 128 255)= env_spritetrain : "Sprite Train"
+[
+  target(target_source) : "First stop target"
+  model(sprite) : "Sprite Name" : "sprites/glow01.spr"
+  speed(integer) : "Speed (units per second)" : 64
+  scale(string) : "Sprite Scale"      
+]
+
+
+//
+// FUNC ENTITIES
+//
+
+@SolidClass base(Target) = func_op4mortarcontroller : "Op4 Mortar Controller" 
+[
+    mortar_axis(Choices) : "Axis" : 0 =
+    [
+        0 : "Vertical"
+        1 : "Horizontal"
+    ]
+]
+
+@BaseClass base(Targetname, Target, RenderFields, Global) = BaseTankOF
+[
+  spawnflags(flags) =
+  [
+    1 : "Active" : 0
+    16: "Only Direct" : 0
+    32: "Controllable" : 0
+  ]
+
+  // Mainly for use with 1009 team settings (game_team_master)
+  master(string) : "(Team) Master" 
+
+  yawrate(string) : "Yaw rate" : "30"
+  yawrange(string) : "Yaw range" : "180"
+  yawtolerance(string) : "Yaw tolerance" : "15"
+  pitchrate(string) : "Pitch rate" : "0"
+  pitchrange(string) : "Pitch range" : "0"
+  pitchtolerance(string) : "Pitch tolerance" : "5"
+  barrel(string) : "Barrel Length" : "0"
+  barrely(string) : "Barrel Horizontal" : "0"
+  barrelz(string) : "Barrel Vertical" : "0"
+  spritesmoke(string) : "Smoke Sprite" : ""
+  spriteflash(string) : "Flash Sprite" : ""
+  spritescale(string) : "Sprite scale" : "1"
+  rotatesound(sound) : "Rotate Sound" : ""
+  firerate(string) : "Rate of Fire" : "1"
+  bullet_damage(string) : "Damage Per Bullet" : "0"
+  persistence(string) : "Firing persistence" : "1"
+  firespread(choices) : "Bullet accuracy" : 0 =
+  [
+    0: "Perfect Shot"
+    1: "Small cone"
+    2: "Medium cone"
+    3: "Large cone"
+    4: "Extra-large cone"
+  ]
+  minRange(string) : "Minmum target range" : "0"
+  maxRange(string) : "Maximum target range" : "0"
+  _minlight(string) : "Minimum light level"
+  enemytype(Choices) : "Enemy Type" : 1 =
+  [
+    0: "Player"
+    1: "Ally"
+    2: "Random"
+  ]
+]
+
+// Don't forget func_tankcontrols_of
+@SolidClass base(BaseTankOF) = func_tank_of : "Brush Gun Turret" 
+[
+  bullet(choices) : "Bullets" : 0 = 
+  [
+    0: "None"
+    1: "9mm"
+    2: "MP5"
+    3: "12mm"
+  ]
+]
+
+@SolidClass = func_tankcontrols_of : "Tank controls"
+[
+  target(target_destination) : "Tank entity name"
+]
+
+// Don't forget func_tankcontrols_of
+@SolidClass base(BaseTankOF) = func_tanklaser_of : "Brush Laser Turret" 
+[
+  laserentity(target_source) : "env_laser Entity"
+]
+
+// Don't forget func_tankcontrols
+@SolidClass base(BaseTankOF) = func_tankrocket_of : "Brush Rocket Turret" []
+
+
+// Don't forget func_tankcontrols
+@SolidClass base(BaseTankOF) = func_tankmortar_of : "Brush Mortar Turret" 
+[
+  iMagnitude(Integer) : "Explosion Magnitude" : 100
+]
+
+//
+// INFO ENTITIES
+//
+
+// Displacer target placement represents the point where the player's feet shall be
+@PointClass base(Targetname) size(-4 -4 -4, 4 4 4) color(200 100 50) = info_displacer_xen_target : "Displacer XEN Target" []
+@PointClass base(Targetname) size(-4 -4 -4, 4 4 4) color(200 100 50) = info_displacer_earth_target : "Displacer EARTH Target" []
+
+@PointClass base(Targetname, Target) = info_pitworm_steam_lock : "Pitworm Steam Lock" []
+
+
+//
+// ITEM ENTITIES
+//
+
+@PointClass base(Weapon, Targetx) = item_generic : "Generic scenery item"
+[
+	model(studio) : "Model" : "models/egg.mdl"
+	sequencename(string) : "Sequence Name" : "idle"
+	skin(integer) : "Skin" : 0
+	body(integer) : "Body" : 0
+]
+
+@PointClass base(Weapon, Targetx) size(-16 -16 0, 16 16 36) = item_nuclearbomb : "Nuclear Bomb"
+[
+      initialstate(integer) : "Initial State" : 0
+	wait(integer) : "Wait" : 1
+]
+
+
+
+//
+// MONSTERS
+//
+
+@PointClass base(Monster, Sequence) studio("models/baby_voltigore.mdl") = monster_alien_babyvoltigore : "Baby Voltigore" 
+[
+  netname(string) : "Squad Name"
+  spawnflags(Flags) =
+  [
+    32 : "SquadLeader" : 0
+  ]
+]
+
+
+
+@PointClass base(Monster, Sequence) studio("models/voltigore.mdl") = monster_alien_voltigore : "Voltigore" 
+[
+  netname(string) : "Squad Name"
+  spawnflags(Flags) =
+  [
+    32 : "SquadLeader" : 0
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/islave.mdl") = monster_alien_slave_dead : "Dead Vortigaunt" 
+[
+      pose(Choices) : "Pose" : 0 =
+  [
+    0 : "On Stomach"
+  ]
+]
+
+
+@PointClass base(Monster, Sequence) studio("models/massn.mdl") = monster_assassin_repel : "Male Assassin (Repel)" []
+
+@PointClass base(Monster, Sequence) studio("models/blkop_apache.mdl") = monster_blkop_apache : "Black Ops Apache" 
+[
+  spawnflags(Flags) = 
+  [
+    8 : "NoWreckage"  : 0
+    64 : "Start Inactive" : 0
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/blkop_osprey.mdl") = monster_blkop_osprey : "Black Ops Osprey"
+[
+  spawnflags(Flags) = 
+  [
+    64 : "Start Inactive" : 0
+  ]
+]
+
+
+@PointClass base(Monster, TalkMonster, Sequence) studio("models/cleansuit_scientist.mdl") = monster_cleansuit_scientist : "Cleansuit Scientist" 
+[
+    body(Choices) : "Body" : -1 =
+    [
+        -1 : "Random"
+        0 : "Glasses"
+        1 : "Einstein"
+        2 : "Luther"
+        3 : "Slick"
+    ]
+]
+
+@PointClass base(Targetname,Appearflags,RenderFields, Sequence) studio("models/cleansuit_scientist.mdl") = monster_cleansuit_scientist_dead : "Dead Cleansuit Scientist" 
+[
+  body(Choices) : "Body" : -1 =
+  [
+    -1 : "Random"
+    0 : "Glasses"
+    1 : "Einstein"
+    2 : "Luther"
+    3 : "Slick"
+  ]
+      pose(Choices) : "Pose" : 0 =
+  [
+    0 : "On back"
+    1 : "On Stomach"
+    2 : "Sitting"
+    3 : "Hanging"
+    4 : "Table1"
+    5 : "Table2"
+    6 : "Table3"
+    7 : "Hi Mike!"
+    8 : "Dead Against Wall"
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/cleansuit_scientist.mdl") = monster_sitting_cleansuit_scientist : "Sitting Cleansuit Scientist" 
+[
+      body(Choices) : "Body" : -1 =
+  [
+    -1 : "Random"
+    0 : "Glasses"
+    1 : "Einstein"
+    2 : "Luther"
+    3 : "Slick"
+  ]
+]
+
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/drill.mdl") = monster_drillsergeant : "Drill Sergeant" []
+
+@PointClass base(Monster, Sequence) studio("models/geneworm.mdl") = monster_geneworm : "Gene Worm" []
+@PointClass base(Monster, Sequence) studio("models/gonome.mdl") = monster_gonome : "Gonome" []
+@PointClass base(Targetname,Appearflags,RenderFields, Sequence) studio("models/gonome.mdl") = monster_gonome_dead : "Dead Gonome" 
+[
+      pose(Choices) : "Pose" : 0 =
+  [
+    0 : "On Stomach"
+    1 : "On Back"
+    2 : "On Side"
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/houndeye_dead.mdl") = monster_houndeye_dead : "Dead Houndeye" 
+[
+  pose(Choices) : "Pose" : 0 =
+  [
+    0 : "Just plain dead"
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/hgrunt_opfor.mdl") = monster_grunt_ally_repel : "Human Grunt Ally (Repel)"
+[
+  spawnflags(Flags) =
+  [
+    32 : "SquadLeader" : 0
+  ]
+  netname(string) : "Squad Name"
+  weapons(Choices) : "Weapons" : 3 =
+  [
+    1 : "9mmAR"
+    3 : "9mmAR + HG"
+    5 : "9mmAR + GL"
+    8 : "Shotgun"
+    10 : "Shotgun + HG"
+    16 : "Saw"
+  ]
+  head(Choices) : "Heads" : -1 =
+  [
+    -1 : "Default"
+    0 : "Gas Mask"
+    1 : "Beret"
+    2 : "Ops Mask"
+    3 : "Bandana White"
+    4 : "Bandana Black"
+  ]
+]
+
+@PointClass base(Monster, Sequence) studio("models/hgrunt_opfor.mdl") = monster_human_grunt_ally : "Human Grunt Ally (camo)" 
+[
+    netname(string) : "Squad Name"
+    
+    spawnflags(Flags) =
+    [
+        32 : "SquadLeader" : 0
+    ]
+
+    weapons(Choices) : "Weapons" : 3 =
+    [
+        0 : "None"
+        1 : "9mmAR"
+        3 : "9mmAR + HG"
+        5 : "9mmAR + GL"
+        8 : "Shotgun"
+        10 : "Shotgun + HG"
+        16 : "Saw"
+    ]
+
+    head(Choices) : "Heads" : -1 =
+    [
+        -1 : "Default"
+         0 : "Gas Mask"
+         1 : "Beret"
+         2 : "Ops Mask"
+         3 : "Bandana White"
+         4 : "Bandana Black"
+         5 : "MP"
+         6 : "Major"
+         7 : "Beret (Black)"
+    ]
+]
+
+
+@PointClass base(Targetname,Appearflags,RenderFields, Sequence) studio("models/hgrunt_opfor.mdl") = monster_human_grunt_ally_dead : "Dead Human Grunt Ally" 
+[
+      pose(Choices) : "Pose" : 0 =
+	[
+		0 : "On stomach"
+		1 : "On side"
+		2 : "Seated"
+		3 : "Dead On Back"
+		4 : "Dead On Stomach"
+		5 : "Head Crabbed"
+	]
+
+	weapons(Choices) : "Weapons" : 1 =
+	[
+		0 : "None"
+		1 : "9mmAR"
+		8 : "Shotgun"
+		16 : "Saw"
+	]
+
+	head(Choices) : "Heads" : 0 =
+	[
+		0 : "Gas Mask"
+		1 : "Beret"
+		2 : "Ops Mask"
+		3 : "Bandana White"
+		4 : "Bandana Black"
+		5 : "MP"
+	]
+]
+
+
+@PointClass base(Monster, Sequence) studio("models/hgrunt_medic.mdl") = monster_human_medic_ally : "Medic" 
+[
+    netname(string) : "Squad Name"
+    
+    spawnflags(Flags) =
+    [
+        32 : "SquadLeader" : 0
+    ]
+
+    head(Choices) : "Heads" : -1 =
+    [
+       -1 : "Random"
+        0 : "White"
+        1 : "Black"
+    ]
+
+    weapons(Choices) : "Weapons" : 2 =
+    [
+	  0 : "None"
+        1 : "Desert Eagle"
+        2 : "9mm Handgun"
+        4 : "Hypodermic Needle"
+    ]
+]
+
+
+@PointClass base(Monster, Sequence) studio("models/hgrunt_torch.mdl") = monster_human_torch_ally : "Torch" 
+[
+  netname(string) : "Squad Name"
+  spawnflags(Flags) =
+  [
+    32 : "SquadLeader" : 0
+  ]
+  weapons(Choices) : "Weapons" : 1 =
+  [
+    1 : "Desert Eagle"
+    2 : "Blow Torch"
+  ]
+]
+
+
+@PointClass base(Monster, Sequence) studio("models/massn.mdl") = monster_male_assassin : "Male Assassin"
+[
+    netname(string) : "Squad Name"
+    
+    spawnflags(Flags) =
+    [
+        32 : "SquadLeader" : 0
+    ]
+
+    head(Choices) : "Heads" : 0 =
+    [
+       -1 : "Random"
+        0 : "Ski Mask White"
+        1 : "Ski Mask Black"
+        2 : "Night Goggles"
+    ]
+
+    weapons(Choices) : "Weapons" : 3 =
+    [
+        0 : "None"
+        1 : "9mmAR"
+        3 : "9mmAR + HG"
+        5 : "9mmAR + GL"
+        8 : "Sniper Rifle"
+    ]
+    standgroundrange(string) : "Stand Ground Range" : "0.0"
+]
+
+@PointClass base(Monster, RenderFields, Sequence) studio("models/loader.mdl") = monster_op4loader : "Loader machine" 
+[
+  spawnflags(Flags) = 
+  [
+    4 : "Not solid" : 0
+  ]
+]
+
+
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/otis.mdl") = monster_otis : "Otis"
+[
+	bodystate(Choices) : "bodystate" : -1 =
+	[
+		-1 : "Random"
+		0 : "Gun Holstered"
+		1 : "Gun Drawn"
+		3 : "Donut"
+	]
+	head(Choices) : "head" : -1 =
+	[
+		-1 : "Random"
+		0 : "Bald Head"
+		1 : "Head with hair"
+	]
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@PointClass base(Targetname,Appearflags, Sequence) studio("models/otis.mdl") = monster_otis_dead : "Dead Otis" 
+[
+    pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+	  3 : "Stuffed in Vent"
+	  4 : "Dead Sitting"
+    ]
+]
+
+
+@PointClass base(Monster, Sequence) studio("models/pit_drone.mdl") = monster_pitdrone : "PitDrone"
+[
+initammo(string) : "Initial Ammo" : "6"
+]
+
+@PointClass base(Monster, Sequence) studio("models/pit_worm_up.mdl") = monster_pitworm : "Pit Worm" []
+@PointClass base(Monster, Sequence) studio("models/pit_worm_up.mdl") = monster_pitworm_up : "Pit Worm Upright" []
+
+@PointClass base(Monster, Sequence) studio("models/w_shock_rifle.mdl") = monster_shockroach : "Shock Roach" []
+
+
+@PointClass base(Monster, Sequence) studio("models/zombie_barney.mdl") = monster_zombie_barney : "Barney Zombie" []
+@PointClass base(Monster, Sequence) studio("models/zombie_soldier.mdl") = monster_zombie_soldier : "Soldier Zombie" []
+@PointClass base(Monster, Sequence) studio("models/zombie_soldier.mdl") = monster_zombie_soldier_dead : "Dead Soldier Zombie"
+[
+    pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On stomach"
+    ]
+]
+
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/recruit.mdl") = monster_recruit : "Recruit" []
+
+@PointClass base(Targetname,Appearflags,RenderFields, Sequence) size(-16 -16 0, 16 16 72) = monster_skeleton_dead : "Dead Skeleton" 
+[
+      pose(Choices) : "Pose" : 0 =
+	[
+		0 : "On back"
+		1 : "Seated"
+		2 : "Against Wall"
+		3 : "On Stomach"
+	]
+]
+
+@PointClass base(Monster, Sequence) studio("models/strooper.mdl") = monster_shocktrooper : "Shock Trooper" 
+[
+    netname(string) : "Squad Name"
+    spawnflags(Flags) =
+    [
+        32 : "SquadLeader" : 0
+    ]
+    weapons(Choices) : "Weapons" : 3 =
+    [
+        1 : "9mmAR"
+        3 : "9mmAR + HG"
+        5 : "9mmAR + GL"
+        8 : "Shotgun"
+        10 : "Shotgun + HG"
+    ]
+]
+
+@PointClass base(Targetname) = op4mortar : "Op4 Mortar" 
+[
+    spawnflags(Flags) =
+    [
+        1  : "Active" : 0
+        16 : "Line of Sight" : 1
+        32 : "Can Control" : 1
+    ]
+    mortar_velocity(integer) : "Velocity" : 800
+    h_min(integer) : "Horiz MIN" : -90
+    h_max(integer) : "Horiz MAX" : 90
+    mindist(integer) : "Min Target Dist" : 256
+    maxdist(integer) : "Max Target Dist" : 2048
+    enemytype(Choices) : "Enemy Type" : 0 =
+    [
+        0 : "Player"
+        1 : "Ally"
+        2 : "Random"
+    ]
+    firedelay(integer) : "Fire Rate" : 5
+]
+
+
+@PointClass base(gibshooterbase) = pitworm_gibshooter : "Pitworm Gib Shooter" []
+
+
+//
+// TRIGGERS
+//
+
+@SolidClass base(Targetname,Target) = trigger_geneworm_hit : "Trigger GeneWorm Hit" 
+[
+  spawnflags(flags) = 
+  [ 
+    1: "Target Once" : 0 
+    2: "Start Off" : 0
+    8: "No clients" : 0
+    16:"FireClientOnly" : 0
+    32:"TouchClientOnly" : 0
+  ]
+  master(string) : "Master" 
+  delay(string) : "Delay before trigger" : "0"
+]
+
+@PointClass base(Targetx, Targetname) = trigger_playerfreeze : "Trigger Player Freeze" []
+@SolidClass base(Trigger) = trigger_xen_return : "Return To Earth (self-tele)" []
+
+//
+//WEAPONS
+//
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_displacer.mdl") = weapon_displacer : "Displacer" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_desert_eagle.mdl") = weapon_eagle : "Desert Eagle" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_bgrap.mdl") = weapon_grapple : "Barnacle Grapple" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_knife.mdl") = weapon_knife : "Knife" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_saw.mdl") = weapon_m249 : "M249 SAW" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_penguinnest.mdl") = weapon_penguin : "Killer Penguin" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_pipe_wrench.mdl") = weapon_pipewrench : "Pipe Wrench" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_shock.mdl") = weapon_shockrifle : "Shock Roach" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_m40a1.mdl") = weapon_sniperrifle : "Sniper Rifle" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_spore_launcher.mdl") = weapon_sporelauncher : "Spore Launcher" []
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// OP4 CTF							          								//
+//////////////////////////////////////////////////////////////////////////////
+
+
+//
+// BaseClasses
+//
+
+
+@BaseClass = CTFAttributes
+[
+	goal_no(Choices) : "Team" : 1 =
+	[
+		1 : "Black Mesa"
+		2 : "Opposing Force"
+	]
+	goal_min(string) : "Min Bounds" : "-16 -16 0"
+	goal_max(string) : "Max Bounds" : "16 16 72"
+]
+
+@BaseClass = CTFItem
+[
+	spawnflags(flags) = 
+	[ 
+		4: "Random Spawn" : 0 
+	]
+	team_no(Choices) : "Team" : 0 =
+	[
+		0 : "Random"
+		1 : "Black Mesa"
+		2 : "Opposing Force"
+	]
+]
+
+
+//
+// Items
+//
+
+
+@PointClass base(CTFAttributes) size(-16 -16 0, 16 16 72) = item_ctfflag : "CTF Flag"
+[
+	skin(choices) : "Skin" : 1 =
+	[
+		1 : "Black Mesa"
+		2 : "Opposing Force"
+	]
+	model(studio) : "Model" : "models/flag.mdl"
+]
+@PointClass base(CTFAttributes) size(-16 -16 0, 16 16 72) = item_ctfbase : "CTF Goal"
+[
+	skin(choices) : "Skin" : 0 =
+	[
+		0 : "Default"
+	]
+	model(studio) : "Model" : "models/civ_stand.mdl"
+]
+@PointClass base(PlayerClass) = info_ctfspawn : "Player CTF Start" 
+[
+	team_no(Choices) : "Team" : 0 =
+	[
+		0 : "Random"
+		1 : "Black Mesa"
+		2 : "Opposing Force"
+	]
+]
+
+@PointClass = info_ctfdetect : "CTF Detect"
+[
+	flagreturntime(string) : "Flag Return Time" : "30.0"
+	basedefenddist(string) : "Base Defend Distance" : "192.0"
+	defendcarriertime(string) : "Defend Carrier Time" : "10.0"
+	captureassisttime(string) : "Capture Assist Time" : "10.0"
+	poweruprespawntime(string) : "Powerup Respawn Time" : "30.0"
+	score_icon_namebm(string) : "Non-Flag Black Mesa icon" : "item_ctfscorebm"
+	score_icon_nameof(string) : "Non-Flag Opposing Force icon" : "item_ctfscoreof"
+	map_score_max(string) : "Maximum Map Team Score" : "0"
+]
+
+@PointClass base(CTFItem) studio("models/w_jumppack.mdl") = item_ctflongjump : "Longjump Module for CTF" []
+@PointClass base(CTFItem) studio("models/w_porthev.mdl") = item_ctfportablehev : "Portable HEV charger for CTF" []
+@PointClass base(CTFItem) studio("models/w_health.mdl") = item_ctfregeneration : "Health regeneration for CTF" []
+@PointClass base(CTFItem) studio("models/w_accelerator.mdl") = item_ctfaccelerator : "Double Weapon Damage for CTF" []
+@PointClass base(CTFItem) studio("models/w_backpack.mdl") = item_ctfbackpack : "Backpack Powerup for CTF" []
+@PointClass size(-16 -16 0, 16 16 36) = info_ctfspawn_powerup : "CTF Powerup Spawn Spot"
+[
+	team_no(Choices) : "Team" : 0 =
+	[
+		0 : "Random"
+		1 : "Black Mesa"
+		2 : "Opposing Force"
+	]
+]
+
+@SolidClass base(Target, Targetname) = trigger_ctfgeneric : "Trigger CTF Generic"
+[
+	team_no(Choices) : "Team" : 0 =
+	[
+		0 : "Both Teams"
+		1 : "Black Mesa Only"
+		2 : "Opposing Force Only"
+	]
+	trigger_delay(string) : "Re-activate delay" : "5"
+	score(string) : "Player Score" : "0"
+	team_score(string) : "Team Score" : "0"
+	triggerstate(choices) : "Trigger State" : 0 = 
+	[
+		0: "Off"
+		1: "On"
+		2: "Toggle"
+	]
+]
+
