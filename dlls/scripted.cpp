@@ -447,6 +447,10 @@ void CCineMonster :: PossessEntity()
 			pTarget->m_scriptState = SCRIPT_WAIT; 
 			break;
 		}
+		/* handle instant turn */
+		if (m_fMoveTo == 4 || m_fMoveTo == 6) {
+			pTarget->pev->angles.y = pev->angles.y;
+		}
 //		ALERT( at_aiconsole, "\"%s\" found and used (INT: %s)\n", STRING( pTarget->pev->targetname ), FBitSet(pev->spawnflags, SF_SCRIPT_NOINTERRUPT)?"No":"Yes" );
 
 		pTarget->m_IdealMonsterState = MONSTERSTATE_SCRIPT;

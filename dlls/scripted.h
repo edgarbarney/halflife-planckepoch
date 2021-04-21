@@ -27,7 +27,7 @@
 #define SF_SCRIPT_NOINTERRUPT		32
 #define SF_SCRIPT_OVERRIDESTATE		64
 #define SF_SCRIPT_NOSCRIPTMOVEMENT	128
-#define SF_SCRIPT_STAYDEAD			256 // LRC- signifies that the animation kills the monster
+#define SF_SCRIPT_STAYDEAD			512 // LRC- signifies that the animation kills the monster
 										// (needed because the monster animations don't use AnimEvent 1000 properly)
 
 /**
