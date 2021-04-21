@@ -61,9 +61,11 @@ env_decal
 ```
 Description:
 The env_decal entity will spawn a decal on the wall it's been pasted onto, specify the texture regardless of grouping.
+
 Texture key is based on Trinity's decals folder, not based on WADs.
-For example: gfx\textures\decals\bloodbigsplat.DDS
-In the entity: Decal Texture = "bloodbigsplat"
+For example: 
+- Decal Path: gfx\textures\decals\bloodbigsplat.DDS
+- In the entity: Decal Texture = "bloodbigsplat"
 
 env_fog
 ===============
