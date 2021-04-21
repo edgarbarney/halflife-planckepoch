@@ -17,9 +17,7 @@ env_elight
 ```
 
 Description:
-Spawns a light that only affects models, it gives per-vertex cal-
-culated lighting on models for extra detail. This is the only way
-you'll get per-vertex lighting on models.
+Spawns a light that only affects models, it gives per-vertex calculated lighting on models for extra detail. This is the only way you'll get per-vertex lighting on models.
 
 env_spotlight
 ===============
@@ -46,8 +44,7 @@ env_spotlight
 ```
 
 Description:
-Spawns a spotlight in your level not unlike the flashlight, howe-
-ver be aware that it is not shadowed.
+Spawns a spotlight in your level not unlike the flashlight, however be aware that it is not shadowed.
 
 env_decal
 ===============
@@ -63,8 +60,7 @@ env_decal
 ]
 ```
 Description:
-The env_decal entity will spawn a decal on the wall it's been pa-
-sted onto, specify the texture regardless of grouping.
+The env_decal entity will spawn a decal on the wall it's been pasted onto, specify the texture regardless of grouping.
 
 env_fog
 ===============
@@ -88,10 +84,7 @@ env_fog
 ]
 ```
 Description:
-Your standard fog entity, but here you can specify wether the fog
-will fog the skybox also. This will cut out fog distance optimiz-
-ation though, so I would only recommend using it in less stressi-
-ing maps.
+Your standard fog entity, but here you can specify wether the fog will fog the skybox also. This will cut out fog distance optimization though, so I would only recommend using it in less stressing maps.
 
 env_particle_system
 ===============
@@ -113,10 +106,7 @@ env_particle_system
 ]
 ```
 Description:
-All particle scripts are loaded from *modfolder*/scripts/particl-
-es/. Here you simply need to specify the script name. You can al-
-so specify wether this is a single script, or a cluster file con-
-taining the names of multiple particle scripts.
+All particle scripts are loaded from *modfolder*/scripts/particles/. Here you simply need to specify the script name. You can also specify wether this is a single script, or a cluster file containing the names of multiple particle scripts.
 
 3D Sky
 ===============
@@ -138,12 +128,9 @@ taining the names of multiple particle scripts.
 ]
 ```
 Description:
-Only solid entities and client-side managed item_generics will be
-shown in a 3D sky, and only if their Render FX is set to 70. 
+Only solid entities and client-side managed item_generics will be shown in a 3D sky, and only if their Render FX is set to 70. 
 
-The envpos_sky entity should be put in the skybox you want to use
-for the map, while the envpos_world should be located inside the
-world where the player interacts.
+The envpos_sky entity should be put in the skybox you want to use for the map, while the envpos_world should be located inside the world where the player interacts.
 
 info_light_origin
 ===============
@@ -165,13 +152,7 @@ item_generic
 ]
 ```
 Description:
-If you want this to animate and/or you want to be able to trigger
-it, just give it a targetname. It'll render slower, though. If y-
-ou want the entity to pick up light from a different position th-
-an it is at now, just put an info_light_origin in the level and
-specify it in the entity. This will only work on entities managed
-on the client side, so if you want to use this don't give it a t-
-argetname.
+If you want this to animate and/or you want to be able to trigger it, just give it a targetname. It'll render slower, though. If you want the entity to pick up light from a different position than it is at now, just put an info_light_origin in the level and specify it in the entity. This will only work on entities managed on the client side, so if you want to use this don't give it a targetname.
 
 func_mirror
 ===============
