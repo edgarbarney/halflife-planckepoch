@@ -185,6 +185,10 @@ so the HUD can reinitialize itself.
 int DLLEXPORT HUD_VidInit()
 {
 //	RecClHudVidInit();
+
+	//Reset to default on new map load
+	UnpackRGB(giR, giG, giB, RGB_HUD_COLOR);
+
 	gHUD.VidInit();
 
 	VGui_Startup();
@@ -206,6 +210,7 @@ void DLLEXPORT HUD_Init()
 {
 //	RecClHudInit();
 	InitInput();
+
 	gHUD.Init();
 	Scheme_Init();
 }

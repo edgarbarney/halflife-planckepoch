@@ -201,6 +201,7 @@ public:
 	void	TurnOff();
     STATE GetState() override { return (pev->effects & EF_NODRAW)?STATE_OFF:STATE_ON; };
 
+	void	FireAtPoint(TraceResult& tr);
 	void	FireAtPoint( Vector startpos, TraceResult &point );
 
 	void	EXPORT StrikeThink();

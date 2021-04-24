@@ -163,6 +163,11 @@ void CHudHealth::GetPainColor( int &r, int &g, int &b )
 		g = 0;
 		b = 0;
 	}
+
+	if( gHUD.isNightVisionOn() )
+	{
+		gHUD.getNightVisionHudItemColor( r, g, b );
+	}
 #endif 
 }
 
@@ -212,6 +217,11 @@ int CHudHealth::Draw(float flTime)
 		y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
 		x = CrossWidth /2;
 
+		if( gHUD.isNightVisionOn() )
+		{
+			gHUD.getNightVisionHudItemColor( r, g, b );
+		}
+
 		SPR_Set(gHUD.GetSprite(m_HUD_cross), r, g, b);
 		SPR_DrawAdditive(0, x, y, &gHUD.GetSpriteRect(m_HUD_cross));
 
@@ -228,8 +238,19 @@ int CHudHealth::Draw(float flTime)
 
 		int iHeight = gHUD.m_iFontHeight;
 		int iWidth = HealthWidth/10;
-		UnpackRGB(r,g,b, gHUD.m_iHUDColor); //LRC
-		FillRGBA(x, y, iWidth, iHeight, r, g, b, a);
+
+		int barR, barG, barB;
+
+		if( gHUD.isNightVisionOn() )
+		{
+			gHUD.getNightVisionHudItemColor( barR, barG, barB );
+		}
+		else
+		{
+			UnpackRGB(barR, barG, barB, gHUD.m_iHUDColor);
+		}
+
+		FillRGBA(x, y, iWidth, iHeight, barR, barG, barB, a);
 	}
 
 	DrawDamage(flTime);

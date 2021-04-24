@@ -17,6 +17,9 @@
 
 
 #include "pm_materials.h"
+#include "ctf/CTFDefs.h"
+
+class CRope;
 
 
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
@@ -35,6 +38,7 @@
 #define		PFLAG_DUCKING		( 1<<3 )		// In the process of ducking, but totally squatted yet
 #define		PFLAG_USING			( 1<<4 )		// Using a continuous entity
 #define		PFLAG_OBSERVER		( 1<<5 )		// player is locked in stationary cam mode. Spectators can move, observers can't.
+#define		PFLAG_ONROPE		( 1<<6 )
 
 //
 // generic player
@@ -58,7 +62,7 @@
 #define CSUITNOREPEAT		32
 
 #define	SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
-#define	SOUND_FLASHLIGHT_OFF	"items/flashlight1.wav"
+#define	SOUND_FLASHLIGHT_OFF	"items/flashlight2.wav"
 
 #define TEAM_NAME_LENGTH	16
 
@@ -70,6 +74,7 @@ typedef enum
 	PLAYER_SUPERJUMP,
 	PLAYER_DIE,
 	PLAYER_ATTACK1,
+	PLAYER_GRAPPLE,
 } PLAYER_ANIM;
 
 #define MAX_ID_RANGE 2048
@@ -109,6 +114,9 @@ public:
 	CItemCamera*		m_pItemCamera;//AJH Remember that we have a camera
 
 	int					random_seed;    // See that is shared between client & server for shared weapons code
+
+	Vector m_DisplacerReturn;
+	float m_flDisplacerSndRoomtype;
 
 	int					m_iPlayerSound;// the index of the sound list slot reserved for this player
 	int					m_iTargetVolume;// ideal sound volume. 
@@ -186,6 +194,42 @@ public:
 	int			m_iClientHideHUD;
 	int			m_iFOV;			// field of view
 	int			m_iClientFOV;	// client's known FOV
+
+	// Opposing Force specific
+
+	char* m_szTeamModel;
+	CTFTeam m_iTeamNum;
+	CTFTeam m_iNewTeamNum;
+	CTFItem::CTFItem m_iItems;
+	unsigned int m_iClientItems;
+	EHANDLE m_pFlag;
+	int m_iCurrentMenu;
+	float m_flNextHEVCharge;
+	float m_flNextHealthCharge;
+	float m_flNextAmmoCharge;
+	int m_iLastPlayerTrace;
+	BOOL m_fPlayingHChargeSound;
+	BOOL m_fPlayingAChargeSound;
+	int m_nLastShotBy;
+	float m_flLastShotTime;
+	int m_iFlagCaptures;
+	int m_iCTFScore;
+	BOOL m_fWONAuthSent;
+
+	short m_iOffense;
+	short m_iDefense;
+	short m_iSnipeKills;
+	short m_iBarnacleKills;
+	short m_iSuicides;
+	float m_flLastDamageTime;
+	short m_iLastDamage;
+	short m_iMostDamage;
+	float m_flAccelTime;
+	float m_flBackpackTime;
+	float m_flHealthTime;
+	float m_flShieldTime;
+	float m_flJumpTime;
+
 	// usable player items 
 	CBasePlayerItem	*m_rgpPlayerItems[MAX_ITEM_TYPES];
 	CBasePlayerItem *m_pActiveItem;
@@ -244,6 +288,8 @@ public:
 
 	// JOHN:  sends custom messages if player HUD data has changed  (eg health, ammo)
 	virtual void UpdateClientData();
+
+	void UpdateCTFHud();
 	
 	static	TYPEDESCRIPTION m_playerSaveData[];
 
@@ -309,7 +355,8 @@ public:
 
 	void ResetAutoaim();
 	Vector GetAutoaimVector( float flDelta  );
-	Vector AutoaimDeflection( Vector &vecSrc, float flDist, float flDelta  );
+	Vector GetAutoaimVectorFromPoint( const Vector& vecSrc, float flDelta );
+	Vector AutoaimDeflection( const Vector &vecSrc, float flDist, float flDelta  );
 
 	void ForceClientDllUpdate();  // Forces all client .dll specific data to be resent to client.
 
@@ -332,7 +379,15 @@ public:
 	float m_flNextSBarUpdateTime;
 	float m_flStatusBarDisappearDelay;
 	char m_SbarString0[ SBAR_STRING_SIZE ];
-	char m_SbarString1[ SBAR_STRING_SIZE ];
+	char m_SbarString1[ SBAR_STRING_SIZE ];	
+
+	void Player_Menu();
+
+	void ResetMenu();
+
+	BOOL Menu_Team_Input( int inp );
+	BOOL Menu_Char_Input( int inp );
+
 	// for trigger_viewset
 	int		viewEntity; // string
 	int		viewFlags;	// 1-active, 2-draw hud
@@ -342,6 +397,33 @@ public:
 	void SetPrefsFromUserinfo(char* infobuffer);
 
 	int m_iAutoWepSwitch;
+
+	bool IsOnRope() const { return ( m_afPhysicsFlags & PFLAG_ONROPE ) != 0; }
+
+	void SetOnRopeState( bool bOnRope )
+	{
+		if( bOnRope )
+			m_afPhysicsFlags |= PFLAG_ONROPE;
+		else
+			m_afPhysicsFlags &= ~PFLAG_ONROPE;
+	}
+
+	CRope* GetRope() { return m_pRope; }
+
+	void SetRope( CRope* pRope )
+	{
+		m_pRope = pRope;
+	}
+
+	void SetIsClimbing( const bool bIsClimbing )
+	{
+		m_bIsClimbing = bIsClimbing;
+	}
+
+private:
+	CRope* m_pRope;
+	float m_flLastClimbTime = 0;
+	bool m_bIsClimbing = false;
 
 	bool m_bRestored;
 
@@ -371,5 +453,139 @@ public:
 
 
 extern BOOL gInitHUD;
+
+class CPlayerIterator
+{
+public:
+	static const int FirstPlayerIndex = 1;
+
+public:
+	CPlayerIterator()
+		: m_pPlayer( nullptr )
+		, m_iNextIndex( gpGlobals->maxClients + 1 )
+	{
+	}
+
+	CPlayerIterator( const CPlayerIterator& ) = default;
+
+	CPlayerIterator( CBasePlayer* pPlayer )
+		: m_pPlayer( pPlayer )
+		, m_iNextIndex( pPlayer ? pPlayer->entindex() + 1 : FirstPlayerIndex )
+	{
+	}
+
+	CPlayerIterator& operator=( const CPlayerIterator& ) = default;
+
+	const CBasePlayer* operator*() const { return m_pPlayer; }
+
+	CBasePlayer* operator*() { return m_pPlayer; }
+
+	CBasePlayer* operator->() { return m_pPlayer; }
+
+	void operator++()
+	{
+		m_pPlayer = static_cast<CBasePlayer*>( FindNextPlayer( m_iNextIndex, &m_iNextIndex ) );
+	}
+
+	void operator++( int )
+	{
+		++*this;
+	}
+
+	bool operator==( const CPlayerIterator& other ) const
+	{
+		return m_pPlayer == other.m_pPlayer;
+	}
+
+	bool operator!=( const CPlayerIterator& other ) const
+	{
+		return !( *this == other );
+	}
+
+	static CBasePlayer* FindNextPlayer( int index, int* pOutNextIndex = nullptr )
+	{
+		while( index <= gpGlobals->maxClients )
+		{
+			auto pPlayer = UTIL_PlayerByIndex( index );
+
+			if( pPlayer )
+			{
+				if( pOutNextIndex )
+				{
+					*pOutNextIndex = index + 1;
+				}
+
+				return static_cast<CBasePlayer*>( pPlayer );
+			}
+
+			++index;
+		}
+
+		if( pOutNextIndex )
+		{
+			*pOutNextIndex = gpGlobals->maxClients;
+		}
+
+		return nullptr;
+	}
+
+private:
+	int m_iNextIndex = 1;
+	CBasePlayer* m_pPlayer;
+};
+
+class CPlayerEnumerator
+{
+public:
+	using iterator = CPlayerIterator;
+
+public:
+	CPlayerEnumerator() = default;
+
+	iterator begin()
+	{
+		return { static_cast<CBasePlayer*>( CPlayerIterator::FindNextPlayer( CPlayerIterator::FirstPlayerIndex ) ) };
+	}
+
+	iterator end()
+	{
+		return {};
+	}
+};
+
+class CPlayerEnumeratorWithStart
+{
+public:
+	using iterator = CPlayerIterator;
+
+public:
+	CPlayerEnumeratorWithStart( CBasePlayer* pStartEntity )
+		: m_pStartEntity( pStartEntity )
+	{
+	}
+
+	iterator begin()
+	{
+		return { m_pStartEntity };
+	}
+
+	iterator end()
+	{
+		return {};
+	}
+
+private:
+	CBasePlayer* m_pStartEntity = nullptr;
+};
+
+inline CPlayerEnumerator UTIL_FindPlayers()
+{
+	return {};
+}
+
+inline CPlayerEnumeratorWithStart UTIL_FindPlayers( CBasePlayer* pStartEntity )
+{
+	return { pStartEntity };
+}
 
 #endif // PLAYER_H

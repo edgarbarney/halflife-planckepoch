@@ -61,7 +61,7 @@ public:
 	void	WritePositionVector( const char *pname, const Vector &value );		// Offset for landmark if necessary
 	void	WritePositionVector( const char *pname, const float *value, int count );	// array of pos vectors
 	
-	void	WriteFunction( const char *pname, const int *value, int count );		// Save a function pointer
+	void	WriteFunction(const char* pname, void** value, int count);		// Save a function pointer
 	// Save a function pointer. (LRC- also pass the classname to allow better error messages)
 	void	WriteFunction( const char* cname, const char *pname, void **value, int count );
 

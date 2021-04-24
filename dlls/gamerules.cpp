@@ -23,11 +23,14 @@
 #include	"weapons.h"
 #include	"gamerules.h"
 #include	"teamplay_gamerules.h"
+#include "ctf/ctfplay_gamerules.h"
+#include "coopplay_gamerules.h"
 #include	"skill.h"
 #include	"game.h"
+#include "world.h"
 #include "UserMessages.h"
 
-extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
+extern edict_t *EntSelectSpawnPoint( CBasePlayer *pPlayer );
 
 DLL_GLOBAL CGameRules*	g_pGameRules = nullptr;
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -145,6 +148,9 @@ void CGameRules::RefreshSkillData ()
 	// Barney
 	gSkillData.barneyHealth = GetSkillCvar( "sk_barney_health");
 
+	// Barney
+	gSkillData.otisHealth = GetSkillCvar( "sk_otis_health" );
+
 	// Big Momma
 	gSkillData.bigmommaHealthFactor = GetSkillCvar( "sk_bigmomma_health_factor" );
 	gSkillData.bigmommaDmgSlash = GetSkillCvar( "sk_bigmomma_dmg_slash" );
@@ -156,6 +162,12 @@ void CGameRules::RefreshSkillData ()
 	gSkillData.bullsquidDmgBite = GetSkillCvar( "sk_bullsquid_dmg_bite");
 	gSkillData.bullsquidDmgWhip = GetSkillCvar( "sk_bullsquid_dmg_whip");
 	gSkillData.bullsquidDmgSpit = GetSkillCvar( "sk_bullsquid_dmg_spit");
+
+	// Pit Drone
+	gSkillData.pitdroneHealth = GetSkillCvar( "sk_pitdrone_health" );
+	gSkillData.pitdroneDmgBite = GetSkillCvar( "sk_pitdrone_dmg_bite" );
+	gSkillData.pitdroneDmgWhip = GetSkillCvar( "sk_pitdrone_dmg_whip" );
+	gSkillData.pitdroneDmgSpit = GetSkillCvar( "sk_pitdrone_dmg_spit" );
 
 	// Gargantua
 	gSkillData.gargantuaHealth = GetSkillCvar( "sk_gargantua_health");
@@ -170,11 +182,45 @@ void CGameRules::RefreshSkillData ()
 	gSkillData.headcrabHealth = GetSkillCvar( "sk_headcrab_health");
 	gSkillData.headcrabDmgBite = GetSkillCvar( "sk_headcrab_dmg_bite");
 
+	// Shock Roach
+	gSkillData.shockroachHealth = GetSkillCvar( "sk_shockroach_health" );
+	gSkillData.shockroachDmgBite = GetSkillCvar( "sk_shockroach_dmg_bite" );
+	gSkillData.shockroachLifespan = GetSkillCvar( "sk_shockroach_lifespan" );
+
 	// Hgrunt 
 	gSkillData.hgruntHealth = GetSkillCvar( "sk_hgrunt_health");
 	gSkillData.hgruntDmgKick = GetSkillCvar( "sk_hgrunt_kick");
 	gSkillData.hgruntShotgunPellets = GetSkillCvar( "sk_hgrunt_pellets");
 	gSkillData.hgruntGrenadeSpeed = GetSkillCvar( "sk_hgrunt_gspeed");
+
+	// Hgrunt Ally
+	gSkillData.hgruntAllyHealth = GetSkillCvar( "sk_hgrunt_ally_health" );
+	gSkillData.hgruntAllyDmgKick = GetSkillCvar( "sk_hgrunt_ally_kick" );
+	gSkillData.hgruntAllyShotgunPellets = GetSkillCvar( "sk_hgrunt_ally_pellets" );
+	gSkillData.hgruntAllyGrenadeSpeed = GetSkillCvar( "sk_hgrunt_ally_gspeed" );
+
+	// Hgrunt Medic
+	gSkillData.medicAllyHealth = GetSkillCvar( "sk_medic_ally_health" );
+	gSkillData.medicAllyDmgKick = GetSkillCvar( "sk_medic_ally_kick" );
+	gSkillData.medicAllyGrenadeSpeed = GetSkillCvar( "sk_medic_ally_gspeed" );
+	gSkillData.medicAllyHeal = GetSkillCvar( "sk_medic_ally_heal" );
+
+	// Hgrunt Torch
+	gSkillData.torchAllyHealth = GetSkillCvar( "sk_torch_ally_health" );
+	gSkillData.torchAllyDmgKick = GetSkillCvar( "sk_torch_ally_kick" );
+	gSkillData.torchAllyGrenadeSpeed = GetSkillCvar( "sk_torch_ally_gspeed" );
+
+	// Male Assassin
+	gSkillData.massassinHealth = GetSkillCvar( "sk_massassin_health" );
+	gSkillData.massassinDmgKick = GetSkillCvar( "sk_massassin_kick" );
+	gSkillData.massassinGrenadeSpeed = GetSkillCvar( "sk_massassin_gspeed" );
+
+	// Shock Trooper
+	gSkillData.shocktrooperHealth = GetSkillCvar( "sk_shocktrooper_health" );
+	gSkillData.shocktrooperDmgKick = GetSkillCvar( "sk_shocktrooper_kick" );
+	gSkillData.shocktrooperGrenadeSpeed = GetSkillCvar( "sk_shocktrooper_gspeed" );
+	gSkillData.shocktrooperMaxCharge = GetSkillCvar( "sk_shocktrooper_maxcharge" );
+	gSkillData.shocktrooperRechargeSpeed = GetSkillCvar( "sk_shocktrooper_rchgspeed" );
 
 	// Houndeye
 	gSkillData.houndeyeHealth = GetSkillCvar( "sk_houndeye_health");
@@ -208,15 +254,53 @@ void CGameRules::RefreshSkillData ()
 	// Scientist
 	gSkillData.scientistHealth = GetSkillCvar( "sk_scientist_health");
 
+	// Cleansuit Scientist
+	gSkillData.cleansuitScientistHealth = GetSkillCvar( "sk_cleansuit_scientist_health" );
+
 	// Snark
 	gSkillData.snarkHealth = GetSkillCvar( "sk_snark_health");
 	gSkillData.snarkDmgBite = GetSkillCvar( "sk_snark_dmg_bite");
 	gSkillData.snarkDmgPop = GetSkillCvar( "sk_snark_dmg_pop");
 
+	// Voltigore
+	gSkillData.voltigoreHealth = GetSkillCvar( "sk_voltigore_health" );
+	gSkillData.voltigoreDmgPunch = GetSkillCvar( "sk_voltigore_dmg_punch" );
+	gSkillData.voltigoreDmgBeam = GetSkillCvar( "sk_voltigore_dmg_beam" );
+
+	// Baby Voltigore
+	gSkillData.babyvoltigoreHealth = GetSkillCvar( "sk_babyvoltigore_health" );
+	gSkillData.babyvoltigoreDmgPunch = GetSkillCvar( "sk_babyvoltigore_dmg_punch" );
+
+	// Pit Worm
+	gSkillData.pitWormHealth = GetSkillCvar( "sk_pitworm_health" );
+	gSkillData.pitWormDmgSwipe = GetSkillCvar( "sk_pitworm_dmg_swipe" );
+	gSkillData.pitWormDmgBeam = GetSkillCvar( "sk_pitworm_dmg_beam" );
+
+	// Gene Worm
+	gSkillData.geneWormHealth = GetSkillCvar( "sk_geneworm_health" );
+	gSkillData.geneWormDmgSpit = GetSkillCvar( "sk_geneworm_dmg_spit" );
+	gSkillData.geneWormDmgHit = GetSkillCvar( "sk_geneworm_dmg_hit" );
+
 	// Zombie
 	gSkillData.zombieHealth = GetSkillCvar( "sk_zombie_health");
 	gSkillData.zombieDmgOneSlash = GetSkillCvar( "sk_zombie_dmg_one_slash");
 	gSkillData.zombieDmgBothSlash = GetSkillCvar( "sk_zombie_dmg_both_slash");
+
+	// Zombie Barney
+	gSkillData.zombieBarneyHealth = GetSkillCvar( "sk_zombie_barney_health" );
+	gSkillData.zombieBarneyDmgOneSlash = GetSkillCvar( "sk_zombie_barney_dmg_one_slash" );
+	gSkillData.zombieBarneyDmgBothSlash = GetSkillCvar( "sk_zombie_barney_dmg_both_slash" );
+
+	// Zombie Sodier
+	gSkillData.zombieSoldierHealth = GetSkillCvar( "sk_zombie_soldier_health" );
+	gSkillData.zombieSoldierDmgOneSlash = GetSkillCvar( "sk_zombie_soldier_dmg_one_slash" );
+	gSkillData.zombieSoldierDmgBothSlash = GetSkillCvar( "sk_zombie_soldier_dmg_both_slash" );
+
+	// Gonome
+	gSkillData.gonomeDmgGuts = GetSkillCvar( "sk_gonome_dmg_guts" );
+	gSkillData.gonomeHealth = GetSkillCvar( "sk_gonome_health" );
+	gSkillData.gonomeDmgOneSlash = GetSkillCvar( "sk_gonome_dmg_one_slash" );
+	gSkillData.gonomeDmgOneBite = GetSkillCvar( "sk_gonome_dmg_one_bite" );
 
 	//Turret
 	gSkillData.turretHealth = GetSkillCvar( "sk_turret_health");
@@ -270,6 +354,36 @@ void CGameRules::RefreshSkillData ()
 	// Tripmine
 	gSkillData.plrDmgTripmine = GetSkillCvar( "sk_plr_tripmine");
 
+	// Pipe Wrench
+	gSkillData.plrDmgPipewrench = GetSkillCvar( "sk_plr_pipewrench" );
+
+	// Knife
+	gSkillData.plrDmgKnife = GetSkillCvar( "sk_plr_knife" );
+
+	// Grapple
+	gSkillData.plrDmgGrapple = GetSkillCvar( "sk_plr_grapple" );
+
+	// Desert Eagle
+	gSkillData.plrDmgEagle = GetSkillCvar( "sk_plr_eagle" );
+
+	// Sniper Rifle
+	gSkillData.plrDmg762 = GetSkillCvar( "sk_plr_762_bullet" );
+
+	// M249
+	gSkillData.plrDmg556 = GetSkillCvar( "sk_plr_556_bullet" );
+
+	// Displacer
+	gSkillData.plrDmgDisplacerSelf = GetSkillCvar( "sk_plr_displacer_self" );
+	gSkillData.plrDmgDisplacerOther = GetSkillCvar( "sk_plr_displacer_other" );
+	gSkillData.plrRadiusDisplacer = GetSkillCvar( "sk_plr_displacer_radius" );
+
+	// Shock Roack
+	gSkillData.plrDmgShockRoachS = GetSkillCvar( "sk_plr_shockroachs" );
+	gSkillData.plrDmgShockRoachM = GetSkillCvar( "sk_plr_shockroachm" );
+
+	// Spore Launcher
+	gSkillData.plrDmgSpore = GetSkillCvar( "sk_plr_spore" );
+
 	// MONSTER WEAPONS
 	gSkillData.monDmg12MM = GetSkillCvar( "sk_12mm_bullet");
 	gSkillData.monDmgMP5 = GetSkillCvar ("sk_9mmAR_bullet" );
@@ -279,12 +393,7 @@ void CGameRules::RefreshSkillData ()
 	gSkillData.monDmgHornet = GetSkillCvar( "sk_hornet_dmg");
 
 	// PLAYER HORNET
-// Up to this point, player hornet damage and monster hornet damage were both using
-// monDmgHornet to determine how much damage to do. In tuning the hivehand, we now need
-// to separate player damage and monster hivehand damage. Since it's so late in the project, we've
-// added plrDmgHornet to the SKILLDATA struct, but not to the engine CVar list, so it's inaccesible
-// via SKILLS.CFG. Any player hivehand tuning must take place in the code. (sjb)
-	gSkillData.plrDmgHornet = 7;
+	gSkillData.plrDmgHornet = GetSkillCvar("sk_plr_hornet_dmg");
 
 
 	// HEALTH/CHARGE
@@ -293,6 +402,7 @@ void CGameRules::RefreshSkillData ()
 	gSkillData.healthchargerCapacity = GetSkillCvar ( "sk_healthcharger" );
 	gSkillData.healthkitCapacity = GetSkillCvar ( "sk_healthkit" );
 	gSkillData.scientistHeal = GetSkillCvar ( "sk_scientist_heal" );
+	gSkillData.cleansuitScientistHeal = GetSkillCvar( "sk_cleansuit_scientist_heal" );
 
 	// monster damage adj
 	gSkillData.monHead = GetSkillCvar( "sk_monster_head" );
@@ -313,7 +423,7 @@ void CGameRules::RefreshSkillData ()
 // instantiate the proper game rules object
 //=========================================================
 
-CGameRules *InstallGameRules()
+CGameRules *InstallGameRules( CBaseEntity* pWorld )
 {
 	SERVER_COMMAND( "exec game.cfg\n" );
 	SERVER_EXECUTE( );
@@ -324,8 +434,17 @@ CGameRules *InstallGameRules()
 		g_teamplay = 0;
 		return new CHalfLifeRules;
 	}
+	if (coopplay.value > 0)
+	{
+		return new CHalfLifeCoopplay();
+	}
 	else
 	{
+		if( pWorld->pev->spawnflags & SF_WORLD_CTF )
+		{
+			return new CHalfLifeCTFplay();
+		}
+
 		if ( teamplay.value > 0 )
 		{
 			// teamplay

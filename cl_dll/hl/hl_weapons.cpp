@@ -19,6 +19,16 @@
 #include "weapons.h"
 #include "nodes.h"
 #include "player.h"
+#include "weapons/CGrapple.h"
+#include "weapons/CEagle.h"
+#include "weapons/CPipewrench.h"
+#include "weapons/CM249.h"
+#include "weapons/CDisplacer.h"
+#include "weapons/CShockRifle.h"
+#include "weapons/CSporeLauncher.h"
+#include "weapons/CSniperRifle.h"
+#include "weapons/CKnife.h"
+#include "weapons/CPenguin.h"
 
 #include "usercmd.h"
 #include "entity_state.h"
@@ -52,6 +62,10 @@ int   g_irunninggausspred = 0;
 
 Vector previousorigin;
 
+int giTeamplay = 0;
+
+int giOldWeapons = 0;
+
 // HLDM Weapon placeholder entities.
 CGlock g_Glock;
 CCrowbar g_Crowbar;
@@ -67,6 +81,16 @@ CHandGrenade g_HandGren;
 CSatchel g_Satchel;
 CTripmine g_Tripmine;
 CSqueak g_Snark;
+CGrapple g_Grapple;
+CEagle g_Eagle;
+CPipewrench g_Pipewrench;
+CM249 g_M249;
+CDisplacer g_Displacer;
+CShockRifle g_ShockRifle;
+CSporeLauncher g_SporeLauncher;
+CSniperRifle g_SniperRifle;
+CKnife g_Knife;
+CPenguin g_Penguin;
 
 
 /*
@@ -99,6 +123,26 @@ bool bIsMultiplayer ()
 void LoadVModel ( const char *szViewModel, CBasePlayer *m_pPlayer )
 {
 	gEngfuncs.CL_LoadModel( szViewModel, &m_pPlayer->pev->viewmodel );
+}
+
+int UTIL_DefaultPlaybackFlags()
+{
+	if (giOldWeapons == 1)
+	{
+		return 0;
+	}
+
+	return FEV_NOTHOST;
+}
+
+bool UTIL_DefaultUseDecrement()
+{
+	return !giOldWeapons;
+}
+
+bool UTIL_UseOldWeapons()
+{
+	return !!giOldWeapons;
 }
 
 /*
@@ -262,7 +306,7 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 			
 	}
 
-    return Vector ( x * vecSpread.x, y * vecSpread.y, 0.0 );
+	return Vector ( x * vecSpread.x, y * vecSpread.y, 0.0 );
 }
 
 /*
@@ -477,6 +521,16 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity( &g_Satchel	, &player );
 	HUD_PrepEntity( &g_Tripmine	, &player );
 	HUD_PrepEntity( &g_Snark	, &player );
+	HUD_PrepEntity( &g_Grapple, &player );
+	HUD_PrepEntity( &g_Eagle, &player );
+	HUD_PrepEntity( &g_Pipewrench, &player );
+	HUD_PrepEntity( &g_M249, &player );
+	HUD_PrepEntity( &g_Displacer, &player );
+	HUD_PrepEntity( &g_ShockRifle, &player );
+	HUD_PrepEntity( &g_SporeLauncher, &player );
+	HUD_PrepEntity( &g_SniperRifle, &player );
+	HUD_PrepEntity( &g_Knife, &player );
+	HUD_PrepEntity(&g_Penguin, &player);
 }
 
 /*
@@ -515,6 +569,54 @@ void HUD_SetLastOrg()
 	}
 }
 
+CBasePlayerWeapon* GetLocalWeapon(int id)
+{
+	if (UTIL_UseOldWeapons())
+	{
+		return nullptr;
+	}
+
+	switch (id)
+	{
+	case WEAPON_CROWBAR: return &g_Crowbar;
+	case WEAPON_GLOCK: return &g_Glock;
+	case WEAPON_PYTHON: return &g_Python;
+	case WEAPON_MP5: return &g_Mp5;
+	case WEAPON_CROSSBOW: return &g_Crossbow;
+	case WEAPON_SHOTGUN: return &g_Shotgun;
+	case WEAPON_RPG: return &g_Rpg;
+	case WEAPON_GAUSS: return &g_Gauss;
+	case WEAPON_EGON: return &g_Egon;
+	case WEAPON_HORNETGUN: return &g_HGun;
+	case WEAPON_HANDGRENADE: return &g_HandGren;
+	case WEAPON_SATCHEL: return &g_Satchel;
+	case WEAPON_TRIPMINE: return &g_Tripmine;
+	case WEAPON_SNARK: return &g_Snark;
+	case WEAPON_GRAPPLE: return &g_Grapple;
+	case WEAPON_EAGLE: return &g_Eagle;
+	case WEAPON_PIPEWRENCH: return &g_Pipewrench;
+	case WEAPON_M249: return &g_M249;
+	case WEAPON_DISPLACER: return &g_Displacer;
+	case WEAPON_SHOCKRIFLE: return &g_ShockRifle;
+	case WEAPON_SPORELAUNCHER: return &g_SporeLauncher;
+	case WEAPON_SNIPERRIFLE: return &g_SniperRifle;
+	case WEAPON_KNIFE: return &g_Knife;
+	case WEAPON_PENGUIN: return &g_Penguin;
+
+	default: return nullptr;
+	}
+}
+
+void SetLocalBody( int id, int body )
+{
+	auto pWeapon = GetLocalWeapon( id );
+
+	if( pWeapon )
+	{
+		pWeapon->pev->body = body;
+	}
+}
+
 /*
 =====================
 HUD_WeaponsPostThink
@@ -526,7 +628,6 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 {
 	int i;
 	int buttonsChanged;
-	CBasePlayerWeapon *pWeapon = nullptr;
 	CBasePlayerWeapon *pCurrent;
 	weapon_data_t nulldata, *pfrom, *pto;
 	static int lasthealth;
@@ -540,64 +641,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 
 	// Fill in data based on selected weapon
 	// FIXME, make this a method in each weapon?  where you pass in an entity_state_t *?
-	switch ( from->client.m_iId )
-	{
-		case WEAPON_CROWBAR:
-			pWeapon = &g_Crowbar;
-			break;
-		
-		case WEAPON_GLOCK:
-			pWeapon = &g_Glock;
-			break;
-		
-		case WEAPON_PYTHON:
-			pWeapon = &g_Python;
-			break;
-			
-		case WEAPON_MP5:
-			pWeapon = &g_Mp5;
-			break;
-
-		case WEAPON_CROSSBOW:
-			pWeapon = &g_Crossbow;
-			break;
-
-		case WEAPON_SHOTGUN:
-			pWeapon = &g_Shotgun;
-			break;
-
-		case WEAPON_RPG:
-			pWeapon = &g_Rpg;
-			break;
-
-		case WEAPON_GAUSS:
-			pWeapon = &g_Gauss;
-			break;
-
-		case WEAPON_EGON:
-			pWeapon = &g_Egon;
-			break;
-
-		case WEAPON_HORNETGUN:
-			pWeapon = &g_HGun;
-			break;
-
-		case WEAPON_HANDGRENADE:
-			pWeapon = &g_HandGren;
-			break;
-
-		case WEAPON_SATCHEL:
-			pWeapon = &g_Satchel;
-			break;
-
-		case WEAPON_TRIPMINE:
-			pWeapon = &g_Tripmine;
-			break;
-
-		case WEAPON_SNARK:
-			pWeapon = &g_Snark;
-			break;
-	}
+	auto pWeapon = GetLocalWeapon( from->client.m_iId );
 
 	// Store pointer to our destination entity_state_t so we can get our origin, etc. from it
 	//  for setting up events on the client
@@ -653,6 +697,8 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		pCurrent->m_iPrimaryAmmoType		= (int)from->client.vuser4[ 0 ];
 		player.m_rgAmmo[ pCurrent->m_iPrimaryAmmoType ]	= (int)from->client.vuser4[ 1 ];
 		player.m_rgAmmo[ pCurrent->m_iSecondaryAmmoType ]	= (int)from->client.vuser4[ 2 ];
+
+		pCurrent->SetWeaponData( *pfrom );
 	}
 
 	// For random weapon events, use this seed to seed random # generator
@@ -695,6 +741,8 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	player.ammo_uranium		= (int)from->client.ammo_cells;
 	player.ammo_hornets		= (int)from->client.vuser2[0];
 	player.ammo_rockets		= (int)from->client.ammo_rockets;
+	player.ammo_spores		= ( int ) from->client.vuser2.y;
+	player.ammo_762			= ( int ) from->client.vuser2.z;
 
 	
 	// Point to current weapon object
@@ -770,6 +818,8 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	to->client.ammo_cells				= player.ammo_uranium;
 	to->client.vuser2[0]				= player.ammo_hornets;
 	to->client.ammo_rockets				= player.ammo_rockets;
+	to->client.vuser2.y					= player.ammo_spores;
+	to->client.vuser2.z					= player.ammo_762;
 
 	if ( player.m_pActiveItem->m_iId == WEAPON_RPG )
 	{
@@ -839,27 +889,27 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 			pto->m_fNextAimBonus = -1.0;
 		}
 
-		if ( pto->m_flNextPrimaryAttack < -1.0 )
+		if (pto->m_flNextPrimaryAttack < -1.0)
 		{
 			pto->m_flNextPrimaryAttack = -1.0;
 		}
 
-		if ( pto->m_flNextSecondaryAttack < -0.001 )
+		if (pto->m_flNextSecondaryAttack < -0.001)
 		{
 			pto->m_flNextSecondaryAttack = -0.001;
 		}
 
-		if ( pto->m_flTimeWeaponIdle < -0.001 )
+		if (pto->m_flTimeWeaponIdle < -0.001)
 		{
 			pto->m_flTimeWeaponIdle = -0.001;
 		}
 
-		if ( pto->m_flNextReload < -0.001 )
+		if (pto->m_flNextReload < -0.001)
 		{
 			pto->m_flNextReload = -0.001;
 		}
 
-		if ( pto->fuser1 < -0.001 )
+		if (pto->fuser1 < -0.001)
 		{
 			pto->fuser1 = -0.001;
 		}
@@ -867,19 +917,19 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 
 	// m_flNextAttack is now part of the weapons, but is part of the player instead
 	to->client.m_flNextAttack -= cmd->msec / 1000.0;
-	if ( to->client.m_flNextAttack < -0.001 )
+	if (to->client.m_flNextAttack < -0.001)
 	{
 		to->client.m_flNextAttack = -0.001;
 	}
 
 	to->client.fuser2 -= cmd->msec / 1000.0;
-	if ( to->client.fuser2 < -0.001 )
+	if (to->client.fuser2 < -0.001)
 	{
 		to->client.fuser2 = -0.001;
 	}
-	
+
 	to->client.fuser3 -= cmd->msec / 1000.0;
-	if ( to->client.fuser3 < -0.001 )
+	if (to->client.fuser3 < -0.001)
 	{
 		to->client.fuser3 = -0.001;
 	}
@@ -902,16 +952,16 @@ runfuncs is 1 if this is the first time we've predicted this command.  If so, so
 be ignored
 =====================
 */
-void DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed )
+void DLLEXPORT HUD_PostRunCmd(struct local_state_s* from, struct local_state_s* to, struct usercmd_s* cmd, int runfuncs, double time, unsigned int random_seed)
 {
-//	RecClPostRunCmd(from, to, cmd, runfuncs, time, random_seed);
+	//	RecClPostRunCmd(from, to, cmd, runfuncs, time, random_seed);
 
 	g_runfuncs = runfuncs;
 
 #if defined( CLIENT_WEAPONS )
-	if ( cl_lw && cl_lw->value )
+	if (cl_lw && cl_lw->value)
 	{
-		HUD_WeaponsPostThink( from, to, cmd, time, random_seed );
+		HUD_WeaponsPostThink(from, to, cmd, time, random_seed);
 	}
 	else
 #endif
@@ -919,14 +969,24 @@ void DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s 
 		to->client.fov = g_lastFOV;
 	}
 
-	if ( g_irunninggausspred == 1 )
+	if (g_irunninggausspred == 1)
 	{
 		Vector forward;
 		gEngfuncs.pfnAngleVectors( v_angles, forward, nullptr, nullptr );
 		to->client.velocity = to->client.velocity - forward * g_flApplyVel * 5; 
 		g_irunninggausspred = false;
 	}
-	
+
 	// All games can use FOV state
 	g_lastFOV = to->client.fov;
+}
+
+bool UTIL_IsMultiplayer()
+{
+	return gEngfuncs.GetMaxClients() != 1;
+}
+
+bool UTIL_IsCTF()
+{
+	return giTeamplay == 2;
 }

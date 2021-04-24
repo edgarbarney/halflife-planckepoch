@@ -201,6 +201,8 @@ void CApache::StartupUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 void CApache :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	ClearShockEffect();
+
 	pev->movetype = MOVETYPE_TOSS;
 	pev->gravity = 0.3;
 
@@ -451,6 +453,8 @@ void CApache :: HuntThink()
 {
 	StudioFrameAdvance( );
 	SetNextThink( 0.1 );
+
+	UpdateShockEffect();
 
 	ShowDamage( );
 

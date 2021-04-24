@@ -153,6 +153,8 @@ void CBarnacle :: BarnacleThink ()
 
 	SetNextThink( 0.1 );
 
+	UpdateShockEffect();
+
 	if ( m_hEnemy != nullptr )
 	{
 // barnacle has prey.
@@ -328,6 +330,11 @@ void CBarnacle :: Killed( entvars_t *pevAttacker, int iGib )
 
 	pev->solid = SOLID_NOT;
 	pev->takedamage = DAMAGE_NO;
+
+	//Added for Op4
+	pev->deadflag = DEAD_DYING;
+
+	ClearShockEffect();
 
 	if ( m_hEnemy != nullptr )
 	{

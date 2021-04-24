@@ -33,6 +33,7 @@
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
 #include "rain.h"
+#include "UserMessages.h"
 
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
@@ -52,6 +53,10 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
 //RENDERERS END
+
+int giR, giG, giB;
+
+extern int giOldWeapons;
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -107,6 +112,22 @@ cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
 
 void ShutdownInput ();
+
+int __MsgFunc_HudColor(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	giR = READ_BYTE();
+	giG = READ_BYTE();
+	giB = READ_BYTE();
+	return 1;
+}
+
+int __MsgFunc_OldWeapon(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	giOldWeapons = READ_BYTE();
+	return 1;
+}
 
 //DECLARE_MESSAGE(m_Logo, Logo)
 int __MsgFunc_Logo(const char *pszName, int iSize, void *pbuf)
@@ -316,6 +337,7 @@ int __MsgFunc_ServerName(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
+/*
 int __MsgFunc_ScoreInfo(const char *pszName, int iSize, void *pbuf)
 {
 	if (gViewPort)
@@ -336,6 +358,7 @@ int __MsgFunc_TeamInfo(const char *pszName, int iSize, void *pbuf)
 		return gViewPort->MsgFunc_TeamInfo( pszName, iSize, pbuf );
 	return 0;
 }
+*/
 
 int __MsgFunc_Spectator(const char *pszName, int iSize, void *pbuf)
 {
@@ -403,6 +426,34 @@ int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
 }
 //RENDERERS END
 
+int __MsgFunc_TeamFull( const char *pszName, int iSize, void *pbuf )
+{
+	if( gViewPort )
+		return gViewPort->MsgFunc_TeamFull( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_SetMenuTeam(const char* pszName, int iSize, void* pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_SetMenuTeam(pszName, iSize, pbuf);
+	return 0;
+}
+
+int __MsgFunc_StatsInfo(const char* pszName, int iSize, void* pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_StatsInfo(pszName, iSize, pbuf);
+	return 0;
+}
+
+int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_StatsPlayer(pszName, iSize, pbuf);
+	return 0;
+}
+
 // This is called every time the DLL is loaded
 void CHud :: Init()
 {
@@ -425,6 +476,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( RainData );//G-Cont. for rain control 
 	HOOK_MESSAGE( Inventory ); //AJH Inventory system
 	HOOK_MESSAGE( ClampView ); //LRC 1.8
+	HOOK_MESSAGE( OldWeapon );
 
 	//KILLAR: MP3	
 	if(gMP3.Initialize())
@@ -447,15 +499,21 @@ void CHud :: Init()
 	HOOK_MESSAGE( BuildSt );
 	HOOK_MESSAGE( RandomPC );
 	HOOK_MESSAGE( ServerName );
+	/*
 	HOOK_MESSAGE( ScoreInfo );
 	HOOK_MESSAGE( TeamScore );
 	HOOK_MESSAGE( TeamInfo );
+	*/
 
 	HOOK_MESSAGE( Spectator );
 	HOOK_MESSAGE( AllowSpec );
+	HOOK_MESSAGE(SetMenuTeam);
+	HOOK_MESSAGE(StatsInfo);
+	HOOK_MESSAGE(StatsPlayer);
 	
 	HOOK_MESSAGE( SpecFade );
 	HOOK_MESSAGE( ResetFade );
+	HOOK_MESSAGE( TeamFull );
 
 	// VGUI Menus
 	HOOK_MESSAGE( VGUIMenu );
@@ -498,8 +556,8 @@ void CHud :: Init()
 	viewFlags = 0;
 	m_iLogo = 0;
 	m_iFOV = 0;
-	numMirrors = 0;
 	m_iHUDColor = 0x00FFA000; //255,160,0 -- LRC
+	setNightVisionState(false);
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
 	CVAR_CREATE("cl_autowepswitch", "1", FCVAR_ARCHIVE | FCVAR_USERINFO);
@@ -539,11 +597,14 @@ void CHud :: Init()
 	m_Battery.Init();
 	m_Flash.Init();
 	m_Message.Init();
+	m_Scoreboard.Init();
 	m_StatusBar.Init();
 	m_DeathNotice.Init();
 	m_AmmoSecondary.Init();
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
+	m_FlagIcons.Init();
+	m_PlayerBrowse.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
 	m_Menu.Init();
@@ -752,6 +813,7 @@ void CHud :: VidInit()
 	m_Battery.VidInit();
 	m_Flash.VidInit();
 	m_Message.VidInit();
+	m_Scoreboard.VidInit();
 	m_StatusBar.VidInit();
 	m_DeathNotice.VidInit();
 	m_SayText.VidInit();
@@ -759,6 +821,8 @@ void CHud :: VidInit()
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
+	m_FlagIcons.VidInit();
+	m_PlayerBrowse.VidInit();
 	GetClientVoiceMgr()->VidInit();
 	//RENDERERS START
 	gTextureLoader.VidInit();
@@ -962,4 +1026,7 @@ float CHud::GetSensitivity()
 	return m_flMouseSensitivity;
 }
 
-
+void CHud::setNightVisionState( bool state )
+{
+	mNightVisionState = state;
+}

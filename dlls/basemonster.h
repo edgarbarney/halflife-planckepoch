@@ -345,6 +345,21 @@ public:
 	void StartPatrol( CBaseEntity *path );
 
 	CBaseEntity* DropItem ( const char *pszItemName, const Vector &vecPos, const Vector &vecAng );// drop an item.
+
+	BOOL JumpToTarget( Activity movementAct, float waitTime );
+
+	//Shock rifle shock effect
+	float m_flShockDuration;
+	float m_flShockTime;
+	int m_iOldRenderMode;
+	int m_iOldRenderFX;
+	Vector m_OldRenderColor;
+	float m_flOldRenderAmt;
+	BOOL m_fShockEffect;
+
+	void AddShockEffect( float r, float g, float b, float size, float flShockDuration );
+	void UpdateShockEffect();
+	void ClearShockEffect();
 	
 	//LRC
     bool	CalcNumber( CBaseEntity *pLocus, float* OUTresult ) override

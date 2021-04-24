@@ -15,12 +15,16 @@
 //
 //  hud_msg.cpp
 //
+
 #include "mp3.h" //AJH - Killar MP3
 #include "hud.h"
 #include "cl_util.h"
 #include "parsemsg.h"
 #include "r_efx.h"
 #include "rain.h"
+#include "UserMessages.h"
+#include "vgui_TeamFortressViewport.h"
+#include<VGUI_ScorePanel.h>
 
 //RENDERERS START
 #include "bsprenderer.h"
@@ -34,12 +38,15 @@
 extern CGameStudioModelRenderer g_StudioRenderer;
 //RENDERERS END
 
+
 //LRC - the fogging fog
 FogSettings g_fog;
 FogSettings g_fogPreFade;
 FogSettings g_fogPostFade;
 float g_fFogFadeDuration;
 float g_fFogFadeFraction;
+
+extern int giTeamplay;
 
 #define MAX_CLIENTS 32
 
@@ -216,7 +223,18 @@ void CHud :: MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf )
 int CHud :: MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 {
 	BEGIN_READ( pbuf, iSize );
-	m_Teamplay = READ_BYTE();
+	m_Teamplay = giTeamplay = READ_BYTE();
+
+	if (gViewPort && !gViewPort->m_pScoreBoard)
+	{
+		gViewPort->CreateScoreBoard();
+		gViewPort->m_pScoreBoard->Initialize();
+
+		if (!gHUD.m_iIntermission)
+		{
+			gViewPort->HideScoreBoard();
+		}
+	}
 
 	return 1;
 }

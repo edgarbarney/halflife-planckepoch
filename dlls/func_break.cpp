@@ -58,6 +58,7 @@ const char *CBreakable::pSpawnObjects[] =
 	"weapon_satchel",	// 19
 	"weapon_snark",		// 20
 	"weapon_hornetgun",	// 21
+	"weapon_penguin",
 };
 
 void CBreakable::KeyValue( KeyValueData* pkvd )
@@ -71,6 +72,15 @@ void CBreakable::KeyValue( KeyValueData* pkvd )
 			m_Explosion = expRandom;
 		else
 			m_Explosion = expRandom;
+
+		if (!stricmp(pkvd->szValue, "1"))
+		{
+			m_Explosion = expDirected;
+		}
+		else
+		{
+			m_Explosion = expRandom;
+		}
 
 		pkvd->fHandled = TRUE;
 	}
@@ -845,7 +855,7 @@ void CBreakable::Die()
 
 
 	if (m_Explosion == expDirected)
-		vecVelocity = g_vecAttackDir * 200;
+		vecVelocity = -g_vecAttackDir * 200;
 	else
 	{
 		vecVelocity.x = 0;

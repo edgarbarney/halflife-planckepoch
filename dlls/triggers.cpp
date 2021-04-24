@@ -33,6 +33,9 @@
 #include "locus.h" //LRC
 //#include "hgrunt.h"
 //#include "islave.h"
+#include "ctf/ctfplay_gamerules.h"
+#include "ctf/CTFGoalFlag.h"
+#include "UserMessages.h"
 
 #include <cctype>
 
@@ -6200,3 +6203,414 @@ void CTriggerCamera::Move()
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1-fraction));
 }
 
+class CTriggerPlayerFreeze : public CBaseDelay
+{
+public:
+	void Spawn() override;
+
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value ) override;
+
+public:
+	bool m_bUnFrozen;
+};
+
+LINK_ENTITY_TO_CLASS( trigger_playerfreeze, CTriggerPlayerFreeze );
+
+void CTriggerPlayerFreeze::Spawn()
+{
+	if( g_pGameRules->IsDeathmatch() )
+		REMOVE_ENTITY( edict() );
+	else
+		m_bUnFrozen = true;
+}
+
+void CTriggerPlayerFreeze::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
+{
+	m_bUnFrozen = !m_bUnFrozen;
+
+	//TODO: not made for multiplayer
+	auto pPlayer = GetClassPtr( ( CBasePlayer* ) &g_engfuncs.pfnPEntityOfEntIndex( 1 )->v );
+
+	pPlayer->EnableControl( m_bUnFrozen );
+}
+
+/**
+*	@brief Kills anything that touches it without gibbing it
+*/
+class CTriggerKillNoGib : public CBaseTrigger
+{
+public:
+	void Spawn() override;
+
+	void KillTouch( CBaseEntity* pOther );
+};
+
+LINK_ENTITY_TO_CLASS( trigger_kill_nogib, CTriggerKillNoGib );
+
+void CTriggerKillNoGib::Spawn()
+{
+	InitTrigger();
+
+	SetTouch( &CTriggerKillNoGib::KillTouch );
+	SetUse( nullptr );
+
+	//TODO: this needs to be removed in order to function
+	pev->solid = SOLID_NOT;
+}
+
+void CTriggerKillNoGib::KillTouch( CBaseEntity* pOther )
+{
+	if( pOther->pev->takedamage != DAMAGE_NO )
+		pOther->TakeDamage( pev, pOther->pev, 500000, DMG_NEVERGIB );
+}
+
+class CTriggerXenReturn : public CBaseTrigger
+{
+public:
+	using BaseClass = CBaseTrigger;
+
+	void Spawn() override;
+
+	void EXPORT ReturnTouch( CBaseEntity* pOther );
+};
+
+LINK_ENTITY_TO_CLASS( trigger_xen_return, CTriggerXenReturn );
+
+LINK_ENTITY_TO_CLASS( info_displacer_earth_target, CPointEntity );
+LINK_ENTITY_TO_CLASS( info_displacer_xen_target, CPointEntity );
+
+void CTriggerXenReturn::Spawn()
+{
+	InitTrigger();
+
+	SetTouch( &CTriggerXenReturn::ReturnTouch );
+	SetUse( nullptr );
+}
+
+void CTriggerXenReturn::ReturnTouch( CBaseEntity* pOther )
+{
+	if( !pOther->IsPlayer() )
+		return;
+
+	auto pPlayer = static_cast<CBasePlayer*>( pOther );
+
+	float flDist = 8192;
+
+	CBaseEntity* pTarget = nullptr;
+
+	//Find the earth target nearest to the player's original location.
+	for( auto pDestination : UTIL_FindEntitiesByClassname( "info_displacer_earth_target" ) )
+	{
+		const float flThisDist = ( pPlayer->m_DisplacerReturn - pDestination->pev->origin ).Length();
+
+		if( flDist > flThisDist )
+		{
+			pTarget = pDestination;
+
+			flDist = flThisDist;
+		}
+	}
+
+	if( pTarget && !FNullEnt( pTarget->pev ) )
+	{
+		pPlayer->pev->flags &= ~FL_SKIPLOCALHOST;
+
+		auto vecDest = pTarget->pev->origin;
+
+		vecDest.z -= pPlayer->pev->mins.z;
+		vecDest.z += 1;
+
+		UTIL_SetOrigin( pPlayer->pev, vecDest );
+
+		pPlayer->pev->angles = pTarget->pev->angles;
+		pPlayer->pev->v_angle = pTarget->pev->angles;
+		pPlayer->pev->fixangle = 1;
+
+		pPlayer->pev->basevelocity = g_vecZero;
+		pPlayer->pev->velocity = g_vecZero;
+
+		pPlayer->pev->gravity = 1.0;
+
+		//TODO: this might not always be correct if the destination has a different room type. - Solokiller
+		pPlayer->m_flSndRoomtype = pPlayer->m_flDisplacerSndRoomtype;
+
+		EMIT_SOUND( pPlayer->edict(), CHAN_WEAPON, "weapons/displacer_self.wav", RANDOM_FLOAT( 0.8, 0.9 ), ATTN_NORM );
+	}
+}
+
+const auto SF_GENEWORM_HIT_TARGET_ONCE = 1 << 0;
+const auto SF_GENEWORM_HIT_START_OFF = 1 << 1;
+const auto SF_GENEWORM_HIT_NO_CLIENTS = 1 << 3;
+const auto SF_GENEWORM_HIT_FIRE_CLIENT_ONLY = 1 << 4;
+const auto SF_GENEWORM_HIT_TOUCH_CLIENT_ONLY = 1 << 5;
+
+class COFTriggerGeneWormHit : public CBaseTrigger
+{
+public:
+	int	Save( CSave &save ) override;
+	int Restore( CRestore &restore ) override;
+	static TYPEDESCRIPTION m_SaveData[];
+
+	void Precache() override;
+	void Spawn() override;
+
+	void EXPORT GeneWormHitTouch( CBaseEntity* pOther );
+
+	static const char* pAttackSounds[];
+
+	float m_flLastDamageTime;
+};
+
+TYPEDESCRIPTION	COFTriggerGeneWormHit::m_SaveData[] =
+{
+	DEFINE_FIELD( COFTriggerGeneWormHit, m_flLastDamageTime, FIELD_TIME ),
+};
+
+IMPLEMENT_SAVERESTORE( COFTriggerGeneWormHit, CBaseTrigger );
+
+const char* COFTriggerGeneWormHit::pAttackSounds[] = 
+{
+	"zombie/claw_strike1.wav",
+	"zombie/claw_strike2.wav",
+	"zombie/claw_strike3.wav"
+};
+
+LINK_ENTITY_TO_CLASS( trigger_geneworm_hit, COFTriggerGeneWormHit );
+
+void COFTriggerGeneWormHit::Precache()
+{
+	PRECACHE_SOUND_ARRAY( pAttackSounds );
+}
+
+void COFTriggerGeneWormHit::Spawn()
+{
+	Precache();
+
+	InitTrigger();
+
+	SetTouch( &COFTriggerGeneWormHit::GeneWormHitTouch );
+
+	if( !FStringNull( pev->targetname ) )
+	{
+		SetUse( &COFTriggerGeneWormHit::ToggleUse );
+	}
+	else
+	{
+		SetUse( nullptr );
+	}
+
+	if( pev->spawnflags & SF_GENEWORM_HIT_START_OFF )
+	{
+		pev->solid = SOLID_NOT;
+	}
+
+	UTIL_SetOrigin( pev, pev->origin );
+
+	pev->dmg = gSkillData.geneWormDmgHit;
+	m_flLastDamageTime = gpGlobals->time;
+}
+
+void COFTriggerGeneWormHit::GeneWormHitTouch( CBaseEntity* pOther )
+{
+	if( gpGlobals->time - m_flLastDamageTime >= 2 && pOther->pev->takedamage != DAMAGE_NO )
+	{
+		if( pev->spawnflags & SF_GENEWORM_HIT_TOUCH_CLIENT_ONLY )
+		{
+			if( !pOther->IsPlayer() )
+				return;
+		}
+
+		if( !( pev->spawnflags & SF_GENEWORM_HIT_NO_CLIENTS ) || !pOther->IsPlayer() )
+		{
+			if( !g_pGameRules->IsMultiplayer() )
+			{
+				if( pev->dmgtime > gpGlobals->time && gpGlobals->time != pev->pain_finished )
+					return;
+			}
+			else if( pev->dmgtime <= gpGlobals->time )
+			{
+				pev->impulse = 0;
+				if( pOther->IsPlayer() )
+					pev->impulse |= 1 << ( pOther->entindex() - 1 );
+			}
+			else if( gpGlobals->time != pev->pain_finished )
+			{
+				if( !pOther->IsPlayer() )
+					return;
+
+				const auto playerBit = 1 << ( pOther->entindex() - 1 );
+
+				if( pev->impulse & playerBit )
+					return;
+
+				pev->impulse |= playerBit;
+			}
+
+			pOther->TakeDamage( pev,pev, pev->dmg, DMG_CRUSH );
+
+			EMIT_SOUND_DYN( pOther->edict(), CHAN_BODY, pAttackSounds[ RANDOM_LONG( 0, ARRAYSIZE( pAttackSounds ) - 1 ) ], VOL_NORM, 0.1, 0, RANDOM_LONG( -5, 5 ) + 100 );
+
+			pev->pain_finished = gpGlobals->time;
+			m_flLastDamageTime = gpGlobals->time;
+
+			if( !FStringNull( pev->target ) &&
+				( !( pev->spawnflags & SF_GENEWORM_HIT_FIRE_CLIENT_ONLY ) || pOther->IsPlayer() ) )
+			{
+				SUB_UseTargets( pOther, USE_TOGGLE, 0 );
+
+				if( pev->spawnflags & SF_GENEWORM_HIT_TARGET_ONCE )
+					pev->target = iStringNull;
+			}
+		}
+	}
+}
+
+class CTriggerCTFGeneric : public CBaseTrigger
+{
+public:
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+	void Spawn() override;
+
+	void Touch(CBaseEntity* pOther) override;
+
+	void KeyValue(KeyValueData* pkvd) override;
+
+	USE_TYPE triggerType;
+	CTFTeam team_no;
+	float trigger_delay;
+	float m_flTriggerDelayTime;
+	int score;
+	int team_score;
+};
+
+LINK_ENTITY_TO_CLASS(trigger_ctfgeneric, CTriggerCTFGeneric);
+
+void CTriggerCTFGeneric::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	Touch(nullptr);
+}
+
+void CTriggerCTFGeneric::Spawn()
+{
+	InitTrigger();
+
+	m_flTriggerDelayTime = 0;
+}
+
+void CTriggerCTFGeneric::Touch(CBaseEntity* pOther)
+{
+	if (m_flTriggerDelayTime <= gpGlobals->time)
+	{
+		CBasePlayer* pOtherPlayer = nullptr;
+
+		if (pOther)
+		{
+			if (score || !pOther->IsPlayer())
+			{
+				return;
+			}
+
+			pOtherPlayer = static_cast<CBasePlayer*>(pOther);
+
+			if (team_no != CTFTeam::None && team_no != pOtherPlayer->m_iTeamNum)
+			{
+				return;
+			}
+		}
+
+		SUB_UseTargets(this, triggerType, 0);
+
+		//TODO: constrain team_no input to valid values
+		if (team_score)
+			teamscores[static_cast<int>(team_no) - 1] += team_score;
+
+		if (pOtherPlayer && score != 0)
+		{
+			pOtherPlayer->m_iCTFScore += score;
+			pOtherPlayer->m_iOffense += score;
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgCTFScore, 0, 0);
+			g_engfuncs.pfnWriteByte(pOtherPlayer->entindex());
+			g_engfuncs.pfnWriteByte(pOtherPlayer->m_iCTFScore);
+			g_engfuncs.pfnMessageEnd();
+
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgScoreInfo, 0, 0);
+			g_engfuncs.pfnWriteByte(pOtherPlayer->entindex());
+			g_engfuncs.pfnWriteShort(pev->frags);
+			g_engfuncs.pfnWriteShort(pOtherPlayer->m_iDeaths);
+			g_engfuncs.pfnMessageEnd();
+
+			UTIL_LogPrintf(
+				"\"%s<%i><%u><%s>\" triggered \"%s\"\n",
+				STRING(pOtherPlayer->pev->targetname),
+				g_engfuncs.pfnGetPlayerUserId(pOtherPlayer->edict()),
+				g_engfuncs.pfnGetPlayerWONId(pOtherPlayer->edict()),
+				GetTeamName(pOtherPlayer->edict()),
+				STRING(pOtherPlayer->pev->targetname));
+		}
+
+		if (team_score)
+		{
+			//TOOD: not sure why this check is here since pev must be valid if the entity exists
+			if (!pOther && !score && pev)
+			{
+				UTIL_LogPrintf((char*)"World triggered \"%s\"\n", STRING(pev->targetname));
+			}
+
+			DisplayTeamFlags(nullptr);
+		}
+
+		m_flTriggerDelayTime = gpGlobals->time + trigger_delay;
+	}
+}
+
+void CTriggerCTFGeneric::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq("team_no", pkvd->szKeyName))
+	{
+		team_no = static_cast<CTFTeam>(atoi(pkvd->szValue));
+		pkvd->fHandled = true;
+	}
+	else if (FStrEq("trigger_delay", pkvd->szKeyName))
+	{
+		trigger_delay = atof(pkvd->szValue);
+
+		if (trigger_delay == 0)
+			trigger_delay = 5;
+
+		pkvd->fHandled = true;
+	}
+	else if (FStrEq("score", pkvd->szKeyName))
+	{
+		score = atof(pkvd->szValue);
+		pkvd->fHandled = true;
+	}
+	else if (FStrEq("team_score", pkvd->szKeyName))
+	{
+		team_score = atof(pkvd->szValue);
+		pkvd->fHandled = true;
+	}
+	else if (FStrEq("triggerstate", pkvd->szKeyName))
+	{
+		switch (atoi(pkvd->szValue))
+		{
+		case 1:
+			triggerType = USE_ON;
+			break;
+
+		case 2:
+			triggerType = USE_TOGGLE;
+			break;
+
+		default:
+			triggerType = USE_OFF;
+			break;
+		}
+
+		pkvd->fHandled = true;
+	}
+	else
+	{
+		pkvd->fHandled = false;
+	}
+}

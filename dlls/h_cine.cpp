@@ -169,6 +169,8 @@ void CLegacyCineMonster :: CineThink()
 
 	SetNextThink( 1.0 );
 
+	UpdateShockEffect();
+
 	if (pev->spawnflags != 0 && m_fSequenceFinished)
 	{
 		Die();

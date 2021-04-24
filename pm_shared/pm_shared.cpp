@@ -587,7 +587,8 @@ void PM_UpdateStepSound()
 	speed = Length( pmove->velocity );
 
 	// determine if we are on a ladder
-	fLadder = ( pmove->movetype == MOVETYPE_FLY );// IsOnLadder();
+	//The Barnacle Grapple sets the FL_IMMUNE_LAVA flag to indicate that the player is not on a ladder - Solokiller
+	fLadder = ( pmove->movetype == MOVETYPE_FLY ) && !( pmove->flags & FL_IMMUNE_LAVA );// IsOnLadder();
 
 	// UNDONE: need defined numbers for run, walk, crouch, crouch run velocities!!!!	
 	if ( ( pmove->flags & FL_DUCKING) || fLadder )
@@ -1667,7 +1668,7 @@ When a player is stuck, it's costly to try and unstick them
 Grab a test offset for the player based on a passed in index
 =================
 */
-int PM_GetRandomStuckOffsets(int nIndex, int server, Vector offset)
+int PM_GetRandomStuckOffsets(int nIndex, int server, Vector& offset)
 {
  // Last time we did a full
 	int idx;
@@ -2636,6 +2637,8 @@ void PM_Jump ()
 
 	// See if user can super long jump?
 	cansuperjump = atoi( pmove->PM_Info_ValueForKey( pmove->physinfo, "slj" ) ) == 1 ? true : false;
+
+	cansuperjump = cansuperjump || (atoi(pmove->PM_Info_ValueForKey(pmove->physinfo, "jpj")) == 1 ? true : false);
 
 	// Acclerate upward
 	// If we are ducking...
