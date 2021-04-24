@@ -33,15 +33,6 @@
 #define PC_LASTCLASS 10
 #define PC_UNDEFINED 0
 #define PC_MAX_TEAMS 11
-#define MENU_DEFAULT				1
-#define MENU_TEAM 					2
-#define MENU_CLASS 					3
-#define MENU_MAPBRIEFING			4
-#define MENU_INTRO 					5
-#define MENU_CLASSHELP				6
-#define MENU_CLASSHELP2 			7
-#define MENU_REPEATHELP 			8
-#define MENU_SPECHELP				9
 #endif
 using namespace vgui;
 
