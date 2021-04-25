@@ -510,7 +510,10 @@ void CGargantua::StompAttack()
 
 	UTIL_TraceLine( pev->origin, pev->origin - Vector(0,0,20), ignore_monsters, edict(), &trace );
 	if ( trace.flFraction < 1.0 )
-		UTIL_DecalTrace( &trace, DECAL_GARGSTOMP1 );
+		//UTIL_DecalTrace( &trace, DECAL_GARGSTOMP1 );
+		//RENDERERS START
+		UTIL_CustomDecal(&trace, "gargstomp");
+		//RENDERERS END
 }
 
 
@@ -604,7 +607,10 @@ void CGargantua :: FlameUpdate()
 			{
 				StreakSplash( trace.vecEndPos, trace.vecPlaneNormal, 6, 20, 50, 400 );
 				streaks = TRUE;
-				UTIL_DecalTrace( &trace, DECAL_SMALLSCORCH1 + RANDOM_LONG(0,2) );
+				//UTIL_DecalTrace( &trace, DECAL_SMALLSCORCH1 + RANDOM_LONG(0,2) );
+				//RENDERERS START
+				UTIL_CustomDecal(&trace, "smallscorch");
+				//RENDERERS END
 			}
 			// RadiusDamage( trace.vecEndPos, pev, pev, gSkillData.gargantuaDmgFire, CLASS_ALIEN_MONSTER, DMG_BURN );
 			FlameDamage( vecStart, trace.vecEndPos, pev, pev, gSkillData.gargantuaDmgFire, CLASS_ALIEN_MONSTER, DMG_BURN );

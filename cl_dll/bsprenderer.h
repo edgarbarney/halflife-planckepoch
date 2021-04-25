@@ -240,6 +240,7 @@ public:
 	cvar_t				*m_pCvarRadialFog;
 	cvar_t				*m_pCvarPCFShadows;
 	cvar_t				*m_pCvarShadows;
+	cvar_t				*m_pCvarOvDecals;
 
 	Vector				m_vDLightMins;
 	Vector				m_vDLightMaxs;
