@@ -3226,8 +3226,8 @@ edict_t *EntSelectSpawnPoint( CBasePlayer *pPlayer )
 		// we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
 		if( !FNullEnt( pSpot ) )
 		{
-			CBaseEntity *ent = NULL;
-			while( ( ent = UTIL_FindEntityInSphere( ent, pSpot->pev->origin, 128 ) ) != NULL )
+			CBaseEntity *ent = nullptr;
+			while( ( ent = UTIL_FindEntityInSphere( ent, pSpot->pev->origin, 128 ) ) != nullptr )
 			{
 				// if ent is a client, kill em (unless they are ourselves)
 				if( ent->IsPlayer() && !( ent->edict() == player ) )
@@ -4621,7 +4621,7 @@ void CBasePlayer :: UpdateClientData()
 			{
 				if( FlashlightIsOn() )
 				{
-					MESSAGE_BEGIN( MSG_ONE, gmsgFlashlight, NULL, pev );
+					MESSAGE_BEGIN( MSG_ONE, gmsgFlashlight, nullptr, pev );
 					WRITE_BYTE( FlashlightIsOn() );
 					WRITE_BYTE( m_iFlashBattery );
 					MESSAGE_END();
@@ -5048,7 +5048,7 @@ void CBasePlayer::UpdateCTFHud()
 					continue;
 				}
 
-				g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgPlayerIcon, 0, 0);
+				g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgPlayerIcon, nullptr, nullptr);
 				g_engfuncs.pfnWriteByte(entindex());
 				g_engfuncs.pfnWriteByte(state);
 				g_engfuncs.pfnWriteByte(1);
@@ -5093,7 +5093,7 @@ void CBasePlayer::UpdateCTFHud()
 
 				const auto& itemData{CTFItemData[i]};
 
-				g_engfuncs.pfnMessageBegin(MSG_ONE, gmsgStatusIcon, 0, edict());
+				g_engfuncs.pfnMessageBegin(MSG_ONE, gmsgStatusIcon, nullptr, edict());
 				g_engfuncs.pfnWriteByte(state);
 				g_engfuncs.pfnWriteString(itemData.ClassName);
 
@@ -5106,7 +5106,7 @@ void CBasePlayer::UpdateCTFHud()
 
 				g_engfuncs.pfnMessageEnd();
 
-				g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgPlayerIcon, 0, 0);
+				g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgPlayerIcon, nullptr, nullptr);
 				g_engfuncs.pfnWriteByte(entindex());
 				g_engfuncs.pfnWriteByte(state);
 				g_engfuncs.pfnWriteByte(0);

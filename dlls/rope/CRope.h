@@ -49,7 +49,7 @@ public:
 
 public:
 	CRope();
-	~CRope();
+	~CRope() override;
 
 	void KeyValue( KeyValueData* pkvd ) override;
 

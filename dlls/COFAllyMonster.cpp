@@ -395,7 +395,7 @@ void COFAllyMonster::StartTask( Task_t *pTask )
 		break;
 
 	case TASK_TLK_IDEALYAW:
-		if( m_hTalkTarget != NULL )
+		if( m_hTalkTarget != nullptr )
 		{
 			pev->yaw_speed = 60;
 			float yaw = VecToYaw( m_hTalkTarget->pev->origin - pev->origin ) - pev->angles.y;
@@ -417,7 +417,7 @@ void COFAllyMonster::StartTask( Task_t *pTask )
 
 	case TASK_TLK_HEADRESET:
 		// reset head position after looking at something
-		m_hTalkTarget = NULL;
+		m_hTalkTarget = nullptr;
 		TaskComplete();
 		break;
 
@@ -443,7 +443,7 @@ void COFAllyMonster::StartTask( Task_t *pTask )
 			dir.y = pev->ideal_yaw + 180;
 			Vector move;
 
-			UTIL_MakeVectorsPrivate( dir, move, NULL, NULL );
+			UTIL_MakeVectorsPrivate( dir, move, nullptr, nullptr );
 			dir = pev->origin + move * pTask->flData;
 			if( MoveToLocation( ACT_WALK, 2, dir ) )
 			{
@@ -464,7 +464,7 @@ void COFAllyMonster::StartTask( Task_t *pTask )
 		break;
 
 	case TASK_PLAY_SCRIPT:
-		m_hTalkTarget = NULL;
+		m_hTalkTarget = nullptr;
 		CBaseMonster::StartTask( pTask );
 		break;
 
@@ -549,7 +549,7 @@ void COFAllyMonster::RunTask( Task_t *pTask )
 		break;
 
 	case TASK_TLK_EYECONTACT:
-		if( !IsMoving() && IsTalking() && m_hTalkTarget != NULL )
+		if( !IsMoving() && IsTalking() && m_hTalkTarget != nullptr )
 		{
 			// ALERT( at_console, "waiting %f\n", m_flStopTalkTime - gpGlobals->time );
 			IdleHeadTurn( m_hTalkTarget->pev->origin );
@@ -575,7 +575,7 @@ void COFAllyMonster::RunTask( Task_t *pTask )
 		}
 		break;
 	case TASK_WAIT_FOR_MOVEMENT:
-		if( IsTalking() && m_hTalkTarget != NULL )
+		if( IsTalking() && m_hTalkTarget != nullptr )
 		{
 			// ALERT(at_console, "walking, talking\n");
 			IdleHeadTurn( m_hTalkTarget->pev->origin );
@@ -597,7 +597,7 @@ void COFAllyMonster::RunTask( Task_t *pTask )
 		break;
 
 	default:
-		if( IsTalking() && m_hTalkTarget != NULL )
+		if( IsTalking() && m_hTalkTarget != nullptr )
 		{
 			IdleHeadTurn( m_hTalkTarget->pev->origin );
 		}
@@ -619,10 +619,10 @@ void COFAllyMonster::Killed( entvars_t *pevAttacker, int iGib )
 		LimitFollowers( CBaseEntity::Instance( pevAttacker ), 0 );
 	}
 
-	m_hTargetEnt = NULL;
+	m_hTargetEnt = nullptr;
 	// Don't finish that sentence
 	StopTalking();
-	SetUse( NULL );
+	SetUse( nullptr );
 	CBaseMonster::Killed( pevAttacker, iGib );
 }
 
@@ -636,7 +636,7 @@ CBaseEntity	*COFAllyMonster::EnumFriends( CBaseEntity *pPrevious, int listNumber
 	Vector vecCheck;
 
 	pszFriend = m_szFriends[ FriendNumber( listNumber ) ];
-	while( pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend ) )
+	while( (pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend )) )
 	{
 		if( pFriend == this || !pFriend->IsAlive() )
 			// don't talk to self or dead people
@@ -657,19 +657,19 @@ CBaseEntity	*COFAllyMonster::EnumFriends( CBaseEntity *pPrevious, int listNumber
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
 void COFAllyMonster::AlertFriends()
 {
-	CBaseEntity *pFriend = NULL;
+	CBaseEntity *pFriend = nullptr;
 	int i;
 
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, TRUE ) )
+		while( (pFriend = EnumFriends( pFriend, i, TRUE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster->IsAlive() )
@@ -685,13 +685,13 @@ void COFAllyMonster::AlertFriends()
 
 void COFAllyMonster::ShutUpFriends()
 {
-	CBaseEntity *pFriend = NULL;
+	CBaseEntity *pFriend = nullptr;
 	int i;
 
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, TRUE ) )
+		while( (pFriend = EnumFriends( pFriend, i, TRUE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster )
@@ -707,14 +707,14 @@ void COFAllyMonster::ShutUpFriends()
 // UNDONE: Check this in Restore to keep restored monsters from joining a full list of followers
 void COFAllyMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 {
-	CBaseEntity *pFriend = NULL;
+	CBaseEntity *pFriend = nullptr;
 	int i, count;
 
 	count = 0;
 	// for each friend in this bsp...
 	for( i = 0; i < TLK_CFRIENDS; i++ )
 	{
-		while( pFriend = EnumFriends( pFriend, i, FALSE ) )
+		while( (pFriend = EnumFriends( pFriend, i, FALSE )) )
 		{
 			CBaseMonster *pMonster = pFriend->MyMonsterPointer();
 			if( pMonster )
@@ -734,7 +734,7 @@ void COFAllyMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 float COFAllyMonster::TargetDistance()
 {
 	// If we lose the player, or he dies, return a really large distance
-	if( m_hTargetEnt == NULL || !m_hTargetEnt->IsAlive() )
+	if( m_hTargetEnt == nullptr || !m_hTargetEnt->IsAlive() )
 		return 1e6;
 
 	return ( m_hTargetEnt->pev->origin - pev->origin ).Length();
@@ -783,8 +783,8 @@ void COFAllyMonster::TalkInit()
 //=========================================================
 CBaseEntity *COFAllyMonster::FindNearestFriend( BOOL fPlayer )
 {
-	CBaseEntity *pFriend = NULL;
-	CBaseEntity *pNearest = NULL;
+	CBaseEntity *pFriend = nullptr;
+	CBaseEntity *pNearest = nullptr;
 	float range = 10000000.0;
 	TraceResult tr;
 	Vector vecStart = pev->origin;
@@ -813,7 +813,7 @@ CBaseEntity *COFAllyMonster::FindNearestFriend( BOOL fPlayer )
 			continue;
 
 		// for each friend in this bsp...
-		while( pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend ) )
+		while( (pFriend = UTIL_FindEntityByClassname( pFriend, pszFriend )) )
 		{
 			if( pFriend == this || !pFriend->IsAlive() )
 				// don't talk to self or dead people
@@ -921,7 +921,7 @@ int COFAllyMonster::FOkToSpeak()
 		return FALSE;
 
 	// don't talk if you're in combat
-	if( m_hEnemy != NULL && FVisible( m_hEnemy ) )
+	if( m_hEnemy != nullptr && FVisible( m_hEnemy ) )
 		return FALSE;
 
 	return TRUE;
@@ -1038,7 +1038,7 @@ int COFAllyMonster::FIdleSpeak()
 	// player using this entity is alive and wounded?
 	CBaseEntity *pTarget = m_hTargetEnt;
 
-	if( pTarget != NULL )
+	if( pTarget != nullptr )
 	{
 		if( pTarget->IsPlayer() )
 		{
@@ -1356,10 +1356,10 @@ void COFAllyMonster::StopFollowing( BOOL clearSchedule )
 
 		if( m_movementGoal == MOVEGOAL_TARGETENT )
 			RouteClear(); // Stop him from walking toward the player
-		m_hTargetEnt = NULL;
+		m_hTargetEnt = nullptr;
 		if( clearSchedule )
 			ClearSchedule();
-		if( m_hEnemy != NULL )
+		if( m_hEnemy != nullptr )
 			m_IdealMonsterState = MONSTERSTATE_COMBAT;
 	}
 }
@@ -1370,7 +1370,7 @@ void COFAllyMonster::StartFollowing( CBaseEntity *pLeader )
 	if( m_pCine )
 		m_pCine->CancelScript();
 
-	if( m_hEnemy != NULL )
+	if( m_hEnemy != nullptr )
 		m_IdealMonsterState = MONSTERSTATE_ALERT;
 
 	m_hTargetEnt = pLeader;
@@ -1402,7 +1402,7 @@ void COFAllyMonster::FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller,
 	if( m_useTime > gpGlobals->time )
 		return;
 
-	if( pCaller != NULL && pCaller->IsPlayer() )
+	if( pCaller != nullptr && pCaller->IsPlayer() )
 	{
 		// Pre-disaster followers can't be used
 		if( pev->spawnflags & SF_MONSTER_PREDISASTER )

@@ -166,9 +166,9 @@ CStatsMenuPanel::CStatsMenuPanel(int iTrans, int iRemoveMe, int x, int y, int wi
 			pNameLabel->getTextSize(xOut, yOut);
 
 			if (i == 3)
-				sprintf(sz, sCTFStatsSelection[1]);
+				sprintf(sz, "%s", sCTFStatsSelection[1]);
 			else
-				sprintf(sz, sCTFStatsSelection[i]);
+				sprintf(sz, "%s", sCTFStatsSelection[i]);
 
 			m_pClassImages[i] = new CImageLabel(sz, textOffs, 2 * yOut, XRES(250), YRES(80));
 			m_pClassImages[i]->setParent(m_pClassInfoPanel[i]);

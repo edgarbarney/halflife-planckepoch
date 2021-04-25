@@ -145,7 +145,7 @@ void COFSquadTalkMonster::Killed( entvars_t *pevAttacker, int iGib )
 //=========================================================
 void COFSquadTalkMonster::SquadRemove( COFSquadTalkMonster *pRemove )
 {
-	ASSERT( pRemove != NULL );
+	ASSERT( pRemove != nullptr );
 	ASSERT( this->IsLeader() );
 	ASSERT( pRemove->m_hSquadLeader == this );
 
@@ -157,8 +157,8 @@ void COFSquadTalkMonster::SquadRemove( COFSquadTalkMonster *pRemove )
 			COFSquadTalkMonster *pMember = MySquadMember( i );
 			if( pMember )
 			{
-				pMember->m_hSquadLeader = NULL;
-				m_hSquadMember[ i ] = NULL;
+				pMember->m_hSquadLeader = nullptr;
+				m_hSquadMember[ i ] = nullptr;
 			}
 		}
 	}
@@ -171,14 +171,14 @@ void COFSquadTalkMonster::SquadRemove( COFSquadTalkMonster *pRemove )
 			{
 				if( pSquadLeader->m_hSquadMember[ i ] == this )
 				{
-					pSquadLeader->m_hSquadMember[ i ] = NULL;
+					pSquadLeader->m_hSquadMember[ i ] = nullptr;
 					break;
 				}
 			}
 		}
 	}
 
-	pRemove->m_hSquadLeader = NULL;
+	pRemove->m_hSquadLeader = nullptr;
 }
 
 //=========================================================
@@ -188,13 +188,13 @@ void COFSquadTalkMonster::SquadRemove( COFSquadTalkMonster *pRemove )
 //=========================================================
 BOOL COFSquadTalkMonster::SquadAdd( COFSquadTalkMonster *pAdd )
 {
-	ASSERT( pAdd != NULL );
+	ASSERT( pAdd != nullptr );
 	ASSERT( !pAdd->InSquad() );
 	ASSERT( this->IsLeader() );
 
 	for( int i = 0; i < MAX_SQUAD_MEMBERS - 1; i++ )
 	{
-		if( m_hSquadMember[ i ] == NULL )
+		if( m_hSquadMember[ i ] == nullptr )
 		{
 			m_hSquadMember[ i ] = pAdd;
 			pAdd->m_hSquadLeader = this;
@@ -251,7 +251,7 @@ void COFSquadTalkMonster::SquadMakeEnemy(CBaseEntity* pEnemy)
 	if (!InSquad())
 	{
 		//TODO: pEnemy could be null here
-		if (m_hEnemy != NULL)
+		if (m_hEnemy != nullptr)
 		{
 			// remember their current enemy
 			PushEnemy(m_hEnemy, m_vecEnemyLKP);
@@ -273,8 +273,8 @@ void COFSquadTalkMonster::SquadMakeEnemy(CBaseEntity* pEnemy)
 
 	auto squadLeader = MySquadLeader();
 
-	const bool fLeaderIsFollowing = squadLeader->m_hTargetEnt != NULL && squadLeader->m_hTargetEnt->IsPlayer();
-	const bool fImFollowing = m_hTargetEnt != NULL && m_hTargetEnt->IsPlayer();
+	const bool fLeaderIsFollowing = squadLeader->m_hTargetEnt != nullptr && squadLeader->m_hTargetEnt->IsPlayer();
+	const bool fImFollowing = m_hTargetEnt != nullptr && m_hTargetEnt->IsPlayer();
 
 	if (!IsLeader() && fLeaderIsFollowing != fImFollowing)
 	{
@@ -288,12 +288,12 @@ void COFSquadTalkMonster::SquadMakeEnemy(CBaseEntity* pEnemy)
 
 		if (squadMember)
 		{
-			const bool isFollowing = squadMember->m_hTargetEnt != NULL && squadMember->m_hTargetEnt->IsPlayer();
+			const bool isFollowing = squadMember->m_hTargetEnt != nullptr && squadMember->m_hTargetEnt->IsPlayer();
 
 			// reset members who aren't activly engaged in fighting
 			if (fLeaderIsFollowing == isFollowing && squadMember->m_hEnemy != pEnemy && !squadMember->HasConditions(bits_COND_SEE_ENEMY))
 			{
-				if (squadMember->m_hEnemy != NULL)
+				if (squadMember->m_hEnemy != nullptr)
 				{
 					// remember their current enemy
 					squadMember->PushEnemy(squadMember->m_hEnemy, squadMember->m_vecEnemyLKP);
@@ -310,12 +310,12 @@ void COFSquadTalkMonster::SquadMakeEnemy(CBaseEntity* pEnemy)
 	}
 
 	//Seems a bit redundant to recalculate this now
-	const bool leaderIsStillFollowing = squadLeader->m_hTargetEnt != NULL && squadLeader->m_hTargetEnt->IsPlayer();
+	const bool leaderIsStillFollowing = squadLeader->m_hTargetEnt != nullptr && squadLeader->m_hTargetEnt->IsPlayer();
 
 	// reset members who aren't activly engaged in fighting
 	if (fLeaderIsFollowing == leaderIsStillFollowing && squadLeader->m_hEnemy != pEnemy && !squadLeader->HasConditions(bits_COND_SEE_ENEMY))
 	{
-		if (squadLeader->m_hEnemy != NULL)
+		if (squadLeader->m_hEnemy != nullptr)
 		{
 			// remember their current enemy
 			squadLeader->PushEnemy(squadLeader->m_hEnemy, squadLeader->m_vecEnemyLKP);
@@ -332,7 +332,7 @@ void COFSquadTalkMonster::SquadMakeEnemy(CBaseEntity* pEnemy)
 	// reset members who aren't activly engaged in fighting
 	if (squadLeader->m_hEnemy != pEnemy && !squadLeader->HasConditions(bits_COND_SEE_ENEMY))
 	{
-		if (squadLeader->m_hEnemy != NULL)
+		if (squadLeader->m_hEnemy != nullptr)
 		{
 			// remember their current enemy
 			squadLeader->PushEnemy(squadLeader->m_hEnemy, squadLeader->m_vecEnemyLKP);
@@ -363,7 +363,7 @@ int COFSquadTalkMonster::SquadCount()
 	int squadCount = 0;
 	for( int i = 0; i < MAX_SQUAD_MEMBERS; i++ )
 	{
-		if( pSquadLeader->MySquadMember( i ) != NULL )
+		if( pSquadLeader->MySquadMember( i ) != nullptr )
 			squadCount++;
 	}
 
@@ -394,7 +394,7 @@ int COFSquadTalkMonster::SquadRecruit( int searchRadius, int maxMembers )
 	m_hSquadLeader = this;
 	squadCount = 1;
 
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity *pEntity = nullptr;
 
 	if( !FStringNull( pev->netname ) )
 	{
@@ -420,7 +420,7 @@ int COFSquadTalkMonster::SquadRecruit( int searchRadius, int maxMembers )
 	}
 	else
 	{
-		while( ( pEntity = UTIL_FindEntityInSphere( pEntity, pev->origin, searchRadius ) ) != NULL )
+		while( ( pEntity = UTIL_FindEntityInSphere( pEntity, pev->origin, searchRadius ) ) != nullptr )
 		{
 			COFSquadTalkMonster *pRecruit = pEntity->MySquadTalkMonsterPointer();
 
@@ -448,7 +448,7 @@ int COFSquadTalkMonster::SquadRecruit( int searchRadius, int maxMembers )
 	// no single member squads
 	if( squadCount == 1 )
 	{
-		m_hSquadLeader = NULL;
+		m_hSquadLeader = nullptr;
 	}
 
 	return squadCount;
@@ -535,7 +535,7 @@ BOOL COFSquadTalkMonster::NoFriendlyFire()
 
 	//!!!BUGBUG - to fix this, the planes must be aligned to where the monster will be firing its gun, not the direction it is facing!!!
 
-	if( m_hEnemy != NULL )
+	if( m_hEnemy != nullptr )
 	{
 		UTIL_MakeVectors( UTIL_VecToAngles( m_hEnemy->Center() - pev->origin ) );
 	}
@@ -642,7 +642,7 @@ BOOL COFSquadTalkMonster::SquadEnemySplit()
 	for( int i = 0; i < MAX_SQUAD_MEMBERS; i++ )
 	{
 		COFSquadTalkMonster *pMember = pSquadLeader->MySquadMember( i );
-		if( pMember != NULL && pMember->m_hEnemy != NULL && pMember->m_hEnemy != pEnemy )
+		if( pMember != nullptr && pMember->m_hEnemy != nullptr && pMember->m_hEnemy != pEnemy )
 		{
 			return TRUE;
 		}
@@ -695,7 +695,7 @@ void COFSquadTalkMonster::FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCa
 	if (m_useTime > gpGlobals->time)
 		return;
 
-	if (pCaller != NULL && pCaller->IsPlayer())
+	if (pCaller != nullptr && pCaller->IsPlayer())
 	{
 		// Pre-disaster followers can't be used
 		if (pev->spawnflags & SF_MONSTER_PREDISASTER)

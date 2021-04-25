@@ -399,7 +399,7 @@ void CMOFAssassin :: JustSpoke()
 //=========================================================
 void CMOFAssassin :: PrescheduleThink ()
 {
-	if ( InSquad() && m_hEnemy != NULL )
+	if ( InSquad() && m_hEnemy != nullptr )
 	{
 		if ( HasConditions ( bits_COND_SEE_ENEMY ) )
 		{
@@ -449,7 +449,7 @@ BOOL CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	CBaseMonster *pEnemy;
 
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 		pEnemy = m_hEnemy->MyMonsterPointer();
 
@@ -760,7 +760,7 @@ CBaseEntity *CMOFAssassin :: Kick()
 		return pEntity;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //=========================================================
@@ -784,7 +784,7 @@ Vector CMOFAssassin :: GetGunPosition( )
 //=========================================================
 void CMOFAssassin :: Shoot ()
 {
-	if (m_hEnemy == NULL)
+	if (m_hEnemy == nullptr)
 	{
 		return;
 	}
@@ -1927,7 +1927,7 @@ Schedule_t *CMOFAssassin :: GetSchedule()
 		CSound *pSound;
 		pSound = PBestSound();
 
-		ASSERT( pSound != NULL );
+		ASSERT( pSound != nullptr );
 		if ( pSound)
 		{
 			if (pSound->m_iType & bits_SOUND_DANGER)
@@ -1994,7 +1994,7 @@ Schedule_t *CMOFAssassin :: GetSchedule()
 				// 10% chance of flinch.
 				int iPercent = RANDOM_LONG(0,99);
 
-				if ( iPercent <= 90 && m_hEnemy != NULL )
+				if ( iPercent <= 90 && m_hEnemy != nullptr )
 				{
 					// only try to take cover if we actually have an enemy!
 
@@ -2203,7 +2203,7 @@ Schedule_t* CMOFAssassin :: GetScheduleOfType ( int Type )
 		}
 	case SCHED_FAIL:
 		{
-			if ( m_hEnemy != NULL )
+			if ( m_hEnemy != nullptr )
 			{
 				// grunt has an enemy, so pick a different default fail schedule most likely to help recover.
 				return &slOFMAssassinCombatFail[ 0 ];

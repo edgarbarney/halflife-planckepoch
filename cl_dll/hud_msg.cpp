@@ -24,7 +24,7 @@
 #include "rain.h"
 #include "UserMessages.h"
 #include "vgui_TeamFortressViewport.h"
-#include<VGUI_ScorePanel.h>
+#include<vgui_ScorePanel.h>
 
 //RENDERERS START
 #include "bsprenderer.h"

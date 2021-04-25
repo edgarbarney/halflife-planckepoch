@@ -264,7 +264,7 @@ void COtis :: RunTask( Task_t *pTask )
 	switch ( pTask->iTask )
 	{
 	case TASK_RANGE_ATTACK1:
-		if (m_hEnemy != NULL && (m_hEnemy->IsPlayer()))
+		if (m_hEnemy != nullptr && (m_hEnemy->IsPlayer()))
 		{
 			pev->framerate = 1.5;
 		}
@@ -308,7 +308,7 @@ int	COtis :: Classify ()
 //=========================================================
 void COtis :: AlertSound()
 {
-	if ( m_hEnemy != NULL )
+	if ( m_hEnemy != nullptr )
 	{
 		if ( FOkToSpeak() )
 		{
@@ -363,7 +363,7 @@ BOOL COtis :: CheckRangeAttack1 ( float flDot, float flDist )
 			Vector shootTarget = ( (pEnemy->BodyTarget( shootOrigin ) - pEnemy->pev->origin) + m_vecEnemyLKP );
 			UTIL_TraceLine( shootOrigin, shootTarget, dont_ignore_monsters, ENT(pev), &tr );
 			m_checkAttackTime = gpGlobals->time + 1;
-			if ( tr.flFraction == 1.0 || (tr.pHit != NULL && CBaseEntity::Instance(tr.pHit) == pEnemy) )
+			if ( tr.flFraction == 1.0 || (tr.pHit != nullptr && CBaseEntity::Instance(tr.pHit) == pEnemy) )
 				m_lastAttackCheck = TRUE;
 			else
 				m_lastAttackCheck = FALSE;
@@ -537,8 +537,8 @@ void COtis :: TalkInit()
 	m_szGrp[TLK_PLHURT2] =	"!BA_CUREB"; 
 	m_szGrp[TLK_PLHURT3] =	"!BA_CUREC";
 
-	m_szGrp[TLK_PHELLO] =	NULL;	//"OT_PHELLO";		// UNDONE
-	m_szGrp[TLK_PIDLE] =	NULL;	//"OT_PIDLE";			// UNDONE
+	m_szGrp[TLK_PHELLO] =	nullptr;	//"OT_PHELLO";		// UNDONE
+	m_szGrp[TLK_PIDLE] =	nullptr;	//"OT_PIDLE";			// UNDONE
 	m_szGrp[TLK_PQUESTION] = "OT_PQUEST";		// UNDONE
 
 	m_szGrp[TLK_SMELL] =	"OT_SMELL";
@@ -563,7 +563,7 @@ int COtis :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float 
 
 		// This is a heurstic to determine if the player intended to harm me
 		// If I have an enemy, we can't establish intent (may just be crossfire)
-		if ( m_hEnemy == NULL )
+		if ( m_hEnemy == nullptr )
 		{
 			// If the player was facing directly at me, or I'm already suspicious, get mad
 			if ( (m_afMemory & bits_MEMORY_SUSPICIOUS) || IsFacing( pevAttacker, pev->origin ) )
@@ -669,7 +669,7 @@ void COtis::Killed( entvars_t *pevAttacker, int iGib )
 		CBaseEntity *pGun = DropItem( "weapon_eagle", vecGunPos, vecGunAngles );
 	}
 
-	SetUse( NULL );	
+	SetUse( nullptr );	
 	CTalkMonster::Killed( pevAttacker, iGib );
 }
 
@@ -684,7 +684,7 @@ Schedule_t* COtis :: GetScheduleOfType ( int Type )
 	switch( Type )
 	{
 	case SCHED_ARM_WEAPON:
-		if ( m_hEnemy != NULL )
+		if ( m_hEnemy != nullptr )
 		{
 			// face enemy, then draw.
 			return slOtisEnemyDraw;
@@ -735,7 +735,7 @@ Schedule_t *COtis :: GetSchedule ()
 		CSound *pSound;
 		pSound = PBestSound();
 
-		ASSERT( pSound != NULL );
+		ASSERT( pSound != nullptr );
 		if ( pSound && (pSound->m_iType & bits_SOUND_DANGER) )
 			return GetScheduleOfType( SCHED_TAKE_COVER_FROM_BEST_SOUND );
 	}
@@ -776,7 +776,7 @@ Schedule_t *COtis :: GetSchedule ()
 			return GetScheduleOfType( SCHED_SMALL_FLINCH );
 		}
 
-		if ( m_hEnemy == NULL && IsFollowing() )
+		if ( m_hEnemy == nullptr && IsFollowing() )
 		{
 			if ( !m_hTargetEnt->IsAlive() )
 			{

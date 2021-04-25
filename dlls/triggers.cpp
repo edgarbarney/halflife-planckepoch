@@ -6529,12 +6529,12 @@ void CTriggerCTFGeneric::Touch(CBaseEntity* pOther)
 		{
 			pOtherPlayer->m_iCTFScore += score;
 			pOtherPlayer->m_iOffense += score;
-			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgCTFScore, 0, 0);
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgCTFScore, nullptr, nullptr);
 			g_engfuncs.pfnWriteByte(pOtherPlayer->entindex());
 			g_engfuncs.pfnWriteByte(pOtherPlayer->m_iCTFScore);
 			g_engfuncs.pfnMessageEnd();
 
-			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgScoreInfo, 0, 0);
+			g_engfuncs.pfnMessageBegin(MSG_ALL, gmsgScoreInfo, nullptr, nullptr);
 			g_engfuncs.pfnWriteByte(pOtherPlayer->entindex());
 			g_engfuncs.pfnWriteShort(pev->frags);
 			g_engfuncs.pfnWriteShort(pOtherPlayer->m_iDeaths);
