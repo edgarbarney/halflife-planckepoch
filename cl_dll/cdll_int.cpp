@@ -74,10 +74,6 @@ void InitInput ();
 void EV_HookEvents( );
 void IN_Commands( );
 
-// SCREEN GLOW FragBait0
-extern void InitScreenGlow(); // FragBait0 - Glow Effect
-extern void RenderScreenGlow(); // FragBait0 - Glow Effect
-
 /*
 ================================
 HUD_GetHullBounds
@@ -197,9 +193,6 @@ int DLLEXPORT HUD_VidInit()
 
 	VGui_Startup();
 	
-//LRCTEMP 1.8	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
-//LRCTEMP 1.8		InitScreenGlow(); // glow effect --FragBait0
-
 	return 1;
 }
 
@@ -237,9 +230,6 @@ extern void HUD_PrintSpeeds( );
 int DLLEXPORT HUD_Redraw( float time, int intermission )
 {
 //	RecClHudRedraw(time, intermission);
-	
-//LRCTEMP 1.8	if (CVAR_GET_FLOAT("r_glow") != 0)	 //check the cvar for the glow is on.//AJH Modified to include glow mode (1&2)
-//LRCTEMP 1.8		RenderScreenGlow(); // glow effect --FragBait0
 
 	gHUD.Redraw( time, intermission );
 
