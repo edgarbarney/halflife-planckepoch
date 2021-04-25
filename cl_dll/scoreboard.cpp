@@ -62,8 +62,8 @@ int CHudScoreboard :: Init()
 	HOOK_MESSAGE( ScoreInfo );
 	HOOK_MESSAGE( TeamScore );
 	HOOK_MESSAGE( TeamInfo );
-	HOOK_MESSAGE(PlayerIcon);
-	HOOK_MESSAGE(CTFScore);
+	HOOK_MESSAGE( PlayerIcon );
+	HOOK_MESSAGE( CTFScore );
 
 	InitHUDData();
 

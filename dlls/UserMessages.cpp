@@ -29,7 +29,7 @@ int gmsgInitHUD = 0;
 int gmsgKeyedDLight = 0;//LRC
 int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
-int gmsgHUDColor = 0;	//LRC
+//int gmsgHUDColor = 0;	//LRC
 int gmsgClampView = 0;	//LRC 1.8
 int gmsgPlayMP3 = 0;	//Killar
 int gmsgShowGameTitle = 0;
@@ -123,7 +123,7 @@ void LinkUserMessages()
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
 	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
-	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		//LRC
+	//gmsgHUDColor = REG_USER_MSG("HUDColor", 4);	//LRC
 	gmsgClampView = REG_USER_MSG("ClampView", 10);	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);

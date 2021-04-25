@@ -65,9 +65,6 @@ extern DLL_GLOBAL ULONG		g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 extern int giPrecacheGrunt;
-extern int gmsgSayText;
-extern int gmsgHUDColor;
-extern int gmsgCamData; // for trigger_viewset
 
 extern cvar_t allow_spectators;
 
@@ -673,6 +670,7 @@ void ClientCommand( edict_t *pEntity )
 	{
 		return;
 	}
+	/*
 	else if ( FStrEq(pcmd, "hud_color") ) //LRC
 	{
 		if (CMD_ARGC() == 4)
@@ -689,6 +687,7 @@ void ClientCommand( edict_t *pEntity )
 			ALERT(at_console, "Syntax: hud_color RRR GGG BBB\n");
 		}
 	}
+	*/
 	else if ( FStrEq(pcmd, "fire") ) //LRC - trigger entities manually
 	{
 		if (g_psv_cheats->value)

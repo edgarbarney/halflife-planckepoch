@@ -135,10 +135,12 @@ int __MsgFunc_Logo(const char *pszName, int iSize, void *pbuf)
 }
 
 //LRC
+/*
 int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
 {
 	return gHUD.MsgFunc_HUDColor(pszName, iSize, pbuf );
 }
+*/
 
 // Trinity
 int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
@@ -466,7 +468,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( ViewMode );
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
-	HOOK_MESSAGE( HUDColor ); //LRC
+	//HOOK_MESSAGE( HUDColor ); //LRC
 	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
@@ -475,7 +477,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( RainData );//G-Cont. for rain control 
 	HOOK_MESSAGE( Inventory ); //AJH Inventory system
 	HOOK_MESSAGE( ClampView ); //LRC 1.8
-	HOOK_MESSAGE(OldWeapon);
+	HOOK_MESSAGE( OldWeapon );
 
 	//KILLAR: MP3	
 	if(gMP3.Initialize())
@@ -506,10 +508,10 @@ void CHud :: Init()
 
 	HOOK_MESSAGE( Spectator );
 	HOOK_MESSAGE( AllowSpec );
-	HOOK_MESSAGE(SetMenuTeam);
-	HOOK_MESSAGE(StatsInfo);
-	HOOK_MESSAGE(StatsPlayer);
-	
+	HOOK_MESSAGE( SetMenuTeam );
+	HOOK_MESSAGE( StatsInfo );
+	HOOK_MESSAGE( StatsPlayer );
+	HOOK_MESSAGE( HudColor );
 	HOOK_MESSAGE( SpecFade );
 	HOOK_MESSAGE( ResetFade );
 	HOOK_MESSAGE( TeamFull );

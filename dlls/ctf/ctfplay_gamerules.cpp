@@ -720,10 +720,12 @@ void CHalfLifeCTFplay::ClientDisconnected( edict_t* pClient )
 
 			v2->RemoveAllItems( true );
 
+			
 			g_engfuncs.pfnMessageBegin( 2, gmsgSpectator, nullptr, nullptr );
 			g_engfuncs.pfnWriteByte( g_engfuncs.pfnIndexOfEdict( pClient ) );
 			g_engfuncs.pfnWriteByte( 0 );
 			g_engfuncs.pfnMessageEnd();
+			
 
 			for( CBasePlayer* pPlayer = nullptr; ( pPlayer = static_cast<CBasePlayer*>( UTIL_FindEntityByClassname( pPlayer, "player" ) ) ); )
 			{
@@ -835,11 +837,13 @@ void CHalfLifeCTFplay::PlayerSpawn( CBasePlayer* pPlayer )
 				break;
 			}
 
+			
 			g_engfuncs.pfnMessageBegin( MSG_ONE, gmsgHudColor, nullptr, pPlayer->edict() );
 			g_engfuncs.pfnWriteByte(r);
 			g_engfuncs.pfnWriteByte(g);
 			g_engfuncs.pfnWriteByte(b);
 			g_engfuncs.pfnMessageEnd();
+			
 
 			InitItemsForPlayer( pPlayer );
 			DisplayTeamFlags( pPlayer );
