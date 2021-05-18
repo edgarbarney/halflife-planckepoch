@@ -538,10 +538,10 @@ inline bool FNullEnt(CBaseEntity* ent) { return (ent == nullptr) || FNullEnt(ent
 
 #ifdef _DEBUG
 
-#define SetThink( a ) ThinkSet( static_cast <void (CBaseEntity::*)()> (a), #a )
-#define SetTouch( a ) TouchSet( static_cast <void (CBaseEntity::*)(CBaseEntity *)> (a), #a )
-#define SetUse( a ) UseSet( static_cast <void (CBaseEntity::*)(	CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )> (a), #a )
-#define SetBlocked( a ) BlockedSet( static_cast <void (CBaseEntity::*)(CBaseEntity *)> (a), #a )
+#define SetThink( a ) ThinkSet( static_cast <void (CBaseEntity::*)()> (a), (char*)(#a) )
+#define SetTouch( a ) TouchSet( static_cast <void (CBaseEntity::*)(CBaseEntity *)> (a), (char*)(#a) )
+#define SetUse( a ) UseSet( static_cast <void (CBaseEntity::*)(	CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )> (a), (char*)(#a) )
+#define SetBlocked( a ) BlockedSet( static_cast <void (CBaseEntity::*)(CBaseEntity *)> (a), (char*)(#a) )
 
 #else
 

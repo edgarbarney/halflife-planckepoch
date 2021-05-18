@@ -325,6 +325,7 @@ void CBSPRenderer::Init( )
 	m_pCvarRadialFog				= CVAR_CREATE( "te_radialfog", "1", 0 );
 	m_pCvarPCFShadows				= CVAR_CREATE( "te_shadows_filter", "1", FCVAR_ARCHIVE );
 	m_pCvarShadows					= CVAR_CREATE( "te_shadows", "1", FCVAR_ARCHIVE );
+	m_pCvarOvDecals					= CVAR_CREATE( "te_overlapdecals", "1", FCVAR_ARCHIVE );
 
 	//
 	// Load shaders
@@ -4322,7 +4323,7 @@ void CBSPRenderer::CreateDecal( Vector endpos, Vector pnormal, const char *name,
 			maxs[1] = m_pDecals[i].position[1] + radius;
 			maxs[2] = m_pDecals[i].position[2] + radius;
 			
-			if(!CullDecalBBox(mins, maxs))
+			if(!CullDecalBBox(mins, maxs) && m_pCvarOvDecals->value < 1)
 			{
 				delete [] m_pDecals[i].polys;
 				memset(&m_pDecals[i], 0, sizeof(customdecal_t));

@@ -182,6 +182,7 @@ void CEnvExplosion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	// draw decal
 	if (! ( pev->spawnflags & SF_ENVEXPLOSION_NODECAL))
 	{
+		/*
 		if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )
 		{
 			UTIL_DecalTrace( &tr, DECAL_SCORCH1 );
@@ -190,6 +191,10 @@ void CEnvExplosion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		{
 			UTIL_DecalTrace( &tr, DECAL_SCORCH2 );
 		}
+		*/
+		//RENDERERS START
+		UTIL_CustomDecal( &tr, "expscorch");
+		//RENDERERS END
 	}
 
 	// draw fireball
