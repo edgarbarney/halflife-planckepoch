@@ -25,9 +25,7 @@ extern "C"
 	void EV_FireGlock1(event_args_t* args);
 	void EV_FireGlock2(event_args_t* args);
 	void EV_FireShotGunSingle(event_args_t* args);
-	void EV_FireShotGunDouble(event_args_t* args);
 	void EV_FireMP5(event_args_t* args);
-	void EV_FireMP52(event_args_t* args);
 	void EV_FirePython(event_args_t* args);
 	void EV_FireGauss(event_args_t* args);
 	void EV_SpinGauss(event_args_t* args);
@@ -39,7 +37,6 @@ extern "C"
 	void EV_HornetGunFire(event_args_t* args);
 	void EV_TripmineFire(event_args_t* args);
 	void EV_SnarkFire(event_args_t* args);
-    void EV_Mirror( struct event_args_s *args );
     void EV_GenericFire1( struct event_args_s *args );
     void EV_GenericFire2( struct event_args_s *args );
     void EV_GenericFire3( struct event_args_s *args );
