@@ -1,3 +1,4 @@
+
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
@@ -92,8 +93,8 @@ int CHgun::GetItemInfo(ItemInfo *p)
 	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
-	p->iSlot = 3;
-	p->iPosition = 3;
+	p->iSlot = 6;
+	p->iPosition = 0;
 	p->iId = m_iId = WEAPON_HORNETGUN;
 	p->iFlags = ITEM_FLAG_NOAUTOSWITCHEMPTY | ITEM_FLAG_NOAUTORELOAD;
 	p->iWeight = HORNETGUN_WEIGHT;
