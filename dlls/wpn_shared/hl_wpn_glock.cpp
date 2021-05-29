@@ -53,7 +53,7 @@ int CGlock::AddToPlayer( CBasePlayer *pPlayer )//Fix old Half-life bug. G-Cont
 void CGlock::Holster( int skiplocal )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	SendWeaponAnim( GLOCK_HOLSTER );
+	SendWeaponAnim( GLOCK_HOLSTER, m_pPlayer->m_isGlockAuto );
 }
 
 
@@ -98,13 +98,15 @@ int CGlock::GetItemInfo(ItemInfo *p)
 BOOL CGlock::Deploy( )
 {
 	SetBodygroup(2, m_pPlayer->m_isGlockAuto);
-	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
+	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0, m_pPlayer->m_isGlockAuto );
 }
 
 void CGlock::SecondaryAttack()
 {
 	m_pPlayer->m_isGlockAuto = !m_pPlayer->m_isGlockAuto;
 	SetBodygroup(2, m_pPlayer->m_isGlockAuto);
+	WeaponIdle();
+	SendWeaponAnim(GLOCK_TOGGLE, 1);
 	//EMIT_SOUND(ENT(pev), CHAN_WEAPON, "items/9mmclip1.wav", 1, ATTN_NORM);
 	PlayEmptySound();
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
@@ -189,7 +191,7 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 	Vector vecDir;
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, Vector( flSpread, flSpread, flSpread ), 8192, BULLET_PLAYER_9MM, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), fUseAutoAim ? m_usFireGlock1 : m_usFireGlock2, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, ( m_iClip == 0 ) ? 1 : 0, 0 );
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), fUseAutoAim ? m_usFireGlock1 : m_usFireGlock2, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, ( m_iClip == 0 ) ? 1 : 0, m_pPlayer->m_isGlockAuto);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
@@ -209,9 +211,9 @@ void CGlock::Reload()
 	int iResult;
 
 	if (m_iClip == 0)
-		iResult = DefaultReload( 17, GLOCK_RELOAD, 2.13 );
+		iResult = DefaultReload( 17, GLOCK_RELOAD, 2.13, m_pPlayer->m_isGlockAuto);
 	else
-		iResult = DefaultReload( 17, GLOCK_RELOAD_NOT_EMPTY, 2.13);
+		iResult = DefaultReload( 17, GLOCK_RELOAD_NOT_EMPTY, 2.13, m_pPlayer->m_isGlockAuto);
 
 	if (iResult)
 	{
@@ -251,7 +253,7 @@ void CGlock::WeaponIdle()
 			iAnim = GLOCK_IDLE2;
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
 		}
-		SendWeaponAnim( iAnim, 1 );
+		SendWeaponAnim( iAnim, 1, m_pPlayer->m_isGlockAuto );
 	}
 }
 

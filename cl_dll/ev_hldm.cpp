@@ -597,7 +597,23 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 				vecDir[i] = vecDirShooting[i] + x * flSpreadX * right[ i ] + y * flSpreadY * up [ i ];
 				vecEnd[i] = vecSrc[ i ] + flDistance * vecDir[ i ];
 			}
-		}//But other guns already have their spread randomized in the synched spread.
+		}
+		//And Slug
+		else if ( iBulletType == BULLET_PLAYER_SLUG )
+		{
+			do {
+				x = gEngfuncs.pfnRandomFloat(-0.5, 0.5) + gEngfuncs.pfnRandomFloat(-0.5, 0.5);
+				y = gEngfuncs.pfnRandomFloat(-0.5, 0.5) + gEngfuncs.pfnRandomFloat(-0.5, 0.5);
+				z = x * x + y * y;
+			} while (z > 1);
+
+			for (i = 0; i < 3; i++)
+			{
+				vecDir[i] = vecDirShooting[i] + x * flSpreadX * right[i] + y * flSpreadY * up[i];
+				vecEnd[i] = vecSrc[i] + flDistance * vecDir[i];
+			}
+		}
+		//But other guns already have their spread randomized in the synched spread.
 		else
 		{
 
@@ -831,6 +847,7 @@ void EV_FireGlock2( event_args_t *args )
 	Vector velocity;
 	
 	int empty;
+	int isFullAuto;
 
 	Vector ShellVelocity;
 	Vector ShellOrigin;
@@ -844,6 +861,7 @@ void EV_FireGlock2( event_args_t *args )
 	VectorCopy( args->angles, angles );
 	VectorCopy( args->velocity, velocity );
 	empty = args->bparam1;
+	isFullAuto = args->bparam2;
 
 	AngleVectors( angles, forward, right, up );
 
@@ -853,7 +871,7 @@ void EV_FireGlock2( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT, 2);
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT, isFullAuto);
 
 		V_PunchAxis( 0, -2.0 );
 	}
@@ -945,7 +963,10 @@ void EV_FireShotGunSingle( event_args_t *args )
 	Vector up, right, forward;
 	float flSpread = 0.01;
 
+	BOOL isSlug;
+
 	idx = args->entindex;
+	isSlug = args->iparam1;
 	VectorCopy( args->origin, origin );
 	VectorCopy( args->angles, angles );
 	VectorCopy( args->velocity, velocity );
@@ -958,7 +979,11 @@ void EV_FireShotGunSingle( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE, 2 );
+
+		if (!isSlug)
+			gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE, 2 );
+		else
+			gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRESLUG, 2 );
 
 		V_PunchAxis( 0, -10.0 );
 	}
@@ -970,11 +995,17 @@ void EV_FireShotGunSingle( event_args_t *args )
 
 	if ( gEngfuncs.GetMaxClients() > 1 )
 	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 4, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.04362 );
+		if (!isSlug)
+			EV_HLDM_FireBullets( idx, forward, right, up, 4, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.34906, 0.34906);
+		else
+			EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_SLUG, 0, &tracerCount[idx - 1], 0.01745, 0.01745);
 	}
 	else
 	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 6, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
+		if (!isSlug)
+			EV_HLDM_FireBullets( idx, forward, right, up, 6, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.26180, 0.26180);
+		else
+			EV_HLDM_FireBullets(idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_SLUG, 0, &tracerCount[idx - 1], 0.01745, 0.01745);
 	}
 }
 //======================

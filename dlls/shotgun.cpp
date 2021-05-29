@@ -27,6 +27,10 @@
 #define VECTOR_CONE_DM_SHOTGUN	Vector( 0.08716, 0.04362, 0.00  )// 10 degrees by 5 degrees
 #define VECTOR_CONE_DM_DOUBLESHOTGUN Vector( 0.17365, 0.04362, 0.00 ) // 20 degrees by 5 degrees
 
+// Singleplayer Shotgun Spreads
+#define VECTOR_CONE_SPBUCKSHOT	Vector( 0.26180, 0.26180, 0.00  )// 30 degrees?
+#define VECTOR_CONE_SPSLUG		Vector( 0.01745, 0.01745, 0.00  )// 2 degrees
+
 LINK_ENTITY_TO_CLASS( weapon_shotgun, CShotgun );
 
 void CShotgun::Spawn( )
@@ -110,7 +114,7 @@ void CShotgun::Holster( int skiplocal )
 	SendWeaponAnim( SHOTGUN_HOLSTER );
 }
 
-void CShotgun::PrimaryAttack()
+void CShotgun::FireShotgun(BOOL isSlug)
 {
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3 && m_pPlayer->pev->watertype > CONTENT_FLYFIELD)
@@ -169,15 +173,20 @@ void CShotgun::PrimaryAttack()
 	if ( g_pGameRules->IsMultiplayer() )
 #endif
 	{
-		vecDir = m_pPlayer->FireBulletsPlayer( 4, vecSrc, vecAiming, VECTOR_CONE_DM_SHOTGUN, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		if (!isSlug)
+			vecDir = m_pPlayer->FireBulletsPlayer( 4, vecSrc, vecAiming, VECTOR_CONE_DM_SHOTGUN, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		else
+			vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_SPSLUG, 8192, BULLET_PLAYER_SLUG, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 	else
 	{
-		// regular old, untouched spread. 
-		vecDir = m_pPlayer->FireBulletsPlayer( 6, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		if (!isSlug)
+			vecDir = m_pPlayer->FireBulletsPlayer( 6, vecSrc, vecAiming, VECTOR_CONE_SPBUCKSHOT, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		else
+			vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_SPSLUG, 8192, BULLET_PLAYER_SLUG, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usSingleFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usSingleFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, isSlug, 0, 0, 0 );
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usEjectShell, 0.8, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
@@ -190,17 +199,23 @@ void CShotgun::PrimaryAttack()
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(1.23);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.23;
+
 	if (m_iClip != 0)
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
 	else
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.23;
+
 	m_fInSpecialReload = 0;
 }
 
-//Disabled Secondary Attack
+void CShotgun::PrimaryAttack()
+{
+	FireShotgun(FALSE);
+}
+
 void CShotgun::SecondaryAttack()
 {
-	return;
+	FireShotgun(TRUE);
 }
 
 

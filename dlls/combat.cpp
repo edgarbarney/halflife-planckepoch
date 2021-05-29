@@ -1538,6 +1538,13 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
 				DecalGunshot(&tr, iBulletType, vecSrc, vecEnd);
 				break;
+			case BULLET_PLAYER_SLUG:
+				// make distance based!
+				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgBuckshot * 6, vecDir, &tr, DMG_BULLET);
+
+				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
+				DecalGunshot(&tr, iBulletType, vecSrc, vecEnd);
+				break;
 
 			default:
 			case BULLET_MONSTER_9MM:
@@ -1683,6 +1690,11 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgBuckshot, vecDir, &tr, DMG_BULLET); 
 				break;
 			
+			case BULLET_PLAYER_SLUG:
+				// make distance based!
+				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgBuckshot * 6, vecDir, &tr, DMG_BULLET);
+				break;
+
 			case BULLET_PLAYER_357:		
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET); 
 				break;

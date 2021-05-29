@@ -221,9 +221,11 @@ typedef	enum
 	BULLET_PLAYER_MP5, // mp5
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
+	BULLET_PLAYER_SLUG,	// Shotgun Slug
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
 	BULLET_PLAYER_556, // 5.56 NATO of new AR
 	BULLET_PLAYER_338, // 338 Lapua of the L96
+	
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
@@ -570,7 +572,7 @@ enum glock_e
 	GLOCK_RELOAD_NOT_EMPTY,
 	GLOCK_DRAW,
 	GLOCK_HOLSTER,
-	GLOCK_ADD_SILENCER
+	GLOCK_TOGGLE
 };
 
 class CGlock : public CBasePlayerWeapon
@@ -892,6 +894,7 @@ private:
 enum shotgun_e 
 {
 	SHOTGUN_IDLE = 0,
+	SHOTGUN_FIRESLUG = 1,
 	SHOTGUN_FIRE = 2,
 	SHOTGUN_FIRE2 = 2,
 	SHOTGUN_RELOAD = 3,
@@ -900,7 +903,7 @@ enum shotgun_e
 	SHOTGUN_DRAW,
 	SHOTGUN_HOLSTER,
 	SHOTGUN_IDLE4,
-	SHOTGUN_IDLE_DEEP
+	SHOTGUN_IDLE_DEEP,
 };
 
 class CShotgun : public CBasePlayerWeapon
@@ -921,6 +924,7 @@ public:
 
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
+	void FireShotgun(BOOL isSlug);
 	BOOL Deploy( ) override;
 	void Holster( int skiplocal = 0 ) override;
 	void Reload() override;
