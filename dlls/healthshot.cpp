@@ -109,14 +109,18 @@ void CHealthShot::PrimaryAttack()
 		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
 		{
 			m_flStartThrow = gpGlobals->time;
-			m_pPlayer->m_hsBoostStartTime = gpGlobals->time;
+			m_pPlayer->m_hsBoostStartTime = 0;
+			// Moved to player.cpp
+			//m_pPlayer->m_hsBoostStartTime = gpGlobals->time;
 			m_flReleaseThrow = 0;
 
 			SendWeaponAnim(HEALTHSHOT_USE);
 			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 			// Time Before Heal
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;  // GlobalTime + Time Before Heal
-			m_pPlayer->m_hsBoostIdleTime = gpGlobals->time + 4.5f; // GlobalTime + Time Before Heal + Wait Time
+			m_pPlayer->m_hsBoostIdleTime = 0;
+			// Moved to player.cpp
+			//m_pPlayer->m_hsBoostIdleTime = gpGlobals->time + 4.5f; // GlobalTime + Time Before Heal + Wait Time
 			m_pPlayer->m_hsIsBoosting = TRUE;
 			m_isUsed = true;
 		}
@@ -126,9 +130,9 @@ void CHealthShot::PrimaryAttack()
 void CHealthShot::ApplyHealth()
 {
 #ifndef CLIENT_DLL
-	UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 2, 128, FFADE_IN);
+		UTIL_ScreenFade(m_pPlayer, Vector(0, 225, 255), 2, 2, 128, FFADE_IN);
 #endif
-	m_pPlayer->pev->iuser1 = TRUE;
+	m_pPlayer->pev->iuser1 = MOVTYPE_HSBOOST;
 	m_pPlayer->pev->fuser1 = 600; //def 320. sv_maxspeed replacement
 
 	if (m_pPlayer->pev->health + m_healthToAdd > 100)

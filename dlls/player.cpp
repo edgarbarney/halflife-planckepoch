@@ -1976,6 +1976,7 @@ void CBasePlayer::UpdateStatusBar()
 
 void CBasePlayer::PreThink()
 {
+
 	int buttonsChanged = (m_afButtonLast ^ pev->button);	// These buttons have changed this frame
 
 	// Debounced button codes for pressed/released
@@ -2116,12 +2117,17 @@ void CBasePlayer::PreThink()
 		pev->velocity = g_vecZero;
 	}
 
-	if (m_hsIsBoosting && m_hsBoostIdleTime <= gpGlobals->time)
+	if (m_hsIsBoosting && m_hsBoostIdleTime == 0)
+	{
+		m_hsBoostStartTime = gpGlobals->time;
+		m_hsBoostIdleTime = gpGlobals->time + 4.5f;
+	} 
+	else if (m_hsIsBoosting && m_hsBoostIdleTime <= gpGlobals->time)
 	{
 		m_hsIsBoosting = FALSE;
 		m_hsBoostIdleTime = 0;
 		m_hsBoostStartTime = 0;
-		pev->iuser1 = FALSE;
+		pev->iuser1 = MOVTYPE_DEFAULT;
 		pev->fuser1 = 320;
 	}
 }
