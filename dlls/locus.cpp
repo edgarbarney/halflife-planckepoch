@@ -951,8 +951,8 @@ bool CCalcNumFromEnt::CalcNumber( CBaseEntity *pLocus, float* OUTresult)
 			{
 				if ( FStrEq( STRING(target->pev->classname), "watcher_count" ) )
 				{
-					*OUTresult = target->pev->iuser1/target->pev->impulse;
-					return true;
+					*OUTresult = 0.0f;
+					return false;
 				}
 				else if ( target->IsPlayer() )
 				{

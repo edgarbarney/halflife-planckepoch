@@ -4646,21 +4646,6 @@ void CBasePlayer :: UpdateClientData()
 			m_rgpPlayerItems[i]->UpdateClientData( this );
 	}
 
-	//Active item is becoming null, or we're sending all HUD state to client
-	//Only if we're not in Observer mode, which uses the target player's weapon
-	// Removed Due to "Bugger Off, Spectator!"
-	/*
-	if (pev->iuser1 == OBS_NONE && !m_pActiveItem && ((m_pClientActiveItem != m_pActiveItem) || fullHUDInitRequired))
-	{
-		//Tell ammo hud that we have no weapon selected
-		MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
-		    WRITE_BYTE(0);
-		    WRITE_BYTE(0);
-		    WRITE_BYTE(0);
-		MESSAGE_END();
-	}
-	*/
-
 	// Cache and client weapon change
 	m_pClientActiveItem = m_pActiveItem;
 	m_iClientFOV = m_iFOV;

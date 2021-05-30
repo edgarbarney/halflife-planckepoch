@@ -787,11 +787,6 @@ void ScorePanel::FillGrid()
 					// Don't show classes if this client hasnt picked a team yet
 					if ( g_iTeamNumber == 0 )
 						bShowClass = false;
-#ifdef _TFC
-					// in TFC show all classes in spectator mode
-					if ( g_iUser1 )
-						bShowClass = true;
-#endif
 
 					if (bShowClass)
 					{
