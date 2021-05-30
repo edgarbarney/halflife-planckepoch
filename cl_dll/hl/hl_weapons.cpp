@@ -259,7 +259,8 @@ Only produces random numbers to match the server ones.
 */
 Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker, int shared_rand )
 {
-	float x, y, z;
+	float x, y, z; 
+	float veloc = 1.0f;
 
 	for ( ULONG iShot = 1; iShot <= cShots; iShot++ )
 	{
@@ -279,11 +280,21 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 			x = UTIL_SharedRandomFloat( shared_rand + iShot, -0.5, 0.5 ) + UTIL_SharedRandomFloat( shared_rand + ( 1 + iShot ) , -0.5, 0.5 );
 			y = UTIL_SharedRandomFloat( shared_rand + ( 2 + iShot ), -0.5, 0.5 ) + UTIL_SharedRandomFloat( shared_rand + ( 3 + iShot ), -0.5, 0.5 );
 			z = x * x + y * y;
+			//Movement speed instability
+			if (pevAttacker->iuser1 == MOVTYPE_HSBOOST )
+			{
+				veloc = 0.2f;
+			}
+			else
+			{
+				veloc = truncf(pevAttacker->velocity.Length2D()) / 32;
+				if (veloc < 1) veloc = 1;
+			}
 		}
-			
 	}
 
-    return Vector ( x * vecSpread.x, y * vecSpread.y, 0.0 );
+	//gEngfuncs.Con_Printf("Fookin spread is %f, Speed is %f \n", veloc, truncf(pevAttacker->velocity.Length2D()));
+    return Vector ( x * vecSpread.x * veloc, y * vecSpread.y * veloc, 0.0 );
 }
 
 /*
