@@ -281,15 +281,15 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 			y = UTIL_SharedRandomFloat( shared_rand + ( 2 + iShot ), -0.5, 0.5 ) + UTIL_SharedRandomFloat( shared_rand + ( 3 + iShot ), -0.5, 0.5 );
 			z = x * x + y * y;
 			//Movement speed instability
-			if (pevAttacker->iuser1 == MOVTYPE_HSBOOST )
-			{
-				veloc = 0.2f;
-			}
-			else
-			{
+			//if ( pevAttacker->iuser1 == MOVTYPE_HSBOOST )
+			//{
+			//	veloc = 0.2f;
+			//}
+			//else
+			//{
 				veloc = truncf(pevAttacker->velocity.Length2D()) / 32;
 				if (veloc < 1) veloc = 1;
-			}
+			//}
 		}
 	}
 
