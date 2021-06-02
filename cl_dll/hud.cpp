@@ -43,6 +43,7 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 #include "particle_engine.h"
 #include "watershader.h"
 #include "mirrormanager.h"
+#include "postprocess.h"
 #include "r_efx.h"
 
 #include "studio.h"
@@ -384,6 +385,9 @@ int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
 {
 	return gParticleEngine.MsgCreateSystem( pszName, iSize, pbuf );
 }
+
+//void InitPostEffects(); //Forward Declaration for Post-Processing
+
 //RENDERERS END
 
 // This is called every time the DLL is loaded
@@ -459,6 +463,7 @@ void CHud :: Init()
 	gParticleEngine.Init();
 	gWaterShader.Init();
 	gMirrorManager.Init();
+	gPostProcess.Init();
 	//RENDERERS END
 	
 	//start glow effect --FragBait0
