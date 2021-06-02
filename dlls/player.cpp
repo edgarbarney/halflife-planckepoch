@@ -49,6 +49,8 @@
 #include "UserMessages.h"
 #include "client.h"
 
+#include "FranUtils.hpp"
+
 // #define DUCKFIX
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
@@ -3910,6 +3912,24 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			if ( pEntity->pev->takedamage )
 				pEntity->SetThink(&CBaseEntity::SUB_Remove);
 		}
+		break;
+	case 149:// Call Grayscale in
+		MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, this->pev);
+			WRITE_LONG(FranUtils::ftol_asm(0));	// StartPower
+			WRITE_LONG(FranUtils::ftol_asm(1));	// EndPower
+			WRITE_LONG(FranUtils::ftol_asm(2));	// Time
+			WRITE_SHORT(FALSE);					// Stay?
+			WRITE_SHORT(FALSE);					// Reset
+		MESSAGE_END();
+		break;
+	case 150:// Call Grayscale out
+		MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, this->pev);
+			WRITE_LONG(FranUtils::ftol_asm(1));	// StartPower
+			WRITE_LONG(FranUtils::ftol_asm(0));	// EndPower
+			WRITE_LONG(FranUtils::ftol_asm(2));	// Time
+			WRITE_SHORT(FALSE);					// Stay?
+			WRITE_SHORT(FALSE);					// Reset
+		MESSAGE_END();
 		break;
 	}
 #endif	// HLDEMO_BUILD

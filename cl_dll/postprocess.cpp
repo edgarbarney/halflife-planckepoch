@@ -24,6 +24,55 @@ Special Thanks to Admer456 of TWHL
 #include "studio_util.h"
 #include "bsprenderer.h"
 #include "postprocess.h"
+#include "FranUtils.hpp"
+
+void CPostProcess::CallTemporaryGrayscale(float startpower, float endpower, float gstime, bool stay,  bool reset)
+{
+	//if (stay || force || (!force && m_fGrayscalePower < startpower))
+	
+	m_fTGS_StartTime = gEngfuncs.GetClientTime();
+	m_fGrayscalePower = m_fTGS_StartPower = startpower;
+	m_fTGS_EndPower = endpower;
+
+	if (stay)
+		m_fTGS_EndTime = 0;
+	else
+		m_fTGS_EndTime = gEngfuncs.GetClientTime() + gstime;
+
+	m_bTGS_FadeIn = m_fTGS_StartPower >= m_fTGS_EndPower;
+	m_bIsTemporaryActive = true;
+}
+
+void CPostProcess::TempGrayscaleThink()
+{
+	if (!m_bIsTemporaryActive)
+		return;
+
+	if (m_bTGS_FadeIn) // If fading out, startpower should be less than endpower
+	{
+		if (m_fGrayscalePower <= m_fTGS_EndPower)
+		{
+			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
+			if (m_fGrayscalePower < 0)
+			{
+				Init(); // Reset
+				gEngfuncs.Con_Printf("\n---Ended---\n");
+			}
+		}
+	}
+	else // If fading in, startpower should be greater than endpower
+	{
+		if (m_fGrayscalePower >= m_fTGS_EndPower)
+		{
+			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
+			if (m_fGrayscalePower > 1)
+			{
+				Init(); // Reset
+				gEngfuncs.Con_Printf("\n---Ended---\n");
+			}
+		} 
+	}
+}
 
 float CPostProcess::GetGrayscalePower()
 {
@@ -39,7 +88,6 @@ float CPostProcess::GetGrayscalePower()
 	return grayscale;
 }
 
-
 int CPostProcess::UseRectangleTextures()
 {
 	if (gBSPRenderer.m_bTexRectangeSupport &&
@@ -50,10 +98,32 @@ int CPostProcess::UseRectangleTextures()
 	return FALSE;
 }
 
-
 void CPostProcess::Init()
 {
-	m_fGrayscalePower = 0;
+	Reset();
+}
+
+void CPostProcess::Reset(bool stay)
+{
+	if (stay)
+	{ 
+		m_bIsTemporaryActive = false;
+		m_fTGS_StartTime = 0;
+		m_fTGS_EndTime = 0;
+		m_fTGS_StartPower = 0;
+		m_fTGS_EndPower = 0;
+		//m_bTGS_FadeIn = false;
+	}
+	else
+	{
+		m_bIsTemporaryActive = false;
+		m_fGrayscalePower = 0;
+		m_fTGS_StartTime = 0;
+		m_fTGS_EndTime = 0;
+		m_fTGS_StartPower = 0;
+		m_fTGS_EndPower = 0;
+		m_bTGS_FadeIn = false;
+	}
 }
 
 void CPostProcess::InitScreenTexture()
@@ -100,7 +170,6 @@ void CPostProcess::InitScreenTexture()
 	delete[] pBlankTex;
 }
 
-
 void CPostProcess::MakeWeightsTexture()
 {
 	if (m_iWeightsTextureVal)
@@ -130,7 +199,6 @@ void CPostProcess::MakeWeightsTexture()
 	gEngfuncs.Con_Printf("Grayscale: created weights texture\n");
 }
 
-
 void CPostProcess::DrawQuad(int width, int height, int ofsX = 0, int ofsY = 0)
 {
 	// GL START
@@ -145,10 +213,10 @@ void CPostProcess::DrawQuad(int width, int height, int ofsX = 0, int ofsY = 0)
 	// GL END
 }
 
-
-
 void CPostProcess::ApplyPostEffects()
 {
+	TempGrayscaleThink(); //Think if temporary Grayscale is active
+
 	// GL START
 	if (!gBSPRenderer.m_bShaderSupport || !gBSPRenderer.m_pCvarPostProcessing->value)
 		return;

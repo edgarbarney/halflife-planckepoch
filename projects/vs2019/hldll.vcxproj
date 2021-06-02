@@ -233,6 +233,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\common\event_api.h" />
     <ClInclude Include="..\..\common\event_args.h" />
     <ClInclude Include="..\..\common\event_flags.h" />
+    <ClInclude Include="..\..\common\FranUtils.hpp" />
     <ClInclude Include="..\..\common\hltv.h" />
     <ClInclude Include="..\..\common\interface.h" />
     <ClInclude Include="..\..\common\in_buttons.h" />
