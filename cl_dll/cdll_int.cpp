@@ -42,6 +42,7 @@
 #include "textureloader.h"
 #include "watershader.h"
 #include "mirrormanager.h"
+#include "postprocess.h"
 
 #include "studio.h"
 #include "StudioModelRenderer.h"
@@ -64,6 +65,7 @@ TeamFortressViewport *gViewPort = nullptr;
 CBSPRenderer gBSPRenderer;
 CParticleEngine gParticleEngine;
 CWaterShader gWaterShader;
+CPostProcess gPostProcess;
 
 CTextureLoader gTextureLoader;
 CPropManager gPropManager;

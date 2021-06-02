@@ -202,6 +202,8 @@ public:
 
 	int					m_iAttenuation1DTexture;
 
+	int					m_iTexRectangleSize;
+
 	bool				m_bCanDraw;
 	bool				m_bDrawSky;
 	bool				m_bSecondPassNeeded;
@@ -215,6 +217,8 @@ public:
 	bool				m_bShadowPCFSupport;
 	bool				m_bSpecialFog;
 	bool				m_bGotAdditional;
+	bool				m_bNVCombinersSupport;
+	bool				m_bTexRectangeSupport;
 
 	bool				m_bDontPromptShaders;
 	bool				m_bDontPromptShadersError;
@@ -242,6 +246,9 @@ public:
 	cvar_t				*m_pCvarPCFShadows;
 	cvar_t				*m_pCvarShadows;
 	cvar_t				*m_pCvarOvDecals;
+	cvar_t				*m_pCvarSpecNoCombiners;
+	cvar_t				*m_pCvarPostProcessing;
+	cvar_t				*m_pCvarPPGrayscale;
 
 	Vector				m_vDLightMins;
 	Vector				m_vDLightMaxs;
@@ -321,6 +328,21 @@ public:
 	PFNGLPROGRAMLOCALPARAMETER4FARBPROC		glProgramLocalParameter4fARB;
 
 	PFNGLFOGCOORDPOINTEREXTPROC				glFogCoordPointer;
+
+	// NV_register_combiner
+	PFNGLCOMBINERPARAMETERFVNVPROC					glCombinerParameterfvNV;
+	PFNGLCOMBINERPARAMETERFNVPROC					glCombinerParameterfNV;
+	PFNGLCOMBINERPARAMETERIVNVPROC					glCombinerParameterivNV;
+	PFNGLCOMBINERPARAMETERINVPROC					glCombinerParameteriNV;
+	PFNGLCOMBINERINPUTNVPROC						glCombinerInputNV;
+	PFNGLCOMBINEROUTPUTNVPROC						glCombinerOutputNV;
+	PFNGLFINALCOMBINERINPUTNVPROC					glFinalCombinerInputNV;
+	PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC			glGetCombinerInputParameterfvNV;
+	PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC			glGetCombinerInputParameterivNV;
+	PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC			glGetCombinerOutputParameterfvNV;
+	PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC			glGetCombinerOutputParameterivNV;
+	PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC		glGetFinalCombinerInputParameterfvNV;
+	PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC		glGetFinalCombinerInputParameterivNV;
 
 public:
 	customdecal_t		m_pDecals[MAX_CUSTOMDECALS];

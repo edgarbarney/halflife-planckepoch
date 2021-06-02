@@ -234,6 +234,30 @@ void CBSPRenderer::Init( )
 		m_bDontPromptParanoia = true;
 	}
 
+	if (ExtensionSupported("GL_NV_register_combiners"))
+	{
+		m_bNVCombinersSupport = true;
+		glCombinerParameterfvNV = (PFNGLCOMBINERPARAMETERFVNVPROC)wglGetProcAddress("glCombinerParameterfvNV");
+		glCombinerParameterfNV = (PFNGLCOMBINERPARAMETERFNVPROC)wglGetProcAddress("glCombinerParameterfNV");
+		glCombinerParameterivNV = (PFNGLCOMBINERPARAMETERIVNVPROC)wglGetProcAddress("glCombinerParameterivNV");
+		glCombinerParameteriNV = (PFNGLCOMBINERPARAMETERINVPROC)wglGetProcAddress("glCombinerParameteriNV");
+		glCombinerInputNV = (PFNGLCOMBINERINPUTNVPROC)wglGetProcAddress("glCombinerInputNV");
+		glCombinerOutputNV = (PFNGLCOMBINEROUTPUTNVPROC)wglGetProcAddress("glCombinerOutputNV");
+		glFinalCombinerInputNV = (PFNGLFINALCOMBINERINPUTNVPROC)wglGetProcAddress("glFinalCombinerInputNV");
+		glGetCombinerInputParameterfvNV = (PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC)wglGetProcAddress("glGetCombinerInputParameterfvNV");
+		glGetCombinerInputParameterivNV = (PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC)wglGetProcAddress("glGetCombinerInputParameterivNV");
+		glGetCombinerOutputParameterfvNV = (PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC)wglGetProcAddress("glGetCombinerOutputParameterfvNV");
+		glGetCombinerOutputParameterivNV = (PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC)wglGetProcAddress("glGetCombinerOutputParameterivNV");
+		glGetFinalCombinerInputParameterfvNV = (PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC)wglGetProcAddress("glGetFinalCombinerInputParameterfvNV");
+		glGetFinalCombinerInputParameterivNV = (PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC)wglGetProcAddress("glGetFinalCombinerInputParameterivNV");
+	}
+
+	if (ExtensionSupported("GL_NV_texture_rectangle") || ExtensionSupported("GL_ARB_texture_rectangle") || ExtensionSupported("GL_EXT_texture_rectangle"))
+	{
+		glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE_NV, &m_iTexRectangleSize);
+		m_bTexRectangeSupport = true;
+	}
+
 	//
 	// Load our OGL functions
 	//
@@ -327,7 +351,10 @@ void CBSPRenderer::Init( )
 	m_pCvarPCFShadows				= CVAR_CREATE( "te_shadows_filter", "1", FCVAR_ARCHIVE );
 	m_pCvarShadows					= CVAR_CREATE( "te_shadows", "1", FCVAR_ARCHIVE );
 	m_pCvarOvDecals					= CVAR_CREATE( "te_overlapdecals", "1", FCVAR_ARCHIVE );
-
+	m_pCvarSpecNoCombiners			= CVAR_CREATE( "te_nocombs", "0", 0);
+	m_pCvarPostProcessing			= CVAR_CREATE( "te_posteffects", "1", FCVAR_ARCHIVE );
+	m_pCvarPPGrayscale				= CVAR_CREATE( "te_grayscale", "1", FCVAR_ARCHIVE );
+	
 	//
 	// Load shaders
 	//
