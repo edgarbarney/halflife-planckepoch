@@ -39,7 +39,7 @@ void CPostProcess::CallTemporaryGrayscale(float startpower, float endpower, floa
 	else
 		m_fTGS_EndTime = gEngfuncs.GetClientTime() + gstime;
 
-	m_bTGS_FadeIn = m_fTGS_StartPower >= m_fTGS_EndPower;
+	m_bTGS_FadeOut = m_fTGS_StartPower < m_fTGS_EndPower;
 	m_bIsTemporaryActive = true;
 }
 
@@ -48,7 +48,7 @@ void CPostProcess::TempGrayscaleThink()
 	if (!m_bIsTemporaryActive)
 		return;
 
-	if (m_bTGS_FadeIn) // If fading out, startpower should be less than endpower
+	if (m_bTGS_FadeOut) // If fading out, startpower should be less than endpower
 	{
 		if (m_fGrayscalePower <= m_fTGS_EndPower)
 		{
@@ -112,7 +112,7 @@ void CPostProcess::Reset(bool stay)
 		m_fTGS_EndTime = 0;
 		m_fTGS_StartPower = 0;
 		m_fTGS_EndPower = 0;
-		//m_bTGS_FadeIn = false;
+		//m_bTGS_FadeOut = false;
 	}
 	else
 	{
@@ -122,7 +122,7 @@ void CPostProcess::Reset(bool stay)
 		m_fTGS_EndTime = 0;
 		m_fTGS_StartPower = 0;
 		m_fTGS_EndPower = 0;
-		m_bTGS_FadeIn = false;
+		m_bTGS_FadeOut = false;
 	}
 }
 
