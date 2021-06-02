@@ -78,6 +78,7 @@ int gmsgSkyMark_World	= 0;
 int gmsgCreateDLight	= 0;
 int gmsgFreeEnt		= 0;
 int gmsgCreateSystem	= 0;
+int gmsgPPGray = 0;
 //RENDERERS END
 
 void LinkUserMessages()
@@ -149,5 +150,6 @@ void LinkUserMessages()
 	gmsgSkyMark_Sky = REG_USER_MSG("SkyMark_S", -1); 
 	gmsgSkyMark_World = REG_USER_MSG("SkyMark_W", -1); 
 	gmsgCreateSystem = REG_USER_MSG("Particle", -1);
+	gmsgPPGray = REG_USER_MSG("PPGray", -1);
 	//RENDERERS END
 }
