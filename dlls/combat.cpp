@@ -1185,6 +1185,8 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 					WRITE_SHORT(FALSE);					// Stay?
 					WRITE_SHORT(FALSE);					// Reset
 					MESSAGE_END();
+					UTIL_ScreenShake(pEntity->pev->origin, flAdjustedDamage, 255.0f, flAdjustedDamage / 30.0f, flAdjustedDamage * 15.0f);
+					//																(flAdjustedDamage / 3) / 10
 				}
 			}
 		}
