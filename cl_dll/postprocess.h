@@ -30,6 +30,7 @@ protected:
 	float m_fTGS_StartPower;
 	float m_fTGS_EndPower;
 	bool m_bTGS_FadeOut;
+	bool m_bTGS_Stay;
 
 	int m_iScreenTextureVal = 0;
 	int m_iWeightsTextureVal = 0; //For GPUs with no register combiners support

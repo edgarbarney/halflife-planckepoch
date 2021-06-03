@@ -3931,6 +3931,24 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			WRITE_SHORT(FALSE);					// Reset
 		MESSAGE_END();
 		break;
+	case 151:// Call Grayscale in
+		MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, this->pev);
+			WRITE_LONG(FranUtils::ftol_asm(0));	// StartPower
+			WRITE_LONG(FranUtils::ftol_asm(1));	// EndPower
+			WRITE_LONG(FranUtils::ftol_asm(2));	// Time
+			WRITE_SHORT(TRUE);					// Stay?
+			WRITE_SHORT(FALSE);					// Reset
+		MESSAGE_END();
+		break;
+	case 152:// Call Grayscale out
+		MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, this->pev);
+			WRITE_LONG(FranUtils::ftol_asm(1));	// StartPower
+			WRITE_LONG(FranUtils::ftol_asm(0));	// EndPower
+			WRITE_LONG(FranUtils::ftol_asm(2));	// Time
+			WRITE_SHORT(TRUE);					// Stay?
+			WRITE_SHORT(FALSE);					// Reset
+		MESSAGE_END();
+		break;
 	}
 #endif	// HLDEMO_BUILD
 }
