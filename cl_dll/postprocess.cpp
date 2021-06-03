@@ -28,20 +28,22 @@ Special Thanks to Admer456 of TWHL
 
 void CPostProcess::CallTemporaryGrayscale(float startpower, float endpower, float gstime, bool stay, bool reset)
 {
-	//if (stay || force || (!force && m_fGrayscalePower < startpower))
-	m_bTGS_Stay = stay;
-	m_fGrayscalePower = m_fTGS_StartPower = startpower;
+	if (startpower != endpower || gstime > 0)
+	{
+		m_bTGS_Stay = stay;
+		m_fGrayscalePower = m_fTGS_StartPower = startpower;
 
-	m_fTGS_StartTime = gEngfuncs.GetClientTime();
-	m_fTGS_EndPower = endpower;
+		m_fTGS_StartTime = gEngfuncs.GetClientTime();
+		m_fTGS_EndPower = endpower;
 	
-	if (stay)
-		m_fTGS_EndTime = 0;
-	else
-		m_fTGS_EndTime = gEngfuncs.GetClientTime() + gstime;
+		if (stay)
+			m_fTGS_EndTime = 0;
+		else
+			m_fTGS_EndTime = gEngfuncs.GetClientTime() + gstime;
 
-	m_bTGS_FadeOut = m_fTGS_StartPower < m_fTGS_EndPower;
-	m_bIsTemporaryActive = true;
+		m_bTGS_FadeOut = m_fTGS_StartPower < m_fTGS_EndPower;
+		m_bIsTemporaryActive = true;
+	}
 }
 
 void CPostProcess::TempGrayscaleThink()
