@@ -26,14 +26,15 @@ Special Thanks to Admer456 of TWHL
 #include "postprocess.h"
 #include "FranUtils.hpp"
 
-void CPostProcess::CallTemporaryGrayscale(float startpower, float endpower, float gstime, bool stay,  bool reset)
+void CPostProcess::CallTemporaryGrayscale(float startpower, float endpower, float gstime, bool stay, bool reset)
 {
 	//if (stay || force || (!force && m_fGrayscalePower < startpower))
-	
-	m_fTGS_StartTime = gEngfuncs.GetClientTime();
+	m_bTGS_Stay = stay;
 	m_fGrayscalePower = m_fTGS_StartPower = startpower;
-	m_fTGS_EndPower = endpower;
 
+	m_fTGS_StartTime = gEngfuncs.GetClientTime();
+	m_fTGS_EndPower = endpower;
+	
 	if (stay)
 		m_fTGS_EndTime = 0;
 	else
@@ -55,8 +56,8 @@ void CPostProcess::TempGrayscaleThink()
 			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
 			if (m_fGrayscalePower < 0)
 			{
-				Init(); // Reset
-				gEngfuncs.Con_Printf("\n---Ended---\n");
+				Reset(m_bTGS_Stay); // Reset
+				gEngfuncs.Con_Printf("\n---Grayscale Fade Ended---\n");
 			}
 		}
 	}
@@ -67,8 +68,8 @@ void CPostProcess::TempGrayscaleThink()
 			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
 			if (m_fGrayscalePower > 1)
 			{
-				Init(); // Reset
-				gEngfuncs.Con_Printf("\n---Ended---\n");
+				Reset(m_bTGS_Stay); // Reset
+				gEngfuncs.Con_Printf("\n---Grayscale Fade Ended---\n");
 			}
 		} 
 	}
