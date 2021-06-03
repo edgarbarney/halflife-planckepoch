@@ -25,6 +25,7 @@
 #include	"effects.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include <shake.h>
 
 extern DLL_GLOBAL int		g_iSkillLevel;
 
@@ -857,6 +858,11 @@ void CISlave :: ZapBeam( int side )
 	if (pEntity != nullptr && pEntity->pev->takedamage)
 	{
 		pEntity->TraceAttack( pev, gSkillData.slaveDmgZap, vecAim, &tr, DMG_SHOCK );
+		if (pEntity->IsPlayer())
+		{
+			UTIL_ScreenFade(pEntity, Vector(0, 225, 0), 1, 0, 150, FFADE_IN);
+			UTIL_ScreenShake(pEntity->pev->origin, 1, 255.0f, 1, 1);
+		}
 	}
 	UTIL_EmitAmbientSound( ENT(pev), tr.vecEndPos, "weapons/electro4.wav", 0.5, ATTN_NORM, 0, RANDOM_LONG( 140, 160 ) );
 }
