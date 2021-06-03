@@ -30,6 +30,7 @@
 #include "weapons.h"
 #include "func_break.h"
 #include "studio.h"
+#include <FranUtils.hpp>
 
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 extern DLL_GLOBAL int			g_iSkillLevel;
@@ -1172,6 +1173,18 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 				else
 				{
 					pEntity->TakeDamage ( pevInflictor, pevAttacker, flAdjustedDamage, bitsDamageType );
+				}
+
+				if (pEntity->IsPlayer())
+				{
+					// Call Grayscale in
+					MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, pEntity->pev);
+					WRITE_LONG(FranUtils::ftol_asm(0));	// StartPower
+					WRITE_LONG(FranUtils::ftol_asm(1));	// EndPower
+					WRITE_LONG(FranUtils::ftol_asm(1));	// Time
+					WRITE_SHORT(FALSE);					// Stay?
+					WRITE_SHORT(FALSE);					// Reset
+					MESSAGE_END();
 				}
 			}
 		}
