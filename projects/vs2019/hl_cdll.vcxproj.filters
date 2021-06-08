@@ -55,12 +55,6 @@
     <Filter Include="Source Files\_hl\cl_dll\hl">
       <UniqueIdentifier>{bd9d5958-4e67-4bff-bbd8-6ba6dfcdb720}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\cl_dll\effects">
-      <UniqueIdentifier>{dcef5fb5-e7ab-4660-90df-f85e761b7f3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\cl_dll\effects">
-      <UniqueIdentifier>{93ab672a-4ac0-4112-94c6-76125590be79}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\engine">
       <UniqueIdentifier>{ebcb0f66-49b6-4e55-9a97-f6720cade9ec}</UniqueIdentifier>
     </Filter>
@@ -341,9 +335,6 @@
     </ClCompile>
     <ClCompile Include="..\..\dlls\healthshot.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\effects\postprocessing.cpp">
-      <Filter>Source Files\cl_dll\effects</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\weapons_shared.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
@@ -637,9 +628,6 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\watershader.h">
       <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\effects\postprocessing.h">
-      <Filter>Header Files\cl_dll\effects</Filter>
     </ClInclude>
     <ClInclude Include="..\..\engine\edict.h">
       <Filter>Header Files\engine</Filter>
