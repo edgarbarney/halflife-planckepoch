@@ -396,6 +396,9 @@
     <ClCompile Include="..\..\dlls\entities\env_soundscape.cpp">
       <Filter>Source Files\dlls\entities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\trigger_forceteleport.cpp">
+      <Filter>Source Files\dlls\entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -670,6 +673,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\FranUtils.hpp">
       <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\basetrigger.h">
+      <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

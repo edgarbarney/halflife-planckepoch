@@ -6166,6 +6166,29 @@
 	noise(target_destination) : "Fire on teleporting"
 ]
 
+//EDMD Force Teleport
+@SolidClass base(Targetname, Master, TriggerCond, MoveWith) = trigger_forceteleport : "Trigger force teleport"
+[
+	target(target_destination) : "Destination entity"
+	noise(target_destination) : "Fire on teleporting"
+	
+	m_bTeleportX(choices) : "Teleport X" : 1 =
+	[
+		0: "On"
+		1: "Off"
+	]
+	m_bTeleportY(choices) : "Teleport Y" : 1 =
+	[
+		0: "On"
+		1: "Off"
+	]
+	m_bTeleportZ(choices) : "Teleport Z" : 1 =
+	[
+		0: "On"
+		1: "Off"
+	]
+]
+
 @SolidClass base(Targetname) = trigger_transition : "Trigger: Select Transition Area" []
 
 //NEW 0.3

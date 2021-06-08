@@ -20,9 +20,7 @@
 
 */
 
-#include "extdll.h"
-#include "util.h"
-#include "cbase.h"
+#include "basetrigger.h"
 #include "player.h"
 #include "saverestore.h"
 #include "trains.h"			// trigger_camera has train functionality
@@ -2163,18 +2161,6 @@ void CEnvCustomize::SetBoneController( float fController, int cnum, CBaseEntity 
 
 //=====================================
 // trigger_x entities
-
-class CBaseTrigger : public CBaseToggle
-{
-public:
-	//LRC - this was very bloated. I moved lots of methods into the
-	// subclasses where they belonged.
-	void InitTrigger();
-	void EXPORT ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	BOOL CanTouch( entvars_t *pevToucher );
-
-    int	ObjectCaps() override { return CBaseToggle :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-};
 
 LINK_ENTITY_TO_CLASS( trigger, CBaseTrigger );
 
