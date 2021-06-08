@@ -40,14 +40,8 @@
     <Filter Include="Source Files\dlls\entities">
       <UniqueIdentifier>{da4d96e3-5e0e-4a27-8c81-17ba69240231}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\dlls\entities\effects">
-      <UniqueIdentifier>{906ff0c8-ee43-4033-b841-c66db1870620}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\dlls\entities">
       <UniqueIdentifier>{f9c56631-6d96-4b27-825e-ed8926e12c9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\dlls\entities\effects">
-      <UniqueIdentifier>{d83a2595-1ef2-4429-ad4a-36a5891b2799}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{42fd860c-8851-42ea-81e1-ffda08a6174d}</UniqueIdentifier>
@@ -375,9 +369,6 @@
     <ClCompile Include="..\..\dlls\ar16.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\env_soundscape.cpp">
-      <Filter>Source Files\dlls</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\sas.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
@@ -401,6 +392,9 @@
     </ClCompile>
     <ClCompile Include="..\..\dlls\stungrenade.cpp">
       <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\env_soundscape.cpp">
+      <Filter>Source Files\dlls\entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
