@@ -6174,18 +6174,48 @@
 	
 	m_bTeleportX(choices) : "Teleport X" : 1 =
 	[
-		0: "On"
-		1: "Off"
+		0: "Off"
+		1: "On"
 	]
 	m_bTeleportY(choices) : "Teleport Y" : 1 =
 	[
-		0: "On"
-		1: "Off"
+		0: "Off"
+		1: "On"
 	]
 	m_bTeleportZ(choices) : "Teleport Z" : 1 =
 	[
-		0: "On"
-		1: "Off"
+		0: "Off"
+		1: "On"
+	]
+	m_bRotateX(choices) : "Rotate X" : 1 =
+	[
+		0: "Off"
+		1: "On"
+	]
+	m_bRotateY(choices) : "Rotate Y" : 1 =
+	[
+		0: "Off"
+		1: "On"
+	]
+	m_bRotateZ(choices) : "Rotate Z" : 1 =
+	[
+		0: "Off"
+		1: "On"
+	]
+	m_bVelocity(choices) : "Change Velocity" : 1 =
+	[
+		0: "Off"
+		1: "On"
+	]
+	m_bForceView(choices) : "Change View Angles" : 1 =
+	[
+		0: "Off"
+		1: "On"
+	]
+	m_bOnce(choices) : "Is Once" : 0 =
+	[
+		0: "Off"
+		1: "On"
 	]
 ]
 
