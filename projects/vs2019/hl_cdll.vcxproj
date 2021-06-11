@@ -151,6 +151,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\mirrormanager.cpp" />
     <ClCompile Include="..\..\cl_dll\mp3.cpp" />
     <ClCompile Include="..\..\cl_dll\particle_engine.cpp" />
+    <ClCompile Include="..\..\cl_dll\postprocess.cpp" />
     <ClCompile Include="..\..\cl_dll\propmanager.cpp" />
     <ClCompile Include="..\..\cl_dll\rendererdefs.cpp" />
     <ClCompile Include="..\..\cl_dll\saytext.cpp" />
@@ -244,6 +245,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\mirrormanager.h" />
     <ClInclude Include="..\..\cl_dll\mp3.h" />
     <ClInclude Include="..\..\cl_dll\particle_engine.h" />
+    <ClInclude Include="..\..\cl_dll\postprocess.h" />
     <ClInclude Include="..\..\cl_dll\propmanager.h" />
     <ClInclude Include="..\..\cl_dll\rendererdefs.h" />
     <ClInclude Include="..\..\cl_dll\StudioModelRenderer.h" />
@@ -274,6 +276,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\common\event_api.h" />
     <ClInclude Include="..\..\common\event_args.h" />
     <ClInclude Include="..\..\common\event_flags.h" />
+    <ClInclude Include="..\..\common\FranUtils.hpp" />
     <ClInclude Include="..\..\common\hltv.h" />
     <ClInclude Include="..\..\common\interface.h" />
     <ClInclude Include="..\..\common\in_buttons.h" />

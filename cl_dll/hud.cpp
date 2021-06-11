@@ -43,6 +43,7 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 #include "particle_engine.h"
 #include "watershader.h"
 #include "mirrormanager.h"
+#include "postprocess.h"
 #include "r_efx.h"
 
 #include "studio.h"
@@ -143,9 +144,9 @@ int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
 */
 
 // Trinity
-int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf)
+int __MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
 {
-	gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
+	gHUD.MsgFunc_SetFog(pszName, iSize, pbuf);
 	return 1;
 }
 
@@ -425,6 +426,15 @@ int __MsgFunc_Particle(const char *pszName, int iSize, void *pbuf )
 {
 	return gParticleEngine.MsgCreateSystem( pszName, iSize, pbuf );
 }
+int __MsgFunc_PPGray(const char* pszName, int iSize, void* pbuf)
+{
+	gHUD.MsgFunc_PPGray(pszName, iSize, pbuf);
+	return 1;
+}
+
+
+//void InitPostEffects(); //Forward Declaration for Post-Processing
+
 //RENDERERS END
 
 int __MsgFunc_TeamFull( const char *pszName, int iSize, void *pbuf )
@@ -532,6 +542,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( DynLight );
 	HOOK_MESSAGE( FreeEnt );
 	HOOK_MESSAGE( Particle );
+	HOOK_MESSAGE( PPGray );
 
 	gPropManager.Init();
 	gTextureLoader.Init();
@@ -539,6 +550,7 @@ void CHud :: Init()
 	gParticleEngine.Init();
 	gWaterShader.Init();
 	gMirrorManager.Init();
+	gPostProcess.Init();
 	//RENDERERS END
 	
 	//start glow effect --FragBait0

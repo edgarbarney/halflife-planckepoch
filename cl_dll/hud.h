@@ -879,6 +879,8 @@ public:
 	int  _cdecl MsgFunc_SkyMark_W( const char *pszName, int iSize, void *pbuf );
 	int  _cdecl MsgFunc_DynLight( const char *pszName, int iSize, void *pbuf );
 	int  _cdecl MsgFunc_CreateSystem( const char *pszName, int iSize, void *pbuf );
+
+	int  _cdecl MsgFunc_PPGray(const char* pszName, int iSize, void* pbuf);
 //RENDERERS END
 	bool isNightVisionOn() { return mNightVisionState; }
 

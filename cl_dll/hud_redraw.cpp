@@ -22,6 +22,8 @@
 #include "vgui_TeamFortressViewport.h"
 #include "vgui_StatsMenuPanel.h"
 
+#include "postprocess.h"
+
 #define MAX_LOGO_FRAMES 56
 
 int grgLogoFrame[MAX_LOGO_FRAMES] = 
@@ -93,11 +95,16 @@ void CHud::Think()
 	Bench_CheckStart();
 }
 
+// 
 // Redraw
 // step through the local data,  placing the appropriate graphics & text as appropriate
 // returns 1 if they've changed, 0 otherwise
 int CHud :: Redraw( float flTime, int intermission )
 {
+	//RENDERERS START
+	gPostProcess.ApplyPostEffects(); //PostProcessing
+	//RENDERERS END
+
 	m_fOldTime = m_flTime;	// save time of previous redraw
 	m_flTime = flTime;
 	m_flTimeDelta = (double)m_flTime - m_fOldTime;

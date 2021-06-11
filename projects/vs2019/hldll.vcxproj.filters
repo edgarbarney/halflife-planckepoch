@@ -968,5 +968,8 @@
     <ClInclude Include="..\..\dlls\locus.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\common\FranUtils.hpp">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
