@@ -1000,12 +1000,17 @@ public:
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
 	void WeaponIdle() override;
+	void GetHeatTrace();
 	void UpdateSpot();
 	BOOL ShouldWeaponIdle() override { return TRUE; }
 
-	CLaserSpot *m_pSpot;
+	//CLaserSpot *m_pSpot;
 	int m_fSpotActive;
 	int m_cActiveRockets;// how many missiles in flight from this launcher right now?
+	CBaseEntity* m_pLockedEntForHS; // Locked entity for heatseeking
+
+	float m_flseekStartTime;
+	edict_t* m_pTempLock; // Temporary entity edict
 
     BOOL UseDecrement() override
     { 
@@ -1032,11 +1037,15 @@ public:
 	void EXPORT FollowThink();
 	void EXPORT IgniteThink();
 	void EXPORT RocketTouch( CBaseEntity *pOther );
-	static CRpgRocket *CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher );
+	static CRpgRocket *CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher, bool bIsTracing = false, CBaseEntity *pLockedForHS = nullptr);
 
 	int m_iTrail;
 	float m_flIgniteTime;
 	EHANDLE m_pLauncher;// handle back to the launcher that fired me. 
+
+	BOOL m_bIsTracing;	// Is this a heatseeking missile or not
+
+	CBaseEntity* m_pLockedForHS; // Locked entity for heatseeking
 };
 
 #define	GAUSS_PRIMARY_CHARGE_VOLUME	256// how loud gauss is while charging

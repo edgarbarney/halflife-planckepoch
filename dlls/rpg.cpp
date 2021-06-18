@@ -14,6 +14,7 @@
 ****/
 #if !defined( OEM_BUILD )
 
+#include <string>
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -23,6 +24,8 @@
 #include "player.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+
+#define WEAPON_TIMEBASE gpGlobals->time
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CRpg );
 
@@ -105,10 +108,12 @@ LINK_ENTITY_TO_CLASS( rpg_rocket, CRpgRocket );
 
 //=========================================================
 //=========================================================
-CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher )
+CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher, bool bIsTracing, CBaseEntity* pLockedForHS)
 {
 	CRpgRocket *pRocket = GetClassPtr( (CRpgRocket *)nullptr );
 
+	pRocket->m_bIsTracing = bIsTracing;
+	pRocket->m_pLockedForHS = pLockedForHS;
 	UTIL_SetOrigin( pRocket, vecOrigin );
 	pRocket->pev->angles = vecAngles;
 	pRocket->Spawn();
@@ -142,7 +147,15 @@ void CRpgRocket :: Spawn()
 	UTIL_MakeVectors( pev->angles );
 	pev->angles.x = -(pev->angles.x + 30);
 
-	pev->velocity = gpGlobals->v_forward * 250;
+	if (m_bIsTracing)
+	{
+		pev->velocity = gpGlobals->v_forward * 250;
+		pev->origin.z += 20;
+	}
+	else
+	{
+		pev->velocity = gpGlobals->v_forward * 250;
+	}
 	pev->gravity = 0.5;
 
 	SetNextThink( 0.4 );
@@ -209,7 +222,8 @@ void CRpgRocket :: IgniteThink()
 
 void CRpgRocket :: FollowThink()
 {
-	CBaseEntity *pOther = nullptr;
+	// Removed due to heat-seeking
+	//CBaseEntity *pOther = nullptr;
 	Vector vecTarget;
 	Vector vecDir;
 	float flDist, flMax, flDot;
@@ -221,6 +235,8 @@ void CRpgRocket :: FollowThink()
 	flMax = 4096;
 	
 	// Examine all entities within a reasonable radius
+	// Removed due to heat-seeking
+	/*
 	while ((pOther = UTIL_FindEntityByClassname( pOther, "laser_spot" )) != nullptr)
 	{
 		UTIL_TraceLine ( pev->origin, pOther->pev->origin, dont_ignore_monsters, ENT(pev), &tr );
@@ -231,6 +247,47 @@ void CRpgRocket :: FollowThink()
 			flDist = vecDir.Length( );
 			vecDir = vecDir.Normalize( );
 			flDot = DotProduct( gpGlobals->v_forward, vecDir );
+			if ((flDot > 0) && (flDist * (1 - flDot) < flMax))
+			{
+				flMax = flDist * (1 - flDot);
+				vecTarget = vecDir;
+			}
+		}
+	}
+	*/
+
+	if (m_pLockedForHS != nullptr)
+	{
+		Vector targetOrigin;
+		Vector emptyAngles;
+		//auto pGrunt = static_cast<CSAS*>
+		const char* clsName = STRING(m_pLockedForHS->pev->classname);
+		//char buffer[64];
+		if ( strstr(clsName, "apache") != NULL )
+		{
+			//auto pTempCast = static_cast<CBaseMonster*>(m_pLockedForHS);
+			targetOrigin = m_pLockedForHS->pev->origin;
+			targetOrigin.z -= 50;
+		}
+		else if (strstr(clsName, "monster_") != NULL && (m_pLockedForHS->Classify() == CLASS_HUMAN_ASSASSIN || m_pLockedForHS->Classify() == CLASS_HUMAN_MILITARY || m_pLockedForHS->Classify() == CLASS_HUMAN_PASSIVE || m_pLockedForHS->Classify() == CLASS_PLAYER_ALLY))
+		{
+			auto pTempCast = static_cast<CBaseMonster*>(m_pLockedForHS);
+			pTempCast->GetBonePosition(1, targetOrigin, emptyAngles);
+		}
+		else
+		{
+			targetOrigin = m_pLockedForHS->pev->origin;
+		}
+
+
+		UTIL_TraceLine(pev->origin, targetOrigin, dont_ignore_monsters, ENT(pev), &tr);
+		// ALERT( at_console, "%f\n", tr.flFraction );
+		if (tr.flFraction >= 0.90)
+		{
+			vecDir = targetOrigin - pev->origin;
+			flDist = vecDir.Length();
+			vecDir = vecDir.Normalize();
+			flDot = DotProduct(gpGlobals->v_forward, vecDir);
 			if ((flDot > 0) && (flDist * (1 - flDot) < flMax))
 			{
 				flMax = flDist * (1 - flDot);
@@ -257,9 +314,19 @@ void CRpgRocket :: FollowThink()
 		} 
 		else 
 		{
-			if (pev->velocity.Length() > 2000)
+			if (m_pLockedForHS != nullptr)
 			{
-				pev->velocity = pev->velocity.Normalize() * 2000;
+				if (pev->velocity.Length() > 2000)
+				{
+					pev->velocity = pev->velocity.Normalize() * 2000;
+				}
+			}
+			else
+			{
+				if (pev->velocity.Length() > 1000)
+				{
+					pev->velocity = pev->velocity.Normalize() * 1000;
+				}
 			}
 		}
 	}
@@ -271,7 +338,7 @@ void CRpgRocket :: FollowThink()
 			STOP_SOUND( ENT(pev), CHAN_VOICE, "weapons/rocket1.wav" );
 		}
 		pev->velocity = pev->velocity * 0.2 + vecTarget * flSpeed * 0.798;
-		if ((pev->waterlevel == 0 || pev->watertype == CONTENT_FOG) && pev->velocity.Length() < 1500)
+		if ((pev->waterlevel == 0 || pev->watertype == CONTENT_FOG) && pev->velocity.Length() < 200)
 		{
 			Detonate( );
 		}
@@ -317,18 +384,22 @@ void CRpg::Reload()
 	}
 
 #ifndef CLIENT_DLL
+	/*
 	if ( m_pSpot && m_fSpotActive )
 	{
 		m_pSpot->Suspend( 2.1 );
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.1;
+		m_flNextSecondaryAttack = WEAPON_TIMEBASE + 2.1;
 	}
+	*/
+	//if (m_fSpotActive)
+	//	m_flNextSecondaryAttack = WEAPON_TIMEBASE + 2.1;
 #endif
 
 	if ( m_iClip == 0 )
 		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD, 2 );
 	
 	if ( iResult )
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+		m_flTimeWeaponIdle = WEAPON_TIMEBASE + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 	
 }
 
@@ -372,6 +443,9 @@ void CRpg::Precache()
 	PRECACHE_SOUND("weapons/rocketfire1.wav");
 	PRECACHE_SOUND("weapons/glauncher.wav"); // alternative fire sound
 
+	PRECACHE_SOUND("weapons/heatseek_blip1.wav"); // heatseeking tick
+	PRECACHE_SOUND("weapons/heatseek_lock1.wav"); // heatseeking lock
+
 	m_usRpg = PRECACHE_EVENT ( 1, "events/rpg.sc" );
 }
 
@@ -407,6 +481,13 @@ int CRpg::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CRpg::Deploy( )
 {
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+	m_pLockedEntForHS = nullptr;
+	pev->skin = m_fSpotActive;
+	m_pTempLock = nullptr;
+	m_flseekStartTime = 0;
+
 	if ( m_iClip == 0 )
 	{
 		return DefaultDeploy( "models/v_rpg.mdl", "models/p_rpg.mdl", RPG_DRAW_UL, "rpg" );
@@ -431,28 +512,36 @@ void CRpg::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = WEAPON_TIMEBASE + 0.5;
 	
 	if (m_iClip)
 		SendWeaponAnim( RPG_HOLSTER1 );
 	else
-		SendWeaponAnim( RPG_HOLSTER2 );
+		SendWeaponAnim( RPG_HOLSTER2 ); 
 
+/*
 #ifndef CLIENT_DLL
+
 	if (m_pSpot)
 	{
 		m_pSpot->Killed( nullptr, GIB_NEVER );
 		m_pSpot = nullptr;
 	}
+	
 #endif
-
+*/
 }
 
 
 
 void CRpg::PrimaryAttack()
 {
-	if ( m_iClip )
+	
+	if (m_fSpotActive && !m_pLockedEntForHS)
+	{
+		PlayEmptySound();
+	}
+	else if ( m_iClip )
 	{
 		m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 		m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
@@ -464,7 +553,18 @@ void CRpg::PrimaryAttack()
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 		Vector vecSrc = m_pPlayer->GetGunPosition( ) + gpGlobals->v_forward * 16 + gpGlobals->v_right * 8 + gpGlobals->v_up * -8;
 		
-		CRpgRocket *pRocket = CRpgRocket::CreateRpgRocket( vecSrc, m_pPlayer->pev->v_angle, m_pPlayer, this );
+		CRpgRocket* pRocket = nullptr;
+
+		if (m_fSpotActive && m_pLockedEntForHS)
+			pRocket = CRpgRocket::CreateRpgRocket(vecSrc, m_pPlayer->pev->v_angle, m_pPlayer, this, true, m_pLockedEntForHS);
+		else
+			pRocket = CRpgRocket::CreateRpgRocket(vecSrc, m_pPlayer->pev->v_angle, m_pPlayer, this);
+
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		m_pLockedEntForHS = nullptr;
+		m_pTempLock = nullptr;
+		m_flseekStartTime = 0;
 
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );// RpgRocket::Create stomps on globals, so remake.
 		pRocket->pev->velocity = pRocket->pev->velocity + gpGlobals->v_forward * DotProduct( m_pPlayer->pev->velocity, gpGlobals->v_forward );
@@ -485,7 +585,7 @@ void CRpg::PrimaryAttack()
 		m_iClip--; 
 				
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
+		m_flTimeWeaponIdle = WEAPON_TIMEBASE + 1.5;
 	}
 	else
 	{
@@ -497,8 +597,10 @@ void CRpg::PrimaryAttack()
 
 void CRpg::SecondaryAttack()
 {
-	m_fSpotActive = ! m_fSpotActive;
-
+	m_fSpotActive = !m_fSpotActive;
+	ResetEmptySound();
+	PlayEmptySound();
+/*
 #ifndef CLIENT_DLL
 	if (!m_fSpotActive && m_pSpot)
 	{
@@ -506,17 +608,41 @@ void CRpg::SecondaryAttack()
 		m_pSpot = nullptr;
 	}
 #endif
+*/
 
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.2;
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+	m_pLockedEntForHS = nullptr;
+	m_pTempLock = nullptr;
+	m_flseekStartTime = 0;
+	pev->skin = m_fSpotActive;
+	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 
 
 void CRpg::WeaponIdle()
 {
-	UpdateSpot( );
+	if (!m_pLockedEntForHS)
+		UpdateSpot( );
 
-	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+	//GetHeatTrace();
+
+	if (m_flTimeWeaponIdle > WEAPON_TIMEBASE)
 		return;
+
+	if (m_fSpotActive)
+	{
+		GetHeatTrace();
+	}
+	else 
+	{
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		m_pLockedEntForHS = nullptr;
+		m_pTempLock = nullptr;
+		pev->skin = m_fSpotActive;
+		m_flseekStartTime = 0;
+	}
 
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
@@ -529,7 +655,8 @@ void CRpg::WeaponIdle()
 			else
 				iAnim = RPG_IDLE;
 
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 90.0 / 15.0;
+			m_flTimeWeaponIdle = WEAPON_TIMEBASE + 90.0 / 15.0;
+			//m_flTimeWeaponIdle = WEAPON_TIMEBASE + 1;
 		}
 		else
 		{
@@ -538,7 +665,8 @@ void CRpg::WeaponIdle()
 			else
 				iAnim = RPG_FIDGET;
 
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 6.1;
+			m_flTimeWeaponIdle = WEAPON_TIMEBASE + 6.1;
+			//m_flTimeWeaponIdle = WEAPON_TIMEBASE + 1;
 		}
 
 		ResetEmptySound();
@@ -546,23 +674,83 @@ void CRpg::WeaponIdle()
 	}
 	else
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1;
+		m_flTimeWeaponIdle = WEAPON_TIMEBASE + 1;
 	}
 }
 
+void CRpg::GetHeatTrace ()
+{
+//#ifndef CLIENT_DLL
+	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecAiming = m_pPlayer->GetAutoaimVector(AUTOAIM_2DEGREES);
 
+	TraceResult tr;
+	UTIL_TraceLine(vecSrc, vecSrc + vecAiming * 8192, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
+
+	//const char* clsName;
+	//if (STRING(VARS(tr.pHit)))
+	//	clsName = STRING(VARS(tr.pHit)->classname);
+
+	//if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP || strstr(clsName, "func_tank") != NULL))
+	if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP))
+	{	
+		if (tr.pHit == m_pTempLock && WEAPON_TIMEBASE < m_flseekStartTime)
+		{
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 1, ATTN_NORM, 0, 100);
+			pev->skin = 1;
+		}
+		else if (tr.pHit != m_pTempLock)
+		{
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 1, ATTN_NORM, 0, 100);
+			pev->skin = 1;
+			m_pLockedEntForHS = nullptr;
+			m_flseekStartTime = WEAPON_TIMEBASE + 2;
+			m_pTempLock = tr.pHit;
+		}
+		else if (tr.pHit == m_pTempLock)
+		{
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 1, ATTN_NORM, 0, 100);
+			pev->skin = 2;
+			m_pLockedEntForHS = reinterpret_cast<CBaseEntity*>(GET_PRIVATE(tr.pHit));
+		}
+		else
+		{
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+			pev->skin = 1;
+			m_pLockedEntForHS = nullptr;
+			m_pTempLock = nullptr;
+			m_flseekStartTime = 0;
+		}
+	}
+	else
+	{
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
+		pev->skin = 1;
+		m_pLockedEntForHS = nullptr;
+		m_pTempLock = nullptr;
+		m_flseekStartTime = 0;
+	}
+//#endif
+}
 
 void CRpg::UpdateSpot()
 {
-
+/*
 #ifndef CLIENT_DLL
 	if (m_fSpotActive)
 	{
+		
 		if (!m_pSpot)
 		{
 			m_pSpot = CLaserSpot::CreateSpot();
 		}
-
+		
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 		Vector vecSrc = m_pPlayer->GetGunPosition( );
 		Vector vecAiming = gpGlobals->v_forward;
@@ -571,9 +759,10 @@ void CRpg::UpdateSpot()
 		UTIL_TraceLine ( vecSrc, vecSrc + vecAiming * 8192, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr );
 		
 		UTIL_SetOrigin( m_pSpot, tr.vecEndPos );
+		
 	}
 #endif
-
+*/
 }
 
 
