@@ -484,7 +484,7 @@ BOOL CRpg::Deploy( )
 	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
 	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
 	m_pLockedEntForHS = nullptr;
-	pev->skin = m_fSpotActive;
+	SetWeaponSkin(m_fSpotActive);
 	m_pTempLock = nullptr;
 	m_flseekStartTime = 0;
 
@@ -615,7 +615,7 @@ void CRpg::SecondaryAttack()
 	m_pLockedEntForHS = nullptr;
 	m_pTempLock = nullptr;
 	m_flseekStartTime = 0;
-	pev->skin = m_fSpotActive;
+	SetWeaponSkin(m_fSpotActive);
 	m_flNextSecondaryAttack = GetNextAttackDelay(0.2);
 }
 
@@ -640,7 +640,7 @@ void CRpg::WeaponIdle()
 		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
 		m_pLockedEntForHS = nullptr;
 		m_pTempLock = nullptr;
-		pev->skin = m_fSpotActive;
+		SetWeaponSkin(m_fSpotActive);
 		m_flseekStartTime = 0;
 	}
 
@@ -699,13 +699,13 @@ void CRpg::GetHeatTrace ()
 		{
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 1, ATTN_NORM, 0, 100);
-			pev->skin = 1;
+			SetWeaponSkin(1);
 		}
 		else if (tr.pHit != m_pTempLock)
 		{
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 1, ATTN_NORM, 0, 100);
-			pev->skin = 1;
+			SetWeaponSkin(1);
 			m_pLockedEntForHS = nullptr;
 			m_flseekStartTime = WEAPON_TIMEBASE + 2;
 			m_pTempLock = tr.pHit;
@@ -714,14 +714,14 @@ void CRpg::GetHeatTrace ()
 		{
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 1, ATTN_NORM, 0, 100);
-			pev->skin = 2;
+			SetWeaponSkin(2);
 			m_pLockedEntForHS = reinterpret_cast<CBaseEntity*>(GET_PRIVATE(tr.pHit));
 		}
 		else
 		{
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
-			pev->skin = 1;
+			SetWeaponSkin(1);
 			m_pLockedEntForHS = nullptr;
 			m_pTempLock = nullptr;
 			m_flseekStartTime = 0;
@@ -731,7 +731,7 @@ void CRpg::GetHeatTrace ()
 	{
 		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_lock1.wav", 0, ATTN_NORM, SND_STOP, 0);
 		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 0, ATTN_NORM, SND_STOP, 0);
-		pev->skin = 1;
+		SetWeaponSkin(1);
 		m_pLockedEntForHS = nullptr;
 		m_pTempLock = nullptr;
 		m_flseekStartTime = 0;

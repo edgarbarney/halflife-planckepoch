@@ -29,6 +29,8 @@ Transparency code by Neil "Jed" Jedrzejewski
 
 #define MAX_FRAGMENT_SHADERS 2
 
+extern int g_iViewmodelSkin;
+
 /*
 ====================
 CStudioModelRenderer

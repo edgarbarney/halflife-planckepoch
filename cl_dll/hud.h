@@ -741,6 +741,7 @@ public:
 	int  _cdecl MsgFunc_CreateSystem( const char *pszName, int iSize, void *pbuf );
 
 	int  _cdecl MsgFunc_PPGray(const char* pszName, int iSize, void* pbuf);
+	int  _cdecl MsgFunc_WpnSkn(const char* pszName, int iSize, void* pbuf);
 //RENDERERS END
 };
 
