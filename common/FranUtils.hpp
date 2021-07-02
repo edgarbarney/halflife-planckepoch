@@ -3,7 +3,7 @@
 namespace FranUtils
 {
 
-#pragma region Non-ensured Funcitons
+#pragma region Non-ensured Math Funcitons
 
 	/**
 	* Basic linear interpolation.
@@ -61,7 +61,7 @@ namespace FranUtils
 
 #pragma endregion
 
-#pragma region Ensured Funcitons
+#pragma region Ensured Math Funcitons
 
 	/**
 	* Ensured linear interpolation.
@@ -109,6 +109,54 @@ namespace FranUtils
 		else
 			return calc;
 	}
-}
+
 
 #pragma endregion
+
+#pragma region String Functions
+
+	inline char* strcharstr(const char* mainstr, const char* substr)
+	{
+		const char* buffer1 = mainstr;
+		const char* buffer2 = substr;
+		const char* result = *buffer2 == 0 ? mainstr : 0;
+
+		while (*buffer1 != 0 && *buffer2 != 0)
+		{
+			if (tolower((unsigned char)*buffer1) == tolower((unsigned char)*buffer2))
+			{
+				if (result == 0)
+				{
+					result = buffer1;
+				}
+
+				buffer2++;
+			}
+			else
+			{
+				buffer2 = substr;
+				if (result != 0)
+				{
+					buffer1 = result + 1;
+				}
+
+				if (tolower((unsigned char)*buffer1) == tolower((unsigned char)*buffer2))
+				{
+					result = buffer1;
+					buffer2++;
+				}
+				else
+				{
+					result = 0;
+				}
+			}
+
+			buffer1++;
+		}
+
+		return *buffer2 == 0 ? (char*)result : 0;
+	}
+
+#pragma endregion
+
+}
