@@ -680,6 +680,12 @@ void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 		pev->health = 0;
 	}
 	
+	UTIL_MakeVectors(pev->v_angle);
+	//Vector vecSrc =  pev->origin;// +gpGlobals->v_up * -8;
+
+	if (m_fCanBleed)
+		m_pMyBloodPuddle = CBloodPuddle::CreatePuddle(m_vecLastHitLocation, pev->v_angle, this, m_bloodColor, m_fBloodScale)->pev;
+
 	//pev->enemy = ENT( pevAttacker );//why? (sjb)
 	
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
@@ -1057,6 +1063,12 @@ int CBaseMonster :: DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttac
 		}
 	}
 
+	//UTIL_MakeVectors(pev->v_angle);
+	//Vector vecSrc = pev->origin;// +gpGlobals->v_up * -8;
+
+	//if (m_fCanBleed && m_pMyBloodPuddle)
+		//m_pMyBloodPuddle = CBloodPuddle::CreatePuddle(vecDir, pev->v_angle, this, m_bloodColor, m_fBloodScale)->pev;
+
 #if 0// turn this back on when the bounding box issues are resolved.
 
 	pev->flags &= ~FL_ONGROUND;
@@ -1411,6 +1423,8 @@ void CBaseMonster :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 {
 	if ( pev->takedamage )
 	{
+		m_vecLastHitLocation = ptr->vecEndPos - vecDir * 4;
+
 		m_LastHitGroup = ptr->iHitgroup;
 
 		switch ( ptr->iHitgroup )

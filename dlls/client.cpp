@@ -1080,6 +1080,10 @@ void StartFrame()
 
 void ClientPrecache()
 {
+	//RENDERERS START
+	UTIL_PrecacheOther("env_bloodpuddle");
+	//RENDERERS END
+
 	// setup precaches always needed
 	PRECACHE_SOUND("player/sprayer.wav");			// spray paint sound for PreAlpha
 
