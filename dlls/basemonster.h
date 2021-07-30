@@ -13,14 +13,33 @@
 *
 ****/
 
+
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
+
+#include <vector>
 
 //
 // generic Monster
 //
 class CBaseMonster : public CBaseToggle
 {
+protected:
+		//UGLY HACK BUGGER ME UP PLEASE 
+		//I COULDN'T FIND ANY BETTER WAY
+		//SINCE THIS BASE CLASS DOESN'T
+		//HAVE ANY PRE-SPAWN FUNCTION
+#pragma warning( disable : 26495 )
+		inline CBaseMonster() 
+		{ 
+			m_fBleedTime = 3;
+			m_fCanBleed = TRUE;
+			m_pMyBloodPuddle = nullptr;
+			m_fBloodScale = 10;
+			m_vecLastHitLocation = Vector{ 0, 0, 0 };
+		};
+#pragma warning( default : 26495 )
+
 private:
 		int					m_afConditions;
 
@@ -98,7 +117,9 @@ public:
 	entvars_t			*m_pMyBloodPuddle;	// Blood Puddle Pointer
 	float				m_fBloodScale;		// Blood Puddle Size
 
-	Vector				m_vecLastHitLocation;	// Location of the last hit. Used by blood puddles
+	Vector				m_vecLastHitLocation;				// Location of the last hit. Used by blood puddles
+	std::vector<char*>	m_stBones;							// Bone list
+	char*				m_stSpecificBones[8];	// Hitbox Bone list
 	//RENDERERS END
 
 	int					m_failSchedule;		// Schedule type to choose if current schedule fails
@@ -148,6 +169,7 @@ public:
 
 	BOOL	IsAlive() override { return (pev->deadflag != DEAD_DEAD); }
 	virtual BOOL	ShouldFadeOnDeath();
+
 
 // Basic Monster AI functions
 	virtual float ChangeYaw ( int speed );
