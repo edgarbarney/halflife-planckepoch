@@ -17,29 +17,11 @@
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
 
-#include <vector>
-
 //
 // generic Monster
 //
 class CBaseMonster : public CBaseToggle
 {
-protected:
-		//UGLY HACK BUGGER ME UP PLEASE 
-		//I COULDN'T FIND ANY BETTER WAY
-		//SINCE THIS BASE CLASS DOESN'T
-		//HAVE ANY PRE-SPAWN FUNCTION
-#pragma warning( disable : 26495 )
-		inline CBaseMonster() 
-		{ 
-			m_fBleedTime = 3;
-			m_fCanBleed = TRUE;
-			m_pMyBloodPuddle = nullptr;
-			m_fBloodScale = 10;
-			m_vecLastHitLocation = Vector{ 0, 0, 0 };
-		};
-#pragma warning( default : 26495 )
-
 private:
 		int					m_afConditions;
 
@@ -112,14 +94,14 @@ public:
 	int					m_bloodColor;		// color of blood particless
 
 	//RENDERERS START
-	BOOL				m_fCanBleed;		// Can monster bleed? Default : True 
-	float				m_fBleedTime;		// Bleeding start delay. Default : 3
-	entvars_t			*m_pMyBloodPuddle;	// Blood Puddle Pointer
-	float				m_fBloodScale;		// Blood Puddle Size
+	BOOL				m_fCanBleed = TRUE;					// Can monster bleed? Default : True 
+	float				m_fBleedTime = 3;					// Bleeding start delay. Default : 3
+	entvars_t			*m_pMyBloodPuddle = nullptr;		// Blood Puddle Pointer
+	float				m_fBloodScale = 10;					// Blood Puddle Size
 
-	Vector				m_vecLastHitLocation;				// Location of the last hit. Used by blood puddles
-	std::vector<char*>	m_stBones;							// Bone list
-	char*				m_stSpecificBones[8];	// Hitbox Bone list
+	Vector				m_vecLastHitLocation = Vector{ 0, 0, 0 };	// Location of the last hit. Used by blood puddles
+	std::vector<char*>	m_stBones;									// Bone list
+	char*				m_stSpecificBones[8];						// Hitbox Bone list
 	//RENDERERS END
 
 	int					m_failSchedule;		// Schedule type to choose if current schedule fails
