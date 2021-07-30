@@ -21,6 +21,8 @@
 #include "monsterevent.h"
 #endif
 
+#include <vector>
+
 extern int IsSoundEvent( int eventNumber );
 
 int LookupActivity( void *pmodel, entvars_t *pev, int activity );
@@ -41,6 +43,10 @@ int GetBodygroup( void *pmodel, entvars_t *pev, int iGroup );
 void SetBones( void *pmodel, float (*data)[3], int datasize );
 int GetBoneCount( void *pmodel );
 int GetSequenceFrames( void *pmodel, entvars_t *pev ); //LRC
+
+//RENDERERS START
+void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones);
+//RENDERERS END
 
 int GetAnimationEvent( void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index );
 int ExtractBbox( void *pmodel, int sequence, float *mins, float *maxs );
