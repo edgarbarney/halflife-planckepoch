@@ -77,6 +77,8 @@ void CRat :: Spawn()
 		SET_MODEL(ENT(pev), "models/bigrat.mdl");
 	UTIL_SetSize( pev, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ) );
 
+	m_fCanBleed = FALSE;
+
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_RED;

@@ -118,6 +118,8 @@ void CSqueakGrenade :: Spawn()
 	SetNextThink( 0.1 );
 	m_flNextHunt = gpGlobals->time + 1E6;
 
+	m_fCanBleed = FALSE;
+
 	pev->flags |= FL_MONSTER;
 	pev->takedamage		= DAMAGE_AIM;
 	if (pev->health == 0)

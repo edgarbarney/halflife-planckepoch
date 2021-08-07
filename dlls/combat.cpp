@@ -684,7 +684,7 @@ void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 	//Vector vecSrc =  pev->origin;// +gpGlobals->v_up * -8;
 
 	if (m_fCanBleed)
-		m_pMyBloodPuddle = CBloodPuddle::CreatePuddle(m_vecLastHitLocation, pev->v_angle, this, m_bloodColor, m_fBloodScale)->pev;
+		m_pMyBloodPuddle = CBloodPuddle::CreatePuddle(pev->origin/*m_vecLastHitLocation*/, pev->v_angle, this, m_bloodColor, m_fBloodScale)->pev;
 
 	//pev->enemy = ENT( pevAttacker );//why? (sjb)
 	

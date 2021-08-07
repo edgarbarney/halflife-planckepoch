@@ -665,7 +665,7 @@ void CScientist :: Spawn()
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	ALERT(at_console, "\n VarTest: %f \n", m_fBloodScale);
-	m_fBloodScale = 100;
+	m_fBloodScale = 1;
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
