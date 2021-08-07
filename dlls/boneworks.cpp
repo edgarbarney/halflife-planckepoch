@@ -28,13 +28,12 @@ Bone Utilities
 #ifndef SCRIPTEVENT_H
 #include "scriptevent.h"
 #endif
+#include <FranUtils.hpp>
 
 //RENDERERS START
-void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones)
+void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones, std::string (&specificBones)[8], int(&specificBoneIndices)[8])
 {
 	void* pmodel = GET_MODEL_PTR(ENT(callerPev));
-
-	bool isHitboxFound[8];
 
 	studiohdr_t* pstudiohdr;
 
@@ -54,7 +53,16 @@ void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones)
 	for (int i = 0; i < limit; i++, pbone++)
 	{
 		bones.emplace_back(pbone->name);
-		if ()
+		int iter = 0;
+		for (std::string bonename: specificBones)
+		{
+			if (FranUtils::strcharstr(pbone->name, bonename.c_str()) != nullptr) 
+			{
+				specificBoneIndices[iter] = i; //set bone index
+				break; //Check for just one hitbox
+			}
+			iter++;
+		}
 	}
 }
 //RENDERERS END

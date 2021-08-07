@@ -22,6 +22,7 @@
 #endif
 
 #include <vector>
+#include <string>
 
 extern int IsSoundEvent( int eventNumber );
 
@@ -45,7 +46,7 @@ int GetBoneCount( void *pmodel );
 int GetSequenceFrames( void *pmodel, entvars_t *pev ); //LRC
 
 //RENDERERS START
-void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones);
+void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones, std::string(&specificBones)[8], int (&specificBoneIndices)[8]);
 //RENDERERS END
 
 int GetAnimationEvent( void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEvent, float flStart, float flEnd, int index );

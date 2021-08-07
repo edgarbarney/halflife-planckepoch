@@ -2050,7 +2050,7 @@ void CBaseMonster :: MonsterInit ()
 		return;
 	}
 
-	GetBoneNames(pev, m_stBones);
+	GetBoneNames(pev, m_stBones, m_stSpecificBones, m_stSpecificBoneIndices);
 
 	// Set fields common to all monsters
 	pev->effects		= 0;

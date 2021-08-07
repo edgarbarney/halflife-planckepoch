@@ -692,6 +692,25 @@ void CScientist :: Spawn()
 	if ( pev->body == HEAD_LUTHER )
 		pev->skin = 1;
 	
+	const char* speciBones[8] =
+	{
+		"Spine2",
+		"Head",
+		"Spine2",
+		"Spine1",
+		"L Arm2",
+		"R Arm2",
+		"L Leg1",
+		"R Leg1",
+	};
+
+	int iter = 0;
+	for (const char* var: speciBones)
+	{
+		m_stSpecificBones[iter] = (char*)var;
+		iter++;
+	}
+
 	MonsterInit();
 	SetUse( &CScientist::FollowerUse );
 }

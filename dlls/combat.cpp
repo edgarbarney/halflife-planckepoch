@@ -30,7 +30,8 @@
 #include "weapons.h"
 #include "func_break.h"
 #include "studio.h"
-#include <FranUtils.hpp>
+#include "FranUtils.hpp"
+
 
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 extern DLL_GLOBAL int			g_iSkillLevel;
