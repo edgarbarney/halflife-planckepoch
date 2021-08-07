@@ -11,8 +11,6 @@ ails.
 Blood Puddle Entity
 */
 
-#include <string>
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -50,7 +48,7 @@ void CBloodPuddle::KeyValue(KeyValueData* pkvd)
 	CBaseAnimating::KeyValue(pkvd);
 }
 
-CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseMonster* pOwner, int bloodColor, float bloodScale)
+CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseEntity* pOwner, int bloodColor, float bloodScale)
 {
 	CBloodPuddle* pPuddle = GetClassPtr((CBloodPuddle*)nullptr);
 
@@ -73,8 +71,6 @@ CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBa
 	pPuddle->pev->scale = bloodScale;
 
 	pPuddle->pev->owner = pOwner->edict();
-	
-	pPuddle->m_pMyHost = pOwner;
 
 	return pPuddle;
 }
@@ -131,19 +127,7 @@ void CBloodPuddle::Think()
 		SetSequence("idle", false);
 
 	else if (gpGlobals->time >= m_fBleedStartTime && pev->sequence != LookupSequence("idle"))
-	{
-		/*
-		Vector puddlePos = Vector{ 0,0,0 };
-		Vector puddleAng = Vector{ 0,0,0 };
-		m_pMyHost->GetBonePosition(m_pMyHost->m_stSpecificBoneIndices[m_pMyHost->m_LastHitGroup], puddlePos, puddleAng);
-		UTIL_SetOrigin(this, puddlePos);
-		pev->origin.z += 1;
-		DROP_TO_FLOOR(ENT(pev));
-		ALERT(at_console, ((std::string)puddlePos).c_str());
-		*/
 		SetSequence("getbiggur", false);
-	}
-		
 		
 	
 	SetNextThink(0.1);
