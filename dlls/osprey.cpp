@@ -155,6 +155,8 @@ void COsprey :: Spawn()
 	UTIL_SetSize(pev, Vector( -400, -400, -100), Vector(400, 400, 32));
 	UTIL_SetOrigin( this, pev->origin );
 
+	m_fCanBleed = FALSE;
+
 	//ALERT(at_console, "Osprey origin %f %f %f\n", pev->origin.x, pev->origin.y, pev->origin.z);
 
 	pev->flags |= FL_MONSTER;

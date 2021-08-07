@@ -484,6 +484,8 @@ void CIchthyosaur :: Spawn()
 		SET_MODEL(ENT(pev), "models/icky.mdl");
 	UTIL_SetSize( pev, Vector( -32, -32, -32 ), Vector( 32, 32, 32 ) );
 
+	m_fCanBleed = FALSE;
+
 	pev->solid			= SOLID_BBOX;
 	pev->movetype		= MOVETYPE_FLY;
 	m_bloodColor		= BLOOD_COLOR_GREEN;

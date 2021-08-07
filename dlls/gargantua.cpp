@@ -788,6 +788,8 @@ void CGargantua :: Spawn()
 		SET_MODEL(ENT(pev), "models/garg.mdl");
 	UTIL_SetSize( pev, Vector( -32, -32, 0 ), Vector( 32, 32, 64 ) );
 
+	m_fCanBleed = FALSE;
+
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_GREEN;

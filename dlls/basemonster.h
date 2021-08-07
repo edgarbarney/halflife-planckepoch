@@ -99,7 +99,7 @@ public:
 	BOOL				m_fCanBleed = TRUE;					// Can monster bleed? Default : True 
 	float				m_fBleedTime = 3;					// Bleeding start delay. Default : 3
 	entvars_t			*m_pMyBloodPuddle = nullptr;		// Blood Puddle Pointer
-	float				m_fBloodScale = 10;					// Blood Puddle Size
+	float				m_fBloodScale = 1;					// Blood Puddle Size
 
 	Vector				m_vecLastHitLocation = Vector{ 0, 0, 0 };	// Location of the last hit. Used by blood puddles
 	std::vector<char*>	m_stBones;									// Bone list

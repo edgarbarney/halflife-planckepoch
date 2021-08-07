@@ -127,7 +127,10 @@ void CBloodPuddle::Think()
 		SetSequence("idle", false);
 
 	else if (gpGlobals->time >= m_fBleedStartTime && pev->sequence != LookupSequence("idle"))
+	{
 		SetSequence("getbiggur", false);
+	}
+		
 		
 	
 	SetNextThink(0.1);
