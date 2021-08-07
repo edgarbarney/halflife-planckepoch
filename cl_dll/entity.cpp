@@ -351,7 +351,7 @@ void DLLEXPORT HUD_CreateEntities()
 		cl_entity_t *pView = gEngfuncs.GetViewModel();
 
 		if(pView)
-			SetupFlashlight(pView->origin + Vector(0, 0, 8), Vector(-pView->angles[0], pView->angles[1], pView->angles[2]), gEngfuncs.GetClientTime(), gHUD.m_flTimeDelta);
+			SetupFlashlight(pView->origin + Vector(0, 0, 8), Vector(-pView->angles[0], pView->angles[1], pView->angles[2]), gEngfuncs.GetClientTime(), gHUD.m_flTimeDelta, true);
 	}
 	//RENDERERS END
 }

@@ -726,7 +726,7 @@ extern void		R_MarkLeaves ( mleaf_t *pLeaf );
 extern void		HUD_PrintSpeeds( );
 extern void		RenderersDumpInfo( );
 extern void		GenDetail( );
-extern void		SetupFlashlight( Vector origin, Vector angles, float time, float frametime );
+extern void		SetupFlashlight( Vector origin, Vector angles, float time, float frametime, bool isNV = false);
 extern void		ExportWorld( );
 
 extern unsigned short	ByteToUShort( byte *byte );

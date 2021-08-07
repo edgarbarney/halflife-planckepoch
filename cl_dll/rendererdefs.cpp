@@ -1072,7 +1072,7 @@ void GenDetail( )
 //===============================
 // buz: flashlight managenemt
 //===============================
-void SetupFlashlight(Vector origin, Vector angles, float time, float frametime)
+void SetupFlashlight(Vector origin, Vector angles, float time, float frametime, bool isNV)
 {
 	pmtrace_t tr;
 	Vector fwd, right, up;
@@ -1117,12 +1117,24 @@ void SetupFlashlight(Vector origin, Vector angles, float time, float frametime)
 
 		cl_dlight_t *flashlight = gBSPRenderer.CL_AllocDLight(-666);
 		flashlight->origin = origin + (up*8) + (right*10);
-		flashlight->radius = 700;
+		if (isNV)
+		{
+			flashlight->radius = 700;
+			flashlight->color.x = 1.0;
+			flashlight->color.y = 1.0;
+			flashlight->color.z = 1.0;
+			flashlight->cone_size = 200;
+			flashlight->noshadow = TRUE;
+		}
+		else
+		{
+			flashlight->radius = 700;
+			flashlight->color.x = 1.0;
+			flashlight->color.y = 1.0;
+			flashlight->color.z = 1.0;
+			flashlight->cone_size = 50 + add;
+		}
 		flashlight->die = time + 0.01;
-		flashlight->cone_size = 50+add;
-		flashlight->color.x = 1.0;
-		flashlight->color.y = 1.0;
-		flashlight->color.z = 1.0;
 		flashlight->textureindex = gBSPRenderer.m_pFlashlightTextures[0]->iIndex;
 		flashlight->frustum.SetFrustum(angles, flashlight->origin, flashlight->cone_size*1.2, 700);
 		VectorCopy(angles, flashlight->angles);
@@ -1130,8 +1142,9 @@ void SetupFlashlight(Vector origin, Vector angles, float time, float frametime)
 		mlight_t *pLight = &gBSPRenderer.m_pModelLights[gBSPRenderer.m_iNumModelLights];
 		gBSPRenderer.m_iNumModelLights++;
 		
+		pLight->flashlight = !isNV;
+
 		pLight->origin = flashlight->origin;
-		pLight->flashlight = true;
 		pLight->frustum = &flashlight->frustum;
 		pLight->radius = flashlight->radius;
 		pLight->spotcos = cos((flashlight->cone_size*2)*0.3*(M_PI*2/360));
