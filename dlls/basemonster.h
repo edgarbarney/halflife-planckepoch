@@ -17,6 +17,8 @@
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
 
+#include <vector>
+
 //
 // generic Monster
 //

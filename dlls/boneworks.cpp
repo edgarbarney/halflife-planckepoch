@@ -34,7 +34,7 @@ void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones)
 {
 	void* pmodel = GET_MODEL_PTR(ENT(callerPev));
 
-	bool isHitboxFound[8];
+	//bool isHitboxFound[8];
 
 	studiohdr_t* pstudiohdr;
 
@@ -54,7 +54,7 @@ void GetBoneNames(entvars_t* callerPev, std::vector<char*>& bones)
 	for (int i = 0; i < limit; i++, pbone++)
 	{
 		bones.emplace_back(pbone->name);
-		if ()
+		//if ()
 	}
 }
 //RENDERERS END
