@@ -2022,6 +2022,8 @@ void CBaseMonster :: MonsterInit ()
 		return;
 	}
 
+	GetBoneNames(pev, m_stBones);
+
 	// Set fields common to all monsters
 	pev->effects		= 0;
 	pev->takedamage		= DAMAGE_AIM;

@@ -28,6 +28,9 @@ public:
 	inline Vector2D operator-(const Vector2D& v)	const	{ return Vector2D(x-v.x, y-v.y);	}
 	inline Vector2D operator*(float fl)				const	{ return Vector2D(x*fl, y*fl);	}
 	inline Vector2D operator/(float fl)				const	{ return Vector2D(x/fl, y/fl);	}
+	#ifdef _STRING_
+	inline operator std::string() const { return ("X: " + std::to_string(x) + ", Y: " + std::to_string(y)); }
+	#endif
 	
 	inline float Length()						const	{ return static_cast<float>(sqrt(x*x + y*y )); }
 
@@ -46,6 +49,14 @@ public:
 			return Vector2D( x * flLen, y * flLen );
 		}
 	}
+
+	#ifdef _STRING_
+	inline std::string str() { return ("X: " + std::to_string(x) + ", Y: " + std::to_string(y)); }
+	inline void c_str(char* outStr)
+	{
+		snprintf(outStr, strlen(outStr) - 1, "X: %f, Y: %f", x, y);
+	}
+	#endif
 
 	vec_t	x, y;
 };
@@ -98,6 +109,9 @@ public:
 	inline Vector operator-(const Vector& v) const	{ return Vector(x-v.x, y-v.y, z-v.z);	}
 	inline Vector operator*(float fl) const			{ return Vector(x*fl, y*fl, z*fl);		}
 	inline Vector operator/(float fl) const			{ return Vector(x/fl, y/fl, z/fl);		}
+	#ifdef _STRING_
+	inline operator std::string() const				{ return ("X: " + std::to_string(x) + ", Y: " + std::to_string(y) + ", Z: " + std::to_string(z)); }
+	#endif
 	
 	// Methods
 	inline void CopyToArray(float* rgfl) const		{ rgfl[0] = x, rgfl[1] = y, rgfl[2] = z; }
@@ -122,6 +136,14 @@ public:
 		return Vec2;
 	}
 	inline float Length2D() const					{ return static_cast<float>(sqrt(x*x + y*y)); }
+
+	#ifdef _STRING_
+	inline std::string str()						{ return ("X: " + std::to_string(x) + ", Y: " + std::to_string(y) + ", Z: " + std::to_string(z)); }
+	inline void c_str(char* outStr)
+	{
+		snprintf(outStr, strlen(outStr)-1, "X: %f, Y: %f, Z: %f", x, y, z);
+	}
+	#endif
 
 	// Members
 	vec_t x, y, z;

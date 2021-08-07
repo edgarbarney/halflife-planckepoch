@@ -129,6 +129,8 @@ void CRoach :: Spawn()
 		SET_MODEL(ENT(pev), "models/roach.mdl");
 	UTIL_SetSize( pev, Vector( -1, -1, 0 ), Vector( 1, 1, 2 ) );
 
+	m_fCanBleed = FALSE;
+
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_YELLOW;

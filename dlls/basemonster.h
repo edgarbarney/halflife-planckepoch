@@ -13,8 +13,11 @@
 *
 ****/
 
+
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
+
+#include <vector>
 
 //
 // generic Monster
@@ -63,25 +66,25 @@ public:
 		int					m_iRouteIndex;			// index into m_Route[]
 		float				m_moveWaitTime;			// How long I should wait for something to move
 
-		Vector				m_vecMoveGoal; // kept around for node graph moves, so we know our ultimate goal
+		Vector				m_vecMoveGoal;	// kept around for node graph moves, so we know our ultimate goal
 		Activity			m_movementActivity;	// When moving, set this activity
 
-		int					m_iAudibleList; // first index of a linked list of sounds that the monster can hear.
+		int					m_iAudibleList;	 // first index of a linked list of sounds that the monster can hear.
 		int					m_afSoundTypes;
 
 		Vector				m_vecLastPosition;// monster sometimes wants to return to where it started after an operation.
 
-		int					m_iHintNode; // this is the hint node that the monster is moving towards or performing active idle on.
+		int					m_iHintNode;	// this is the hint node that the monster is moving towards or performing active idle on.
 
 		int					m_afMemory;
 
-		int					m_iMaxHealth;// keeps track of monster's maximum health value (for re-healing, etc)
+		int					m_iMaxHealth;	// keeps track of monster's maximum health value (for re-healing, etc)
 
-	Vector				m_vecEnemyLKP;// last known position of enemy. (enemy's origin)
+	Vector				m_vecEnemyLKP;		// last known position of enemy. (enemy's origin)
 
 	int					m_cAmmoLoaded;		// how much ammo is in the weapon (used to trigger reload anim sequences)
 
-	int					m_afCapability;// tells us what a monster can/can't do.
+	int					m_afCapability;		// tells us what a monster can/can't do.
 
 	float				m_flNextAttack;		// cannot attack again until this time
 
@@ -92,17 +95,28 @@ public:
 											// time based damage counters, decr. 1 per 2 seconds
 	int					m_bloodColor;		// color of blood particless
 
-	int					m_failSchedule;				// Schedule type to choose if current schedule fails
+	//RENDERERS START
+	BOOL				m_fCanBleed = TRUE;					// Can monster bleed? Default : True 
+	float				m_fBleedTime = 3;					// Bleeding start delay. Default : 3
+	entvars_t			*m_pMyBloodPuddle = nullptr;		// Blood Puddle Pointer
+	float				m_fBloodScale = 1;					// Blood Puddle Size
 
-	float				m_flHungryTime;// set this is a future time to stop the monster from eating for a while. 
+	Vector				m_vecLastHitLocation = Vector{ 0, 0, 0 };	// Location of the last hit. Used by blood puddles
+	std::vector<char*>	m_stBones;									// Bone list
+	char*				m_stSpecificBones[8];						// Hitbox Bone list
+	//RENDERERS END
 
-	float				m_flDistTooFar;	// if enemy farther away than this, bits_COND_ENEMY_TOOFAR set in CheckEnemy
-	float				m_flDistLook;	// distance monster sees (Default 2048)
+	int					m_failSchedule;		// Schedule type to choose if current schedule fails
+
+	float				m_flHungryTime;		// set this is a future time to stop the monster from eating for a while. 
+
+	float				m_flDistTooFar;		// if enemy farther away than this, bits_COND_ENEMY_TOOFAR set in CheckEnemy
+	float				m_flDistLook;		// distance monster sees (Default 2048)
 
 	int					m_iTriggerCondition;// for scripted AI, this is the condition that will cause the activation of the monster's TriggerTarget
-	string_t			m_iszTriggerTarget;// name of target that should be fired. 
+	string_t			m_iszTriggerTarget;	// name of target that should be fired. 
 
-	Vector				m_HackedGunPos;	// HACK until we can query end of gun
+	Vector				m_HackedGunPos;		// HACK until we can query end of gun
 
 // Scripted sequence Info
 	SCRIPTSTATE			m_scriptState;		// internal cinematic state
@@ -139,6 +153,7 @@ public:
 
 	BOOL	IsAlive() override { return (pev->deadflag != DEAD_DEAD); }
 	virtual BOOL	ShouldFadeOnDeath();
+
 
 // Basic Monster AI functions
 	virtual float ChangeYaw ( int speed );

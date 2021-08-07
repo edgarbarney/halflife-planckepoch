@@ -123,7 +123,9 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\blkop_apache.cpp" />
     <ClCompile Include="..\..\dlls\bloater.cpp" />
     <ClCompile Include="..\..\dlls\blowercannon.cpp" />
+    <ClCompile Include="..\..\dlls\bloodpuddle.cpp" />
     <ClCompile Include="..\..\dlls\bmodels.cpp" />
+    <ClCompile Include="..\..\dlls\boneworks.cpp" />
     <ClCompile Include="..\..\dlls\bullsquid.cpp" />
     <ClCompile Include="..\..\dlls\buttons.cpp" />
     <ClCompile Include="..\..\dlls\cbase.cpp" />

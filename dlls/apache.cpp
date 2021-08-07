@@ -208,6 +208,8 @@ void CApache :: Killed( entvars_t *pevAttacker, int iGib )
 
 	STOP_SOUND( ENT(pev), CHAN_STATIC, "apache/ap_rotor2.wav" );
 
+	m_fCanBleed = FALSE;
+
 	UTIL_SetSize( pev, Vector( -32, -32, -64), Vector( 32, 32, 0) );
 	SetThink( &CApache::DyingThink );
 	SetTouch( &CApache::CrashTouch );
