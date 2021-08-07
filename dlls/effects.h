@@ -329,10 +329,8 @@ class CBloodPuddle : public CBaseAnimating
 	float m_fBleedStartTime;
 	//int m_iBloodColor;
 
-	CBaseMonster* m_pMyHost; // Owner But Monster PTR
-
 public:
-	static CBloodPuddle* CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseMonster* pOwner, int bloodColor, float bloodScale);
+	static CBloodPuddle* CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseEntity* pOwner, int bloodColor, float bloodScale);
 };
 //RENDERERS END
 

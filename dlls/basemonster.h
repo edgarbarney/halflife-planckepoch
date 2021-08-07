@@ -17,9 +17,6 @@
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
 
-#include <vector>
-#include <string>
-
 //
 // generic Monster
 //
@@ -104,8 +101,7 @@ public:
 
 	Vector				m_vecLastHitLocation = Vector{ 0, 0, 0 };	// Location of the last hit. Used by blood puddles
 	std::vector<char*>	m_stBones;									// Bone list
-	std::string			m_stSpecificBones[8]{""};					// Hitbox Bone list
-	int					m_stSpecificBoneIndices[8]{0};				// Hitbox Bone indices
+	char*				m_stSpecificBones[8];						// Hitbox Bone list
 	//RENDERERS END
 
 	int					m_failSchedule;		// Schedule type to choose if current schedule fails
