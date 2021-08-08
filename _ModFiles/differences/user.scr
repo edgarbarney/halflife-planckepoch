@@ -59,7 +59,7 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"Borderless Mode"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"r_ignoreborderless"

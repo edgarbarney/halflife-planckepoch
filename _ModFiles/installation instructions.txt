@@ -10,6 +10,14 @@
 5:  Restart Steam and find the "Spirinity: OP4 Edition"
     then press play button.
 
+I suggest playing on Windowed mode with "Borderless mode"
+activated from advanced settings.
+
+If you have option errors, you can exec spirinity_default.cfg
+
+Grayscale system is a bit buggy. So if it get broken, disabling and re-enabling it
+should fix the problems
+
 Because of legal reasons, I cannot give OP4 files to you.
 So I will only send required mod files that you should manually patch.
 
