@@ -1,0 +1,13 @@
+game "Spirinity: OP4 Edition"
+url_info "https://github.com/edgarbarney/halflife-planckepoch/tree/spirit/spirit-1.8-trinity-op4"
+url_dl ""
+version "1"
+svonly "0"
+secure "0"
+cldll "1"
+hlversion "1111"
+gamedll "dlls\opfor.dll"
+startmap "of0a0"
+trainmap "ofboot0"
+
+
