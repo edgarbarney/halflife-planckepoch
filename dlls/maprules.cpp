@@ -820,6 +820,11 @@ public:
 
 	inline bool UseOnly() { return (pev->spawnflags & SF_PLAYEREQUIP_USEONLY) != 0; }
 
+	virtual bool Save(CSave& save);
+	virtual bool Restore(CRestore& restore);
+
+	static TYPEDESCRIPTION m_SaveData[];
+
 private:
 	void EquipPlayer(CBaseEntity* pPlayer);
 
@@ -829,6 +834,13 @@ private:
 
 LINK_ENTITY_TO_CLASS(game_player_equip, CGamePlayerEquip);
 
+TYPEDESCRIPTION CGamePlayerEquip::m_SaveData[] =
+	{
+		DEFINE_ARRAY(CGamePlayerEquip, m_weaponNames, FIELD_STRING, MAX_EQUIP),
+		DEFINE_ARRAY(CGamePlayerEquip, m_weaponCount, FIELD_INTEGER, MAX_EQUIP),
+};
+
+IMPLEMENT_SAVERESTORE(CGamePlayerEquip, CRulePointEntity);
 
 bool CGamePlayerEquip::KeyValue(KeyValueData* pkvd)
 {
