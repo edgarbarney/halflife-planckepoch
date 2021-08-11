@@ -843,6 +843,14 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 	// hornetgun is outside the spawnflags Worldcraft can set - handle it seperately.
 	if (iHornet)
 		iWeaponMask |= 1 << WEAPON_HORNETGUN;
+	if (iSnark)
+		iWeaponMask |= 1 << WEAPON_SNARK;
+	if (iTrip)
+		iWeaponMask |= 1 << WEAPON_TRIPMINE;
+	if (iGren)
+		iWeaponMask |= 1 << WEAPON_HANDGRENADE;
+	if (iSatchel)
+		iWeaponMask |= 1 << WEAPON_SATCHEL;
 
 	RemoveAmmo("9mm", i9mm);
 	RemoveAmmo("357", i357);
@@ -866,7 +874,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 		{
 			if (!(1 << pCurrentItem->m_pNext->m_iId & iWeaponMask))
 			{
-				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem->m_pNext)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//remove pCurrentItem->m_pNext from the list
 				//				ALERT(at_console, "Removing %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem->m_pNext->Drop();
@@ -877,7 +885,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 			else
 			{
 				//we're keeping this, so we need to empty the clip
-				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem->m_pNext)->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//now, leave pCurrentItem->m_pNext in the list and go on to the next
 				//				ALERT(at_console, "Keeping %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem = pCurrentItem->m_pNext;
@@ -886,7 +894,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 		// we've gone through items 2+, now we finish off by checking item 1.
 		if (!(1 << m_rgpPlayerItems[i]->m_iId & iWeaponMask))
 		{
-			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+			((CBasePlayerWeapon*)m_rgpPlayerItems[i])->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 			//			ALERT(at_console, "Removing %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 			m_rgpPlayerItems[i]->Drop();
 			if (m_pLastItem == m_rgpPlayerItems[i])
@@ -895,7 +903,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 		}
 		else
 		{
-			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+			((CBasePlayerWeapon*)m_rgpPlayerItems[i])->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 			//			ALERT(at_console, "Keeping %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 		}
 	}
