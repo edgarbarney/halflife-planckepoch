@@ -664,6 +664,9 @@ void CScientist :: Spawn()
 		SET_MODEL(ENT(pev), "models/scientist.mdl");
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
+	ALERT(at_console, "\n VarTest: %f \n", m_fBloodScale);
+	m_fBloodScale = 100;
+
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_RED;

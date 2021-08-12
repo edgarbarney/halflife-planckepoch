@@ -67,7 +67,9 @@ CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBa
 		break;
 	}
 	//pPuddle->SetTouch(&CBloodPuddle::RocketTouch);
-		
+	
+	pPuddle->pev->scale = bloodScale;
+
 	pPuddle->pev->owner = pOwner->edict();
 
 	return pPuddle;

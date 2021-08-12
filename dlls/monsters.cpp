@@ -2050,6 +2050,8 @@ void CBaseMonster :: MonsterInit ()
 		return;
 	}
 
+	GetBoneNames(pev, m_stBones);
+
 	// Set fields common to all monsters
 	pev->effects		= 0;
 	pev->takedamage		= DAMAGE_AIM;
@@ -2057,11 +2059,6 @@ void CBaseMonster :: MonsterInit ()
 	pev->max_health		= pev->health;
 	pev->deadflag		= DEAD_NO;
 	m_IdealMonsterState	= MONSTERSTATE_IDLE;// Assume monster will be idle, until proven otherwise
-	m_fBleedTime		= 3;
-	m_fCanBleed			= TRUE;
-	m_pMyBloodPuddle	= nullptr;
-	m_fBloodScale		= 1.5;
-	m_vecLastHitLocation	= Vector{ 0, 0, 0 };
 
 	m_IdealActivity = ACT_IDLE;
 
