@@ -302,6 +302,36 @@ public:
 	BOOL m_fDisableShadows;
 	BOOL m_fDisableDrawing;
 };
+
+//=======================
+// CBloodPuddle
+//=======================
+
+#define SF_BLOODPUDDLE_OFF			1
+#define SF_BLOODPUDDLE_DROPTOFLOOR	2
+#define SF_BLOODPUDDLE_SOLID		4
+
+class CBloodPuddle : public CBaseAnimating
+{
+	void Spawn() override;
+	void Precache() override;
+	void EXPORT Think() override;
+	void KeyValue(KeyValueData* pkvd) override;
+	int	ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+
+	int		Save(CSave& save) override;
+	int		Restore(CRestore& restore) override;
+	static	TYPEDESCRIPTION m_SaveData[];
+
+	void SetSequence(const char* sequenceName, BOOL isLoopin);
+
+	float m_fStartTime;
+	float m_fBleedStartTime;
+	//int m_iBloodColor;
+
+public:
+	static CBloodPuddle* CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseEntity* pOwner, int bloodColor, float bloodScale);
+};
 //RENDERERS END
 
 #endif		//EFFECTS_H
