@@ -25,6 +25,7 @@
 #include	"effects.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include	"FranUtils.hpp"
 
 extern DLL_GLOBAL int		g_iSkillLevel;
 
@@ -217,18 +218,7 @@ void CISlave :: IdleSound()
 
 	UTIL_MakeAimVectors( pev->angles );
 	Vector vecSrc = pev->origin + gpGlobals->v_right * 2 * side;
-	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSrc );
-		WRITE_BYTE(TE_DLIGHT);
-		WRITE_COORD(vecSrc.x);	// X
-		WRITE_COORD(vecSrc.y);	// Y
-		WRITE_COORD(vecSrc.z);	// Z
-		WRITE_BYTE( 8 );		// radius * 0.1
-		WRITE_BYTE( 255 );		// r
-		WRITE_BYTE( 180 );		// g
-		WRITE_BYTE( 96 );		// b
-		WRITE_BYTE( 10 );		// time * 10
-		WRITE_BYTE( 0 );		// decay * 0.1
-	MESSAGE_END( );
+	FranUtils::EmitDlight(vecSrc, 8, { 255, 180, 96 }, 10, 0);
 
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "debris/zap1.wav", 1, ATTN_NORM, 0, 100 );
 #endif
@@ -364,19 +354,7 @@ void CISlave :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			if (m_iBeams == 0)
 			{
 				Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
-				MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSrc );
-					WRITE_BYTE(TE_DLIGHT);
-					WRITE_COORD(vecSrc.x);	// X
-					WRITE_COORD(vecSrc.y);	// Y
-					WRITE_COORD(vecSrc.z);	// Z
-					WRITE_BYTE( 12 );		// radius * 0.1
-					WRITE_BYTE( 255 );		// r
-					WRITE_BYTE( 180 );		// g
-					WRITE_BYTE( 96 );		// b
-					WRITE_BYTE( 20 / pev->framerate );		// time * 10
-					WRITE_BYTE( 0 );		// decay * 0.1
-				MESSAGE_END( );
-
+				FranUtils::EmitDlight(vecSrc, 12, {12, 255, 188}, 20 /* pev->framerate*/, 0);
 			}
 			if (m_hDead != nullptr)
 			{

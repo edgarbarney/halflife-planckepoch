@@ -22,6 +22,7 @@
 #include "player.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+#include "FranUtils.hpp"
 
 LINK_ENTITY_TO_CLASS( weapon_python, CPython );
 LINK_ENTITY_TO_CLASS( weapon_357, CPython );
@@ -170,20 +171,9 @@ void CPython::PrimaryAttack()
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
-	#ifndef CLIENT_DLL 
-	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
-       WRITE_BYTE( TE_DLIGHT );
-       WRITE_COORD( pev->origin.x ); // origin
-       WRITE_COORD( pev->origin.y );
-       WRITE_COORD( pev->origin.z );
-       WRITE_BYTE( 16 );     // radius
-       WRITE_BYTE( 255 );    // R
-       WRITE_BYTE( 255 );    // G
-       WRITE_BYTE( 180 );    // B
-       WRITE_BYTE( 0 );      // life * 10
-       WRITE_BYTE( 0 );      // decay
-    MESSAGE_END();
-	#endif 
+#ifndef CLIENT_DLL
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0, 0);
+#endif
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
