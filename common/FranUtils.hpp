@@ -258,7 +258,7 @@ namespace FranUtils
 			WRITE_BYTE(colour.x);		// r
 			WRITE_BYTE(colour.y);		// g
 			WRITE_BYTE(colour.z);		// b
-			WRITE_BYTE(time);			// time * 10
+			WRITE_LONG(FranUtils::ftol_asm(time));  //WRITE_BYTE(time);			// time * 10
 			WRITE_BYTE(decay);			// decay * 0.1
 		MESSAGE_END();
 	}
