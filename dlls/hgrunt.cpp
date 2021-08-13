@@ -42,6 +42,7 @@
 #include	"effects.h"
 #include	"customentity.h"
 #include	"scripted.h" //LRC
+#include	"FranUtils.hpp"
 
 int g_fGruntQuestion;				// true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -858,18 +859,7 @@ void CHGrunt :: Shotgun ()
 	SetBlending( 0, angDir.x );
 
 	// Teh_Freak: World Lighting!
-     MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
-          WRITE_BYTE( TE_DLIGHT );
-          WRITE_COORD( vecShootOrigin.x ); // origin
-          WRITE_COORD( vecShootOrigin.y );
-          WRITE_COORD( vecShootOrigin.z );
-          WRITE_BYTE( 16 );     // radius
-          WRITE_BYTE( 255 );     // R
-          WRITE_BYTE( 255 );     // G
-          WRITE_BYTE( 128 );     // B
-          WRITE_BYTE( 0 );     // life * 10
-          WRITE_BYTE( 0 ); // decay
-     MESSAGE_END();
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0, 0);
 	// Teh_Freak: World Lighting!
 
 }
