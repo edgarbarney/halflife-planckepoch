@@ -5954,7 +5954,7 @@ int CBSPRenderer::MsgDynLight(const char *pszName, int iSize, void *pbuf)
 	dl->color.x = (float)READ_BYTE()/255;
 	dl->color.y = (float)READ_BYTE()/255;
 	dl->color.z = (float)READ_BYTE()/255;
-	dl->die = READ_BYTE() + gEngfuncs.GetClientTime();
+	dl->die = READ_FLOAT() + gEngfuncs.GetClientTime();
 	dl->decay = READ_BYTE()*10;
 	return 1;
 }
