@@ -701,10 +701,12 @@ void CHud :: VidInit()
 	m_hsprCursor = 0;
 	numMirrors = 0;
 
-	if (ScreenWidth < 640)
-		m_iRes = 320;
-	else
-		m_iRes = 640;
+	//Removed 320 Hud
+
+	//if (ScreenWidth < 640)
+	//	m_iRes = 320;
+	//else
+	m_iRes = 640;
 
 	if (CVAR_GET_FLOAT("r_ignoreborderless") == 0)
 	{
