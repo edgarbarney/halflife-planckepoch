@@ -84,6 +84,10 @@ float CPostProcess::GetGrayscalePower()
 
 	float grayscale = m_fGrayscalePower;
 
+	//TODO: Fix grayscale staying bug
+	if (m_fTGS_StartTime + 10.0f > m_fTGS_EndTime)
+		m_fTGS_EndTime = m_fTGS_StartTime + 9.9f;
+
 	if (grayscale > 1) grayscale = 1;
 
 	//return 1; //debug
