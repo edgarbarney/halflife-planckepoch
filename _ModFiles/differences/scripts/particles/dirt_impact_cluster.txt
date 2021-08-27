@@ -1,2 +1,0 @@
-engine_dirt_flecks.txt
-engine_dirt_cloud.txt

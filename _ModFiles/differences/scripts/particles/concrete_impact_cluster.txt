@@ -1,3 +1,0 @@
-engine_concrete_flecks1.txt
-engine_concrete_flecks2.txt
-engine_concrete_cloud.txt

@@ -1,3 +1,0 @@
-engine_wood_flecks1.txt
-engine_wood_flecks2.txt
-engine_wood_cloud.txt

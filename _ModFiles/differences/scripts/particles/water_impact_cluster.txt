@@ -1,4 +1,0 @@
-engine_water_splashes1.txt
-engine_water_splashes2.txt
-engine_water_droplets.txt
-ripples.txt
