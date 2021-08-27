@@ -1200,6 +1200,6 @@ void GameDLLInit()
 	// END REGISTER CVARS FOR OPPOSING FORCE
 
 	SERVER_COMMAND( "exec skill.cfg\n" );
-	SERVER_COMMAND( "exec skillopfor.cfg\n" );
+	SERVER_COMMAND( "exec skilladmurr.cfg\n" );
 }
 
