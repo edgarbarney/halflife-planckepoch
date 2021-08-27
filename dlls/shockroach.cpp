@@ -299,6 +299,8 @@ void COFShockRoach :: Spawn()
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
 
+	m_fCanBleed = FALSE;
+
 	m_fRoachSolid = false;
 	m_flBirthTime = gpGlobals->time;
 
