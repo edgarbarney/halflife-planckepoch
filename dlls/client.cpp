@@ -670,24 +670,6 @@ void ClientCommand( edict_t *pEntity )
 	{
 		return;
 	}
-	/*
-	else if ( FStrEq(pcmd, "hud_color") ) //LRC
-	{
-		if (CMD_ARGC() == 4)
-		{
-			int col = (atoi(CMD_ARGV(1)) & 255) << 16;
-			col += (atoi(CMD_ARGV(2)) & 255) << 8;
-			col += (atoi(CMD_ARGV(3)) & 255);
-			MESSAGE_BEGIN( MSG_ONE, gmsgHUDColor, nullptr, &pEntity->v );
-				WRITE_LONG(col);
-			MESSAGE_END();
-		}
-		else
-		{
-			ALERT(at_console, "Syntax: hud_color RRR GGG BBB\n");
-		}
-	}
-	*/
 	else if ( FStrEq(pcmd, "fire") ) //LRC - trigger entities manually
 	{
 		if (g_psv_cheats->value)

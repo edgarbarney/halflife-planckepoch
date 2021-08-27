@@ -56,20 +56,11 @@ int CHudPlayerBrowse::Draw(float flTime)
 {
 	int r, g, b;
 
-	if (m_iTeamNum == static_cast<int>(CTFTeam::BlackMesa))
-	{
-		UnpackRGB(r, g, b, RGB_YELLOWISH);
-	}
-	else if (m_iTeamNum == static_cast<int>(CTFTeam::OpposingForce))
-	{
-		UnpackRGB(r, g, b, RGB_HUD_COLOR);
-	}
-	else
-	{
-		r = 192;
-		g = 192;
-		b = 192;
-	}
+	UnpackRGB(r, g, b, RGB_HUD_COLOR);
+
+	r = 192;
+	g = 192;
+	b = 192;
 
 	if (m_flDelayFade > 0)
 	{

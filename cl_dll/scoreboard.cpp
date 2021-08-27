@@ -727,14 +727,7 @@ int CHudScoreboard::MsgFunc_PlayerIcon(const char* pszName, int iSize, void* pbu
 
 		int r, g, b;
 
-		if (id == CTFItem::BlackMesaFlag)
-		{
-			UnpackRGB(r, g, b, RGB_YELLOWISH);
-		}
-		else
-		{
-			UnpackRGB(r, g, b, RGB_HUD_COLOR);
-		}
+		UnpackRGB(r, g, b, RGB_HUD_COLOR);
 
 		sprite.r = r;
 		sprite.g = g;

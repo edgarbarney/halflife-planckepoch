@@ -113,15 +113,6 @@ cvar_t* cl_bobtilt = nullptr;
 
 void ShutdownInput ();
 
-int __MsgFunc_HudColor(const char* pszName, int iSize, void* pbuf)
-{
-	BEGIN_READ(pbuf, iSize);
-	giR = READ_BYTE();
-	giG = READ_BYTE();
-	giB = READ_BYTE();
-	return 1;
-}
-
 int __MsgFunc_OldWeapon(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
@@ -134,14 +125,6 @@ int __MsgFunc_Logo(const char *pszName, int iSize, void *pbuf)
 {
 	return gHUD.MsgFunc_Logo(pszName, iSize, pbuf );
 }
-
-//LRC
-/*
-int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
-{
-	return gHUD.MsgFunc_HUDColor(pszName, iSize, pbuf );
-}
-*/
 
 // Trinity
 int __MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
@@ -521,7 +504,6 @@ void CHud :: Init()
 	HOOK_MESSAGE( SetMenuTeam );
 	HOOK_MESSAGE( StatsInfo );
 	HOOK_MESSAGE( StatsPlayer );
-	HOOK_MESSAGE( HudColor );
 	HOOK_MESSAGE( SpecFade );
 	HOOK_MESSAGE( ResetFade );
 	HOOK_MESSAGE( TeamFull );
@@ -853,16 +835,6 @@ int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)
 
 	// update Train data
 	m_iLogo = READ_BYTE();
-
-	return 1;
-}
-
-//LRC
-int CHud::MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf)
-{
-	BEGIN_READ( pbuf, iSize );
-
-	m_iHUDColor = READ_LONG();
 
 	return 1;
 }

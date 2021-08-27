@@ -173,7 +173,7 @@ constexpr Vector VEC_DEAD_VIEW(0, 0, -8);
 #define RGB_REDISH 0x00FF1010 //255,160,0
 #define RGB_GREENISH 0x0000A000 //0,160,0
 
-#define RGB_HUD_COLOR RGB_GREENISH
+#define RGB_HUD_COLOR 0x0000A000 //0x00RRGGBB
 
 inline void UnpackRGB(int& r, int& g, int& b, unsigned long ulRGB)
 {

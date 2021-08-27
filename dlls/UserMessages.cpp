@@ -29,7 +29,6 @@ int gmsgInitHUD = 0;
 int gmsgKeyedDLight = 0;//LRC
 int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
-//int gmsgHUDColor = 0;	//LRC
 int gmsgClampView = 0;	//LRC 1.8
 int gmsgPlayMP3 = 0;	//Killar
 int gmsgShowGameTitle = 0;
@@ -82,7 +81,6 @@ int gmsgPPGray = 0;
 
 int gmsgSpectator = 0;
 int gmsgPlayerBrowse = 0;
-int gmsgHudColor = 0;
 int gmsgFlagIcon = 0;
 int gmsgFlagTimer = 0;
 int gmsgPlayerIcon = 0;
@@ -124,7 +122,6 @@ void LinkUserMessages()
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1);	//LRC
 	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1);	//LRC
 	gmsgSetSky = REG_USER_MSG("SetSky", 8);			//LRC
-	//gmsgHUDColor = REG_USER_MSG("HUDColor", 4);	//LRC
 	gmsgClampView = REG_USER_MSG("ClampView", 10);	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
@@ -169,7 +166,6 @@ void LinkUserMessages()
 	gmsgSpectator = g_engfuncs.pfnRegUserMsg("Spectator", 2);
 	gmsgStatusIcon = g_engfuncs.pfnRegUserMsg("StatusIcon", -1);
 	gmsgPlayerBrowse = g_engfuncs.pfnRegUserMsg("PlyrBrowse", -1);
-	gmsgHudColor = g_engfuncs.pfnRegUserMsg("HudColor", 3);
 	gmsgFlagIcon = g_engfuncs.pfnRegUserMsg("FlagIcon", -1);
 	gmsgFlagTimer = g_engfuncs.pfnRegUserMsg("FlagTimer", -1);
 	gmsgPlayerIcon = g_engfuncs.pfnRegUserMsg("PlayerIcon", -1);
