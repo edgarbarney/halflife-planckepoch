@@ -719,6 +719,10 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 //=========================================================
 void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 {
+	SERVER_COMMAND("escape\n");
+	MessageBox(nullptr, "No. You can't multiplay cus we're out of Admers\n", "ERROR", MB_OK);
+	SERVER_COMMAND("quit\n");
+
 	BOOL		addDefault;
 	CBaseEntity	*pWeaponEntity = nullptr;
 

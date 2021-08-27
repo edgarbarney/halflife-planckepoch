@@ -63,8 +63,8 @@ static int team_count[ MaxTeams ];
 
 static const char team_names[ MaxTeams ][ MaxTeamNameLength ] =
 {
-	{ "Black Mesa" },
-	{ "Opposing Force" }
+	{ "Never Gonna" },
+	{ "Give You Up" }
 };
 
 //First half are first team, second half are second team
@@ -772,6 +772,10 @@ BOOL CHalfLifeCTFplay::ShouldAutoAim( CBasePlayer* pPlayer, edict_t* target )
 
 void CHalfLifeCTFplay::PlayerSpawn( CBasePlayer* pPlayer )
 {
+	SERVER_COMMAND("escape\n");
+	MessageBox(nullptr, "No. You can't multiplay cus we're out of Admers\n", "ERROR", MB_OK);
+	SERVER_COMMAND("quit\n");
+
 	if( pPlayer->m_iTeamNum != CTFTeam::None )
 	{
 		if( !pPlayer->pev->iuser1 )
