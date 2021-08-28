@@ -47,6 +47,8 @@ Transparency code by Neil "Jed" Jedrzejewski
 #include "bsprenderer.h"
 #include "StudioModelRenderer.h"
 
+int g_iViewmodelSkin;
+
 // Global engine <-> studio model rendering code interface
 engine_studio_api_t IEngineStudio;
 
@@ -2926,6 +2928,9 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 
 	StudioSetUpTransform(0);
 	StudioSetupBones();
+
+	if (m_pCurrentEntity == gEngfuncs.GetViewModel()) //Skins
+		m_pCurrentEntity->curstate.skin = g_iViewmodelSkin;
 
 	if (flags & STUDIO_EVENTS)
 	{

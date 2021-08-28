@@ -19,6 +19,12 @@
 #include "weaponinfo.h"
 #include "UserMessages.h"
 
+#ifdef CLIENT_DLL
+#define SetWeaponSkin(x) 
+#else
+#define SetWeaponSkin(x) MESSAGE_BEGIN(MSG_ONE, gmsgViewmodelSkin, nullptr, m_pPlayer->pev); WRITE_SHORT(x); MESSAGE_END()
+#endif // CLIENT
+
 class CBasePlayer;
 
 void DeactivateSatchels( CBasePlayer *pOwner );
@@ -419,7 +425,19 @@ public:
 
 	//LRC - used by weaponstrip
 	void DrainClip(CBasePlayer* pPlayer, BOOL keep, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iUranium, int iSatchel, int iSnark, int iTrip, int iGren );
-		
+
+	//RENDERERS START
+	//Set Weapon Skinfamilies
+	/*
+	inline void SetWeaponSkin(int x)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgViewmodelSkin, nullptr, m_pPlayer->pev);
+			WRITE_SHORT(x);
+		MESSAGE_END();
+	}
+	*/
+	//RENDERERS END
+
 	int	PrimaryAmmoIndex() override;
 	int	SecondaryAmmoIndex() override;
 
