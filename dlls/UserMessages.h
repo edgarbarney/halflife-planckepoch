@@ -74,6 +74,7 @@ extern int gmsgSkyMark_Sky;
 extern int gmsgSkyMark_World;
 extern int gmsgCreateSystem;
 extern int gmsgPPGray;
+extern int gmsgViewmodelSkin;
 //RENDERERS END
 
 void LinkUserMessages();
