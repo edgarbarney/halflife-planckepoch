@@ -62,7 +62,7 @@ void CEagle::Spawn()
 {
 	pev->classname = MAKE_STRING( "weapon_eagle" );
 
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 	Precache();
 
@@ -92,7 +92,7 @@ BOOL CEagle::Deploy()
 {
 	m_bSpotVisible = true;
 
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 	return DefaultDeploy( 
 		"models/v_desert_eagle.mdl", "models/p_desert_eagle.mdl", 
@@ -102,7 +102,7 @@ BOOL CEagle::Deploy()
 
 void CEagle::Holster( int skiplocal )
 {
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 	m_fInReload = false;
 
@@ -124,7 +124,7 @@ void CEagle::Holster( int skiplocal )
 
 void CEagle::WeaponIdle()
 {
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 #ifndef CLIENT_DLL
 	UpdateLaser();
@@ -301,7 +301,7 @@ void CEagle::PrimaryAttack()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10.0, 15.0 );
 
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 #ifndef CLIENT_DLL
 	UpdateLaser();
@@ -310,7 +310,7 @@ void CEagle::PrimaryAttack()
 
 void CEagle::SecondaryAttack()
 {
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 #ifndef CLIENT_DLL
 	m_bLaserActive = !m_bLaserActive;
@@ -333,7 +333,7 @@ void CEagle::SecondaryAttack()
 
 void CEagle::Reload()
 {
-	pev->skin = m_iClip;
+	SetWeaponSkin(m_iClip);
 
 	if( m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] > 0 )
 	{
