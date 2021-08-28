@@ -49,7 +49,7 @@ Extended and/or recoded by Andrew Lucas
 #include "GameStudioModelRenderer.h"
 extern CGameStudioModelRenderer g_StudioRenderer;
 
-using namespace std;
+//using namespace std; //BLOODY HELL MR. LUCAS!!
 
 extern "C"
 {
