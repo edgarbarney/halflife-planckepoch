@@ -55,7 +55,7 @@
 #include "com_model.h"
 #include <fstream> 
 #include <iostream>
-using namespace std;
+//using namespace std; //Really, Mr. Lucas? Right in front of my salad?
 //RENDERERS END
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
