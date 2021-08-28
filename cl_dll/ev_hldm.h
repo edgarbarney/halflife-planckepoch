@@ -40,6 +40,7 @@ extern "C"
 	void EV_SnarkFire(event_args_t* args);
     void EV_Mirror( struct event_args_s *args );
 	void EV_FireEagle(event_args_t* args);
+	void EV_FireEagleSecnd(struct event_args_s* args);
 	void EV_Pipewrench(event_args_t* args);
 	void EV_FireM249(event_args_t* args);
 	void EV_FireDisplacer(event_args_t* args);

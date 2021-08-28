@@ -243,7 +243,7 @@ void CShockBeam::Explode()
 	EMIT_SOUND( edict(), CHAN_WEAPON, "weapons/shock_impact.wav", RANDOM_FLOAT( 0.8, 0.9 ), ATTN_NORM );
 }
 
-CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner )
+CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner, bool isDeagle )
 {
 	auto pBeam = GetClassPtr<CShockBeam>( nullptr );
 
@@ -254,7 +254,11 @@ CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& 
 
 	UTIL_MakeVectors( pBeam->pev->angles );
 
-	pBeam->pev->velocity = gpGlobals->v_forward * 2000.0;
+	if (isDeagle)
+		pBeam->pev->velocity = gpGlobals->v_forward * 4000.0;
+	else
+		pBeam->pev->velocity = gpGlobals->v_forward * 2000.0;
+
 	pBeam->pev->velocity.z = -pBeam->pev->velocity.z;
 
 	pBeam->pev->classname = MAKE_STRING( "shock_beam" );

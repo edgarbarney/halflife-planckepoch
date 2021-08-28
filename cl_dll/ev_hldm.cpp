@@ -1814,13 +1814,14 @@ void EV_FireEagle( event_args_t* args )
 
 	AngleVectors( args->angles, forward, right, up );
 
-	const int iShell = gEngfuncs.pEventAPI->EV_FindModelIndex( "models/shell.mdl" );
+	const int iShell = gEngfuncs.pEventAPI->EV_FindModelIndex( "models/eagleshell.mdl" );
 
 	if( EV_IsLocal( args->entindex ) )
 	{
 		EV_MuzzleFlash();
 
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( bEmpty ? EAGLE_SHOOT_EMPTY : EAGLE_SHOOT, 0 );
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(bEmpty ? EAGLE_SHOOT_EMPTY : EAGLE_SHOOT, 0);
+		//gEngfuncs.pEventAPI->EV_WeaponAnimation( EAGLE_FIRE0, 0 );
 		V_PunchAxis( 0, -4.0 );
 	}
 
@@ -1848,6 +1849,7 @@ void EV_FireEagle( event_args_t* args )
 
 	Vector vecAiming = forward;
 
+	/*
 	EV_HLDM_FireBullets(
 		args->entindex,
 		forward, right, up,
@@ -1857,6 +1859,60 @@ void EV_FireEagle( event_args_t* args )
 		BULLET_PLAYER_EAGLE,
 		0, nullptr,
 		args->fparam1, args->fparam2 );
+	*/
+}
+
+void EV_FireEagleSecnd(event_args_t* args)
+{
+	const bool bEmpty = args->bparam1 != 0;
+
+	Vector up, right, forward;
+
+	AngleVectors(args->angles, forward, right, up);
+
+	const int iShell = gEngfuncs.pEventAPI->EV_FindModelIndex("models/shell.mdl");
+
+	if (EV_IsLocal(args->entindex))
+	{
+		EV_MuzzleFlash();
+
+		//gEngfuncs.pEventAPI->EV_WeaponAnimation( EAGLE_FIRE1, 0);
+		V_PunchAxis(0, -4.0);
+	}
+
+	Vector ShellVelocity;
+	Vector ShellOrigin;
+
+	EV_GetDefaultShellInfo(
+		args,
+		args->origin, args->velocity,
+		ShellVelocity,
+		ShellOrigin,
+		forward, right, up,
+		-9.0, 14.0, 9.0);
+
+	EV_EjectBrass(ShellOrigin, ShellVelocity, args->angles[1], iShell, TE_BOUNCE_SHELL);
+
+	gEngfuncs.pEventAPI->EV_PlaySound(
+		args->entindex,
+		args->origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav",
+		gEngfuncs.pfnRandomFloat(0.92, 1), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
+
+	Vector vecSrc;
+
+	EV_GetGunPosition(args, vecSrc, args->origin);
+
+	Vector vecAiming = forward;
+
+	EV_HLDM_FireBullets(
+		args->entindex,
+		forward, right, up,
+		1,
+		vecSrc, vecAiming,
+		8192.0,
+		BULLET_PLAYER_EAGLE,
+		0, nullptr,
+		args->fparam1, args->fparam2);
 }
 
 //======================

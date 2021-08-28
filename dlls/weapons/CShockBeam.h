@@ -42,7 +42,7 @@ public:
 
 	void EXPORT BallTouch( CBaseEntity* pOther );
 
-	static CShockBeam* CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner );
+	static CShockBeam* CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner, bool isDeagle = false );
 
 private:
 	void Explode();

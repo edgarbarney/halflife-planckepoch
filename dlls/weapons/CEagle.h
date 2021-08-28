@@ -17,6 +17,22 @@
 
 class CEagleLaser;
 
+/*
+enum DesertEagleAnim
+{
+	EAGLE_IDLE0 = 0,
+	EAGLE_IDLE1,
+	EAGLE_FIRE0,
+	EAGLE_FIRE1,
+	EAGLE_RELOAD0,
+	EAGLE_RELOAD1,
+	EAGLE_HOLSTER0,
+	EAGLE_HOLSTER1,
+	EAGLE_DRAW0,
+	EAGLE_DRAW1,
+};
+*/
+
 enum DesertEagleAnim
 {
 	EAGLE_IDLE1 = 0,

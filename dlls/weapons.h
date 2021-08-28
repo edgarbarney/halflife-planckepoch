@@ -145,7 +145,7 @@ public:
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
 #define	_9MM_MAX_CARRY			250
-#define _357_MAX_CARRY			36
+#define _357_MAX_CARRY			48
 #define BUCKSHOT_MAX_CARRY		125
 #define BOLT_MAX_CARRY			50
 #define ROCKET_MAX_CARRY		5
@@ -178,7 +178,7 @@ public:
 #define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
-#define EAGLE_MAX_CLIP			7
+#define EAGLE_MAX_CLIP			8
 #define M249_MAX_CLIP			50
 #define SPORELAUNCHER_MAX_CLIP	5
 #define SHOCKRIFLE_MAX_CLIP		10
@@ -188,7 +188,7 @@ public:
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
 #define PYTHON_DEFAULT_GIVE			6
-#define DEAGLE_DEFAULT_GIVE			7
+#define DEAGLE_DEFAULT_GIVE			8
 #define MP5_DEFAULT_GIVE			50 //Full magazine for Op4
 #define MP5_DEFAULT_AMMO			25
 #define MP5_M203_DEFAULT_GIVE		0
@@ -212,6 +212,7 @@ public:
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_GLOCKCLIP_GIVE		GLOCK_MAX_CLIP
 #define AMMO_357BOX_GIVE		PYTHON_MAX_CLIP
+#define AMMO_DEAGLE_GIVE		PYTHON_MAX_CLIP
 #define AMMO_MP5CLIP_GIVE		MP5_MAX_CLIP
 #define AMMO_CHAINBOX_GIVE		200
 #define AMMO_M203BOX_GIVE		2

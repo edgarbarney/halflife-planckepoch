@@ -22,6 +22,7 @@
 #include "CEagleLaser.h"
 
 #include "CEagle.h"
+#include <weapons/CShockBeam.h>
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION	CEagle::m_SaveData[] =
@@ -37,10 +38,19 @@ LINK_ENTITY_TO_CLASS( weapon_eagle, CEagle );
 
 void CEagle::Precache()
 {
+	//PRECACHE_MODEL("sprites/lgtning.spr");
+
+	PRECACHE_SOUND("weapons/shock_fire.wav");
+	PRECACHE_SOUND("weapons/shock_draw.wav");
+	PRECACHE_SOUND("weapons/shock_recharge.wav");
+	PRECACHE_SOUND("weapons/shock_discharge.wav");
+
+	UTIL_PrecacheOther("shock_beam");
+
 	PRECACHE_MODEL( "models/v_desert_eagle.mdl" );
 	PRECACHE_MODEL( "models/w_desert_eagle.mdl" );
 	PRECACHE_MODEL( "models/p_desert_eagle.mdl" );
-	m_iShell = PRECACHE_MODEL( "models/shell.mdl" );
+	m_iShell = PRECACHE_MODEL( "models/eagleshell.mdl" );
 	PRECACHE_SOUND( "weapons/desert_eagle_fire.wav" );
 	PRECACHE_SOUND( "weapons/desert_eagle_reload.wav" );
 	PRECACHE_SOUND( "weapons/desert_eagle_sight.wav" );
@@ -51,6 +61,8 @@ void CEagle::Precache()
 void CEagle::Spawn()
 {
 	pev->classname = MAKE_STRING( "weapon_eagle" );
+
+	pev->skin = m_iClip;
 
 	Precache();
 
@@ -80,6 +92,8 @@ BOOL CEagle::Deploy()
 {
 	m_bSpotVisible = true;
 
+	pev->skin = m_iClip;
+
 	return DefaultDeploy( 
 		"models/v_desert_eagle.mdl", "models/p_desert_eagle.mdl", 
 		EAGLE_DRAW,
@@ -88,6 +102,8 @@ BOOL CEagle::Deploy()
 
 void CEagle::Holster( int skiplocal )
 {
+	pev->skin = m_iClip;
+
 	m_fInReload = false;
 
 #ifndef CLIENT_DLL
@@ -108,6 +124,8 @@ void CEagle::Holster( int skiplocal )
 
 void CEagle::WeaponIdle()
 {
+	pev->skin = m_iClip;
+
 #ifndef CLIENT_DLL
 	UpdateLaser();
 #endif
@@ -169,7 +187,7 @@ void CEagle::PrimaryAttack()
 		PlayEmptySound();
 
 		//Note: this is broken in original Op4 since it uses gpGlobals->time when using prediction
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.15;
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.2;
 		return;
 	}
 
@@ -192,8 +210,11 @@ void CEagle::PrimaryAttack()
 		return;
 	}
 
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
-	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
+	//m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	//m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
+
+	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
+	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
 	--m_iClip;
 
@@ -210,11 +231,15 @@ void CEagle::PrimaryAttack()
 	}
 #endif
 
+
+
+	/*
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	Vector vecSrc = m_pPlayer->GetGunPosition();
 
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+
 
 	const float flSpread = m_bLaserActive ? 0.001 : 0.1;
 
@@ -224,7 +249,34 @@ void CEagle::PrimaryAttack()
 		8192.0, BULLET_PLAYER_EAGLE, 0, 0,
 		m_pPlayer->pev, m_pPlayer->random_seed );
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + ( m_bLaserActive ? 0.5 : 0.22 );
+	*/
+
+#ifndef CLIENT_DLL
+	const Vector vecAnglesAim = m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle;
+
+	UTIL_MakeVectors(vecAnglesAim);
+
+	/*
+	const auto vecSrc =
+		m_pPlayer->GetGunPosition() +
+		gpGlobals->v_forward * 16 +
+		gpGlobals->v_right * 9 +
+		gpGlobals->v_up * -7;
+	*/
+
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+
+	//Update auto-aim
+	m_pPlayer->GetAutoaimVectorFromPoint(vecSrc, AUTOAIM_10DEGREES);
+
+	auto pBeam = CShockBeam::CreateShockBeam(vecSrc, vecAnglesAim, m_pPlayer);
+
+	UTIL_SetOrigin(pBeam->m_pBeam1->pev, pBeam->pev->origin);
+	UTIL_SetOrigin(pBeam->m_pBeam2->pev, pBeam->pev->origin);
+
+#endif
+
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + ( m_bLaserActive ? 1 : 0.6 );
 
 	int flags;
 #if defined( CLIENT_WEAPONS )
@@ -236,7 +288,8 @@ void CEagle::PrimaryAttack()
 	PLAYBACK_EVENT_FULL(
 		flags, m_pPlayer->edict(), m_usFireEagle, 0,
 		g_vecZero, g_vecZero,
-		vecSpread.x, vecSpread.y,
+		//vecSpread.x, vecSpread.y,
+		0, 0,
 		0, 0,
 		m_iClip == 0, 0 );
 
@@ -248,6 +301,8 @@ void CEagle::PrimaryAttack()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10.0, 15.0 );
 
+	pev->skin = m_iClip;
+
 #ifndef CLIENT_DLL
 	UpdateLaser();
 #endif
@@ -255,6 +310,8 @@ void CEagle::PrimaryAttack()
 
 void CEagle::SecondaryAttack()
 {
+	pev->skin = m_iClip;
+
 #ifndef CLIENT_DLL
 	m_bLaserActive = !m_bLaserActive;
 
@@ -276,6 +333,8 @@ void CEagle::SecondaryAttack()
 
 void CEagle::Reload()
 {
+	pev->skin = m_iClip;
+
 	if( m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] > 0 )
 	{
 		const bool bResult = DefaultReload( EAGLE_MAX_CLIP, m_iClip ? EAGLE_RELOAD : EAGLE_RELOAD_NOSHOT, 1.5, 1 );
