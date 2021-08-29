@@ -57,7 +57,7 @@ public:
 	void Explode( TraceResult *pTrace, int bitsDamageType );
 
 	// Ear Ringing
-	int CalcDamageDirection(vec3_t vecFrom, CBasePlayer* playaPtr);
+	int CalcDamageDirection(Vector vecFrom, CBasePlayer* playaPtr);
 	int EmitDir();
 
 	void EXPORT Smoke();
