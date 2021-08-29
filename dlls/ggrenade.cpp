@@ -149,7 +149,7 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 		float plrHeathOld = plrHeathOld = thePlayerPtr->pev->health;
 		RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
 		float plrHeathDif = plrHeathDif = (plrHeathOld - thePlayerPtr->pev->health) * 8.0f;
-		UTIL_ScreenShake(pev->origin, plrHeathDif, 255.0f, plrHeathDif / 80.0f, plrHeathDif * 8.0f);
+		//UTIL_ScreenShake(pev->origin, plrHeathDif, 255.0f, plrHeathDif / 80.0f, plrHeathDif * 8.0f);
 		//												  (plrHeathDif / 8) / 10
 		if (Distance(thePlayerPtr->pev->origin, pev->origin) < 250.0f)
 		{
