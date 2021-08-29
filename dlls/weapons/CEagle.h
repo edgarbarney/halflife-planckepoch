@@ -45,7 +45,8 @@ enum DesertEagleAnim
 	EAGLE_RELOAD_NOSHOT,
 	EAGLE_RELOAD,
 	EAGLE_DRAW,
-	EAGLE_HOLSTER
+	EAGLE_HOLSTER,
+	EAGLE_SHOOT_BIG
 };
 
 class CEagle : public CBasePlayerWeapon
@@ -99,6 +100,8 @@ public:
 
 private:
 	void UpdateLaser();
+
+	void EagleFire(bool isBig);
 
 private:
 	int m_iShell;

@@ -1809,6 +1809,7 @@ void EV_SnarkFire( event_args_t *args )
 void EV_FireEagle( event_args_t* args )
 {
 	const bool bEmpty = args->bparam1 != 0;
+	const bool bBig = args->bparam2;
 
 	Vector up, right, forward;
 
@@ -1820,7 +1821,10 @@ void EV_FireEagle( event_args_t* args )
 	{
 		EV_MuzzleFlash();
 
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(bEmpty ? EAGLE_SHOOT_EMPTY : EAGLE_SHOOT, 0);
+		if (!bBig)
+			gEngfuncs.pEventAPI->EV_WeaponAnimation(bEmpty ? EAGLE_SHOOT_EMPTY : EAGLE_SHOOT, 0);
+		else
+			gEngfuncs.pEventAPI->EV_WeaponAnimation(EAGLE_SHOOT_BIG, 0);
 		//gEngfuncs.pEventAPI->EV_WeaponAnimation( EAGLE_FIRE0, 0 );
 		V_PunchAxis( 0, -4.0 );
 	}

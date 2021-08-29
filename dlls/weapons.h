@@ -161,9 +161,9 @@ public:
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
 #define	_9MM_MAX_CARRY			250
-#define _357_MAX_CARRY			48
+#define _357_MAX_CARRY			36
 #define BUCKSHOT_MAX_CARRY		125
-#define BOLT_MAX_CARRY			50
+#define BOLT_MAX_CARRY			24
 #define ROCKET_MAX_CARRY		5
 #define HANDGRENADE_MAX_CARRY	10
 #define SATCHEL_MAX_CARRY		5
@@ -419,7 +419,7 @@ public:
 
     BOOL CanDeploy() override;
 	virtual BOOL IsUseable();
-	BOOL DefaultDeploy(const char *szViewModel, const char *szWeaponModel, int iAnim, const char *szAnimExt, int skiplocal = 0, int body = 0 );
+	BOOL DefaultDeploy(const char *szViewModel, const char *szWeaponModel, int iAnim, const char *szAnimExt, int skiplocal = 0, int body = 0 , float aftdelay = 0.5f);
 	int DefaultReload( int iClipSize, int iAnim, float fDelay, int body = 0 );
 
     void ItemPostFrame() override;	// called each frame by the player PostThink

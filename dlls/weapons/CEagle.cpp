@@ -97,7 +97,7 @@ BOOL CEagle::Deploy()
 	return DefaultDeploy( 
 		"models/v_desert_eagle.mdl", "models/p_desert_eagle.mdl", 
 		EAGLE_DRAW,
-		"onehanded" );
+		"onehanded", 0, 0, 1.0f);
 }
 
 void CEagle::Holster( int skiplocal )
@@ -180,7 +180,7 @@ void CEagle::WeaponIdle()
 	}
 }
 
-void CEagle::PrimaryAttack()
+void CEagle::EagleFire(bool isBig)
 {
 	if( m_pPlayer->pev->waterlevel == WATERLEVEL_HEAD )
 	{
@@ -216,7 +216,10 @@ void CEagle::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
-	--m_iClip;
+	if (isBig)
+		m_iClip = 0;
+	else
+		--m_iClip;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 
@@ -256,20 +259,20 @@ void CEagle::PrimaryAttack()
 
 	UTIL_MakeVectors(vecAnglesAim);
 
-	/*
+	
 	const auto vecSrc =
 		m_pPlayer->GetGunPosition() +
 		gpGlobals->v_forward * 16 +
-		gpGlobals->v_right * 9 +
-		gpGlobals->v_up * -7;
-	*/
+		gpGlobals->v_right +
+		gpGlobals->v_up;
+	
 
-	Vector vecSrc = m_pPlayer->GetGunPosition();
+	//Vector vecSrc = m_pPlayer->GetGunPosition();
 
 	//Update auto-aim
 	m_pPlayer->GetAutoaimVectorFromPoint(vecSrc, AUTOAIM_10DEGREES);
 
-	auto pBeam = CShockBeam::CreateShockBeam(vecSrc, vecAnglesAim, m_pPlayer);
+	auto pBeam = CShockBeam::CreateShockBeam(vecSrc, vecAnglesAim, m_pPlayer, isBig ? 2 : 1);
 
 	UTIL_SetOrigin(pBeam->m_pBeam1->pev, pBeam->pev->origin);
 	UTIL_SetOrigin(pBeam->m_pBeam2->pev, pBeam->pev->origin);
@@ -291,7 +294,7 @@ void CEagle::PrimaryAttack()
 		//vecSpread.x, vecSpread.y,
 		0, 0,
 		0, 0,
-		m_iClip == 0, 0 );
+		m_iClip == 0, isBig );
 
 	if( !m_iClip )
 	{
@@ -308,8 +311,23 @@ void CEagle::PrimaryAttack()
 #endif
 }
 
+void CEagle::PrimaryAttack()
+{
+	EagleFire(false);
+}
+
 void CEagle::SecondaryAttack()
 {
+	if (m_iClip == EAGLE_MAX_CLIP)
+	{
+		EagleFire(true);
+	}
+	else
+	{
+		PlayEmptySound();
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+	}
+	/*
 	SetWeaponSkin(m_iClip);
 
 #ifndef CLIENT_DLL
@@ -329,30 +347,30 @@ void CEagle::SecondaryAttack()
 #endif
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+	*/
 }
 
 void CEagle::Reload()
 {
-	SetWeaponSkin(m_iClip);
-
 	if( m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] > 0 )
 	{
-		const bool bResult = DefaultReload( EAGLE_MAX_CLIP, m_iClip ? EAGLE_RELOAD : EAGLE_RELOAD_NOSHOT, 1.5, 1 );
-	
+		const bool bResult = DefaultReload( EAGLE_MAX_CLIP, m_iClip ? EAGLE_RELOAD : EAGLE_RELOAD_NOSHOT, 2, 1 );
+
 #ifndef CLIENT_DLL
 		//Only turn it off if we're actually reloading
 		if( bResult && m_pLaser && m_bLaserActive )
 		{
 			m_pLaser->pev->effects |= EF_NODRAW;
 			m_pLaser->SetThink( &CEagleLaser::Revive );
-			m_pLaser->pev->nextthink = gpGlobals->time + 1.6;
+			m_pLaser->pev->nextthink = gpGlobals->time + 2;
 
-			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.5;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.9;
 		}
 #endif
 
 		if( bResult )
 		{
+			SetWeaponSkin(0);
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10.0, 15.0 );
 		}
 	}
@@ -392,8 +410,8 @@ int CEagle::iItemSlot()
 
 int CEagle::GetItemInfo( ItemInfo* p )
 {
-	p->pszAmmo1 = "357";
-	p->iMaxAmmo1 = _357_MAX_CARRY;
+	p->pszAmmo1 = "bolts";
+	p->iMaxAmmo1 = BOLT_MAX_CARRY;
 	p->pszName = STRING( pev->classname );
 	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = WEAPON_NOCLIP;
@@ -408,7 +426,7 @@ int CEagle::GetItemInfo( ItemInfo* p )
 
 void CEagle::IncrementAmmo(CBasePlayer* pPlayer)
 {
-	if (pPlayer->GiveAmmo(1, "357", _357_MAX_CARRY))
+	if (pPlayer->GiveAmmo(1, "bolts", BOLT_MAX_CARRY))
 	{
 		EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_backpack.wav", 0.5, ATTN_NORM);
 	}
@@ -446,7 +464,7 @@ class CEagleAmmo : public CBasePlayerAmmo
 
 	BOOL AddAmmo( CBaseEntity* pOther ) override
 	{
-		if( pOther->GiveAmmo( AMMO_EAGLE_GIVE, "357", _357_MAX_CARRY ) != -1 )
+		if( pOther->GiveAmmo( AMMO_EAGLE_GIVE, "bolts", BOLT_MAX_CARRY ) != -1 )
 		{
 			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
 			return TRUE;

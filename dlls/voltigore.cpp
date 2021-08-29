@@ -475,6 +475,12 @@ void COFVoltigore :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);// a little surface blood.
 		TraceBleed( flDamage, vecDir, ptr, bitsDamageType );
 		AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
+	} 
+	else if (bitsDamageType & DMG_BULLET)
+	{
+		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);// a little surface blood.
+		TraceBleed(flDamage, vecDir, ptr, bitsDamageType);
+		AddMultiDamage(pevAttacker, this, flDamage, bitsDamageType);
 	}
 }
 

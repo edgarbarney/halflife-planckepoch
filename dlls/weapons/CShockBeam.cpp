@@ -64,12 +64,12 @@ void CShockBeam::Spawn()
 	m_pSprite = CSprite::SpriteCreate( "sprites/flare3.spr", pev->origin, false );
 
 	m_pSprite->SetTransparency( kRenderTransAdd, 255, 255, 255, 255, kRenderFxDistort );
-
+	
 	m_pSprite->SetScale( 0.35 );
 
 	m_pSprite->SetAttachment( edict(), 0 );
 
-	m_pBeam1 = CBeam::BeamCreate( "sprites/lgtning.spr", 60 );
+	m_pBeam1 = CBeam::BeamCreate("sprites/lgtning.spr", 60);
 
 	if( m_pBeam1 )
 	{
@@ -80,7 +80,12 @@ void CShockBeam::Spawn()
 		m_pBeam1->SetStartAttachment( 1 );
 		m_pBeam1->SetEndAttachment( 2 );
 
-		m_pBeam1->SetColor( 0, 253, 253 );
+		if(m_iIsDeagle == 1)
+			m_pBeam1->SetColor( 0, 255, 0 );
+		else if (m_iIsDeagle == 2)
+			m_pBeam1->SetColor(255, 0, 0);
+		else
+			m_pBeam1->SetColor( 0, 253, 253 );
 
 		m_pBeam1->SetFlags( BEAM_FSHADEOUT );
 		m_pBeam1->SetBrightness( 180 );
@@ -105,7 +110,10 @@ void CShockBeam::Spawn()
 			m_pBeam2->SetStartAttachment( 1 );
 			m_pBeam2->SetEndAttachment( 2 );
 
-			m_pBeam2->SetColor( 255, 255, 157 );
+			if (m_iIsDeagle == 2)
+				m_pBeam1->SetColor(255, 0, 0);
+			else
+				m_pBeam2->SetColor(255, 255, 157);
 
 			m_pBeam2->SetFlags( BEAM_FSHADEOUT );
 			m_pBeam2->SetBrightness( 180 );
@@ -140,7 +148,8 @@ void CShockBeam::WaterExplodeThink()
 
 	Explode();
 
-	::RadiusDamage( pev->origin, pev, pOwner, 100.0, 150.0, CLASS_NONE, DMG_ALWAYSGIB | DMG_BLAST );
+	if (m_iIsDeagle == 0)
+		::RadiusDamage( pev->origin, pev, pOwner, 100.0, 150.0, CLASS_NONE, DMG_ALWAYSGIB | DMG_BLAST );
 
 	UTIL_Remove( this );
 }
@@ -156,27 +165,100 @@ void CShockBeam::BallTouch( CBaseEntity* pOther )
 
 		ClearMultiDamage();
 
-		const auto damage = g_pGameRules->IsMultiplayer() ? gSkillData.plrDmgShockRoachM : gSkillData.plrDmgShockRoachS;
-
-		auto bitsDamageTypes = DMG_ALWAYSGIB | DMG_SHOCK;
-
-		auto pMonster = pOther->MyMonsterPointer();
-
-		if( pMonster )
+		/*
+		if (m_iIsDeagle != 0)
 		{
-			bitsDamageTypes = DMG_BLAST;
+			bitsDamageTypes = DMG_BULLET;
+			if (!FClassnameIs(pOther->pev, "monster_alien_voltigore"))
+				pOther->TraceAttack(VARS(pev->owner), damage, pev->velocity.Normalize(), &tr, bitsDamageTypes);
+			else
+				pOther->ForceAttack(VARS(pev->owner), damage, pev->velocity.Normalize(), &tr, bitsDamageTypes);
+		}
+		else
+		*/
 
-			if( pMonster->m_flShockDuration > 1 )
+		if (m_iIsDeagle == 1)
+		{
+			pOther->TraceAttack(VARS(pev->owner), gSkillData.plrDmgEagle, pev->velocity.Normalize(), &tr, DMG_BULLET);
+			//if (!pOther->pev->health - gSkillData.plrDmgEagle < 0)
+			//	ExplodeThink();
+			if (pOther->pev->takedamage == DAMAGE_NO)
 			{
-				bitsDamageTypes = DMG_ALWAYSGIB;
+				TraceResult tr;
+				UTIL_TraceLine(pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, edict(), &tr);
+
+				//UTIL_DecalTrace(&tr, DECAL_OFSCORCH1 + RANDOM_LONG(0, 2));
+
+				//RENDERERS START
+				UTIL_CustomDecal(&tr, "expscorch");
+				//RENDERERS END
+
+				MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
+				g_engfuncs.pfnWriteByte(TE_SPARKS);
+				g_engfuncs.pfnWriteCoord(pev->origin.x);
+				g_engfuncs.pfnWriteCoord(pev->origin.y);
+				g_engfuncs.pfnWriteCoord(pev->origin.z);
+				MESSAGE_END();
 			}
 		}
-
-		pOther->TraceAttack( VARS( pev->owner ), damage, pev->velocity.Normalize(), &tr, bitsDamageTypes );
-
-		if( pMonster )
+		else if(m_iIsDeagle == 2)
 		{
-			pMonster->AddShockEffect( 63.0, 152.0, 208.0, 16.0, 0.5 );
+			pOther->TraceAttack(VARS(pev->owner), gSkillData.plrDmgEagle * 4, pev->velocity.Normalize(), &tr, DMG_BULLET);
+			//if (!pOther->pev->health - gSkillData.plrDmgEagle * 4 < 0)
+			//	ExplodeThink();
+			if (pOther->pev->takedamage == DAMAGE_NO)
+			{
+				TraceResult tr;
+				UTIL_TraceLine(pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, edict(), &tr);
+
+				//UTIL_DecalTrace(&tr, DECAL_OFSCORCH1 + RANDOM_LONG(0, 2));
+
+				//RENDERERS START
+				UTIL_CustomDecal(&tr, "expscorch");
+				//RENDERERS END
+
+				MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
+				g_engfuncs.pfnWriteByte(TE_SPARKS);
+				g_engfuncs.pfnWriteCoord(pev->origin.x);
+				g_engfuncs.pfnWriteCoord(pev->origin.y);
+				g_engfuncs.pfnWriteCoord(pev->origin.z);
+				MESSAGE_END();
+			}
+		}
+		else
+		{
+			//auto damage = g_pGameRules->IsMultiplayer() ? gSkillData.plrDmgShockRoachM : gSkillData.plrDmgShockRoachS;
+			auto damage = gSkillData.plrDmgShockRoachS;
+
+			//if (m_iIsDeagle == 1)
+			//	auto damage = gSkillData.plrDmgEagle;
+			//else if (m_iIsDeagle == 2)
+			//	auto damage = gSkillData.plrDmgEagle * 8;
+			//else
+			//	const auto damage = gSkillData.plrDmgShockRoachS;
+
+			auto bitsDamageTypes = DMG_ALWAYSGIB | DMG_SHOCK;
+
+			auto pMonster = pOther->MyMonsterPointer();
+
+			if (pMonster)
+			{
+				bitsDamageTypes = DMG_BLAST;
+
+				if (pMonster->m_flShockDuration > 1)
+				{
+					bitsDamageTypes = DMG_ALWAYSGIB;
+				}
+			}
+			pOther->TraceAttack(VARS(pev->owner), damage, pev->velocity.Normalize(), &tr, bitsDamageTypes);
+
+			if (pMonster && m_iIsDeagle == 0)
+			{
+				pMonster->AddShockEffect(63.0, 152.0, 208.0, 16.0, 0.5);
+			}
+
+			//if (!pOther->pev->health - damage < 0 )
+			//	ExplodeThink();
 		}
 
 		ApplyMultiDamage( pev, VARS( pev->owner ) );
@@ -192,7 +274,11 @@ void CShockBeam::BallTouch( CBaseEntity* pOther )
 		TraceResult tr;
 		UTIL_TraceLine( pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, edict(), &tr );
 
-		UTIL_DecalTrace( &tr, DECAL_OFSCORCH1 + RANDOM_LONG( 0, 2 ) );
+		//UTIL_DecalTrace( &tr, DECAL_OFSCORCH1 + RANDOM_LONG( 0, 2 ) );
+
+		//RENDERERS START
+		UTIL_CustomDecal(&tr, "expscorch");
+		//RENDERERS END
 
 		MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
 		g_engfuncs.pfnWriteByte( TE_SPARKS );
@@ -201,6 +287,8 @@ void CShockBeam::BallTouch( CBaseEntity* pOther )
 		g_engfuncs.pfnWriteCoord( pev->origin.z );
 		MESSAGE_END();
 	}
+
+	ExplodeThink();
 }
 
 void CShockBeam::Explode()
@@ -243,7 +331,7 @@ void CShockBeam::Explode()
 	EMIT_SOUND( edict(), CHAN_WEAPON, "weapons/shock_impact.wav", RANDOM_FLOAT( 0.8, 0.9 ), ATTN_NORM );
 }
 
-CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner, bool isDeagle )
+CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& vecAngles, CBaseEntity* pOwner, int isDeagle )
 {
 	auto pBeam = GetClassPtr<CShockBeam>( nullptr );
 
@@ -254,14 +342,16 @@ CShockBeam* CShockBeam::CreateShockBeam( const Vector& vecOrigin, const Vector& 
 
 	UTIL_MakeVectors( pBeam->pev->angles );
 
-	if (isDeagle)
-		pBeam->pev->velocity = gpGlobals->v_forward * 4000.0;
-	else
-		pBeam->pev->velocity = gpGlobals->v_forward * 2000.0;
+	//if (isDeagle > 0)
+	//	pBeam->pev->velocity = gpGlobals->v_forward * 2000.0;
+	//else
+	pBeam->pev->velocity = gpGlobals->v_forward * 2000.0;
 
 	pBeam->pev->velocity.z = -pBeam->pev->velocity.z;
 
 	pBeam->pev->classname = MAKE_STRING( "shock_beam" );
+
+	pBeam->m_iIsDeagle = isDeagle;
 
 	pBeam->Spawn();
 

@@ -995,7 +995,7 @@ BOOL CBasePlayerWeapon :: IsUseable()
 	return CanDeploy();
 }
 
-BOOL CBasePlayerWeapon :: DefaultDeploy( const char *szViewModel, const char *szWeaponModel, int iAnim, const char *szAnimExt, int skiplocal /* = 0 */, int body )
+BOOL CBasePlayerWeapon :: DefaultDeploy( const char *szViewModel, const char *szWeaponModel, int iAnim, const char *szAnimExt, int skiplocal /* = 0 */, int body, float aftdelay)
 {
 	if (!CanDeploy( ))
 		return FALSE;
@@ -1012,6 +1012,11 @@ BOOL CBasePlayerWeapon :: DefaultDeploy( const char *szViewModel, const char *sz
 
 	return TRUE;
 }
+
+//BOOL CBasePlayerWeapon::DefaultDeploy(const char* szViewModel, const char* szWeaponModel, int iAnim, const char* szAnimExt, int skiplocal /* = 0 */, int body)
+//{
+//	return DefaultDeploy(szViewModel, szWeaponModel, iAnim, szAnimExt, skiplocal /* = 0 */, body, 0.5f);
+//}
 
 BOOL CBasePlayerWeapon :: PlayEmptySound()
 {
