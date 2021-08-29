@@ -54,7 +54,7 @@
     </Filter>
     <Filter Include="Source Files\dlls\ctf">
       <UniqueIdentifier>{a2593f6b-0415-4442-8232-2135c1979f29}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{42fd860c-8851-42ea-81e1-ffda08a6174d}</UniqueIdentifier>
     </Filter>
@@ -562,7 +562,7 @@
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\coopplay_gamerules.cpp">
-		<Filter>Source Files\dlls</Filter>
+      <Filter>Source Files\dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\UserMessages.cpp">
       <Filter>Source Files\dlls</Filter>
@@ -590,6 +590,9 @@
     </ClCompile>
     <ClCompile Include="..\..\dlls\boneworks.cpp">
       <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\weapons\CAR16.cpp">
+      <Filter>Source Files\dlls\weapons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -846,7 +849,7 @@
       <Filter>Header Files\dlls\weapons</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\coopplay_gamerules.h">
-		<Filter>Header Files\dlls</Filter>
+      <Filter>Header Files\dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\UserMessages.h">
       <Filter>Header Files\dlls</Filter>
@@ -976,6 +979,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\FranUtils.hpp">
       <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\weapons\CAR16.h">
+      <Filter>Header Files\dlls\weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

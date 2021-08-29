@@ -25,7 +25,10 @@ extern "C"
 	void EV_FireShotGunSingle(event_args_t* args);
 	void EV_FireShotGunDouble(event_args_t* args);
 	void EV_FireMP5(event_args_t* args);
-	void EV_FireMP52(event_args_t* args);
+	//void EV_FireMP52(event_args_t* args);
+	void EV_FireAR16(struct event_args_s* args);
+	void EV_FireAR162(struct event_args_s* args);
+	void EV_FireAR163(struct event_args_s* args);
 	void EV_FirePython(event_args_t* args);
 	void EV_FireGauss(event_args_t* args);
 	void EV_SpinGauss(event_args_t* args);

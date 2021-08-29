@@ -196,6 +196,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\shotgun.cpp" />
     <ClCompile Include="..\..\dlls\squeakgrenade.cpp" />
     <ClCompile Include="..\..\dlls\tripmine.cpp" />
+    <ClCompile Include="..\..\dlls\weapons\CAR16.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CDisplacer.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CEagle.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CGrapple.cpp" />
@@ -290,6 +291,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\common\parsemsg.h" />
     <ClInclude Include="..\..\common\particledef.h" />
     <ClInclude Include="..\..\common\Platform.h" />
+    <ClInclude Include="..\..\dlls\weapons\CAR16.h" />
     <ClInclude Include="..\..\dlls\weapons\CDisplacer.h" />
     <ClInclude Include="..\..\dlls\weapons\CEagle.h" />
     <ClInclude Include="..\..\dlls\weapons\CGrapple.h" />

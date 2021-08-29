@@ -122,6 +122,7 @@ public:
 #define WEAPON_KNIFE			25
 #define WEAPON_PENGUIN			26
 #define WEAPON_DEBUG			27
+#define WEAPON_AR16				28
 
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
@@ -139,6 +140,7 @@ public:
 #define GLOCK_WEIGHT		10
 #define PYTHON_WEIGHT		15
 #define MP5_WEIGHT			15
+#define AR16_WEIGHT			16//fml
 #define SHOTGUN_WEIGHT		15
 #define CROSSBOW_WEIGHT		10
 #define RPG_WEIGHT			20
@@ -182,8 +184,8 @@ public:
 //#define CROWBAR_MAX_CLIP		WEAPON_NOCLIP
 #define GLOCK_MAX_CLIP			17
 #define PYTHON_MAX_CLIP			6
-#define MP5_MAX_CLIP			50
-#define MP5_DEFAULT_AMMO		25
+#define MP5_MAX_CLIP			30
+//#define MP5_DEFAULT_AMMO		30
 #define SHOTGUN_MAX_CLIP		8
 #define CROSSBOW_MAX_CLIP		5
 #define RPG_MAX_CLIP			1
@@ -200,12 +202,14 @@ public:
 #define SHOCKRIFLE_MAX_CLIP		10
 #define SNIPERRIFLE_MAX_CLIP	5
 #define PENGUIN_MAX_CLIP		3
+#define AR16_MAX_CLIP			30
 
 // the default amount of ammo that comes with each gun when it spawns
+/*
 #define GLOCK_DEFAULT_GIVE			17
 #define PYTHON_DEFAULT_GIVE			6
 #define DEAGLE_DEFAULT_GIVE			8
-#define MP5_DEFAULT_GIVE			50 //Full magazine for Op4
+#define MP5_DEFAULT_GIVE			30 //Full magazine for Op4
 #define MP5_DEFAULT_AMMO			25
 #define MP5_M203_DEFAULT_GIVE		0
 #define SHOTGUN_DEFAULT_GIVE		12
@@ -223,6 +227,31 @@ public:
 #define SPORELAUNCHER_DEFAULT_GIVE	5
 #define SHOCKRIFLE_DEFAULT_GIVE		10
 #define SNIPERRIFLE_DEFAULT_GIVE	5
+#define AR16_DEFAULT_GIVE			30
+*/
+
+#define GLOCK_DEFAULT_GIVE			17
+#define PYTHON_DEFAULT_GIVE			6
+#define DEAGLE_DEFAULT_GIVE			8
+#define MP5_DEFAULT_GIVE			30 //Full magazine for Op4
+#define MP5_DEFAULT_AMMO			30
+#define MP5_M203_DEFAULT_GIVE		0
+#define SHOTGUN_DEFAULT_GIVE		12
+#define CROSSBOW_DEFAULT_GIVE		5
+#define RPG_DEFAULT_GIVE			1
+#define GAUSS_DEFAULT_GIVE			20
+#define EGON_DEFAULT_GIVE			20
+#define HANDGRENADE_DEFAULT_GIVE	5
+#define SATCHEL_DEFAULT_GIVE		1
+#define TRIPMINE_DEFAULT_GIVE		1
+#define SNARK_DEFAULT_GIVE			5
+#define HIVEHAND_DEFAULT_GIVE		8
+#define M249_DEFAULT_GIVE			50
+#define DISPLACER_DEFAULT_GIVE		40
+#define SPORELAUNCHER_DEFAULT_GIVE	5
+#define SHOCKRIFLE_DEFAULT_GIVE		10
+#define SNIPERRIFLE_DEFAULT_GIVE	5
+#define AR16_DEFAULT_GIVE			30 //Full magazine for Op4
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -241,6 +270,7 @@ public:
 #define AMMO_EAGLE_GIVE			7
 #define AMMO_SPORE_GIVE			1
 #define AMMO_SNIPERRIFLE_GIVE	5
+#define AMMO_AR16CLIP_GIVE		30
 
 // bullet types
 typedef	enum
@@ -743,11 +773,10 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int GetItemInfo(ItemInfo *p) override;
-	void IncrementAmmo(CBasePlayer* pPlayer) override;
+	//void IncrementAmmo(CBasePlayer* pPlayer) override;
 	int AddToPlayer( CBasePlayer *pPlayer ) override;
 
 	void PrimaryAttack() override;
-	void SecondaryAttack() override;
 	BOOL Deploy() override;
 	void Holster( int skiplocal = 0 ) override;
 	void Reload() override;
