@@ -1150,6 +1150,9 @@ void ClientPrecache()
 	// setup precaches always needed
 	PRECACHE_SOUND("player/sprayer.wav");			// spray paint sound for PreAlpha
 
+	//Admurr Sounds
+	PRECACHE_SOUND("player/longjump1.wav");
+
 	// PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound
 
 	PRECACHE_SOUND("player/pl_fallpain2.wav");
