@@ -58,6 +58,8 @@ public:
 	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
 	static void UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code );
 
+	void ShootShrapnel();
+
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
 	void EXPORT Smoke();
@@ -76,6 +78,12 @@ public:
     void Killed( entvars_t *pevAttacker, int iGib ) override;
 
 	BOOL m_fRegisteredSound;// whether or not this grenade has issued its DANGER sound to the world sound list yet.
+
+	//Shrapnel System
+	BOOL m_bSimulateShrapnel;
+	int m_iLineCount;
+	float m_iLineCountNextRot;
+
 };
 
 
