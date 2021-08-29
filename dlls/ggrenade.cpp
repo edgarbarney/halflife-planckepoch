@@ -36,6 +36,24 @@ LINK_ENTITY_TO_CLASS( grenade, CGrenade );
 // Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 #define SF_DETONATE		0x0001
 
+void CGrenade::ShootShrapnel()
+{
+	/*
+	int i;
+	TraceResult tr;
+
+	Vector forward = { gpGlobals->v_forward.x, gpGlobals->v_forward.y * m_iLineCountNextRot, gpGlobals->v_forward.z};
+
+	UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, -32), ignore_monsters, ENT(pev), &tr);
+
+	// do damage, paint decals
+	if (tr.flFraction != 1.0)
+	{
+
+	}
+	*/
+}
+
 //
 // Grenade Explode
 //
@@ -97,6 +115,9 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	pev->owner = nullptr; // can't traceline attack owner if this is set
 
 	RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
+
+	if (m_bSimulateShrapnel)
+		ShootShrapnel();
 
 	/*
 	if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )
@@ -382,7 +403,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->SetNextThink( 0 );
 	
 	// Tumble in air
-	pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
+	//pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
 	
 	// Explode on contact
 	pGrenade->SetTouch( &CGrenade::ExplodeTouch );
