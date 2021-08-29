@@ -62,6 +62,11 @@ public:
 
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
+
+	// Ear Ringing
+	int CalcDamageDirection(vec3_t vecFrom, CBasePlayer* playaPtr);
+	int EmitDir();
+
 	void EXPORT Smoke();
 
 	void EXPORT BounceTouch( CBaseEntity *pOther );
@@ -78,6 +83,9 @@ public:
     void Killed( entvars_t *pevAttacker, int iGib ) override;
 
 	BOOL m_fRegisteredSound;// whether or not this grenade has issued its DANGER sound to the world sound list yet.
+
+	// Ear Ringing
+	float m_fAttackFront, m_fAttackRear, m_fAttackLeft, m_fAttackRight;
 
 	//Shrapnel System
 	BOOL m_bSimulateShrapnel;
