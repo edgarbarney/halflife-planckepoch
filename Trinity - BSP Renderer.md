@@ -94,14 +94,7 @@ The texture will be looked for in
 gfx/textures/world as .tga files.
 
 HD Sky:
-This lets you use high resolution tga images for the skybox, but
-it's not as simple as just putting them in your env folder. Name
-your HD skybox textures as you would normally, but append "_larg
--e" at the end of each file, so that if you specified "desert"
-as your skybox, the files should be named "desertlf_large", "de-
-sertup_large", and the like. These should be put in your env fo-
-lder, and it's not necessary to have a normal file, the hd text-
-ure will be loaded regardless.
+This lets you use high resolution tga images for the skybox, but it's not as simple as just putting them in your env folder. Name your HD skybox textures as you would normally, but append "_large" at the end of each file, so that if you specified "desert" as your skybox, the files should be named "desertlf_large", "desertup_large", and the like. These should be put in your env folder, and it's not necessary to have a normal file, the hd texture will be loaded regardless.
 
 Shadow Mapping:
 With version v1.14 I've added projective shadow mapping to proj-
