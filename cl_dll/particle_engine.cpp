@@ -44,6 +44,14 @@ Written by Andrew Lucas
 #include "GameStudioModelRenderer.h"
 extern CGameStudioModelRenderer g_StudioRenderer;
 
+enum ParticleQuality
+{
+	verylow = 0,
+	low = 1,
+	medium = 2,
+	high = 3,
+};
+
 /*
 ====================
 Init
@@ -54,6 +62,7 @@ void CParticleEngine::Init( )
 {
 	m_pCvarDrawParticles = CVAR_CREATE( "te_particles", "1", 0 );
 	m_pCvarParticleDebug = CVAR_CREATE( "te_particles_debug", "0", 0 );
+	m_pCvarParticleMaxPart = CVAR_CREATE("te_particle_quality", "2", FCVAR_ARCHIVE);
 	m_pCvarGravity = gEngfuncs.pfnGetCvarPointer("sv_gravity");
 };
 
@@ -327,6 +336,24 @@ particle_system_t *CParticleEngine::CreateSystem( char *szPath, Vector origin, V
 			gEngfuncs.Con_Printf("Warning! Unknown field: %s\n", szField);
 	}
 	gEngfuncs.COM_FreeFile(pFile);
+	
+	if (m_pCvarParticleMaxPart->value == ParticleQuality::verylow)
+	{
+		pSystem->maxparticles = 1;
+	}
+	else if(m_pCvarParticleMaxPart->value == ParticleQuality::low)
+	{
+		pSystem->maxparticles = 2;
+	}
+	else if (m_pCvarParticleMaxPart->value == ParticleQuality::medium)
+	{
+		pSystem->maxparticles = 4;
+	}
+	else if (m_pCvarParticleMaxPart->value == ParticleQuality::high)//Placeholder
+	{
+		//pSystem->maxparticles = 4;
+	}
+	//pSystem->maxparticles = m_pCvarParticleMaxPart->value; 
 
 	if(pSystem->shapetype != SYSTEM_SHAPE_PLANE_ABOVE_PLAYER)
 	{
