@@ -22,6 +22,7 @@
 #include "gamerules.h"
 
 #include "CShockBeam.h"
+#include <FranUtils.hpp>
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION	CShockBeam::m_SaveData[] =
@@ -313,6 +314,7 @@ void CShockBeam::Explode()
 
 	pev->dmg = 40;
 
+	/*
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 	WRITE_BYTE( TE_DLIGHT );
 	WRITE_COORD( pev->origin.x );
@@ -325,6 +327,9 @@ void CShockBeam::Explode()
 	WRITE_BYTE( 5 );
 	WRITE_BYTE( 10 );
 	MESSAGE_END();
+	*/
+
+	FranUtils::EmitDlight(pev->origin, 8, { 0, 253, 253 }, 0.5f, 20);
 
 	pev->owner = nullptr;
 

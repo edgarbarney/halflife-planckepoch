@@ -21,6 +21,7 @@
 #include "decals.h"
 
 #include "CSpore.h"
+#include <FranUtils.hpp>
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION	CSpore::m_SaveData[] =
@@ -156,6 +157,7 @@ void CSpore::IgniteThink()
 		WRITE_BYTE( 180 );
 	MESSAGE_END();
 
+	/*
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_DLIGHT );
 		WRITE_COORD_VECTOR( pev->origin );
@@ -166,6 +168,9 @@ void CSpore::IgniteThink()
 		WRITE_BYTE( 5 );
 		WRITE_BYTE( 10 );
 	MESSAGE_END();
+	*/
+
+	FranUtils::EmitDlight(pev->origin, 10, { 15, 220, 40 }, 0.5f, 1);
 
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_SPRITE );

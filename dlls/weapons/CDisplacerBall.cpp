@@ -27,6 +27,7 @@
 #include "UserMessages.h"
 
 #include "CDisplacerBall.h"
+#include <FranUtils.hpp>
 
 extern CBaseEntity* g_pLastSpawn;
 
@@ -141,6 +142,7 @@ void CDisplacerBall::BallTouch( CBaseEntity* pOther )
 		WRITE_BYTE( 0 );							 // byte (scroll speed in 0.1's)
 	MESSAGE_END();
 
+	/*
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_DLIGHT );
 		WRITE_COORD_VECTOR( pev->origin );			// coord, coord, coord (pos) 
@@ -151,6 +153,9 @@ void CDisplacerBall::BallTouch( CBaseEntity* pOther )
 		WRITE_BYTE( 10 );							// byte (brightness)
 		WRITE_BYTE( 10 );							// byte (life in 10's)
 	MESSAGE_END();
+	*/
+
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 180, 96 }, 1, 0);
 
 	m_hDisplacedTarget = nullptr;
 
@@ -272,6 +277,7 @@ void CDisplacerBall::FizzleThink()
 
 	pev->dmg = gSkillData.plrDmgDisplacerOther;
 
+	/*
 	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_DLIGHT );
 		WRITE_COORD_VECTOR( pev->origin );
@@ -282,6 +288,9 @@ void CDisplacerBall::FizzleThink()
 		WRITE_BYTE( 10 );
 		WRITE_BYTE( 10 );
 	MESSAGE_END();
+	*/
+
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 180, 96 }, 1, 1);
 
 	auto pOwner = VARS( pev->owner );
 
