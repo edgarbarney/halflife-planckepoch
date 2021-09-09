@@ -60,7 +60,7 @@ Init
 */
 void CParticleEngine::Init( ) 
 {
-	m_pCvarDrawParticles = CVAR_CREATE( "te_particles", "1", 0 );
+	m_pCvarDrawParticles = CVAR_CREATE( "te_particles", "1", FCVAR_ARCHIVE);
 	m_pCvarParticleDebug = CVAR_CREATE( "te_particles_debug", "0", 0 );
 	m_pCvarParticleMaxPart = CVAR_CREATE("te_particle_quality", "2", FCVAR_ARCHIVE);
 	m_pCvarGravity = gEngfuncs.pfnGetCvarPointer("sv_gravity");
