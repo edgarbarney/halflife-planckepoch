@@ -346,7 +346,7 @@ void CBSPRenderer::Init( )
 	m_pCvarDetailTextures			= CVAR_CREATE( "te_detail", "1", 0 );
 	m_pCvarWorldShaders				= CVAR_CREATE( "te_world_shaders", "1", FCVAR_ARCHIVE );
 	m_pCvarWireFrame				= CVAR_CREATE( "te_wireframe", "0", 0 );
-	m_pCvarDynamic					= CVAR_CREATE( "te_dynlights", "1", 0 );
+	m_pCvarDynamic					= CVAR_CREATE( "te_dynlights", "1", FCVAR_ARCHIVE);
 	m_pCvarRadialFog				= CVAR_CREATE( "te_radialfog", "1", 0 );
 	m_pCvarPCFShadows				= CVAR_CREATE( "te_shadows_filter", "1", FCVAR_ARCHIVE );
 	m_pCvarShadows					= CVAR_CREATE( "te_shadows", "1", FCVAR_ARCHIVE );
