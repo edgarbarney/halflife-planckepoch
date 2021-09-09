@@ -696,6 +696,20 @@ void CBSPRenderer::GetRenderEnts( )
 			continue;
 		}
 
+		if (pEntity->curstate.effects & EF_SHOCKLIGHT)
+		{
+			cl_dlight_t* dlight = CL_AllocDLight(pEntity->index);
+
+			dlight->color.x = 0;
+			dlight->color.y = 1.0;
+			dlight->color.z = 1.0;
+			dlight->radius = 64;
+			dlight->origin = pEntity->curstate.origin;
+			dlight->die = gEngfuncs.GetClientTime() + 0.5f;
+			dlight->decay = 200;
+			continue;
+		}
+
 		if (pEntity->model->type == mod_brush || pEntity->model->type == mod_studio)
 		{
 			m_pRenderEntities[m_iNumRenderEntities] = pEntity;

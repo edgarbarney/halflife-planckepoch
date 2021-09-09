@@ -52,6 +52,7 @@ void CShockBeam::Spawn()
 
 	pev->movetype = MOVETYPE_FLY;
 	pev->solid = SOLID_BBOX;
+	pev->effects |= EF_SHOCKLIGHT;
 
 	SET_MODEL( edict(), "models/shock_effect.mdl" );
 
@@ -329,7 +330,7 @@ void CShockBeam::Explode()
 	MESSAGE_END();
 	*/
 
-	FranUtils::EmitDlight(pev->origin, 8, { 0, 253, 253 }, 0.5f, 20);
+	//FranUtils::EmitDlight(pev->origin, 8, { 0, 253, 253 }, 0.5f, 20);
 
 	pev->owner = nullptr;
 
