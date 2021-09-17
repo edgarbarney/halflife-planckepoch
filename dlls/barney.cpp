@@ -27,6 +27,7 @@
 #include	"scripted.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include <FranUtils.hpp>
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -393,18 +394,7 @@ void CBarney :: BarneyFirePistol ()
 	m_cAmmoLoaded--;// take away a bullet!
 
 	// Teh_Freak: World Lighting!
-     MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
-          WRITE_BYTE( TE_DLIGHT );
-          WRITE_COORD( vecShootOrigin.x ); // origin
-          WRITE_COORD( vecShootOrigin.y );
-          WRITE_COORD( vecShootOrigin.z );
-          WRITE_BYTE( 16 );     // radius
-          WRITE_BYTE( 255 );     // R
-          WRITE_BYTE( 255 );     // G
-          WRITE_BYTE( 128 );     // B
-          WRITE_BYTE( 0 );     // life * 10
-          WRITE_BYTE( 0 ); // decay
-     MESSAGE_END();
+		FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
 	// Teh_Freak: World Lighting!
 
 }

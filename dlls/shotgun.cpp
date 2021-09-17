@@ -148,7 +148,7 @@ void CShotgun::PrimaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
 #ifndef CLIENT_DLL
-	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0, 0);
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
 #endif
 
 	Vector vecDir;
@@ -226,7 +226,7 @@ void CShotgun::SecondaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
 #ifndef CLIENT_DLL
-	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0, 0);
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
 #endif
 
 	Vector vecDir;
