@@ -18,23 +18,56 @@
 
 */
 
+#include <cmath>
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
+#include "player.h"
 #include "monsters.h"
 #include "weapons.h"
 #include "nodes.h"
 #include "soundent.h"
 #include "decals.h"
+#include "pm_movevars.h"
+#include "pm_shared.h"
+#include "pm_defs.h"
 
+#define NadeVectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 
-//===================grenade
+float Distance(const float* v1, const float* v2);
 
+enum nadedir
+{
+	NADEDIR_WTF = -1,
+	NADEDIR_NOPE = 0,
+	NADEDIR_FRONT = 1,
+	NADEDIR_RIGHT,
+	NADEDIR_REAR,
+	NADEDIR_LEFT,
+};
 
 LINK_ENTITY_TO_CLASS( grenade, CGrenade );
 
 // Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 #define SF_DETONATE		0x0001
+
+void CGrenade::ShootShrapnel()
+{
+	/*
+	int i;
+	TraceResult tr;
+
+	Vector forward = { gpGlobals->v_forward.x, gpGlobals->v_forward.y * m_iLineCountNextRot, gpGlobals->v_forward.z};
+
+	UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, -32), ignore_monsters, ENT(pev), &tr);
+
+	// do damage, paint decals
+	if (tr.flFraction != 1.0)
+	{
+
+	}
+	*/
+}
 
 //
 // Grenade Explode
@@ -51,6 +84,8 @@ void CGrenade::Explode( Vector vecSrc, Vector vecAim )
 void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 {
 	float		flRndSound;// sound randomizer
+
+	CBasePlayer* thePlayerPtr = nullptr;
 
 	pev->model = iStringNull;//invisible
 	pev->solid = SOLID_NOT;// intangible
@@ -87,6 +122,7 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	if(iContents != CONTENTS_WATER)
 		UTIL_Particle("explosion_cluster.txt", pev->origin, g_vecZero, 1);
 //RENDERERS END
+
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
 	entvars_t *pevOwner;
 	if ( pev->owner )
@@ -96,7 +132,56 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 
 	pev->owner = nullptr; // can't traceline attack owner if this is set
 
-	RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
+	if (!thePlayerPtr) 
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+			if (!pPlayer) // Failed to retrieve a player at this index, skip and move on to the next one
+				continue;
+
+			thePlayerPtr = pPlayer;
+		}
+	}
+
+	if (thePlayerPtr)
+	{
+		float plrHeathOld = plrHeathOld = thePlayerPtr->pev->health;
+		RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
+		float plrHeathDif = plrHeathDif = (plrHeathOld - thePlayerPtr->pev->health) * 8.0f;
+		//UTIL_ScreenShake(pev->origin, plrHeathDif, 255.0f, plrHeathDif / 80.0f, plrHeathDif * 8.0f);
+		//												  (plrHeathDif / 8) / 10
+		if (Distance(thePlayerPtr->pev->origin, pev->origin) < 250.0f)
+		{
+			float volu = (150 - Distance(thePlayerPtr->pev->origin, pev->origin)) / 125; if (volu < 0) volu = 0;
+			switch (CalcDamageDirection(pev->origin, thePlayerPtr))
+			{
+			case NADEDIR_FRONT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_RIGHT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_right.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_REAR:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_LEFT:
+				EMIT_SOUND_DYN(ENT(thePlayerPtr->pev), CHAN_AUTO, "player/earringing_left.wav", volu, ATTN_NORM, 0, 100);
+				break;
+			case NADEDIR_WTF:
+			case NADEDIR_NOPE:
+			default:
+				break;
+			}
+		}
+	}
+	else
+	{
+		RadiusDamage(pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
+	}
+
+	if (m_bSimulateShrapnel)
+		ShootShrapnel();
 
 	/*
 	if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )
@@ -135,6 +220,85 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	}
 }
 
+int CGrenade::CalcDamageDirection(Vector vecFrom, CBasePlayer* playaPtr)
+{
+	Vector	forward, right, up;
+	float	side, front;
+	Vector vecOrigin, vecAngles;
+
+	if (!vecFrom[0] && !vecFrom[1] && !vecFrom[2])
+	{
+		m_fAttackFront = m_fAttackRear = m_fAttackRight = m_fAttackLeft = 0;
+		return -1;
+	}
+
+
+	memcpy(vecOrigin, playaPtr->pev->origin, sizeof(Vector));
+	memcpy(vecAngles, playaPtr->pev->angles, sizeof(Vector));
+
+
+	NadeVectorSubtract(vecFrom, vecOrigin, vecFrom);
+
+	float flDistToTarget = vecFrom.Length();
+
+	vecFrom = vecFrom.Normalize();
+	g_engfuncs.pfnAngleVectors(vecAngles, forward, right, up);
+
+	front = DotProduct(vecFrom, right);
+	side = DotProduct(vecFrom, forward);
+
+	if (flDistToTarget <= 50)
+	{
+		m_fAttackFront = m_fAttackRear = m_fAttackRight = m_fAttackLeft = 1;
+	}
+	else
+	{
+		if (side > 0)
+		{
+			if (side > 0.3)
+				m_fAttackFront = V_max(m_fAttackFront, side);
+		}
+		else
+		{
+			float f = fabs(side);
+			if (f > 0.3)
+				m_fAttackRear = V_max(m_fAttackRear, f);
+		}
+
+		if (front > 0)
+		{
+			if (front > 0.3)
+				m_fAttackRight = V_max(m_fAttackRight, front);
+		}
+		else
+		{
+			float f = fabs(front);
+			if (f > 0.3)
+				m_fAttackLeft = V_max(m_fAttackLeft, f);
+		}
+	}
+	return EmitDir();
+}
+
+int CGrenade::EmitDir()
+{
+	if (!(m_fAttackFront || m_fAttackRear || m_fAttackLeft || m_fAttackRight))
+		return 0;
+
+	if	(m_fAttackFront > 0.4)	return NADEDIR_FRONT;
+	else m_fAttackFront = 0;
+
+	if	(m_fAttackRight > 0.4)	return NADEDIR_RIGHT;
+	else m_fAttackRight = 0;
+
+	if	(m_fAttackRear > 0.4)	return NADEDIR_REAR;
+	else m_fAttackRear = 0;
+
+	if	(m_fAttackLeft > 0.4)	return NADEDIR_LEFT;
+	else m_fAttackLeft = 0;
+
+	return 0;
+}
 
 void CGrenade::Smoke()
 {
@@ -156,6 +320,7 @@ void CGrenade::Smoke()
 	}
 	UTIL_Remove( this );
 }
+
 
 void CGrenade::Killed( entvars_t *pevAttacker, int iGib )
 {
@@ -382,7 +547,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->SetNextThink( 0 );
 	
 	// Tumble in air
-	pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
+	//pGrenade->pev->avelocity.x = RANDOM_FLOAT ( -100, -500 );
 	
 	// Explode on contact
 	pGrenade->SetTouch( &CGrenade::ExplodeTouch );
@@ -488,6 +653,3 @@ void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 		pEnt = UTIL_FindEntityByClassname( pEnt, "grenade" );
 	}
 }
-
-//======================end grenade
- 

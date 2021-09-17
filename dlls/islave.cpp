@@ -218,7 +218,7 @@ void CISlave :: IdleSound()
 
 	UTIL_MakeAimVectors( pev->angles );
 	Vector vecSrc = pev->origin + gpGlobals->v_right * 2 * side;
-	FranUtils::EmitDlight(vecSrc, 8, { 255, 180, 96 }, 10, 0);
+	FranUtils::EmitDlight(vecSrc, 8, { 0, 100, 0 }, 1, 0);
 
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "debris/zap1.wav", 1, ATTN_NORM, 0, 100 );
 #endif
@@ -354,7 +354,7 @@ void CISlave :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			if (m_iBeams == 0)
 			{
 				Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
-				FranUtils::EmitDlight(vecSrc, 12, {12, 255, 188}, 20 /* pev->framerate*/, 0);
+				//FranUtils::EmitDlight(vecSrc, 12, {0, 100, 0}, 2.0f /* pev->framerate*/, 0.0f);
 			}
 			if (m_hDead != nullptr)
 			{
@@ -770,6 +770,9 @@ void CISlave :: BeamGlow( )
 			m_pBeam[i]->SetBrightness( b );
 		}
 	}
+
+	Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
+	FranUtils::EmitDlight(vecSrc, 12, { 0, 100, 0 }, 3.0f /* pev->framerate*/, 5.0f);
 }
 
 

@@ -23,7 +23,7 @@
 #include "soundent.h"
 #include "gamerules.h"
 #include "UserMessages.h"
-#include "FranUtils.hpp"
+#include <FranUtils.hpp>
 
 LINK_ENTITY_TO_CLASS( weapon_mp5, CMP5 );
 LINK_ENTITY_TO_CLASS( weapon_9mmAR, CMP5 );
@@ -157,9 +157,9 @@ void CMP5::PrimaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-#ifndef CLIENT_DLL
-	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0, 0);
-#endif
+#ifndef CLIENT_DLL 
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
+#endif 
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
