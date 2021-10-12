@@ -1,3 +1,6 @@
+Source code of my mod
+======================
+
 Half Life 1 SDK LICENSE
 ======================
 
