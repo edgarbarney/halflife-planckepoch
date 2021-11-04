@@ -1794,6 +1794,16 @@
 		64 : "IgnorePlayer" : 0
 	]
 ]
+@PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 72) studio("models/pinkslave.mdl") = monster_alien_pinkslave : "Pink Vortigaunt" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+		64 : "IgnorePlayer" : 0
+	]
+]
+
 @PointClass base(Monster, Sequence) size(-360 -360 -172, 360 360 8) studio("models/apache.mdl") = monster_apache : "Apache" 
 [
 	spawnflags(Flags) = 
