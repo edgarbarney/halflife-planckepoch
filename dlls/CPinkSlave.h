@@ -5,7 +5,7 @@
 #include	"util.h"
 #include	"cbase.h"
 #include	"monsters.h"
-#include	"talkmonster.h"
+#include	"squadmonster.h"
 #include	"schedule.h"
 #include	"effects.h"
 #include	"weapons.h"
@@ -19,12 +19,10 @@
 
 #define		PINKSLAVE_MAX_BEAMS	8
 
-class CPinkSlave : public CTalkMonster
+class CPinkSlave : public CSquadMonster
 {
 public:
 	void Spawn() override;
-	void DeclineFollowing() override;
-	void TalkInit();
 	void Precache() override;
 	void SetYawSpeed() override;
 	int	 ISoundMask() override;
