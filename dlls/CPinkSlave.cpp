@@ -17,7 +17,7 @@ TYPEDESCRIPTION	CPinkSlave::m_SaveData[] =
 
 };
 
-IMPLEMENT_SAVERESTORE(CPinkSlave, CSquadMonster);
+IMPLEMENT_SAVERESTORE(CPinkSlave, CTalkMonster);
 
 
 
@@ -177,7 +177,7 @@ int CPinkSlave::ISoundMask()
 void CPinkSlave::Killed(entvars_t* pevAttacker, int iGib)
 {
 	ClearBeams();
-	CSquadMonster::Killed(pevAttacker, iGib);
+	CTalkMonster::Killed(pevAttacker, iGib);
 }
 
 //=========================================================
@@ -350,7 +350,7 @@ void CPinkSlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	default:
-		CSquadMonster::HandleAnimEvent(pEvent);
+		CTalkMonster::HandleAnimEvent(pEvent);
 		break;
 	}
 }
@@ -365,7 +365,7 @@ BOOL CPinkSlave::CheckRangeAttack1(float flDot, float flDist)
 		return FALSE;
 	}
 
-	return CSquadMonster::CheckRangeAttack1(flDot, flDist);
+	return CTalkMonster::CheckRangeAttack1(flDot, flDist);
 }
 
 //=========================================================
@@ -421,7 +421,7 @@ void CPinkSlave::StartTask(Task_t* pTask)
 {
 	ClearBeams();
 
-	CSquadMonster::StartTask(pTask);
+	CTalkMonster::StartTask(pTask);
 }
 
 
@@ -448,6 +448,47 @@ void CPinkSlave::Spawn()
 	m_voicePitch = RANDOM_LONG(85, 110);
 
 	MonsterInit();
+	SetUse(&CPinkSlave::FollowerUse);
+}
+
+void CPinkSlave::DeclineFollowing()
+{
+	PlaySentence("BA_POK", 2, VOL_NORM, ATTN_NORM);
+}
+
+void CPinkSlave::TalkInit()
+{
+
+	CTalkMonster::TalkInit();
+
+	// scientists speach group names (group names are in sentences.txt)
+
+	m_szGrp[TLK_ANSWER] = "BA_ANSWER";
+	m_szGrp[TLK_QUESTION] = "BA_QUESTION";
+	m_szGrp[TLK_IDLE] = "BA_IDLE";
+	m_szGrp[TLK_STARE] = "BA_STARE";
+	m_szGrp[TLK_USE] = "BA_OK";
+	m_szGrp[TLK_UNUSE] = "BA_WAIT";
+	m_szGrp[TLK_STOP] = "BA_STOP";
+
+	m_szGrp[TLK_NOSHOOT] = "BA_SCARED";
+	m_szGrp[TLK_HELLO] = "BA_HELLO";
+
+	m_szGrp[TLK_PLHURT1] = "!BA_CUREA";
+	m_szGrp[TLK_PLHURT2] = "!BA_CUREB";
+	m_szGrp[TLK_PLHURT3] = "!BA_CUREC";
+
+	m_szGrp[TLK_PHELLO] = NULL;	//"BA_PHELLO";		// UNDONE
+	m_szGrp[TLK_PIDLE] = NULL;	//"BA_PIDLE";			// UNDONE
+	m_szGrp[TLK_PQUESTION] = "BA_PQUEST";		// UNDONE
+
+	m_szGrp[TLK_SMELL] = "BA_SMELL";
+
+	m_szGrp[TLK_WOUND] = "BA_WOUND";
+	m_szGrp[TLK_MORTAL] = "BA_MORTAL";
+
+	// get voice for head - just one barney voice for now
+	m_voicePitch = 100;
 }
 
 //=========================================================
@@ -479,6 +520,8 @@ void CPinkSlave::Precache()
 	for (i = 0; i < ARRAYSIZE(pDeathSounds); i++)
 		PRECACHE_SOUND((char*)pDeathSounds[i]);
 
+	TalkInit();
+
 	UTIL_PrecacheOther("test_effect");
 }
 
@@ -494,7 +537,7 @@ int CPinkSlave::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 		return 0;
 
 	m_afMemory |= bits_MEMORY_PROVOKED;
-	return CSquadMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
+	return CTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
 
 
@@ -503,7 +546,7 @@ void CPinkSlave::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	if (bitsDamageType & DMG_SHOCK)
 		return;
 
-	CSquadMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
+	CTalkMonster::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 }
 
 
@@ -511,6 +554,26 @@ void CPinkSlave::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 // AI Schedules Specific to this monster
 //=========================================================
 
+Task_t	tlPinkSlaveFollow[] =
+{
+	{ TASK_MOVE_TO_TARGET_RANGE,(float)128		},	// Move within 128 of target ent (client)
+	{ TASK_SET_SCHEDULE,		(float)SCHED_TARGET_FACE },
+};
+
+Schedule_t	slPinkSlaveFollow[] =
+{
+	{
+		tlPinkSlaveFollow,
+		ARRAYSIZE(tlPinkSlaveFollow),
+		bits_COND_NEW_ENEMY |
+		bits_COND_LIGHT_DAMAGE |
+		bits_COND_HEAVY_DAMAGE |
+		bits_COND_HEAR_SOUND |
+		bits_COND_PROVOKED,
+		bits_SOUND_DANGER,
+		"Follow"
+	},
+};
 
 
 // primary range attack
@@ -538,10 +601,11 @@ Schedule_t	slPinkSlaveAttack1[] =
 
 DEFINE_CUSTOM_SCHEDULES(CPinkSlave)
 {
+	slPinkSlaveFollow,
 	slPinkSlaveAttack1,
 };
 
-IMPLEMENT_CUSTOM_SCHEDULES(CPinkSlave, CSquadMonster);
+IMPLEMENT_CUSTOM_SCHEDULES(CPinkSlave, CTalkMonster);
 
 
 //=========================================================
@@ -599,7 +663,7 @@ Schedule_t* CPinkSlave::GetSchedule()
 		}
 		break;
 	}
-	return CSquadMonster::GetSchedule();
+	return CTalkMonster::GetSchedule();
 }
 
 
@@ -610,15 +674,17 @@ Schedule_t* CPinkSlave::GetScheduleOfType(int Type)
 	case SCHED_FAIL:
 		if (HasConditions(bits_COND_CAN_MELEE_ATTACK1))
 		{
-			return CSquadMonster::GetScheduleOfType(SCHED_MELEE_ATTACK1);
+			return CTalkMonster::GetScheduleOfType(SCHED_MELEE_ATTACK1);
 		}
 		break;
+	case SCHED_TARGET_CHASE:
+		return slPinkSlaveFollow;
 	case SCHED_RANGE_ATTACK1:
 		return slPinkSlaveAttack1;
 	case SCHED_RANGE_ATTACK2:
 		return slPinkSlaveAttack1;
 	}
-	return CSquadMonster::GetScheduleOfType(Type);
+	return CTalkMonster::GetScheduleOfType(Type);
 }
 
 
