@@ -16,16 +16,8 @@
 // Houndeye - spooky sonic dog. 
 //=========================================================
 
-#include	"extdll.h"
-#include	"util.h"
-#include	"cbase.h"
-#include	"monsters.h"
-#include	"schedule.h"
-#include	"animation.h"
-#include	"nodes.h"
-#include	"squadmonster.h"
-#include	"soundent.h"
-#include	"game.h"
+
+#include	"CHoundeye.h"
 
 extern CGraph WorldGraph;
 
@@ -73,43 +65,7 @@ enum
 #define		HOUND_AE_HOPBACK		6
 #define		HOUND_AE_CLOSE_EYE		7
 
-class CHoundeye : public CSquadMonster
-{
-public:
-	void Spawn() override;
-	void Precache() override;
-	int  Classify () override;
-	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	void SetYawSpeed () override;
-	void WarmUpSound ();
-	void AlertSound() override;
-	void DeathSound() override;
-	void WarnSound();
-	void PainSound() override;
-	void IdleSound() override;
-	void StartTask( Task_t *pTask ) override;
-	void RunTask ( Task_t *pTask ) override;
-	void SonicAttack();
-	void PrescheduleThink() override;
-	void SetActivity ( Activity NewActivity ) override;
-	void WriteBeamColor ();
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL FValidateHintType ( short sHint ) override;
-	BOOL FCanActiveIdle () override;
-	Schedule_t *GetScheduleOfType ( int Type ) override;
-	Schedule_t *GetSchedule() override;
 
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
-
-	CUSTOM_SCHEDULES;
-	static TYPEDESCRIPTION m_SaveData[];
-
-	int m_iSpriteTexture;
-	BOOL m_fAsleep;// some houndeyes sleep in idle mode if this is set, the houndeye is lying down
-	BOOL m_fDontBlink;// don't try to open/close eye if this bit is set!
-	Vector	m_vecPackCenter; // the center of the pack. The leader maintains this by averaging the origins of all pack members.
-};
 LINK_ENTITY_TO_CLASS( monster_houndeye, CHoundeye );
 
 TYPEDESCRIPTION	CHoundeye::m_SaveData[] = 
@@ -618,7 +574,7 @@ void CHoundeye :: SonicAttack ()
 	{
 		if ( pEntity->pev->takedamage != DAMAGE_NO )
 		{
-			if ( !FClassnameIs(pEntity->pev, "monster_houndeye") )
+			if ( !FClassnameIs(pEntity->pev, STRING(pev->classname)) )
 			{// houndeyes don't hurt other houndeyes with their attack
 
 				// houndeyes do FULL damage if the ent in question is visible. Half damage otherwise.

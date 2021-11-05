@@ -1901,6 +1901,16 @@
 	[
 		32 : "SquadLeader" : 0
 	]
+
+]
+@PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 36) studio("models/toxichoundeye.mdl") = monster_toxichoundeye : "ToxicHoundeye" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+	]
+
 ]
 @PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 72) studio("models/hassassin.mdl") = monster_human_assassin : "Human Assassin" []
 @PointClass base(Monster) size(-16 -16 0, 16 16 72) studio("models/hgrunt.mdl") = monster_human_grunt : "Human Grunt (camo)" 

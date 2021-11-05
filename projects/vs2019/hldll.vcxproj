@@ -196,6 +196,7 @@
     <ClCompile Include="..\..\dlls\teamplay_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\tempmonster.cpp" />
     <ClCompile Include="..\..\dlls\tentacle.cpp" />
+    <ClCompile Include="..\..\dlls\toxichoundeye.cpp" />
     <ClCompile Include="..\..\dlls\triggers.cpp" />
     <ClCompile Include="..\..\dlls\tripmine.cpp" />
     <ClCompile Include="..\..\dlls\turret.cpp" />
@@ -254,6 +255,7 @@
     <ClInclude Include="..\..\dlls\CBarney.h" />
     <ClInclude Include="..\..\dlls\cbase.h" />
     <ClInclude Include="..\..\dlls\cdll_dll.h" />
+    <ClInclude Include="..\..\dlls\CHoundeye.h" />
     <ClInclude Include="..\..\dlls\client.h" />
     <ClInclude Include="..\..\dlls\CPinkSlave.h" />
     <ClInclude Include="..\..\dlls\decals.h" />

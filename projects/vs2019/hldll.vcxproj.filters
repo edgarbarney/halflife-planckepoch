@@ -363,6 +363,9 @@
     <ClCompile Include="..\..\dlls\CPinkSlave.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\toxichoundeye.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -627,6 +630,9 @@
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\CPinkSlave.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\CHoundeye.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>
