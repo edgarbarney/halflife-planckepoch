@@ -133,6 +133,9 @@ public:
 	BOOL	IsAlive() override { return (pev->deadflag != DEAD_DEAD); }
 	virtual BOOL	ShouldFadeOnDeath();
 
+// Is Monster?
+	bool IsMonster() override { return true; };
+
 // Basic Monster AI functions
 	virtual float ChangeYaw ( int speed );
 	float VecToYaw( Vector vecDir );
@@ -312,6 +315,7 @@ public:
 	int			DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
 
 	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
+	void RadiusDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType, string_t iClassnameIgnore = 0, bool doOnlyMonsterDamage = false);
 	void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
         int		IsMoving() override { return m_movementGoal != MOVEGOAL_NONE; }
 

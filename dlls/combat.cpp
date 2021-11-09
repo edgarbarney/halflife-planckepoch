@@ -1034,8 +1034,7 @@ float CBaseMonster :: DamageForce( float damage )
 // 
 // only damage ents that can clearly be seen by the explosion!
 
-	
-void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType )
+void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType, string_t iClassnameIgnore, bool doOnlyMonsterDamage)
 {
 	CBaseEntity *pEntity = NULL;
 	TraceResult	tr;
@@ -1059,6 +1058,17 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	{
 		if ( pEntity->pev->takedamage != DAMAGE_NO )
 		{
+			if (doOnlyMonsterDamage && !pEntity->IsMonster())
+			{
+				continue;
+			}
+
+
+			if (iClassnameIgnore != 0 && FClassnameIs(pEntity->pev, STRING(iClassnameIgnore)))
+			{
+				continue;
+			}
+
 			// UNDONE: this should check a damage mask, not an ignore
 			if ( iClassIgnore != CLASS_NONE && pEntity->Classify() == iClassIgnore )
 			{// houndeyes don't hurt other houndeyes with their attack
@@ -1109,16 +1119,24 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	}
 }
 
+void RadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
+{
+	RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flRadius, iClassIgnore, bitsDamageType, 0, false);
+}
 
 void CBaseMonster :: RadiusDamage(entvars_t* pevInflictor, entvars_t*	pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType )
 {
-	::RadiusDamage( pev->origin, pevInflictor, pevAttacker, flDamage, flDamage * 2.5, iClassIgnore, bitsDamageType );
+	::RadiusDamage( pev->origin, pevInflictor, pevAttacker, flDamage, flDamage * 2.5, iClassIgnore, bitsDamageType);
 }
 
+void CBaseMonster :: RadiusDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType, string_t iClassnameIgnore, bool doOnlyMonsterDamage)
+{
+	::RadiusDamage(pev->origin, pevInflictor, pevAttacker, flDamage, flRadius, iClassIgnore, bitsDamageType, iClassnameIgnore, doOnlyMonsterDamage);
+}
 
 void CBaseMonster :: RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType )
 {
-	::RadiusDamage( vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * 2.5, iClassIgnore, bitsDamageType );
+	::RadiusDamage( vecSrc, pevInflictor, pevAttacker, flDamage, flDamage * 2.5, iClassIgnore, bitsDamageType);
 }
 
 

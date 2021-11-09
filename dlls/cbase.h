@@ -194,12 +194,15 @@ public:
 	virtual BOOL	HasTarget( string_t targetname ) { return FStrEq(STRING(targetname), STRING(pev->targetname) ); }
 	virtual BOOL    IsInWorld();
 	virtual	BOOL	IsPlayer() { return FALSE; }
+	virtual bool	IsMonster() { return false; };
 	virtual BOOL	IsNetClient() { return FALSE; }
 	virtual const char *TeamID() { return ""; }
 
 
 //	virtual void	SetActivator( CBaseEntity *pActivator ) {}
 	virtual CBaseEntity *GetNextTarget();
+
+	
 	
 	// fundamental callbacks
 	void (CBaseEntity ::*m_pfnThink)();

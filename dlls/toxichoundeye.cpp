@@ -3,11 +3,56 @@
 
 class CToxicHoundeye : public CHoundeye
 {
-	void Spawn();
-	void Precache();
-	int Classify();
+	void Spawn() override;
+	void Precache() override;
+	int Classify() override;
+	
+	void MonsterThink() override;
+
+	float toxicDamageDelay = 1.0f; // Delay between damages
+	float toxicDamageNextTime = 0.0f; // Next damage time
+
 };
 LINK_ENTITY_TO_CLASS(monster_toxichoundeye, CToxicHoundeye);
+
+void CToxicHoundeye::MonsterThink()
+{
+	if (gpGlobals->time > toxicDamageNextTime)
+	{
+		RadiusDamage(pev, pev, 20, 250, CLASS_NONE, DMG_ACID, pev->classname, true);
+		toxicDamageNextTime = gpGlobals->time + toxicDamageDelay;
+	}
+
+	Vector vecSrc = pev->origin;
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+		WRITE_BYTE(TE_DLIGHT);
+		WRITE_COORD(vecSrc.x);	// X
+		WRITE_COORD(vecSrc.y);	// Y
+		WRITE_COORD(vecSrc.z);	// Z
+		WRITE_BYTE(15);			// radius * 0.1
+		WRITE_BYTE(57);		// r
+		WRITE_BYTE(212);		// g
+		WRITE_BYTE(173);			// b
+		WRITE_BYTE(1 / pev->framerate);		// time * 10
+		WRITE_BYTE(0);			// decay * 0.1
+	MESSAGE_END();
+
+	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+		WRITE_BYTE(TE_ELIGHT);
+		WRITE_SHORT(entindex());     // entity, attachment
+		WRITE_COORD(vecSrc.x);     // origin
+		WRITE_COORD(vecSrc.y);
+		WRITE_COORD(vecSrc.z);
+		WRITE_COORD(15);     // radius
+		WRITE_BYTE(57);		// r
+		WRITE_BYTE(212);		// g
+		WRITE_BYTE(173);			// b
+		WRITE_BYTE(1 / pev->framerate);     // life * 10
+		WRITE_COORD(0); // decay
+	MESSAGE_END();
+
+	CBaseMonster::MonsterThink();
+}
 
 void CToxicHoundeye::Spawn()
 {
