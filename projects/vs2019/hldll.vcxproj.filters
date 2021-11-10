@@ -366,6 +366,9 @@
     <ClCompile Include="..\..\dlls\toxichoundeye.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="CWaterSquid.cpp">
+      <Filter>Source Files\dlls\wpn_shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">

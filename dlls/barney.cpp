@@ -567,7 +567,7 @@ void CBarney::Killed( entvars_t *pevAttacker, int iGib )
 		Vector vecGunPos;
 		Vector vecGunAngles;
 
-		pev->body = BARNEY_BODY_GUNGONE;
+		pev->body = BARNEY_BODY_GUNGONE; 
 
 		GetAttachment( 0, vecGunPos, vecGunAngles );
 		

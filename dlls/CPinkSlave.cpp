@@ -277,8 +277,8 @@ void CPinkSlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 			WRITE_COORD(vecSrc.z);	// Z
 			WRITE_BYTE(12);		// radius * 0.1
 			WRITE_BYTE(255);		// r
-			WRITE_BYTE(180);		// g
-			WRITE_BYTE(96);		// b
+			WRITE_BYTE(77);		// g
+			WRITE_BYTE(252);		// b
 			WRITE_BYTE(20 / pev->framerate);		// time * 10
 			WRITE_BYTE(0);		// decay * 0.1
 			MESSAGE_END();
@@ -662,9 +662,9 @@ void CPinkSlave::ArmBeam(int side)
 	m_pBeam[m_iBeams]->PointEntInit(tr.vecEndPos, entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
 	// m_pBeam[m_iBeams]->SetColor( 180, 255, 96 );
-	m_pBeam[m_iBeams]->SetColor(96, 128, 16);
-	m_pBeam[m_iBeams]->SetBrightness(64);
-	m_pBeam[m_iBeams]->SetNoise(80);
+	m_pBeam[m_iBeams]->SetColor(250, 57, 215);
+	m_pBeam[m_iBeams]->SetBrightness(600);
+	m_pBeam[m_iBeams]->SetNoise(100);
 	m_iBeams++;
 }
 
@@ -708,8 +708,8 @@ void CPinkSlave::WackBeam(int side, CBaseEntity* pEntity)
 
 	m_pBeam[m_iBeams]->PointEntInit(pEntity->Center(), entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
-	m_pBeam[m_iBeams]->SetColor(180, 255, 96);
-	m_pBeam[m_iBeams]->SetBrightness(255);
+	m_pBeam[m_iBeams]->SetColor(250, 57, 215);
+	m_pBeam[m_iBeams]->SetBrightness(900);
 	m_pBeam[m_iBeams]->SetNoise(80);
 	m_iBeams++;
 }
@@ -738,7 +738,7 @@ void CPinkSlave::ZapBeam(int side)
 
 	m_pBeam[m_iBeams]->PointEntInit(tr.vecEndPos, entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
-	m_pBeam[m_iBeams]->SetColor(180, 255, 96);
+	m_pBeam[m_iBeams]->SetColor(250, 57, 215);
 	m_pBeam[m_iBeams]->SetBrightness(255);
 	m_pBeam[m_iBeams]->SetNoise(20);
 	m_iBeams++;
