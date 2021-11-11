@@ -83,6 +83,8 @@ DLL_DECALLIST gDecals[] = {
 	{ "{bigshot5", 0 },		// DECAL_BIGSHOT5
 	{ "{spit1", 0 },		// DECAL_SPIT1
 	{ "{spit2", 0 },		// DECAL_SPIT2
+	{ "{waterspit1", 0 },   //DECAL_WATERSPIT1
+	{ "{waterspit2", 0 },   //DECAL_WATERSPIT2
 	{ "{bproof1", 0 },		// DECAL_BPROOF1
 	{ "{gargstomp", 0 },	// DECAL_GARGSTOMP1,	// Gargantua stomp crack
 	{ "{smscorch1", 0 },	// DECAL_SMALLSCORCH1,	// Small scorch mark

@@ -42,9 +42,9 @@ void CWaterSquid::Precache()
 {
 	PRECACHE_MODEL("models/watersquid.mdl");
 
-	PRECACHE_MODEL("sprites/bigspit.spr");// spit projectile.
+	PRECACHE_MODEL("sprites/waterbigspit.spr");// spit projectile.
 
-	iWaterSquidSpitSprite = PRECACHE_MODEL("sprites/tinyspit.spr");// client side spittle.
+	iWaterSquidSpitSprite = PRECACHE_MODEL("sprites/watertinyspit.spr");// client side spittle.
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav");// because we use the basemonster SWIPE animation event
 
@@ -83,4 +83,9 @@ void CWaterSquid::Precache()
 void CWaterSquid::ShootSpit(Vector v_offset, Vector v_dir)
 {
 	CSquidSpit::Shoot(pev, v_offset, v_dir * 900);
+}
+
+int CWaterSpit::SquidDecal()
+{
+	return WATERDECAL_SPIT1;
 }

@@ -106,7 +106,10 @@ void CSquidSpit::Shoot( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity
 	pSpit->SetThink ( &CSquidSpit::Animate );
 	pSpit->pev->nextthink = gpGlobals->time + 0.1;
 }
-
+int CSquidSpit::SquidDecal()
+{
+	return DECAL_SPIT1;
+}
 void CSquidSpit :: Touch ( CBaseEntity *pOther )
 {
 	TraceResult tr;
@@ -132,7 +135,7 @@ void CSquidSpit :: Touch ( CBaseEntity *pOther )
 
 		// make a splat on the wall
 		UTIL_TraceLine( pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, ENT( pev ), &tr );
-		UTIL_DecalTrace(&tr, DECAL_SPIT1 + RANDOM_LONG(0,1));
+		UTIL_DecalTrace(&tr, SquidDecal() +RANDOM_LONG(0, 1));
 
 		// make some flecks
 		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, tr.vecEndPos );

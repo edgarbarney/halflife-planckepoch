@@ -42,7 +42,7 @@ public:
 
 	virtual void ShootSpit(Vector v_offset, Vector v_dir);
 	virtual int SpitModelInt();
-
+	
 	int	Save(CSave& save) override;
 	int Restore(CRestore& restore) override;
 
@@ -79,8 +79,9 @@ public:
 	int		Save(CSave& save) override;
 	int		Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
-
+	
 	virtual int SpitModelInt();
+	virtual int SquidDecal();
 
 	int  m_maxFrame;
 
@@ -89,6 +90,7 @@ public:
 class CWaterSpit : public CSquidSpit
 {
 	int SpitModelInt() override;
+	int SquidDecal();
 };
-
+ 
 #endif
