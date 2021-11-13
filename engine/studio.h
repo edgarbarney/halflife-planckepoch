@@ -340,8 +340,9 @@ typedef struct
 #define STUDIO_NF_ADDITIVE      0x0020
 #define STUDIO_NF_ALPHATEST     0x0040
 //#define STUDIO_NF_PHOLDER		0x0080 // 128
-#define STUDIO_NF_NOMIPMAP		0x0100 // 256
+//#define STUDIO_NF_PHOLDER		0x0100 // 256 = WAS Nomipmap in original Trinity 
 //#define STUDIO_NF_PHOLDER		0x0200 // 512 - WAS Fullbright in original Trinity
+#define STUDIO_NF_NOMIPMAP      0x0008
 /*
 - SOHL -
 #define STUDIO_NF_FULLBRIGHT	0x0004
