@@ -20,6 +20,8 @@
 // CHud handles the message, calculation, and drawing the HUD
 //
 
+#pragma once
+
 #define FOG_LIMIT 30000
 
 #define RGB_YELLOWISH 0x00FFA000 //255,160,0 -- no longer used

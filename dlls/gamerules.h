@@ -16,6 +16,8 @@
 // GameRules
 //=========================================================
 
+#pragma once
+
 //LRC
 #define GAME_NAME "Spirit of Half-Life"
 
