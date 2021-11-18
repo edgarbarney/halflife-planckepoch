@@ -26,10 +26,6 @@
 #include "saverestore.h"
 #include "doors.h"
 
-#if !defined ( WIN32 )
-#include <string.h> // memset())))
-#endif
-
 #define SF_BUTTON_DONTMOVE		1
 #define SF_ROTBUTTON_NOTSOLID	1
 #define SF_BUTTON_ONLYDIRECT	16  //LRC - button can't be used through walls.
