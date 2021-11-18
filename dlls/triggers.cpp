@@ -1791,7 +1791,7 @@ void CEnvCustomize :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 //LRCT
-extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
+extern DLL_GLOBAL unsigned int g_ulModelIndexPlayer;
 
 void CEnvCustomize :: Affect (CBaseEntity *pTarget, USE_TYPE useType)
 {

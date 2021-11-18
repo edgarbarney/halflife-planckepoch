@@ -1310,7 +1310,7 @@ void UTIL_SetOrigin( CBaseEntity *pEntity, const Vector &vecOrigin )
 	SET_ORIGIN(ENT(pEntity->pev), vecOrigin );
 }
 
-void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount )
+void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, unsigned int ulColor, unsigned int ulCount )
 {
 	PARTICLE_EFFECT( vecOrigin, vecDirection, (float)ulColor, (float)ulCount );
 }
