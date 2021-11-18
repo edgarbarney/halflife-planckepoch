@@ -12,8 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef FUNC_BREAK_H
-#define FUNC_BREAK_H
+
+#pragma once
 
 typedef enum { expRandom, expDirected} Explosions;
 typedef enum { matGlass = 0, matWood, matMetal, matFlesh, matCinderBlock, matCeilingTile, matComputer, matUnbreakableGlass, matRocks, matNone, matLastMaterial } Materials;
@@ -84,5 +84,3 @@ public:
 	int			m_iszWhenHit; // locus trigger
 	CPointEntity	*m_pHitProxy;
 };
-
-#endif	// FUNC_BREAK_H

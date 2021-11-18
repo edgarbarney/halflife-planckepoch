@@ -12,8 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef TRAINS_H
-#define TRAINS_H
+
+#pragma once
 
 // Tracktrain spawn flags
 #define SF_TRACKTRAIN_NOPITCH		0x0001
@@ -158,5 +158,3 @@ public:
 private:
 	unsigned short m_usAdjustPitch;
 };
-
-#endif

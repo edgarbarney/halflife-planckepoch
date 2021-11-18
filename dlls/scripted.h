@@ -12,8 +12,8 @@
 *   use or distribution of this code by or to any unlicensed person is illegal.
 *
 ****/
-#ifndef SCRIPTED_H
-#define SCRIPTED_H
+
+#pragma once
 
 #include "scriptevent.h"
 
@@ -122,5 +122,3 @@ public:
 };
 
 //LRC - removed CCineAI, obsolete
-
-#endif		//SCRIPTED_H

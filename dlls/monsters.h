@@ -12,9 +12,10 @@
 *   use or distribution of this code by or to any unlicensed person is illegal.
 *
 ****/
-#ifndef MONSTERS_H
+
+#pragma once
+
 #include "skill.h"
-#define MONSTERS_H
 
 /*
 
@@ -183,7 +184,3 @@ public:
 				return baseClass::ScheduleFromName(pName);\
 			return pSchedule;\
 		}
-
-
-
-#endif	//MONSTERS_H

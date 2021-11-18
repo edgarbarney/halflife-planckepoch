@@ -13,8 +13,7 @@
 *
 ****/
 
-#ifndef BASEMONSTER_H
-#define BASEMONSTER_H
+#pragma once
 
 //
 // generic Monster
@@ -344,7 +343,3 @@ public:
 
 	float CalcRatio() { return pev->health / pev->max_health; } //LRC
 };
-
-
-
-#endif // BASEMONSTER_H

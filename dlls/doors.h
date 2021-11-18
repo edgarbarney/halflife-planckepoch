@@ -12,8 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef DOORS_H
-#define DOORS_H
+
+#pragma once
 
 // doors
 #define SF_DOOR_ROTATE_Y			0
@@ -32,7 +32,3 @@
 										 // USE_TOGGLE when fully open/closed); also responds to USE_ON and USE_OFF
 										 // 'correctly'.
 #define SF_DOOR_SILENT				0x80000000
-
-
-
-#endif		//DOORS_H

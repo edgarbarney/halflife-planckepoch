@@ -13,8 +13,8 @@
 *
 ****/
 // Implementation in UTIL.CPP
-#ifndef SAVERESTORE_H
-#define SAVERESTORE_H
+
+#pragma once
 
 class CBaseEntity;
 
@@ -172,5 +172,3 @@ private:
 };
 
 extern CGlobalState gGlobalState;
-
-#endif		//SAVERESTORE_H
