@@ -727,7 +727,7 @@ typedef struct
 	unsigned r, g, b, a;
 } colorVec;
 
-#ifdef _WIN32
+#ifdef WIN32
 #pragma pack(push,2)
 #endif
 
@@ -736,7 +736,7 @@ typedef struct
 	unsigned short r, g, b, a;
 } PackedColorVec;
 
-#ifdef _WIN32
+#ifdef WIN32
 #pragma pack(pop)
 #endif
 typedef struct link_s

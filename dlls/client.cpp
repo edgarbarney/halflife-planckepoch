@@ -40,7 +40,7 @@
 #include "UserMessages.h"
 #include "movewith.h"
 
-#if !defined ( _WIN32 )
+#if !defined ( WIN32 )
 #include <ctype.h>
 #endif
 
