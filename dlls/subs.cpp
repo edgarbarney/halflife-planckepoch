@@ -29,8 +29,6 @@
 #include "movewith.h"
 #include "player.h"
 
-extern CGraph WorldGraph;
-
 extern BOOL FEntIsVisible(entvars_t* pev, entvars_t* pevTarget);
 
 extern DLL_GLOBAL int g_iSkillLevel;

@@ -35,7 +35,6 @@
 #include "teamplay_gamerules.h"
 #include "movewith.h" //LRC
 
-extern CGraph WorldGraph;
 extern CSoundEnt *pSoundEnt;
 
 extern CBaseEntity				*g_pLastSpawn;
