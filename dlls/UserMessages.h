@@ -15,44 +15,44 @@
 
 #pragma once
 
-extern int gmsgShake;
-extern int gmsgFade;
-extern int gmsgFlashlight;
-extern int gmsgFlashBattery;
-extern int gmsgResetHUD;
-extern int gmsgInitHUD;
-extern int gmsgSetFog; //LRC
-extern int gmsgShowGameTitle;
-extern int gmsgCurWeapon;
-extern int gmsgHealth;
-extern int gmsgDamage;
-extern int gmsgBattery;
-extern int gmsgTrain;
-extern int gmsgLogo;
-extern int gmsgHUDColor; //LRC
-extern int gmsgWeaponList;
-extern int gmsgAmmoX;
-extern int gmsgHudText;
-extern int gmsgDeathMsg;
-extern int gmsgScoreInfo;
-extern int gmsgTeamInfo;
-extern int gmsgTeamScore;
-extern int gmsgGameMode;
-extern int gmsgMOTD;
-extern int gmsgServerName;
-extern int gmsgAmmoPickup;
-extern int gmsgWeapPickup;
-extern int gmsgItemPickup;
-extern int gmsgHideWeapon;
-extern int gmsgSetCurWeap;
-extern int gmsgSayText;
-extern int gmsgTextMsg;
-extern int gmsgSetFOV;
-extern int gmsgShowMenu;
-extern int gmsgGeigerRange;
-extern int gmsgTeamNames;
-extern int gmsgStatusIcon; //LRC
-extern int gmsgStatusText;
-extern int gmsgStatusValue;
+inline int gmsgShake = 0;
+inline int gmsgFade = 0;
+inline int gmsgFlashlight = 0;
+inline int gmsgFlashBattery = 0;
+inline int gmsgResetHUD = 0;
+inline int gmsgInitHUD = 0;
+inline int gmsgSetFog = 0; //LRC
+inline int gmsgShowGameTitle = 0;
+inline int gmsgCurWeapon = 0;
+inline int gmsgHealth = 0;
+inline int gmsgDamage = 0;
+inline int gmsgBattery = 0;
+inline int gmsgTrain = 0;
+inline int gmsgLogo = 0;
+inline int gmsgHUDColor = 0; //LRC
+inline int gmsgWeaponList = 0;
+inline int gmsgAmmoX = 0;
+inline int gmsgHudText = 0;
+inline int gmsgDeathMsg = 0;
+inline int gmsgScoreInfo = 0;
+inline int gmsgTeamInfo = 0;
+inline int gmsgTeamScore = 0;
+inline int gmsgGameMode = 0;
+inline int gmsgMOTD = 0;
+inline int gmsgServerName = 0;
+inline int gmsgAmmoPickup = 0;
+inline int gmsgWeapPickup = 0;
+inline int gmsgItemPickup = 0;
+inline int gmsgHideWeapon = 0;
+inline int gmsgSetCurWeap = 0;
+inline int gmsgSayText = 0;
+inline int gmsgTextMsg = 0;
+inline int gmsgSetFOV = 0;
+inline int gmsgShowMenu = 0;
+inline int gmsgGeigerRange = 0;
+inline int gmsgTeamNames = 0;
+inline int gmsgStatusIcon = 0; //LRC
+inline int gmsgStatusText = 0;
+inline int gmsgStatusValue = 0;
 
 void LinkUserMessages();

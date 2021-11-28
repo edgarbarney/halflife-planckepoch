@@ -35,12 +35,7 @@
 #include "teamplay_gamerules.h"
 #include "movewith.h" //LRC
 
-extern CSoundEnt* pSoundEnt;
-
-extern CBaseEntity* g_pLastSpawn;
-DLL_GLOBAL edict_t* g_pBodyQueueHead;
 CGlobalState gGlobalState;
-extern DLL_GLOBAL bool gDisplayTitle;
 
 extern void W_Precache();
 
@@ -469,8 +464,6 @@ LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
 #define SF_WORLD_FORCETEAM 0x0004 // Force teams
 //#define SF_WORLD_STARTSUIT	0x0008		// LRC- Start this level with an HEV suit!
 
-extern DLL_GLOBAL bool g_fGameOver;
-
 bool g_startSuit; //LRC
 
 void CWorld ::Spawn()
@@ -630,10 +623,7 @@ void CWorld ::Precache()
 	else
 		CVAR_SET_FLOAT("v_dark", 0.0);
 
-	if ((pev->spawnflags & SF_WORLD_TITLE) != 0)
-		gDisplayTitle = true; // display the game title if this key is set
-	else
-		gDisplayTitle = false;
+	gDisplayTitle = (pev->spawnflags & SF_WORLD_TITLE) != 0;
 
 	if ((pev->spawnflags & SF_WORLD_FORCETEAM) != 0)
 	{

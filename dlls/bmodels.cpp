@@ -26,8 +26,6 @@
 #include "doors.h"
 #include "movewith.h"
 
-extern DLL_GLOBAL Vector g_vecAttackDir;
-
 #define SF_BRUSH_ACCDCC 16		 // brush should accelerate and decelerate when toggled
 #define SF_BRUSH_HURT 32		 // rotating brush that inflicts pain based on rotation speed
 #define SF_ROTATING_NOT_SOLID 64 // some special rotating objects are not solid.

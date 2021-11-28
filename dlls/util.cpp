@@ -173,9 +173,6 @@ void UTIL_ParametricRocket(entvars_t* pev, Vector vecOrigin, Vector vecAngles, e
 	pev->impacttime = gpGlobals->time + travelTime;
 }
 
-int g_groupmask = 0;
-int g_groupop = 0;
-
 // Normal overrides
 void UTIL_SetGroupTrace(int groupmask, int op)
 {
@@ -1910,9 +1907,6 @@ float UTIL_WaterLevel(const Vector& position, float minz, float maxz)
 
 	return midUp.z;
 }
-
-
-extern DLL_GLOBAL short g_sModelIndexBubbles; // holds the index for the bubbles model
 
 void UTIL_Bubbles(Vector mins, Vector maxs, int count)
 {

@@ -25,6 +25,7 @@
 #include "decals.h"
 #include "explode.h"
 #include "locus.h"
+#include "weapons.h"
 
 // Spark Shower
 class CShower : public CBaseEntity
