@@ -1001,6 +1001,7 @@ void CHGrunt ::HandleAnimEvent(MonsterEvent_t* pEvent)
 			JustSpoke();
 		}
 	}
+	break;
 
 	default:
 		CSquadMonster::HandleAnimEvent(pEvent);
