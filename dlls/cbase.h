@@ -866,14 +866,6 @@ push_trigger_data
 
 #define TRACER_FREQ 4 // Tracers fire every 4 bullets
 
-typedef struct _SelAmmo
-{
-	byte Ammo1Type;
-	byte Ammo1;
-	byte Ammo2Type;
-	byte Ammo2;
-} SelAmmo;
-
 //LRC- much as I hate to add new globals, I can't see how to read data from the World entity.
 extern bool g_startSuit;
 
