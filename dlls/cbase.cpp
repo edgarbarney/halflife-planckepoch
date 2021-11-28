@@ -102,6 +102,7 @@ static DLL_FUNCTIONS gFunctionTable =
 NEW_DLL_FUNCTIONS gNewDLLFunctions =
 	{
 		OnFreeEntPrivateData, //pfnOnFreeEntPrivateData
+		GameDLLShutdown,
 };
 
 static void SetObjectCollisionBox(entvars_t* pev);
