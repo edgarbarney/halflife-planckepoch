@@ -143,19 +143,19 @@ void HUD_PrepEntity(CBaseEntity* pEntity, CBasePlayer* pWeaponOwner)
 
 /*
 =====================
-CBaseEntity :: Killed
+CBaseEntity::Killed
 
 If weapons code "kills" an entity, just set its effects to EF_NODRAW
 =====================
 */
-void CBaseEntity ::Killed(entvars_t* pevAttacker, int iGib)
+void CBaseEntity::Killed(entvars_t* pevAttacker, int iGib)
 {
 	pev->effects |= EF_NODRAW;
 }
 
 
 //LRC
-void CBasePlayerWeapon ::SetNextThink(float delay)
+void CBasePlayerWeapon::SetNextThink(float delay)
 {
 	m_fNextThink = UTIL_WeaponTimeBase() + delay;
 	pev->nextthink = m_fNextThink;
@@ -163,11 +163,11 @@ void CBasePlayerWeapon ::SetNextThink(float delay)
 
 /*
 =====================
-CBasePlayerWeapon :: DefaultDeploy
+CBasePlayerWeapon::DefaultDeploy
 
 =====================
 */
-bool CBasePlayerWeapon ::DefaultDeploy(const char* szViewModel, const char* szWeaponModel, int iAnim, const char* szAnimExt, int body)
+bool CBasePlayerWeapon::DefaultDeploy(const char* szViewModel, const char* szWeaponModel, int iAnim, const char* szAnimExt, int body)
 {
 	if (!CanDeploy())
 		return false;
@@ -184,11 +184,11 @@ bool CBasePlayerWeapon ::DefaultDeploy(const char* szViewModel, const char* szWe
 
 /*
 =====================
-CBasePlayerWeapon :: PlayEmptySound
+CBasePlayerWeapon::PlayEmptySound
 
 =====================
 */
-bool CBasePlayerWeapon ::PlayEmptySound()
+bool CBasePlayerWeapon::PlayEmptySound()
 {
 	if (m_iPlayEmptySound)
 	{

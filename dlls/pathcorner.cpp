@@ -51,7 +51,7 @@ IMPLEMENT_SAVERESTORE(CPathCorner, CPointEntity);
 //
 // Cache user-entity-field values until spawn is called.
 //
-bool CPathCorner ::KeyValue(KeyValueData* pkvd)
+bool CPathCorner::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
@@ -72,13 +72,13 @@ bool CPathCorner ::KeyValue(KeyValueData* pkvd)
 }
 
 
-void CPathCorner ::Spawn()
+void CPathCorner::Spawn()
 {
 	ASSERTSZ(!FStringNull(pev->targetname), "path_corner without a targetname");
 }
 
 #if 0
-void CPathCorner :: Touch( CBaseEntity *pOther )
+void CPathCorner::Touch( CBaseEntity *pOther )
 {
 	entvars_t*		pevToucher = pOther->pev;
 		
@@ -142,7 +142,7 @@ LINK_ENTITY_TO_CLASS(path_track, CPathTrack);
 //
 // Cache user-entity-field values until spawn is called.
 //
-bool CPathTrack ::KeyValue(KeyValueData* pkvd)
+bool CPathTrack::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "altpath"))
 	{
@@ -162,7 +162,7 @@ bool CPathTrack ::KeyValue(KeyValueData* pkvd)
 	return CPointEntity::KeyValue(pkvd);
 }
 
-void CPathTrack ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CPathTrack::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	bool on;
 
@@ -193,7 +193,7 @@ void CPathTrack ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 }
 
 
-void CPathTrack ::Link()
+void CPathTrack::Link()
 {
 	CBaseEntity* pTarget;
 
@@ -222,7 +222,7 @@ void CPathTrack ::Link()
 }
 
 
-void CPathTrack ::Spawn()
+void CPathTrack::Spawn()
 {
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
@@ -245,7 +245,7 @@ void CPathTrack::Activate()
 	CPointEntity::Activate();
 }
 
-CPathTrack* CPathTrack ::ValidPath(CPathTrack* ppath, bool testFlag)
+CPathTrack* CPathTrack::ValidPath(CPathTrack* ppath, bool testFlag)
 {
 	if (!ppath)
 		return NULL;
@@ -257,7 +257,7 @@ CPathTrack* CPathTrack ::ValidPath(CPathTrack* ppath, bool testFlag)
 }
 
 
-void CPathTrack ::Project(CPathTrack* pstart, CPathTrack* pend, Vector* origin, float dist)
+void CPathTrack::Project(CPathTrack* pstart, CPathTrack* pend, Vector* origin, float dist)
 {
 	if (pstart && pend)
 	{
@@ -296,7 +296,7 @@ void CPathTrack::SetPrevious(CPathTrack* pprev)
 
 
 // Assumes this is ALWAYS enabled
-CPathTrack* CPathTrack ::LookAhead(Vector* origin, float dist, bool move)
+CPathTrack* CPathTrack::LookAhead(Vector* origin, float dist, bool move)
 {
 	CPathTrack* pcurrent;
 	float originalDist = dist;
@@ -379,7 +379,7 @@ CPathTrack* CPathTrack ::LookAhead(Vector* origin, float dist, bool move)
 
 
 // Assumes this is ALWAYS enabled
-CPathTrack* CPathTrack ::Nearest(Vector origin)
+CPathTrack* CPathTrack::Nearest(Vector origin)
 {
 	int deadCount;
 	float minDist, dist;
@@ -427,7 +427,7 @@ CPathTrack* CPathTrack::Instance(edict_t* pent)
 
 // DEBUGGING CODE
 #if PATH_SPARKLE_DEBUG
-void CPathTrack ::Sparkle()
+void CPathTrack::Sparkle()
 {
 
 	SetNextThink(0.2);

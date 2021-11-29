@@ -40,7 +40,7 @@ LINK_ENTITY_TO_CLASS(monster_rat, CRat);
 // Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int CRat ::Classify()
+int CRat::Classify()
 {
 	return m_iClass ? m_iClass : CLASS_INSECT; //LRC- maybe someone needs to give them a basic biology lesson...
 }
@@ -49,7 +49,7 @@ int CRat ::Classify()
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CRat ::SetYawSpeed()
+void CRat::SetYawSpeed()
 {
 	int ys;
 
@@ -67,7 +67,7 @@ void CRat ::SetYawSpeed()
 //=========================================================
 // Spawn
 //=========================================================
-void CRat ::Spawn()
+void CRat::Spawn()
 {
 	Precache();
 
@@ -91,7 +91,7 @@ void CRat ::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CRat ::Precache()
+void CRat::Precache()
 {
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC

@@ -42,7 +42,7 @@ public:
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
-	int ObjectCaps() override { return CBaseMonster ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	void Spawn() override;
 	void Precache() override;
@@ -140,7 +140,7 @@ TYPEDESCRIPTION COsprey::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE(COsprey, CBaseMonster);
 
-void COsprey ::Spawn()
+void COsprey::Spawn()
 {
 	Precache();
 	// motor
@@ -212,7 +212,7 @@ void COsprey::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 	SetNextThink(0.1);
 }
 
-void COsprey ::FindAllThink()
+void COsprey::FindAllThink()
 {
 	CBaseEntity* pEntity = NULL;
 
@@ -241,7 +241,7 @@ void COsprey ::FindAllThink()
 }
 
 
-void COsprey ::DeployThink()
+void COsprey::DeployThink()
 {
 	UTIL_MakeAimVectors(pev->angles);
 
@@ -273,7 +273,7 @@ void COsprey ::DeployThink()
 
 
 
-bool COsprey ::HasDead()
+bool COsprey::HasDead()
 {
 	for (int i = 0; i < m_iUnits; i++)
 	{
@@ -290,7 +290,7 @@ bool COsprey ::HasDead()
 }
 
 
-CBaseMonster* COsprey ::MakeGrunt(Vector vecSrc)
+CBaseMonster* COsprey::MakeGrunt(Vector vecSrc)
 {
 	CBaseEntity* pEntity;
 	CBaseMonster* pGrunt;
@@ -332,7 +332,7 @@ CBaseMonster* COsprey ::MakeGrunt(Vector vecSrc)
 }
 
 
-void COsprey ::HoverThink()
+void COsprey::HoverThink()
 {
 	int i;
 	for (i = 0; i < 4; i++)
@@ -530,7 +530,7 @@ int COsprey::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float 
 
 
 
-void COsprey ::Killed(entvars_t* pevAttacker, int iGib)
+void COsprey::Killed(entvars_t* pevAttacker, int iGib)
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->gravity = 0.3;
@@ -561,7 +561,7 @@ void COsprey::CrashTouch(CBaseEntity* pOther)
 }
 
 
-void COsprey ::DyingThink()
+void COsprey::DyingThink()
 {
 	StudioFrameAdvance();
 	SetNextThink(0.1);
@@ -750,7 +750,7 @@ void COsprey ::DyingThink()
 }
 
 
-void COsprey ::ShowDamage()
+void COsprey::ShowDamage()
 {
 	if (m_iDoLeftSmokePuff > 0 || RANDOM_LONG(0, 99) > m_flLeftHealth)
 	{

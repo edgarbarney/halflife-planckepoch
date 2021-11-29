@@ -508,13 +508,13 @@ edict_t* EHANDLE::Set(edict_t* pent)
 };
 
 
-EHANDLE ::operator CBaseEntity*()
+EHANDLE::operator CBaseEntity*()
 {
 	return (CBaseEntity*)GET_PRIVATE(Get());
 };
 
 
-CBaseEntity* EHANDLE ::operator=(CBaseEntity* pEntity)
+CBaseEntity* EHANDLE::operator=(CBaseEntity* pEntity)
 {
 	if (pEntity)
 	{
@@ -530,7 +530,7 @@ CBaseEntity* EHANDLE ::operator=(CBaseEntity* pEntity)
 	return pEntity;
 }
 
-CBaseEntity* EHANDLE ::operator->()
+CBaseEntity* EHANDLE::operator->()
 {
 	return (CBaseEntity*)GET_PRIVATE(Get());
 }
@@ -633,7 +633,7 @@ void CBaseEntity::DontThink()
 //LRC
 // PUSH entities won't have their velocity applied unless they're thinking.
 // make them do so for the foreseeable future.
-void CBaseEntity ::SetEternalThink()
+void CBaseEntity::SetEternalThink()
 {
 	if (pev->movetype == MOVETYPE_PUSH)
 	{
@@ -652,7 +652,7 @@ void CBaseEntity ::SetEternalThink()
 //LRC - for getting round the engine's preconceptions.
 // MoveWith entities have to be able to think independently of moving.
 // This is how we do so.
-void CBaseEntity ::SetNextThink(float delay, bool correctSpeed)
+void CBaseEntity::SetNextThink(float delay, bool correctSpeed)
 {
 	// now monsters use this method, too.
 	if (m_pMoveWith || m_pChildMoveWith || pev->flags & FL_MONSTER)
@@ -686,7 +686,7 @@ void CBaseEntity ::SetNextThink(float delay, bool correctSpeed)
 }
 
 //LRC
-void CBaseEntity ::AbsoluteNextThink(float time, bool correctSpeed)
+void CBaseEntity::AbsoluteNextThink(float time, bool correctSpeed)
 {
 	if (m_pMoveWith || m_pChildMoveWith)
 	{
@@ -707,7 +707,7 @@ void CBaseEntity ::AbsoluteNextThink(float time, bool correctSpeed)
 // on a depressingly frequent basis.)
 // for some reason, this doesn't always produce perfect movement - but it's close
 // enough for government work. (the player doesn't get stuck, at least.)
-void CBaseEntity ::ThinkCorrection()
+void CBaseEntity::ThinkCorrection()
 {
 	if (pev->nextthink != m_fPevNextThink)
 	{
@@ -720,7 +720,7 @@ void CBaseEntity ::ThinkCorrection()
 }
 
 // give health
-bool CBaseEntity ::TakeHealth(float flHealth, int bitsDamageType)
+bool CBaseEntity::TakeHealth(float flHealth, int bitsDamageType)
 {
 	if (0 == pev->takedamage)
 		return false;
@@ -739,7 +739,7 @@ bool CBaseEntity ::TakeHealth(float flHealth, int bitsDamageType)
 
 // inflict damage on this entity.  bitsDamageType indicates type of damage inflicted, ie: DMG_CRUSH
 
-bool CBaseEntity ::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
+bool CBaseEntity::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
@@ -790,7 +790,7 @@ bool CBaseEntity ::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, f
 }
 
 
-void CBaseEntity ::Killed(entvars_t* pevAttacker, int iGib)
+void CBaseEntity::Killed(entvars_t* pevAttacker, int iGib)
 {
 	pev->takedamage = DAMAGE_NO;
 	pev->deadflag = DEAD_DEAD;
@@ -918,7 +918,7 @@ void CBaseEntity::SetObjectCollisionBox()
 }
 
 
-bool CBaseEntity ::Intersects(CBaseEntity* pOther)
+bool CBaseEntity::Intersects(CBaseEntity* pOther)
 {
 	if (pOther->pev->absmin.x > pev->absmax.x ||
 		pOther->pev->absmin.y > pev->absmax.y ||
@@ -930,7 +930,7 @@ bool CBaseEntity ::Intersects(CBaseEntity* pOther)
 	return true;
 }
 
-void CBaseEntity ::MakeDormant()
+void CBaseEntity::MakeDormant()
 {
 	SetBits(pev->flags, FL_DORMANT);
 
@@ -946,12 +946,12 @@ void CBaseEntity ::MakeDormant()
 	UTIL_SetOrigin(this, pev->origin);
 }
 
-bool CBaseEntity ::IsDormant()
+bool CBaseEntity::IsDormant()
 {
 	return FBitSet(pev->flags, FL_DORMANT);
 }
 
-bool CBaseEntity ::IsInWorld()
+bool CBaseEntity::IsInWorld()
 {
 	// position
 	if (pev->origin.x >= 4096)
@@ -1016,7 +1016,7 @@ bool CBaseEntity::ShouldToggle(USE_TYPE useType)
 }
 
 
-int CBaseEntity ::DamageDecal(int bitsDamageType)
+int CBaseEntity::DamageDecal(int bitsDamageType)
 {
 	if (pev->rendermode == kRenderTransAlpha)
 		return -1;

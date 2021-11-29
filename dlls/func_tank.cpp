@@ -60,7 +60,7 @@ public:
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
-	bool CFuncTankControls ::OnControls(entvars_t* pevTest) override;
+	bool CFuncTankControls::OnControls(entvars_t* pevTest) override;
 
 	bool m_active;				  // am I being used to control tanks right now?
 	Vector m_vecControllerUsePos; // where was the player standing when he used me?
@@ -155,7 +155,7 @@ public:
 	void StopRotSound();
 
 	// Bmodels don't go across transitions
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	inline bool IsActive() { return (pev->spawnflags & SF_TANK_ACTIVE) != 0; }
 	inline void TankActivate()
@@ -301,7 +301,7 @@ static Vector gTankSpread[] =
 #define MAX_FIRING_SPREADS ARRAYSIZE(gTankSpread)
 
 
-void CFuncTank ::Spawn()
+void CFuncTank::Spawn()
 {
 	Precache();
 
@@ -345,7 +345,7 @@ void CFuncTank::PostSpawn()
 	}
 }
 
-void CFuncTank ::Precache()
+void CFuncTank::Precache()
 {
 	//	PRECACHE_MODEL( "sprites/mommablob.spr" );
 	if (!FStringNull(m_iszSpriteSmoke))
@@ -358,7 +358,7 @@ void CFuncTank ::Precache()
 }
 
 
-bool CFuncTank ::KeyValue(KeyValueData* pkvd)
+bool CFuncTank::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "yawrate"))
 	{
@@ -487,7 +487,7 @@ bool CFuncTank ::KeyValue(KeyValueData* pkvd)
 //==================================================================================
 // TANK CONTROLLING
 /*LRC- TankControls checks this instead
-bool CFuncTank :: OnControls( entvars_t *pevTest )
+bool CFuncTank::OnControls( entvars_t *pevTest )
 {
 	if ( (pev->spawnflags & SF_TANK_CANCONTROL) == 0 )
 		return false;
@@ -500,7 +500,7 @@ bool CFuncTank :: OnControls( entvars_t *pevTest )
 	return false;
 } */
 
-bool CFuncTank ::StartControl(CBasePlayer* pController, CFuncTankControls* pControls)
+bool CFuncTank::StartControl(CBasePlayer* pController, CFuncTankControls* pControls)
 {
 	//	ALERT(at_console, "StartControl\n");
 	// we're already being controlled or playing a sequence
@@ -533,7 +533,7 @@ bool CFuncTank ::StartControl(CBasePlayer* pController, CFuncTankControls* pCont
 	return true;
 }
 
-void CFuncTank ::StopControl(CFuncTankControls* pControls)
+void CFuncTank::StopControl(CFuncTankControls* pControls)
 {
 	//LRC- various commands moved from here to FuncTankControls
 	if (!m_pControls || m_pControls != pControls)
@@ -593,7 +593,7 @@ void CFuncTank::UpdateSpot()
 // Called each frame by PostThink, via Use.
 // all we do here is handle firing.
 // LRC- this is now never called. Think functions are handling it all.
-/*void CFuncTank :: ControllerPostFrame()
+/*void CFuncTank::ControllerPostFrame()
 {
 	ASSERT(m_pController != NULL);
 
@@ -619,7 +619,7 @@ void CFuncTank::UpdateSpot()
 ////////////// END NEW STUFF //////////////
 
 
-void CFuncTank ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CFuncTank::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	if ((pev->spawnflags & SF_TANK_CANCONTROL) != 0)
 	{ // player controlled turret
@@ -668,7 +668,7 @@ void CFuncTank ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 }
 
 
-edict_t* CFuncTank ::FindTarget(edict_t* pPlayer)
+edict_t* CFuncTank::FindTarget(edict_t* pPlayer)
 {
 	return pPlayer;
 }
@@ -795,7 +795,7 @@ int CFuncTank::IRelationship(CBaseEntity* pTarget)
 }
 
 
-bool CFuncTank ::InRange(float range)
+bool CFuncTank::InRange(float range)
 {
 	if (range < m_minRange)
 		return false;
@@ -806,14 +806,14 @@ bool CFuncTank ::InRange(float range)
 }
 
 //LRC
-void CFuncTank ::StartSequence(CTankSequence* pSequence)
+void CFuncTank::StartSequence(CTankSequence* pSequence)
 {
 	m_pSequence = pSequence;
 	SetNextThink(1.0);
 }
 
 //LRC
-void CFuncTank ::StopSequence()
+void CFuncTank::StopSequence()
 {
 	StopRotSound();
 	DontThink();
@@ -823,7 +823,7 @@ void CFuncTank ::StopSequence()
 }
 
 // NB: tracktarget updates nextthink
-void CFuncTank ::Think()
+void CFuncTank::Think()
 {
 	//	pev->avelocity = g_vecZero;
 	TrackTarget();
@@ -1544,7 +1544,7 @@ TYPEDESCRIPTION CFuncTankControls::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CFuncTankControls, CBaseEntity);
 
 
-bool CFuncTankControls ::KeyValue(KeyValueData* pkvd)
+bool CFuncTankControls::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "crosshair"))
 	{
@@ -1554,7 +1554,7 @@ bool CFuncTankControls ::KeyValue(KeyValueData* pkvd)
 	return CBaseEntity::KeyValue(pkvd);
 }
 
-int CFuncTankControls ::ObjectCaps()
+int CFuncTankControls::ObjectCaps()
 {
 	if (pev->spawnflags & SF_TANKCONTROLS_NO_USE)
 		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
@@ -1563,7 +1563,7 @@ int CFuncTankControls ::ObjectCaps()
 }
 
 //LRC- copied here from FuncTank.
-bool CFuncTankControls ::OnControls(entvars_t* pevTest)
+bool CFuncTankControls::OnControls(entvars_t* pevTest)
 {
 	//	if ( !(pev->spawnflags & SF_TANK_CANCONTROL) )
 	//		return false;
@@ -1595,7 +1595,7 @@ bool CFuncTankControls ::OnControls(entvars_t* pevTest)
 	return false;
 }
 
-void CFuncTankControls ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CFuncTankControls::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	// LRC- rewritten to allow TankControls to be the thing that handles the relationship
 	// between the player and one or more faithful tanks.
@@ -1689,7 +1689,7 @@ void CFuncTankControls ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_
 
 
 /* LRC- no need to set up m_pTank any more...
-void CFuncTankControls :: Think()
+void CFuncTankControls::Think()
 {
 	CBaseEntity *pTarget = NULL;
 
@@ -1761,12 +1761,12 @@ TYPEDESCRIPTION CTankSequence::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTankSequence, CBaseEntity);
 
-int CTankSequence ::ObjectCaps()
+int CTankSequence::ObjectCaps()
 {
 	return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
 }
 
-bool CTankSequence ::KeyValue(KeyValueData* pkvd)
+bool CTankSequence::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iUntil"))
 	{
@@ -1811,7 +1811,7 @@ bool CTankSequence ::KeyValue(KeyValueData* pkvd)
 	return CBaseEntity::KeyValue(pkvd);
 }
 
-void CTankSequence ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CTankSequence::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	if (!ShouldToggle(useType))
 		return;
@@ -1888,7 +1888,7 @@ void CTankSequence ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 	}
 }
 
-void CTankSequence ::FacingNotify()
+void CTankSequence::FacingNotify()
 {
 	if (m_iUntil == TSEQ_UNTIL_FACING)
 	{
@@ -1899,7 +1899,7 @@ void CTankSequence ::FacingNotify()
 		m_pTank->pev->spawnflags |= SF_TANK_SEQFIRE;
 }
 
-void CTankSequence ::DeadEnemyNotify()
+void CTankSequence::DeadEnemyNotify()
 {
 	if (m_iUntil == TSEQ_UNTIL_DEATH)
 	{
@@ -1910,7 +1910,7 @@ void CTankSequence ::DeadEnemyNotify()
 	//		m_pTank->pev->spawnflags &= ~SF_TANK_SEQFIRE; // if the enemy's dead, stop firing
 }
 
-void CTankSequence ::EndThink()
+void CTankSequence::EndThink()
 {
 	//the sequence has expired. Release control of the tank.
 	StopSequence();
@@ -1918,7 +1918,7 @@ void CTankSequence ::EndThink()
 		FireTargets(STRING(pev->target), this, this, USE_TOGGLE, 0);
 }
 
-void CTankSequence ::TimeOutThink()
+void CTankSequence::TimeOutThink()
 {
 	//the sequence has timed out. Release control of the tank.
 	StopSequence();
@@ -1926,7 +1926,7 @@ void CTankSequence ::TimeOutThink()
 		FireTargets(STRING(pev->netname), this, this, USE_TOGGLE, 0);
 }
 
-void CTankSequence ::StopSequence()
+void CTankSequence::StopSequence()
 {
 	if (!m_pTank)
 	{

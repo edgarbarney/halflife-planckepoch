@@ -187,7 +187,7 @@ TYPEDESCRIPTION CLocusBeam::m_SaveData[] =
 LINK_ENTITY_TO_CLASS(locus_beam, CLocusBeam);
 IMPLEMENT_SAVERESTORE(CLocusBeam, CPointEntity);
 
-bool CLocusBeam ::KeyValue(KeyValueData* pkvd)
+bool CLocusBeam::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszSprite"))
 	{
@@ -247,7 +247,7 @@ bool CLocusBeam ::KeyValue(KeyValueData* pkvd)
 	return CBaseEntity::KeyValue(pkvd);
 }
 
-void CLocusBeam ::Precache()
+void CLocusBeam::Precache()
 {
 	PRECACHE_MODEL((char*)STRING(m_iszSprite));
 }
@@ -691,7 +691,7 @@ TYPEDESCRIPTION CLocusVariable::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CLocusVariable, CLocusVariable);
 LINK_ENTITY_TO_CLASS(locus_variable, CLocusVariable);
 
-bool CLocusVariable ::KeyValue(KeyValueData* pkvd)
+bool CLocusVariable::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{

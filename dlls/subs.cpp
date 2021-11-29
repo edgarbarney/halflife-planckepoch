@@ -32,7 +32,7 @@
 extern bool FEntIsVisible(entvars_t* pev, entvars_t* pevTarget);
 
 // Landmark class
-void CPointEntity ::Spawn()
+void CPointEntity::Spawn()
 {
 	pev->solid = SOLID_NOT;
 }
@@ -45,7 +45,7 @@ public:
 
 
 // Null Entity, remove on startup
-void CNullEntity ::Spawn()
+void CNullEntity::Spawn()
 {
 	REMOVE_ENTITY(ENT(pev));
 }
@@ -169,7 +169,7 @@ void CBaseEntity::UpdateOnRemove()
 }
 
 // Convenient way to delay removing oneself
-void CBaseEntity ::SUB_Remove()
+void CBaseEntity::SUB_Remove()
 {
 	UpdateOnRemove();
 	if (pev->health > 0)
@@ -184,7 +184,7 @@ void CBaseEntity ::SUB_Remove()
 
 
 // Convenient way to explicitly do nothing (passed to functions that require a method)
-void CBaseEntity ::SUB_DoNothing()
+void CBaseEntity::SUB_DoNothing()
 {
 	//	if (pev->ltime)
 	//		ALERT(at_console, "Doing Nothing %f\n", pev->ltime);
@@ -203,7 +203,7 @@ TYPEDESCRIPTION CBaseDelay::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CBaseDelay, CBaseEntity);
 
-bool CBaseDelay ::KeyValue(KeyValueData* pkvd)
+bool CBaseDelay::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "delay"))
 	{
@@ -235,7 +235,7 @@ match (string)self.target and call their .use function (if they have one)
 
 ==============================
 */
-void CBaseEntity ::SUB_UseTargets(CBaseEntity* pActivator, USE_TYPE useType, float value)
+void CBaseEntity::SUB_UseTargets(CBaseEntity* pActivator, USE_TYPE useType, float value)
 {
 	//
 	// fire targets
@@ -342,7 +342,7 @@ void FireTargets(const char* targetName, CBaseEntity* pActivator, CBaseEntity* p
 LINK_ENTITY_TO_CLASS(DelayedUse, CBaseDelay);
 
 
-void CBaseDelay ::SUB_UseTargets(CBaseEntity* pActivator, USE_TYPE useType, float value)
+void CBaseDelay::SUB_UseTargets(CBaseEntity* pActivator, USE_TYPE useType, float value)
 {
 	//
 	// exit immediatly if we don't have a target or kill target
@@ -401,7 +401,7 @@ void CBaseDelay ::SUB_UseTargets(CBaseEntity* pActivator, USE_TYPE useType, floa
 
 
 /*
-void CBaseDelay :: SUB_UseTargetsEntMethod()
+void CBaseDelay::SUB_UseTargetsEntMethod()
 {
 	SUB_UseTargets(pev);
 }
@@ -501,7 +501,7 @@ bool CBaseToggle::KeyValue(KeyValueData* pkvd)
 }
 
 
-//void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed)
+//void CBaseToggle::LinearMove( Vector	vecInput, float flSpeed)
 //{
 //	LinearMove(vecInput, flSpeed);
 //}
@@ -514,7 +514,7 @@ calculate pev->velocity and pev->nextthink to reach vecDest from
 pev->origin traveling at flSpeed
 ===============
 */
-void CBaseToggle ::LinearMove(Vector vecInput, float flSpeed) //, bool bNow )
+void CBaseToggle::LinearMove(Vector vecInput, float flSpeed) //, bool bNow )
 {
 	//	ALERT(at_console, "LMove %s: %f %f %f, speed %f\n", STRING(pev->targetname), vecInput.x, vecInput.y, vecInput.z, flSpeed);
 	ASSERTSZ(flSpeed != 0, "LinearMove:  no speed is defined!");
@@ -536,7 +536,7 @@ void CBaseToggle ::LinearMove(Vector vecInput, float flSpeed) //, bool bNow )
 	//	}
 }
 
-void CBaseToggle ::LinearMoveNow()
+void CBaseToggle::LinearMoveNow()
 {
 	//	ALERT(at_console, "LMNow %s\n", STRING(pev->targetname));
 
@@ -586,7 +586,7 @@ void CBaseToggle ::LinearMoveNow()
 After moving, set origin to exact final destination, call "move done" function
 ============
 */
-/*void CBaseToggle :: LinearMoveDone()
+/*void CBaseToggle::LinearMoveDone()
 {
 	Vector vecDiff;
 	if (m_pMoveWith)
@@ -606,14 +606,14 @@ After moving, set origin to exact final destination, call "move done" function
 	}
 }*/
 
-void CBaseToggle ::LinearMoveDone()
+void CBaseToggle::LinearMoveDone()
 {
 	SetThink(&CBaseToggle::LinearMoveDoneNow);
 	//	ALERT(at_console, "LMD: desiredThink %s\n", STRING(pev->targetname));
 	UTIL_DesiredThink(this);
 }
 
-void CBaseToggle ::LinearMoveDoneNow()
+void CBaseToggle::LinearMoveDoneNow()
 {
 	Vector vecDest;
 
@@ -638,13 +638,13 @@ void CBaseToggle ::LinearMoveDoneNow()
 		(this->*m_pfnCallWhenMoveDone)();
 }
 
-bool CBaseToggle ::IsLockedByMaster()
+bool CBaseToggle::IsLockedByMaster()
 {
 	return !FStringNull(m_sMaster) && !UTIL_IsMasterTriggered(m_sMaster, m_hActivator);
 }
 
 //LRC- mapping toggle-states to global states
-STATE CBaseToggle ::GetState()
+STATE CBaseToggle::GetState()
 {
 	switch (m_toggle_state)
 	{
@@ -670,7 +670,7 @@ pev->origin traveling at flSpeed
 Just like LinearMove, but rotational.
 ===============
 */
-void CBaseToggle ::AngularMove(Vector vecDestAngle, float flSpeed)
+void CBaseToggle::AngularMove(Vector vecDestAngle, float flSpeed)
 {
 	ASSERTSZ(flSpeed != 0, "AngularMove:  no speed is defined!");
 	//	ASSERTSZ(m_pfnCallWhenMoveDone != NULL, "AngularMove: no post-move function defined");
@@ -692,7 +692,7 @@ void CBaseToggle ::AngularMove(Vector vecDestAngle, float flSpeed)
 	//	}
 }
 
-void CBaseToggle ::AngularMoveNow()
+void CBaseToggle::AngularMoveNow()
 {
 	//	ALERT(at_console, "AngularMoveNow %f\n", pev->ltime);
 	Vector vecDestAngle;
@@ -723,7 +723,7 @@ void CBaseToggle ::AngularMoveNow()
 	UTIL_SetAvelocity(this, vecDestDelta / flTravelTime);
 }
 
-void CBaseToggle ::AngularMoveDone()
+void CBaseToggle::AngularMoveDone()
 {
 	SetThink(&CBaseToggle::AngularMoveDoneNow);
 	//	ALERT(at_console, "LMD: desiredThink %s\n", STRING(pev->targetname));
@@ -735,7 +735,7 @@ void CBaseToggle ::AngularMoveDone()
 After rotating, set angle to exact final angle, call "move done" function
 ============
 */
-void CBaseToggle ::AngularMoveDoneNow()
+void CBaseToggle::AngularMoveDoneNow()
 {
 	//	ALERT(at_console, "AngularMoveDone %f\n", pev->ltime);
 	UTIL_SetAvelocity(this, g_vecZero);
@@ -753,7 +753,7 @@ void CBaseToggle ::AngularMoveDoneNow()
 }
 
 // this isn't currently used. Otherwise I'd fix it to use movedir the way it should...
-float CBaseToggle ::AxisValue(int flags, const Vector& angles)
+float CBaseToggle::AxisValue(int flags, const Vector& angles)
 {
 	if (FBitSet(flags, SF_DOOR_ROTATE_Z))
 		return angles.z;
@@ -764,7 +764,7 @@ float CBaseToggle ::AxisValue(int flags, const Vector& angles)
 }
 
 
-void CBaseToggle ::AxisDir(entvars_t* pev)
+void CBaseToggle::AxisDir(entvars_t* pev)
 {
 	if (pev->movedir != g_vecZero) //LRC
 		return;
@@ -778,7 +778,7 @@ void CBaseToggle ::AxisDir(entvars_t* pev)
 }
 
 
-float CBaseToggle ::AxisDelta(int flags, const Vector& angle1, const Vector& angle2)
+float CBaseToggle::AxisDelta(int flags, const Vector& angle1, const Vector& angle2)
 {
 	if (FBitSet(flags, SF_DOOR_ROTATE_Z))
 		return angle1.z - angle2.z;
@@ -829,14 +829,14 @@ class CInfoMoveWith : public CBaseEntity
 public:
 	void Spawn() override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	STATE GetState() override { return (pev->spawnflags & SF_IMW_INACTIVE) ? STATE_OFF : STATE_ON; }
 };
 
 LINK_ENTITY_TO_CLASS(info_movewith, CInfoMoveWith);
 
-void CInfoMoveWith ::Spawn()
+void CInfoMoveWith::Spawn()
 {
 	if (pev->spawnflags & SF_IMW_INACTIVE)
 		m_MoveWith = pev->netname;
@@ -851,7 +851,7 @@ void CInfoMoveWith ::Spawn()
 	// and allow InitMoveWith to set things up as usual.
 }
 
-void CInfoMoveWith ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CInfoMoveWith::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	CBaseEntity* pSibling;
 

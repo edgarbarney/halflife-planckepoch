@@ -80,25 +80,25 @@ bool CHalfLifeRules::FShouldSwitchWeapon(CBasePlayer* pPlayer, CBasePlayerItem* 
 
 //=========================================================
 //=========================================================
-bool CHalfLifeRules ::GetNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon)
+bool CHalfLifeRules::GetNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon)
 {
 	return false;
 }
 
 //=========================================================
 //=========================================================
-bool CHalfLifeRules ::ClientConnected(edict_t* pEntity, const char* pszName, const char* pszAddress, char szRejectReason[128])
+bool CHalfLifeRules::ClientConnected(edict_t* pEntity, const char* pszName, const char* pszAddress, char szRejectReason[128])
 {
 	return true;
 }
 
-void CHalfLifeRules ::InitHUD(CBasePlayer* pl)
+void CHalfLifeRules::InitHUD(CBasePlayer* pl)
 {
 }
 
 //=========================================================
 //=========================================================
-void CHalfLifeRules ::ClientDisconnected(edict_t* pClient)
+void CHalfLifeRules::ClientDisconnected(edict_t* pClient)
 {
 }
 
@@ -114,7 +114,7 @@ float CHalfLifeRules::FlPlayerFallDamage(CBasePlayer* pPlayer)
 
 //=========================================================
 //=========================================================
-void CHalfLifeRules ::PlayerSpawn(CBasePlayer* pPlayer)
+void CHalfLifeRules::PlayerSpawn(CBasePlayer* pPlayer)
 {
 	CBaseEntity* pWeaponEntity = NULL;
 
@@ -132,28 +132,28 @@ void CHalfLifeRules ::PlayerSpawn(CBasePlayer* pPlayer)
 
 //=========================================================
 //=========================================================
-bool CHalfLifeRules ::AllowAutoTargetCrosshair()
+bool CHalfLifeRules::AllowAutoTargetCrosshair()
 {
 	return (g_iSkillLevel == SKILL_EASY);
 }
 
 //=========================================================
 //=========================================================
-void CHalfLifeRules ::PlayerThink(CBasePlayer* pPlayer)
+void CHalfLifeRules::PlayerThink(CBasePlayer* pPlayer)
 {
 }
 
 
 //=========================================================
 //=========================================================
-bool CHalfLifeRules ::FPlayerCanRespawn(CBasePlayer* pPlayer)
+bool CHalfLifeRules::FPlayerCanRespawn(CBasePlayer* pPlayer)
 {
 	return true;
 }
 
 //=========================================================
 //=========================================================
-float CHalfLifeRules ::FlPlayerSpawnTime(CBasePlayer* pPlayer)
+float CHalfLifeRules::FlPlayerSpawnTime(CBasePlayer* pPlayer)
 {
 	return gpGlobals->time; //now!
 }
@@ -162,7 +162,7 @@ float CHalfLifeRules ::FlPlayerSpawnTime(CBasePlayer* pPlayer)
 // IPointsForKill - how many points awarded to anyone
 // that kills this player?
 //=========================================================
-int CHalfLifeRules ::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
+int CHalfLifeRules::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
 {
 	return 1;
 }
@@ -170,7 +170,7 @@ int CHalfLifeRules ::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled
 //=========================================================
 // PlayerKilled - someone/something killed this player
 //=========================================================
-void CHalfLifeRules ::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor)
+void CHalfLifeRules::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor)
 {
 }
 
@@ -185,7 +185,7 @@ void CHalfLifeRules::DeathNotice(CBasePlayer* pVictim, entvars_t* pKiller, entva
 // PlayerGotWeapon - player has grabbed a weapon that was
 // sitting in the world
 //=========================================================
-void CHalfLifeRules ::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon)
+void CHalfLifeRules::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon)
 {
 }
 
@@ -193,7 +193,7 @@ void CHalfLifeRules ::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWe
 // FlWeaponRespawnTime - what is the time in the future
 // at which this weapon may spawn?
 //=========================================================
-float CHalfLifeRules ::FlWeaponRespawnTime(CBasePlayerItem* pWeapon)
+float CHalfLifeRules::FlWeaponRespawnTime(CBasePlayerItem* pWeapon)
 {
 	return -1;
 }
@@ -203,7 +203,7 @@ float CHalfLifeRules ::FlWeaponRespawnTime(CBasePlayerItem* pWeapon)
 // now,  otherwise it returns the time at which it can try
 // to spawn again.
 //=========================================================
-float CHalfLifeRules ::FlWeaponTryRespawn(CBasePlayerItem* pWeapon)
+float CHalfLifeRules::FlWeaponTryRespawn(CBasePlayerItem* pWeapon)
 {
 	return 0;
 }
@@ -212,7 +212,7 @@ float CHalfLifeRules ::FlWeaponTryRespawn(CBasePlayerItem* pWeapon)
 // VecWeaponRespawnSpot - where should this weapon spawn?
 // Some game variations may choose to randomize spawn locations
 //=========================================================
-Vector CHalfLifeRules ::VecWeaponRespawnSpot(CBasePlayerItem* pWeapon)
+Vector CHalfLifeRules::VecWeaponRespawnSpot(CBasePlayerItem* pWeapon)
 {
 	return pWeapon->pev->origin;
 }
@@ -221,7 +221,7 @@ Vector CHalfLifeRules ::VecWeaponRespawnSpot(CBasePlayerItem* pWeapon)
 // WeaponShouldRespawn - any conditions inhibiting the
 // respawning of this weapon?
 //=========================================================
-int CHalfLifeRules ::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
+int CHalfLifeRules::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
 {
 	return GR_WEAPON_RESPAWN_NO;
 }
@@ -329,7 +329,7 @@ int CHalfLifeRules::PlayerRelationship(CBaseEntity* pPlayer, CBaseEntity* pTarge
 
 //=========================================================
 //=========================================================
-bool CHalfLifeRules ::FAllowMonsters()
+bool CHalfLifeRules::FAllowMonsters()
 {
 	return true;
 }

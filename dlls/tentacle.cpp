@@ -46,7 +46,7 @@ public:
 	static TYPEDESCRIPTION m_SaveData[];
 
 	// Don't allow the tentacle to go across transitions!!!
-	int ObjectCaps() override { return CBaseMonster ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	void SetObjectCollisionBox() override
 	{
@@ -109,8 +109,8 @@ public:
 
 
 
-bool CTentacle ::g_fFlySound;
-bool CTentacle ::g_fSquirmSound;
+bool CTentacle::g_fFlySound;
+bool CTentacle::g_fSquirmSound;
 
 LINK_ENTITY_TO_CLASS(monster_tentacle, CTentacle);
 
@@ -238,7 +238,7 @@ typedef enum
 // Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int CTentacle ::Classify()
+int CTentacle::Classify()
 {
 	return m_iClass ? m_iClass : CLASS_ALIEN_MONSTER;
 }
@@ -246,7 +246,7 @@ int CTentacle ::Classify()
 //
 // Tentacle Spawn
 //
-void CTentacle ::Spawn()
+void CTentacle::Spawn()
 {
 	Precache();
 
@@ -291,7 +291,7 @@ void CTentacle ::Spawn()
 	UTIL_SetOrigin(this, pev->origin);
 }
 
-void CTentacle ::Precache()
+void CTentacle::Precache()
 {
 	PRECACHE_MODEL("models/tentacle2.mdl");
 
@@ -345,7 +345,7 @@ bool CTentacle::KeyValue(KeyValueData* pkvd)
 
 
 
-int CTentacle ::Level(float dz)
+int CTentacle::Level(float dz)
 {
 	if (dz < 216)
 		return 0;
@@ -357,7 +357,7 @@ int CTentacle ::Level(float dz)
 }
 
 
-float CTentacle ::MyHeight()
+float CTentacle::MyHeight()
 {
 	switch (MyLevel())
 	{
@@ -372,7 +372,7 @@ float CTentacle ::MyHeight()
 }
 
 
-int CTentacle ::MyLevel()
+int CTentacle::MyLevel()
 {
 	switch (pev->sequence)
 	{
@@ -441,7 +441,7 @@ int CTentacle ::MyLevel()
 }
 
 
-void CTentacle ::Test()
+void CTentacle::Test()
 {
 	pev->sequence = TENTACLE_ANIM_Floor_Strike;
 	pev->framerate = 0;
@@ -454,7 +454,7 @@ void CTentacle ::Test()
 //
 // TentacleThink
 //
-void CTentacle ::Cycle()
+void CTentacle::Cycle()
 {
 	// ALERT( at_console, "%s %.2f %d %d\n", STRING( pev->targetname ), pev->origin.z, m_MonsterState, m_IdealMonsterState );
 	SetNextThink(0.1);
@@ -741,7 +741,7 @@ void CTentacle::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TY
 
 
 
-void CTentacle ::DieThink()
+void CTentacle::DieThink()
 {
 	SetNextThink(0.1);
 
@@ -815,7 +815,7 @@ void CTentacle ::DieThink()
 }
 
 
-void CTentacle ::HandleAnimEvent(MonsterEvent_t* pEvent)
+void CTentacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	const char* sound;
 
@@ -942,8 +942,8 @@ void CTentacle ::HandleAnimEvent(MonsterEvent_t* pEvent)
 //
 // TentacleStart
 //
-// void CTentacle :: Start( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-void CTentacle ::Start()
+// void CTentacle::Start( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CTentacle::Start()
 {
 	SetThink(&CTentacle::Cycle);
 
@@ -965,7 +965,7 @@ void CTentacle ::Start()
 
 
 
-void CTentacle ::HitTouch(CBaseEntity* pOther)
+void CTentacle::HitTouch(CBaseEntity* pOther)
 {
 	TraceResult tr = UTIL_GetGlobalTrace();
 
@@ -1018,7 +1018,7 @@ bool CTentacle::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 
 
 
-void CTentacle ::Killed(entvars_t* pevAttacker, int iGib)
+void CTentacle::Killed(entvars_t* pevAttacker, int iGib)
 {
 	m_iGoalAnim = TENTACLE_ANIM_Pit_Idle;
 	return;
@@ -1038,7 +1038,7 @@ LINK_ENTITY_TO_CLASS(monster_tentaclemaw, CTentacleMaw);
 //
 // Tentacle Spawn
 //
-void CTentacleMaw ::Spawn()
+void CTentacleMaw::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), "models/maw.mdl");
@@ -1055,7 +1055,7 @@ void CTentacleMaw ::Spawn()
 	// ResetSequenceInfo( );
 }
 
-void CTentacleMaw ::Precache()
+void CTentacleMaw::Precache()
 {
 	PRECACHE_MODEL("models/maw.mdl");
 }

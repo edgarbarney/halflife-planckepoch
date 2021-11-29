@@ -50,7 +50,7 @@ spawnflags - (stop if blocked, stop if player seen)
 // Cache user-entity-field values until spawn is called.
 //
 
-bool CCineMonster ::KeyValue(KeyValueData* pkvd)
+bool CCineMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszIdle"))
 	{
@@ -172,7 +172,7 @@ LINK_ENTITY_TO_CLASS(scripted_action, CCineMonster); //LRC
 LINK_ENTITY_TO_CLASS(aiscripted_sequence, CCineMonster); //LRC - aiscripted sequences don't need to be seperate
 
 
-void CCineMonster ::Spawn()
+void CCineMonster::Spawn()
 {
 	// pev->solid = SOLID_TRIGGER;
 	// UTIL_SetSize(pev, Vector(-8, -8, -8), Vector(8, 8, 8));
@@ -205,7 +205,7 @@ void CCineMonster ::Spawn()
 //
 // CineStart
 //
-void CCineMonster ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CCineMonster::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	// do I already know who I should use
 	CBaseEntity* pEntity = m_hTargetEnt;
@@ -236,11 +236,11 @@ void CCineMonster ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 
 
 // This doesn't really make sense since only MOVETYPE_PUSH get 'Blocked' events
-void CCineMonster ::Blocked(CBaseEntity* pOther)
+void CCineMonster::Blocked(CBaseEntity* pOther)
 {
 }
 
-void CCineMonster ::Touch(CBaseEntity* pOther)
+void CCineMonster::Touch(CBaseEntity* pOther)
 {
 	/*
 	ALERT( at_aiconsole, "Cine Touch\n" );
@@ -281,7 +281,7 @@ void CCineMonster ::Touch(CBaseEntity* pOther)
 //
 // ********** Cinematic DIE **********
 //
-void CCineMonster ::Die()
+void CCineMonster::Die()
 {
 	SetThink(&CCineMonster::SUB_Remove);
 }
@@ -289,7 +289,7 @@ void CCineMonster ::Die()
 //
 // ********** Cinematic PAIN **********
 //
-void CCineMonster ::Pain()
+void CCineMonster::Pain()
 {
 }
 
@@ -298,7 +298,7 @@ void CCineMonster ::Pain()
 //
 
 //LRC: now redefined... find a viable entity with the given name, and return it (or NULL if not found).
-CBaseMonster* CCineMonster ::FindEntity(const char* sName, CBaseEntity* pActivator)
+CBaseMonster* CCineMonster::FindEntity(const char* sName, CBaseEntity* pActivator)
 {
 	CBaseEntity* pEntity;
 
@@ -344,7 +344,7 @@ CBaseMonster* CCineMonster ::FindEntity(const char* sName, CBaseEntity* pActivat
 }
 
 // make the entity enter a scripted sequence
-void CCineMonster ::PossessEntity()
+void CCineMonster::PossessEntity()
 {
 	CBaseEntity* pEntity = m_hTargetEnt;
 	CBaseMonster* pTarget = NULL;
@@ -440,7 +440,7 @@ void CCineMonster ::PossessEntity()
 }
 
 // at the beginning of the level, set up the idle animation. --LRC
-void CCineMonster ::InitIdleThink()
+void CCineMonster::InitIdleThink()
 {
 	if ((m_hTargetEnt = FindEntity(STRING(m_iszEntity), NULL)) != NULL)
 	{
@@ -456,7 +456,7 @@ void CCineMonster ::InitIdleThink()
 	}
 }
 
-void CCineMonster ::CineThink()
+void CCineMonster::CineThink()
 {
 	//	ALERT(at_console, "Sequence think, activator %s\n", STRING(m_hActivator->pev->targetname));
 	if ((m_hTargetEnt = FindEntity(STRING(m_iszEntity), m_hActivator)) != NULL)
@@ -476,7 +476,7 @@ void CCineMonster ::CineThink()
 
 
 // lookup a sequence name and setup the target monster to play it
-bool CCineMonster ::StartSequence(CBaseMonster* pTarget, int iszSeq, bool completeOnEmpty)
+bool CCineMonster::StartSequence(CBaseMonster* pTarget, int iszSeq, bool completeOnEmpty)
 {
 	//	ALERT( at_console, "StartSequence %s \"%s\"\n", STRING(pev->classname), STRING(pev->targetname));
 
@@ -516,7 +516,7 @@ bool CCineMonster ::StartSequence(CBaseMonster* pTarget, int iszSeq, bool comple
 // the CBaseMonster pointer to the monster that the sequence
 // possesses.
 //=========================================================
-void CCineMonster ::SequenceDone(CBaseMonster* pMonster)
+void CCineMonster::SequenceDone(CBaseMonster* pMonster)
 {
 	m_iRepeatsLeft = m_iRepeats; //LRC - reset the repeater count
 	m_iState = STATE_OFF;		 // we've finished.
@@ -549,7 +549,7 @@ void CCineMonster ::SequenceDone(CBaseMonster* pMonster)
 //
 // or select a specific AMBUSH schedule, regardless of state. //LRC
 //=========================================================
-void CCineMonster ::FixScriptMonsterSchedule(CBaseMonster* pMonster)
+void CCineMonster::FixScriptMonsterSchedule(CBaseMonster* pMonster)
 {
 	if (pMonster->m_IdealMonsterState != MONSTERSTATE_DEAD)
 		pMonster->m_IdealMonsterState = MONSTERSTATE_IDLE;
@@ -570,7 +570,7 @@ void CCineMonster ::FixScriptMonsterSchedule(CBaseMonster* pMonster)
 	}
 }
 
-bool CBaseMonster ::ExitScriptedSequence()
+bool CBaseMonster::ExitScriptedSequence()
 {
 	if (pev->deadflag == DEAD_DYING)
 	{
@@ -653,7 +653,7 @@ void ScriptEntityCancel(edict_t* pentCine)
 
 
 // find all the cinematic entities with my targetname and stop them from playing
-void CCineMonster ::CancelScript()
+void CCineMonster::CancelScript()
 {
 	ALERT(at_aiconsole, "Cancelling script: %s\n", STRING(m_iszPlay));
 
@@ -674,7 +674,7 @@ void CCineMonster ::CancelScript()
 
 
 // find all the cinematic entities with my targetname and tell them whether to wait before starting
-void CCineMonster ::DelayStart(bool state)
+void CCineMonster::DelayStart(bool state)
 {
 	CBaseEntity* pCine = UTIL_FindEntityByTargetname(NULL, STRING(pev->targetname));
 
@@ -707,7 +707,7 @@ void CCineMonster ::DelayStart(bool state)
 
 
 // Find an entity that I'm interested in and precache the sounds he'll need in the sequence.
-void CCineMonster ::Activate()
+void CCineMonster::Activate()
 {
 	CBaseEntity* pEntity;
 	CBaseMonster* pTarget;
@@ -753,7 +753,7 @@ void CCineMonster ::Activate()
 }
 
 
-bool CBaseMonster ::CineCleanup()
+bool CBaseMonster::CineCleanup()
 {
 	CCineMonster* pOldCine = m_pCine;
 
@@ -893,7 +893,7 @@ public:
 	void EXPORT FindThink();
 	void EXPORT DelayThink();
 	void EXPORT DurationThink();
-	int ObjectCaps() override { return (CBaseToggle ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int ObjectCaps() override { return (CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	STATE GetState() override { return m_playing ? STATE_ON : STATE_OFF; }
 
@@ -944,7 +944,7 @@ IMPLEMENT_SAVERESTORE(CScriptedSentence, CBaseToggle);
 
 LINK_ENTITY_TO_CLASS(scripted_sentence, CScriptedSentence);
 
-bool CScriptedSentence ::KeyValue(KeyValueData* pkvd)
+bool CScriptedSentence::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "sentence"))
 	{
@@ -991,7 +991,7 @@ bool CScriptedSentence ::KeyValue(KeyValueData* pkvd)
 }
 
 
-void CScriptedSentence ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CScriptedSentence::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	if (!m_active)
 		return;
@@ -1002,7 +1002,7 @@ void CScriptedSentence ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_
 }
 
 
-void CScriptedSentence ::Spawn()
+void CScriptedSentence::Spawn()
 {
 	pev->solid = SOLID_NOT;
 
@@ -1042,7 +1042,7 @@ void CScriptedSentence ::Spawn()
 }
 
 
-void CScriptedSentence ::FindThink()
+void CScriptedSentence::FindThink()
 {
 	if (!m_iszEntity) //LRC- no target monster given: speak through HEV
 	{
@@ -1085,14 +1085,14 @@ void CScriptedSentence ::FindThink()
 }
 
 //LRC
-void CScriptedSentence ::DurationThink()
+void CScriptedSentence::DurationThink()
 {
 	m_playing = false;
 	SetNextThink(m_flRepeat);
 	SetThink(&CScriptedSentence::DelayThink);
 }
 
-void CScriptedSentence ::DelayThink()
+void CScriptedSentence::DelayThink()
 {
 	m_active = true;
 	if (FStringNull(pev->targetname))
@@ -1101,7 +1101,7 @@ void CScriptedSentence ::DelayThink()
 }
 
 
-bool CScriptedSentence ::AcceptableSpeaker(CBaseMonster* pMonster)
+bool CScriptedSentence::AcceptableSpeaker(CBaseMonster* pMonster)
 {
 	if (pMonster)
 	{
@@ -1122,7 +1122,7 @@ bool CScriptedSentence ::AcceptableSpeaker(CBaseMonster* pMonster)
 }
 
 
-CBaseMonster* CScriptedSentence ::FindEntity(CBaseEntity* pActivator)
+CBaseMonster* CScriptedSentence::FindEntity(CBaseEntity* pActivator)
 {
 	CBaseEntity* pTarget;
 	CBaseMonster* pMonster;
@@ -1160,7 +1160,7 @@ CBaseMonster* CScriptedSentence ::FindEntity(CBaseEntity* pActivator)
 }
 
 
-bool CScriptedSentence ::StartSentence(CBaseMonster* pTarget)
+bool CScriptedSentence::StartSentence(CBaseMonster* pTarget)
 {
 	if (!pTarget)
 	{
@@ -1208,7 +1208,7 @@ public:
 	void Spawn() override;
 	void Die();
 	int Classify() override;
-	int ObjectCaps() override { return (CBaseMonster ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	int ObjectCaps() override { return (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 };
 
 
@@ -1218,7 +1218,7 @@ LINK_ENTITY_TO_CLASS(monster_furniture, CFurniture);
 //=========================================================
 // Furniture is killed
 //=========================================================
-void CFurniture ::Die()
+void CFurniture::Die()
 {
 	SetThink(&CFurniture::SUB_Remove);
 	SetNextThink(0);
@@ -1228,7 +1228,7 @@ void CFurniture ::Die()
 // This used to have something to do with bees flying, but
 // now it only initializes moving furniture in scripted sequences
 //=========================================================
-void CFurniture ::Spawn()
+void CFurniture::Spawn()
 {
 	PRECACHE_MODEL((char*)STRING(pev->model));
 	SET_MODEL(ENT(pev), STRING(pev->model));

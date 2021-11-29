@@ -946,7 +946,7 @@ void CBaseTurret::AutoSearchThink()
 }
 
 
-void CBaseTurret ::TurretDeath()
+void CBaseTurret::TurretDeath()
 {
 	bool iActive = false;
 
@@ -1014,7 +1014,7 @@ void CBaseTurret ::TurretDeath()
 
 
 
-void CBaseTurret ::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
+void CBaseTurret::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
 {
 	if (ptr->iHitgroup == 10)
 	{
@@ -1282,7 +1282,7 @@ void CSentry::SentryTouch(CBaseEntity* pOther)
 }
 
 
-void CSentry ::SentryDeath()
+void CSentry::SentryDeath()
 {
 	bool iActive = false;
 

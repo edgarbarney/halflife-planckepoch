@@ -82,7 +82,7 @@ bool CGenericMonster::KeyValue(KeyValueData* pkvd)
 // Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int CGenericMonster ::Classify()
+int CGenericMonster::Classify()
 {
 	return m_iClass ? m_iClass : CLASS_PLAYER_ALLY;
 }
@@ -91,7 +91,7 @@ int CGenericMonster ::Classify()
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CGenericMonster ::SetYawSpeed()
+void CGenericMonster::SetYawSpeed()
 {
 	int ys;
 
@@ -109,7 +109,7 @@ void CGenericMonster ::SetYawSpeed()
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CGenericMonster ::HandleAnimEvent(MonsterEvent_t* pEvent)
+void CGenericMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	switch (pEvent->event)
 	{
@@ -123,7 +123,7 @@ void CGenericMonster ::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 // ISoundMask - generic monster can't hear.
 //=========================================================
-int CGenericMonster ::ISoundMask()
+int CGenericMonster::ISoundMask()
 {
 	return bits_SOUND_NONE;
 }
@@ -131,7 +131,7 @@ int CGenericMonster ::ISoundMask()
 //=========================================================
 // Spawn
 //=========================================================
-void CGenericMonster ::Spawn()
+void CGenericMonster::Spawn()
 {
 	// store the size, so we can use it to set up the hulls after Set_Model overwrites it.
 	Vector vecSize = pev->size;
@@ -194,7 +194,7 @@ void CGenericMonster ::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CGenericMonster ::Precache()
+void CGenericMonster::Precache()
 {
 	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)
@@ -253,7 +253,7 @@ bool CDeadGenericMonster::KeyValue(KeyValueData* pkvd)
 //=========================================================
 // ********** DeadGenericMonster SPAWN **********
 //=========================================================
-void CDeadGenericMonster ::Spawn()
+void CDeadGenericMonster::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));
@@ -290,7 +290,7 @@ void CDeadGenericMonster ::Spawn()
 	pev->frame = 255; // pose at the _end_ of its death sequence.
 }
 
-void CDeadGenericMonster ::Precache()
+void CDeadGenericMonster::Precache()
 {
 	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)

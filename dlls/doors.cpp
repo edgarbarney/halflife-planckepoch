@@ -344,7 +344,7 @@ void CBaseDoor::Spawn()
 }
 
 //LRC
-void CBaseDoor ::PostSpawn()
+void CBaseDoor::PostSpawn()
 {
 	if (m_pMoveWith)
 		m_vecPosition1 = pev->origin - m_pMoveWith->pev->origin;
@@ -374,7 +374,7 @@ void CBaseDoor ::PostSpawn()
 	}
 }
 
-//void CBaseDoor :: PostMoveWith()
+//void CBaseDoor::PostMoveWith()
 //{
 //	Vector vecTemp = m_vecPosition1 - m_pMoveWith->m_vecSpawnOffset;
 //	ALERT(at_console, "door %s pmw: pos1 changes from (%f %f %f) to (%f %f %f)\n", STRING(pev->targetname), m_vecPosition1.x, m_vecPosition1.y, m_vecPosition1.z, vecTemp.x, vecTemp.y, vecTemp.z);
@@ -382,7 +382,7 @@ void CBaseDoor ::PostSpawn()
 //	m_vecPosition2 = m_vecPosition2 - m_pMoveWith->m_vecSpawnOffset;
 //}
 
-void CBaseDoor ::SetToggleState(int state)
+void CBaseDoor::SetToggleState(int state)
 {
 	if (state == TS_AT_TOP)
 	{
@@ -1094,7 +1094,7 @@ bool CRotDoor::KeyValue(KeyValueData* pkvd)
 	return CBaseDoor::KeyValue(pkvd);
 }
 
-void CRotDoor ::SetToggleState(int state)
+void CRotDoor::SetToggleState(int state)
 {
 	if (state == TS_AT_TOP)
 		pev->angles = m_vecAngle2;
@@ -1116,7 +1116,7 @@ public:
 
 	bool KeyValue(KeyValueData* pkvd) override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	int ObjectCaps() override { return CBaseToggle ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;

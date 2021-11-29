@@ -77,7 +77,7 @@ IMPLEMENT_SAVERESTORE(CSqueakGrenade, CGrenade);
 
 #define SQUEEK_DETONATE_DELAY 15.0
 
-int CSqueakGrenade ::Classify()
+int CSqueakGrenade::Classify()
 {
 	if (m_iClass)
 		return m_iClass;
@@ -102,7 +102,7 @@ int CSqueakGrenade ::Classify()
 	return CLASS_ALIEN_BIOWEAPON;
 }
 
-void CSqueakGrenade ::Spawn()
+void CSqueakGrenade::Spawn()
 {
 	Precache();
 	// motor
@@ -153,7 +153,7 @@ void CSqueakGrenade::Precache()
 }
 
 
-void CSqueakGrenade ::Killed(entvars_t* pevAttacker, int iGib)
+void CSqueakGrenade::Killed(entvars_t* pevAttacker, int iGib)
 {
 	pev->model = iStringNull; // make invisible
 	SetThink(&CSqueakGrenade::SUB_Remove);
@@ -181,10 +181,10 @@ void CSqueakGrenade ::Killed(entvars_t* pevAttacker, int iGib)
 	if (m_hOwner != NULL)
 		pev->owner = m_hOwner->edict();
 
-	CBaseMonster ::Killed(pevAttacker, GIB_ALWAYS);
+	CBaseMonster::Killed(pevAttacker, GIB_ALWAYS);
 }
 
-void CSqueakGrenade ::GibMonster()
+void CSqueakGrenade::GibMonster()
 {
 	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/bodysplat.wav", 0.75, ATTN_NORM, 0, 200);
 }

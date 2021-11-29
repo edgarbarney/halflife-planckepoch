@@ -46,7 +46,7 @@ public:
 		int flags = 0;
 		if (pev->spawnflags & SF_SPRITE_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
-		return (CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
 	void EXPORT AnimateThink();
 	void EXPORT ExpandThink();
@@ -119,7 +119,7 @@ public:
 		int flags = 0;
 		if (pev->spawnflags & SF_BEAM_TEMPORARY)
 			flags = FCAP_DONT_SAVE;
-		return (CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
+		return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | flags;
 	}
 
 	void EXPORT TriggerTouch(CBaseEntity* pOther);

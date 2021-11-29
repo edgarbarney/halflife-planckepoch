@@ -73,7 +73,7 @@ IMPLEMENT_SAVERESTORE(CBarnacle, CBaseMonster);
 // Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int CBarnacle ::Classify()
+int CBarnacle::Classify()
 {
 	return m_iClass ? m_iClass : CLASS_ALIEN_MONSTER;
 }
@@ -84,7 +84,7 @@ int CBarnacle ::Classify()
 //
 // Returns number of events handled, 0 if none.
 //=========================================================
-void CBarnacle ::HandleAnimEvent(MonsterEvent_t* pEvent)
+void CBarnacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	switch (pEvent->event)
 	{
@@ -100,7 +100,7 @@ void CBarnacle ::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 // Spawn
 //=========================================================
-void CBarnacle ::Spawn()
+void CBarnacle::Spawn()
 {
 	Precache();
 
@@ -145,7 +145,7 @@ bool CBarnacle::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 
 //=========================================================
 //=========================================================
-void CBarnacle ::BarnacleThink()
+void CBarnacle::BarnacleThink()
 {
 	CBaseEntity* pTouchEnt;
 	CBaseMonster* pVictim;
@@ -332,7 +332,7 @@ void CBarnacle ::BarnacleThink()
 //=========================================================
 // Killed.
 //=========================================================
-void CBarnacle ::Killed(entvars_t* pevAttacker, int iGib)
+void CBarnacle::Killed(entvars_t* pevAttacker, int iGib)
 {
 	CBaseMonster* pVictim;
 
@@ -372,7 +372,7 @@ void CBarnacle ::Killed(entvars_t* pevAttacker, int iGib)
 
 //=========================================================
 //=========================================================
-void CBarnacle ::WaitTillDead()
+void CBarnacle::WaitTillDead()
 {
 	SetNextThink(0.1);
 
@@ -390,7 +390,7 @@ void CBarnacle ::WaitTillDead()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CBarnacle ::Precache()
+void CBarnacle::Precache()
 {
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
@@ -412,7 +412,7 @@ void CBarnacle ::Precache()
 // of the trace in the int pointer provided.
 //=========================================================
 #define BARNACLE_CHECK_SPACING 8
-CBaseEntity* CBarnacle ::TongueTouchEnt(float* pflLength)
+CBaseEntity* CBarnacle::TongueTouchEnt(float* pflLength)
 {
 	TraceResult tr;
 	float length;

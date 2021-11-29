@@ -44,7 +44,7 @@ LINK_ENTITY_TO_CLASS(info_target, CInfoTarget);
 #define SF_TARGET_HACK_VISIBLE 1
 
 // Landmark class
-void CInfoTarget ::Spawn()
+void CInfoTarget::Spawn()
 {
 	//Precache();
 	pev->solid = SOLID_NOT;
@@ -56,7 +56,7 @@ void CInfoTarget ::Spawn()
 	}
 }
 
-void CInfoTarget ::Precache()
+void CInfoTarget::Precache()
 {
 	if (pev->spawnflags & SF_TARGET_HACK_VISIBLE)
 		PRECACHE_MODEL("sprites/null.spr");
@@ -1689,7 +1689,7 @@ class CEnvModel : public CBaseAnimating
 	bool KeyValue(KeyValueData* pkvd) override;
 	STATE GetState() override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
@@ -1739,7 +1739,7 @@ bool CEnvModel::KeyValue(KeyValueData* pkvd)
 	return CBaseAnimating::KeyValue(pkvd);
 }
 
-void CEnvModel ::Spawn()
+void CEnvModel::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));
@@ -1834,7 +1834,7 @@ void CEnvModel::Think()
 	SetNextThink(0.1);
 }
 
-void CEnvModel ::SetSequence()
+void CEnvModel::SetSequence()
 {
 	int iszSeq;
 
@@ -1930,7 +1930,7 @@ IMPLEMENT_SAVERESTORE(CGibShooter, CBaseDelay);
 LINK_ENTITY_TO_CLASS(gibshooter, CGibShooter);
 
 
-void CGibShooter ::Precache()
+void CGibShooter::Precache()
 {
 	if (g_Language == LANGUAGE_GERMAN)
 	{
@@ -2033,7 +2033,7 @@ void CGibShooter::Spawn()
 }
 
 
-CBaseEntity* CGibShooter ::CreateGib(Vector vecPos, Vector vecVel)
+CBaseEntity* CGibShooter::CreateGib(Vector vecPos, Vector vecVel)
 {
 	if (CVAR_GET_FLOAT("violence_hgibs") == 0)
 		return NULL;
@@ -2085,7 +2085,7 @@ CBaseEntity* CGibShooter ::CreateGib(Vector vecPos, Vector vecVel)
 }
 
 
-void CGibShooter ::ShootThink()
+void CGibShooter::ShootThink()
 {
 	int i;
 	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
@@ -2169,7 +2169,7 @@ public:
 	void Touch(CBaseEntity* pOther) override;
 };
 
-void CShot ::Touch(CBaseEntity* pOther)
+void CShot::Touch(CBaseEntity* pOther)
 {
 	if (pev->teleport_time > gpGlobals->time)
 		return;
@@ -2221,7 +2221,7 @@ void CEnvShooter::Spawn()
 	pev->body = iBody;
 }
 
-bool CEnvShooter ::KeyValue(KeyValueData* pkvd)
+bool CEnvShooter::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "shootmodel"))
 	{
@@ -2288,7 +2288,7 @@ bool CEnvShooter ::KeyValue(KeyValueData* pkvd)
 }
 
 
-void CEnvShooter ::Precache()
+void CEnvShooter::Precache()
 {
 	if (pev->model)
 		m_iGibModelIndex = PRECACHE_MODEL((char*)STRING(pev->model));
@@ -2296,7 +2296,7 @@ void CEnvShooter ::Precache()
 }
 
 
-CBaseEntity* CEnvShooter ::CreateGib(Vector vecPos, Vector vecVel)
+CBaseEntity* CEnvShooter::CreateGib(Vector vecPos, Vector vecVel)
 {
 	if (m_iPhysics <= 1) // normal gib or sticky gib
 	{
@@ -2967,7 +2967,7 @@ public:
 	int m_iSprite; // Don't save, precache
 };
 
-void CEnvFunnel ::Precache()
+void CEnvFunnel::Precache()
 {
 	//LRC
 	if (pev->netname)
@@ -3079,7 +3079,7 @@ public:
 	int m_iSprite; // Don't save, precache
 };
 
-void CEnvBeamTrail ::Precache()
+void CEnvBeamTrail::Precache()
 {
 	if (pev->target)
 		PRECACHE_MODEL("sprites/null.spr");
@@ -3089,7 +3089,7 @@ void CEnvBeamTrail ::Precache()
 
 LINK_ENTITY_TO_CLASS(env_beamtrail, CEnvBeamTrail);
 
-STATE CEnvBeamTrail ::GetState()
+STATE CEnvBeamTrail::GetState()
 {
 	if (pev->spawnflags & SF_BEAMTRAIL_OFF)
 		return STATE_OFF;
@@ -3097,7 +3097,7 @@ STATE CEnvBeamTrail ::GetState()
 		return STATE_ON;
 }
 
-void CEnvBeamTrail ::StartTrailThink()
+void CEnvBeamTrail::StartTrailThink()
 {
 	pev->spawnflags |= SF_BEAMTRAIL_OFF; // fake turning off, so the Use turns it on properly
 	Use(this, this, USE_ON, 0);
@@ -3186,7 +3186,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	STATE GetState() override;
 	STATE GetState(CBaseEntity* pEnt) override;
 	void PrecacheNoise(const char* szNoise);
@@ -3199,7 +3199,7 @@ void CEnvFootsteps::Spawn()
 	Precache();
 }
 
-void CEnvFootsteps ::PrecacheNoise(const char* szNoise)
+void CEnvFootsteps::PrecacheNoise(const char* szNoise)
 {
 	static char szBuf[128];
 	int i = 0, j = 0;
@@ -3219,7 +3219,7 @@ void CEnvFootsteps ::PrecacheNoise(const char* szNoise)
 		PRECACHE_SOUND((char*)szNoise);
 }
 
-void CEnvFootsteps ::Precache()
+void CEnvFootsteps::Precache()
 {
 	if (pev->noise)
 		PrecacheNoise(STRING(pev->noise));
@@ -3361,7 +3361,7 @@ public:
 	void Think() override;
 	void Precache() override;
 	bool KeyValue(KeyValueData* pkvd) override;
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
@@ -3656,7 +3656,7 @@ public:
 	void Spawn() override { Precache(); }
 	void Think() override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	int ObjectCaps() override { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 };
 
 LINK_ENTITY_TO_CLASS(env_warpball, CEnvWarpBall);
@@ -4189,7 +4189,7 @@ public:
 	STATE GetState() override { return (pev->health > 0) ? STATE_ON : STATE_OFF; };
 };
 
-void CEnvBeverage ::Precache()
+void CEnvBeverage::Precache()
 {
 	PRECACHE_MODEL("models/can.mdl");
 	PRECACHE_SOUND("weapons/g_bounce3.wav");
@@ -4252,7 +4252,7 @@ public:
 	void EXPORT CanTouch(CBaseEntity* pOther);
 };
 
-void CItemSoda ::Precache()
+void CItemSoda::Precache()
 {
 }
 
@@ -4352,7 +4352,7 @@ TYPEDESCRIPTION CEnvFog::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CEnvFog, CBaseEntity);
 
-bool CEnvFog ::KeyValue(KeyValueData* pkvd)
+bool CEnvFog::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "startdist"))
 	{
@@ -4400,7 +4400,7 @@ STATE CEnvFog::GetState()
 	}
 }
 
-void CEnvFog ::Spawn()
+void CEnvFog::Spawn()
 {
 	pev->effects |= EF_NODRAW;
 
@@ -4424,7 +4424,7 @@ void CEnvFog ::Spawn()
 		m_iEndDist = 1;
 }
 
-void CEnvFog ::Precache()
+void CEnvFog::Precache()
 {
 	if (pev->spawnflags & SF_FOG_ACTIVE)
 	{
@@ -4435,7 +4435,7 @@ void CEnvFog ::Precache()
 
 extern int gmsgSetFog;
 
-void CEnvFog ::TurnOn()
+void CEnvFog::TurnOn()
 {
 	//	ALERT(at_console, "Fog turnon %f\n", gpGlobals->time);
 
@@ -4460,7 +4460,7 @@ void CEnvFog ::TurnOn()
 	}
 }
 
-void CEnvFog ::TurnOff()
+void CEnvFog::TurnOff()
 {
 	//	ALERT(at_console, "Fog turnoff\n");
 
@@ -4485,14 +4485,14 @@ void CEnvFog ::TurnOff()
 // the engine seems to ignore the nextthink time when starting up.
 // So this function gets called immediately after the precache finishes,
 // regardless of what nextthink time is specified.
-void CEnvFog ::ResumeThink()
+void CEnvFog::ResumeThink()
 {
 	//	ALERT(at_console, "Fog resume %f\n", gpGlobals->time);
 	SetThink(&CEnvFog::FadeInDone);
 	SetNextThink(0.1);
 }
 
-void CEnvFog ::FadeInDone()
+void CEnvFog::FadeInDone()
 {
 	pev->spawnflags &= ~SF_FOG_FADING;
 	SendData(pev->rendercolor, 0, m_iStartDist, m_iEndDist);
@@ -4504,13 +4504,13 @@ void CEnvFog ::FadeInDone()
 	}
 }
 
-void CEnvFog ::FadeOutDone()
+void CEnvFog::FadeOutDone()
 {
 	pev->spawnflags &= ~SF_FOG_FADING;
 	SendData(g_vecZero, 0, 0, 0);
 }
 
-void CEnvFog ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CEnvFog::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	//	ALERT(at_console, "Fog use %s %s\n", GetStringForUseType(useType), GetStringForState(GetState()));
 	if (ShouldToggle(useType))
@@ -4522,7 +4522,7 @@ void CEnvFog ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 	}
 }
 
-void CEnvFog ::SendData(Vector col, int iFadeTime, int iStartDist, int iEndDist)
+void CEnvFog::SendData(Vector col, int iFadeTime, int iStartDist, int iEndDist)
 {
 	//	ALERT(at_console, "Fog send (%d %d %d), %d - %d\n", col.x, col.y, col.z, iStartDist, iEndDist);
 	for (int i = 1; i <= gpGlobals->maxClients; i++)

@@ -168,7 +168,7 @@ IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
 //
 // Cache user-entity-field values until spawn is called.
 //
-bool CLight ::KeyValue(KeyValueData* pkvd)
+bool CLight::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iOnStyle"))
 	{
@@ -219,7 +219,7 @@ bool CLight ::KeyValue(KeyValueData* pkvd)
 	return CPointEntity::KeyValue(pkvd);
 }
 
-void CLight ::SetStyle(int iszPattern)
+void CLight::SetStyle(int iszPattern)
 {
 	if (m_iStyle < 32) // if it's using a global style, don't change it
 		return;
@@ -229,7 +229,7 @@ void CLight ::SetStyle(int iszPattern)
 }
 
 // regardless of what's been set by trigger_lightstyle ents, set the style I think I need
-void CLight ::SetCorrectStyle()
+void CLight::SetCorrectStyle()
 {
 	if (m_iStyle >= 32)
 	{
@@ -269,7 +269,7 @@ void CLight ::SetCorrectStyle()
 	}
 }
 
-void CLight ::Think()
+void CLight::Think()
 {
 	switch (GetState())
 	{
@@ -292,7 +292,7 @@ Default style is 0
 If targeted, it will toggle between on or off.
 */
 
-void CLight ::Spawn()
+void CLight::Spawn()
 {
 	if (FStringNull(pev->targetname))
 	{ // inert light
@@ -308,7 +308,7 @@ void CLight ::Spawn()
 }
 
 
-void CLight ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	if (m_iStyle >= 32)
 	{
@@ -394,7 +394,7 @@ bool CEnvLight::KeyValue(KeyValueData* pkvd)
 }
 
 
-void CEnvLight ::Spawn()
+void CEnvLight::Spawn()
 {
 	char szVector[64];
 	UTIL_MakeAimVectors(pev->angles);
@@ -444,7 +444,7 @@ void CLightDynamic::Spawn()
 	}
 }
 
-void CLightDynamic ::Precache()
+void CLightDynamic::Precache()
 {
 	PRECACHE_MODEL("sprites/null.spr");
 }

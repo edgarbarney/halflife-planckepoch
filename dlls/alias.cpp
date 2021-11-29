@@ -116,7 +116,7 @@ TYPEDESCRIPTION CInfoGroup::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CInfoGroup, CBaseEntity);
 
-bool CInfoGroup ::KeyValue(KeyValueData* pkvd)
+bool CInfoGroup::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "defaultmember"))
 	{
@@ -208,7 +208,7 @@ TYPEDESCRIPTION CMultiAlias::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CMultiAlias, CBaseAlias);
 
-bool CMultiAlias ::KeyValue(KeyValueData* pkvd)
+bool CMultiAlias::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iMode"))
 	{

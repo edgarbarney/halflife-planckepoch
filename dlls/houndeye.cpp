@@ -124,7 +124,7 @@ IMPLEMENT_SAVERESTORE(CHoundeye, CSquadMonster);
 // Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int CHoundeye ::Classify()
+int CHoundeye::Classify()
 {
 	return m_iClass ? m_iClass : CLASS_ALIEN_MONSTER;
 }
@@ -132,7 +132,7 @@ int CHoundeye ::Classify()
 //=========================================================
 //  FValidateHintType
 //=========================================================
-bool CHoundeye ::FValidateHintType(short sHint)
+bool CHoundeye::FValidateHintType(short sHint)
 {
 	int i;
 
@@ -160,7 +160,7 @@ bool CHoundeye ::FValidateHintType(short sHint)
 //=========================================================
 // FCanActiveIdle
 //=========================================================
-bool CHoundeye ::FCanActiveIdle()
+bool CHoundeye::FCanActiveIdle()
 {
 	if (InSquad())
 	{
@@ -189,7 +189,7 @@ bool CHoundeye ::FCanActiveIdle()
 // try to get within half of their max attack radius before
 // attacking, so as to increase their chances of doing damage.
 //=========================================================
-bool CHoundeye ::CheckRangeAttack1(float flDot, float flDist)
+bool CHoundeye::CheckRangeAttack1(float flDot, float flDist)
 {
 	if (flDist <= (HOUNDEYE_MAX_ATTACK_RADIUS * 0.5) && flDot >= 0.3)
 	{
@@ -202,7 +202,7 @@ bool CHoundeye ::CheckRangeAttack1(float flDot, float flDist)
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CHoundeye ::SetYawSpeed()
+void CHoundeye::SetYawSpeed()
 {
 	int ys;
 
@@ -234,7 +234,7 @@ void CHoundeye ::SetYawSpeed()
 //=========================================================
 // SetActivity
 //=========================================================
-void CHoundeye ::SetActivity(Activity NewActivity)
+void CHoundeye::SetActivity(Activity NewActivity)
 {
 	int iSequence;
 
@@ -262,7 +262,7 @@ void CHoundeye ::SetActivity(Activity NewActivity)
 	}
 	else
 	{
-		CSquadMonster ::SetActivity(NewActivity);
+		CSquadMonster::SetActivity(NewActivity);
 	}
 }
 
@@ -270,7 +270,7 @@ void CHoundeye ::SetActivity(Activity NewActivity)
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CHoundeye ::HandleAnimEvent(MonsterEvent_t* pEvent)
+void CHoundeye::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	switch (pEvent->event)
 	{
@@ -323,7 +323,7 @@ void CHoundeye ::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 // Spawn
 //=========================================================
-void CHoundeye ::Spawn()
+void CHoundeye::Spawn()
 {
 	Precache();
 
@@ -352,7 +352,7 @@ void CHoundeye ::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CHoundeye ::Precache()
+void CHoundeye::Precache()
 {
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); //LRC
@@ -393,7 +393,7 @@ void CHoundeye ::Precache()
 //=========================================================
 // IdleSound
 //=========================================================
-void CHoundeye ::IdleSound()
+void CHoundeye::IdleSound()
 {
 	switch (RANDOM_LONG(0, 2))
 	{
@@ -412,7 +412,7 @@ void CHoundeye ::IdleSound()
 //=========================================================
 // IdleSound
 //=========================================================
-void CHoundeye ::WarmUpSound()
+void CHoundeye::WarmUpSound()
 {
 	switch (RANDOM_LONG(0, 1))
 	{
@@ -428,7 +428,7 @@ void CHoundeye ::WarmUpSound()
 //=========================================================
 // WarnSound
 //=========================================================
-void CHoundeye ::WarnSound()
+void CHoundeye::WarnSound()
 {
 	switch (RANDOM_LONG(0, 2))
 	{
@@ -447,7 +447,7 @@ void CHoundeye ::WarnSound()
 //=========================================================
 // AlertSound
 //=========================================================
-void CHoundeye ::AlertSound()
+void CHoundeye::AlertSound()
 {
 
 	if (InSquad() && !IsLeader())
@@ -472,7 +472,7 @@ void CHoundeye ::AlertSound()
 //=========================================================
 // DeathSound
 //=========================================================
-void CHoundeye ::DeathSound()
+void CHoundeye::DeathSound()
 {
 	switch (RANDOM_LONG(0, 2))
 	{
@@ -491,7 +491,7 @@ void CHoundeye ::DeathSound()
 //=========================================================
 // PainSound
 //=========================================================
-void CHoundeye ::PainSound()
+void CHoundeye::PainSound()
 {
 	switch (RANDOM_LONG(0, 2))
 	{
@@ -511,7 +511,7 @@ void CHoundeye ::PainSound()
 // WriteBeamColor - writes a color vector to the network
 // based on the size of the group.
 //=========================================================
-void CHoundeye ::WriteBeamColor()
+void CHoundeye::WriteBeamColor()
 {
 	byte bRed, bGreen, bBlue;
 
@@ -560,7 +560,7 @@ void CHoundeye ::WriteBeamColor()
 //=========================================================
 // SonicAttack
 //=========================================================
-void CHoundeye ::SonicAttack()
+void CHoundeye::SonicAttack()
 {
 	float flAdjustedDamage;
 	float flDist;
@@ -680,7 +680,7 @@ void CHoundeye ::SonicAttack()
 //=========================================================
 // start task
 //=========================================================
-void CHoundeye ::StartTask(Task_t* pTask)
+void CHoundeye::StartTask(Task_t* pTask)
 {
 	m_iTaskStatus = TASKSTATUS_RUNNING;
 
@@ -763,7 +763,7 @@ void CHoundeye ::StartTask(Task_t* pTask)
 		break;
 	}
 	default: {
-		CSquadMonster ::StartTask(pTask);
+		CSquadMonster::StartTask(pTask);
 		break;
 	}
 	}
@@ -772,7 +772,7 @@ void CHoundeye ::StartTask(Task_t* pTask)
 //=========================================================
 // RunTask
 //=========================================================
-void CHoundeye ::RunTask(Task_t* pTask)
+void CHoundeye::RunTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
@@ -831,7 +831,7 @@ void CHoundeye ::RunTask(Task_t* pTask)
 		break;
 	}
 	default: {
-		CSquadMonster ::RunTask(pTask);
+		CSquadMonster::RunTask(pTask);
 		break;
 	}
 	}
@@ -1121,7 +1121,7 @@ IMPLEMENT_CUSTOM_SCHEDULES(CHoundeye, CSquadMonster);
 //=========================================================
 // GetScheduleOfType
 //=========================================================
-Schedule_t* CHoundeye ::GetScheduleOfType(int Type)
+Schedule_t* CHoundeye::GetScheduleOfType(int Type)
 {
 	if (m_fAsleep)
 	{
@@ -1167,7 +1167,7 @@ Schedule_t* CHoundeye ::GetScheduleOfType(int Type)
 		}
 		else
 		{
-			return CSquadMonster ::GetScheduleOfType(Type);
+			return CSquadMonster::GetScheduleOfType(Type);
 		}
 	}
 	case SCHED_RANGE_ATTACK1: {
@@ -1209,11 +1209,11 @@ Schedule_t* CHoundeye ::GetScheduleOfType(int Type)
 		}
 		else
 		{
-			return CSquadMonster ::GetScheduleOfType(Type);
+			return CSquadMonster::GetScheduleOfType(Type);
 		}
 	}
 	default: {
-		return CSquadMonster ::GetScheduleOfType(Type);
+		return CSquadMonster::GetScheduleOfType(Type);
 	}
 	}
 }
@@ -1221,7 +1221,7 @@ Schedule_t* CHoundeye ::GetScheduleOfType(int Type)
 //=========================================================
 // GetSchedule
 //=========================================================
-Schedule_t* CHoundeye ::GetSchedule()
+Schedule_t* CHoundeye::GetSchedule()
 {
 	switch (m_MonsterState)
 	{
@@ -1230,7 +1230,7 @@ Schedule_t* CHoundeye ::GetSchedule()
 		if (HasConditions(bits_COND_ENEMY_DEAD))
 		{
 			// call base class, all code to handle dead enemies is centralized there.
-			return CBaseMonster ::GetSchedule();
+			return CBaseMonster::GetSchedule();
 		}
 
 		if (HasConditions(bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE))
@@ -1264,5 +1264,5 @@ Schedule_t* CHoundeye ::GetSchedule()
 	}
 	}
 
-	return CSquadMonster ::GetSchedule();
+	return CSquadMonster::GetSchedule();
 }
