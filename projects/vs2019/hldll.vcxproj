@@ -256,6 +256,7 @@
     <ClInclude Include="..\..\dlls\CBarney.h" />
     <ClInclude Include="..\..\dlls\cbase.h" />
     <ClInclude Include="..\..\dlls\cdll_dll.h" />
+    <ClInclude Include="..\..\dlls\CHGrunt.h" />
     <ClInclude Include="..\..\dlls\CHoundeye.h" />
     <ClInclude Include="..\..\dlls\client.h" />
     <ClInclude Include="..\..\dlls\CPinkSlave.h" />

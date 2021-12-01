@@ -1,3 +1,14 @@
+#include	"extdll.h"
+#include	"util.h"
+#include	"cbase.h"
+#include	"monsters.h"
+#include	"schedule.h"
+#include	"animation.h"
+#include	"nodes.h"
+#include	"squadmonster.h"
+#include	"soundent.h"
+#include	"game.h"
+
 #include "CHoundeye.h"
 
 

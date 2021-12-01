@@ -638,5 +638,8 @@
     <ClInclude Include="..\..\dlls\CHoundeye.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dlls\CHGrunt.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

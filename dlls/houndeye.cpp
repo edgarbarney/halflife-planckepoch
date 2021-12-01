@@ -16,8 +16,21 @@
 // Houndeye - spooky sonic dog. 
 //=========================================================
 
+#include	"extdll.h"
+#include	"util.h"
+#include	"cbase.h"
+#include	"monsters.h"
+#include	"schedule.h"
+#include	"animation.h"
+#include	"nodes.h"
+#include	"squadmonster.h"
+#include	"soundent.h"
+#include	"game.h"
 
 #include	"CHoundeye.h"
+#include	"CHGrunt.h"
+
+
 
 extern CGraph WorldGraph;
 
@@ -617,6 +630,11 @@ void CHoundeye :: SonicAttack ()
 				if (flAdjustedDamage > 0 )
 				{
 					pEntity->TakeDamage ( pev, pev, flAdjustedDamage, DMG_SONIC | DMG_ALWAYSGIB );
+					if (FClassnameIs(pEntity->pev, "monster_human_grunt"))
+					{
+						CHGrunt* pGrunt = static_cast<CHGrunt*>(pEntity);
+						pGrunt->m_voicePitch = 200;
+					}
 				}
 			}
 		}
