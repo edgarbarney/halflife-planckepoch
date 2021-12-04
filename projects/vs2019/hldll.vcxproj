@@ -70,7 +70,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>$(ProjectDir)..\..\dlls\hl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\Program Files\Python\Python310\python_310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>python310_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Python\Python310\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>cd /D "$(ProjectDir)..\.."
@@ -102,7 +103,8 @@ EXIT /B 0</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>$(ProjectDir)..\..\dlls\hl.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\Program Files\Python\Python310\python_310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>python310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Python\Python310\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>
