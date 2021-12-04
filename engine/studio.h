@@ -334,25 +334,26 @@ typedef struct
 // lighting options
 #define STUDIO_NF_FLATSHADE		0x0001 // 1
 #define STUDIO_NF_CHROME		0x0002 // 2
-//#define STUDIO_NF_PHOLDER		0x0080 // 4
-#define STUDIO_NF_NOMIPS        0x0008 // 8
-#define STUDIO_NF_ALPHA         0x0010 // 16
-#define STUDIO_NF_ADDITIVE		0x0020 // 32
-#define STUDIO_NF_ALPHATEST		0x0040 // 64
+#define STUDIO_NF_FULLBRIGHT		0x0004 // 4
+#define STUDIO_NF_NOMIPS        	0x0008 // 8
+#define STUDIO_NF_ALPHA         	0x0010 // 16
+#define STUDIO_NF_ADDITIVE      	0x0020 // 32
+#define STUDIO_NF_ALPHATEST     	0x0040 // 64
 //#define STUDIO_NF_PHOLDER		0x0080 // 128
-#define STUDIO_NF_NOMIPMAP		0x0100 // 256
-#define STUDIO_NF_FULLBRIGHT	0x0200 // 512
+//#define STUDIO_NF_PHOLDER		0x0100 // 256 = WAS Nomipmap in original Trinity 
+//#define STUDIO_NF_PHOLDER		0x0200 // 512 - WAS Fullbright in original Trinity
+#define STUDIO_NF_NOMIPMAP      	0x0008 // 1024
 /*
 - SOHL -
-#define STUDIO_NF_FULLBRIGHT	0x0004
-#define STUDIO_NF_NOMIPS        0x0008
-#define STUDIO_NF_ALPHA         0x0010
-#define STUDIO_NF_ADDITIVE      0x0020
-#define STUDIO_NF_MASKED        0x0040
+#define STUDIO_NF_FULLBRIGHT		0x0004
+#define STUDIO_NF_NOMIPS        	0x0008
+#define STUDIO_NF_ALPHA         	0x0010
+#define STUDIO_NF_ADDITIVE      	0x0020
+#define STUDIO_NF_MASKED        	0x0040
 - TRINITY -
 #define STUDIO_NF_ADDITIVE		32 // buz
 #define STUDIO_NF_ALPHATEST		64 // buz
-#define STUDIO_NF_FULLBRIGHT	512
+#define STUDIO_NF_FULLBRIGHT		512
 #define STUDIO_NF_NOMIPMAP		256
 */
 
