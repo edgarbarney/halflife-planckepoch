@@ -1,4 +1,4 @@
-Source code of my mod
+Source code of my mod. If you're looking for Spririnity, check branches.
 ======================
 
 Half Life 1 SDK LICENSE
