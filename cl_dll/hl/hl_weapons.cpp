@@ -66,6 +66,7 @@ CHandGrenade g_HandGren;
 CSatchel g_Satchel;
 CTripmine g_Tripmine;
 CSqueak g_Snark;
+CNyanGun g_NyanGun;
 
 
 /*
@@ -453,17 +454,18 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity( &g_Glock	, &player );
 	HUD_PrepEntity( &g_Crowbar	, &player );
 	HUD_PrepEntity( &g_Python	, &player );
-	HUD_PrepEntity( &g_Mp5	, &player );
+	HUD_PrepEntity( &g_Mp5		, &player );
 	HUD_PrepEntity( &g_Crossbow	, &player );
 	HUD_PrepEntity( &g_Shotgun	, &player );
-	HUD_PrepEntity( &g_Rpg	, &player );
+	HUD_PrepEntity( &g_Rpg		, &player );
 	HUD_PrepEntity( &g_Gauss	, &player );
-	HUD_PrepEntity( &g_Egon	, &player );
-	HUD_PrepEntity( &g_HGun	, &player );
+	HUD_PrepEntity( &g_Egon		, &player );
+	HUD_PrepEntity( &g_HGun		, &player );
 	HUD_PrepEntity( &g_HandGren	, &player );
 	HUD_PrepEntity( &g_Satchel	, &player );
 	HUD_PrepEntity( &g_Tripmine	, &player );
 	HUD_PrepEntity( &g_Snark	, &player );
+	HUD_PrepEntity( &g_NyanGun	, &player);
 }
 
 /*
@@ -584,6 +586,10 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		case WEAPON_SNARK:
 			pWeapon = &g_Snark;
 			break;
+
+		case WEAPON_NYANGUN:
+			pWeapon = &g_NyanGun;
+			break;
 	}
 
 	// Store pointer to our destination entity_state_t so we can get our origin, etc. from it
@@ -682,6 +688,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	player.ammo_uranium		= (int)from->client.ammo_cells;
 	player.ammo_hornets		= (int)from->client.vuser2[0];
 	player.ammo_rockets		= (int)from->client.ammo_rockets;
+	player.ammo_nyanammo	= (int)from->client.fuser1;
 
 	
 	// Point to current weapon object
@@ -757,6 +764,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	to->client.ammo_cells				= player.ammo_uranium;
 	to->client.vuser2[0]				= player.ammo_hornets;
 	to->client.ammo_rockets				= player.ammo_rockets;
+	to->client.fuser1					= player.ammo_nyanammo;
 
 	if ( player.m_pActiveItem->m_iId == WEAPON_RPG )
 	{

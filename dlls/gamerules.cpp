@@ -275,6 +275,12 @@ void CGameRules::RefreshSkillData ()
 	// PLAYER HORNET
 	gSkillData.plrDmgHornet = GetSkillCvar("sk_plr_hornet_dmg");
 
+	// MONSTER NYAN
+	gSkillData.monDmgNyanCat = GetSkillCvar("sk_nyancat_dmg");
+
+	// PLAYER NYAN
+	gSkillData.plrDmgNyanCat = GetSkillCvar("sk_plr_nyancat_dmg");
+
 
 	// HEALTH/CHARGE
 	gSkillData.suitchargerCapacity = GetSkillCvar( "sk_suitcharger" );

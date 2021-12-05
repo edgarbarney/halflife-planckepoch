@@ -306,6 +306,8 @@ void W_Precache()
 	UTIL_PrecacheOther( "ammo_9mmAR" );
 	UTIL_PrecacheOther( "ammo_ARgrenades" );
 
+
+
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	// python
 	UTIL_PrecacheOtherWeapon( "weapon_357" );
@@ -356,6 +358,10 @@ void W_Precache()
 	UTIL_PrecacheOtherWeapon( "weapon_hornetgun" );
 #endif
 
+	// nyangun
+	UTIL_PrecacheOtherWeapon("weapon_nyangun");
+	UTIL_PrecacheOther("ammo_nyangunclip");
+	UTIL_PrecacheOther("ammo_nyangungrenades");
 
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	if ( g_pGameRules->IsDeathmatch() )

@@ -369,6 +369,12 @@
     <ClCompile Include="CWaterSquid.cpp">
       <Filter>Source Files\dlls\wpn_shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\nyancat.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\CNyanGun.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -639,6 +645,9 @@
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\CHGrunt.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\nyancat.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>

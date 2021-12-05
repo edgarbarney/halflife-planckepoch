@@ -77,6 +77,7 @@ public:
 #define WEAPON_TRIPMINE			13
 #define	WEAPON_SATCHEL			14
 #define	WEAPON_SNARK			15
+#define WEAPON_NYANGUN			16
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
@@ -103,6 +104,7 @@ public:
 #define SNARK_WEIGHT		5
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
+#define NYANGUN_WEIGHT			100
 
 
 // weapon clip/carry ammo capacities
@@ -118,6 +120,7 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
+#define	NYANAMMO_MAX_CARRY		250
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -137,13 +140,13 @@ public:
 #define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
+#define NYANGUN_MAX_CLIP		74
 
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
 #define PYTHON_DEFAULT_GIVE			6
 #define MP5_DEFAULT_GIVE			25
-#define MP5_DEFAULT_AMMO			25
 #define MP5_M203_DEFAULT_GIVE		0
 #define SHOTGUN_DEFAULT_GIVE		12
 #define CROSSBOW_DEFAULT_GIVE		5
@@ -155,6 +158,7 @@ public:
 #define TRIPMINE_DEFAULT_GIVE		1
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
+#define NYANGUN_DEFAULT_GIVE		37
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -168,6 +172,7 @@ public:
 #define AMMO_RPGCLIP_GIVE		RPG_MAX_CLIP
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_SNARKBOX_GIVE		5
+#define AMMO_NYANGUNCLIP_GIVE	NYANGUN_MAX_CLIP
 
 // bullet types
 typedef	enum
@@ -639,6 +644,49 @@ public:
 private:
 	unsigned short m_usMP5;
 	unsigned short m_usMP52;
+};
+
+enum nyangun_e
+{
+	NYANGUN_LONGIDLE = 0,
+	NYANGUN_IDLE1,
+	NYANGUN_LAUNCH,
+	NYANGUN_RELOAD,
+	NYANGUN_DEPLOY,
+	NYANGUN_FIRE1,
+	NYANGUN_FIRE2,
+	NYANGUN_FIRE3,
+};
+
+class CNyanGun : public CBasePlayerWeapon
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	int iItemSlot() override { return 3; }
+	int GetItemInfo(ItemInfo* p) override;
+	int AddToPlayer(CBasePlayer* pPlayer) override;
+
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	BOOL Deploy() override;
+	void Reload() override;
+	void WeaponIdle() override;
+	float m_flNextAnimTime;
+	int m_iShell;
+
+	BOOL UseDecrement() override
+	{
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usNYANGUN;
+	unsigned short m_usNYANGUN2;
 };
 
 enum crossbow_e

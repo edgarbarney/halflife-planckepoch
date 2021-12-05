@@ -473,6 +473,11 @@ void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volu
 						   int flags, int pitch);
 
 
+inline void EMIT_SOUND(edict_t* entity, int channel, const char* sample, float volume, float attenuation, float pitch)
+{
+	EMIT_SOUND_DYN(entity, channel, sample, volume, attenuation, 0, pitch);
+}
+
 inline void EMIT_SOUND(edict_t *entity, int channel, const char *sample, float volume, float attenuation)
 {
 	EMIT_SOUND_DYN(entity, channel, sample, volume, attenuation, 0, PITCH_NORM);
