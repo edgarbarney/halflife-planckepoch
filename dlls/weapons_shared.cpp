@@ -132,6 +132,27 @@ void CBasePlayerWeapon::ItemPostFrame()
 		m_fInReload = FALSE;
 	}
 
+	if (!m_bIsPrimAttKeyPressed)
+	{
+		if (m_pPlayer->pev->button & IN_ATTACK)
+			//if (FBitSet(m_pPlayer->pev->button, IN_ATTACK))
+		{
+			m_bIsPrimAttKeyPressed = true;
+			KeyPressed_PrimaryAttack();
+		}
+
+	}
+	else
+	{
+		if (!(m_pPlayer->pev->button & IN_ATTACK))
+			//if (!FBitSet(m_pPlayer->pev->button, IN_ATTACK))
+		{
+			m_bIsPrimAttKeyPressed = false;
+			KeyReleased_PrimaryAttack();
+		}
+
+	}
+
 	if (!(m_pPlayer->pev->button & IN_ATTACK))
 	{
 		m_flLastFireTime = 0.0f;

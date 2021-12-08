@@ -488,7 +488,8 @@ int CHudAmmo::MsgFunc_AmmoX(const char *pszName, int iSize, void *pbuf)
 	BEGIN_READ( pbuf, iSize );
 
 	int iIndex = READ_BYTE();
-	int iCount = READ_BYTE();
+	//int iCount = READ_BYTE();
+	int iCount = READ_LONG();
 
 	gWR.SetAmmo( iIndex, abs(iCount) );
 
@@ -499,7 +500,8 @@ int CHudAmmo::MsgFunc_AmmoPickup( const char *pszName, int iSize, void *pbuf )
 {
 	BEGIN_READ( pbuf, iSize );
 	int iIndex = READ_BYTE();
-	int iCount = READ_BYTE();
+	//int iCount = READ_BYTE();
+	int iCount = READ_LONG();
 
 	// Add ammo to the history
 	gHR.AddToHistory( HISTSLOT_AMMO, iIndex, abs(iCount) );

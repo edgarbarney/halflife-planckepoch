@@ -3444,6 +3444,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_snark" );
 		GiveNamedItem( "weapon_hornetgun" );
 #endif
+		GiveNamedItem( "weapon_nyangun" );
 		gEvilImpulse101 = FALSE;
 		break;
 
@@ -3700,7 +3701,8 @@ int CBasePlayer :: GiveAmmo( int iCount, const char *szName, int iMax )
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN( MSG_ONE, gmsgAmmoPickup, NULL, pev );
 			WRITE_BYTE( GetAmmoIndex(szName) );		// ammo ID
-			WRITE_BYTE( iAdd );		// amount
+			//WRITE_BYTE( iAdd );		// amount
+			WRITE_LONG( iAdd );		// amount
 		MESSAGE_END();
 	}
 
@@ -3807,12 +3809,13 @@ void CBasePlayer::SendAmmoUpdate()
 			m_rgAmmoLast[i] = m_rgAmmo[i];
 
 			ASSERT( m_rgAmmo[i] >= 0 );
-			ASSERT( m_rgAmmo[i] < 255 );
+			//ASSERT( m_rgAmmo[i] < 255 );
 
 			// send "Ammo" update message
 			MESSAGE_BEGIN( MSG_ONE, gmsgAmmoX, NULL, pev );
 				WRITE_BYTE( i );
-				WRITE_BYTE( V_max( V_min( m_rgAmmo[i], 254 ), 0 ) );  // clamp the value to one byte
+				//WRITE_BYTE( V_max( V_min( m_rgAmmo[i], 254 ), 0 ) );  // clamp the value to one byte
+				WRITE_LONG(m_rgAmmo[i]); // Allow ammo more than 254
 			MESSAGE_END();
 		}
 	}

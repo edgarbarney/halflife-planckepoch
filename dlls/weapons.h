@@ -120,7 +120,7 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
-#define	NYANAMMO_MAX_CARRY		250
+#define	NYANAMMO_MAX_CARRY		750
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -140,7 +140,7 @@ public:
 #define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
-#define NYANGUN_MAX_CLIP		74
+#define NYANGUN_MAX_CLIP		74 // Deprecated
 
 
 // the default amount of ammo that comes with each gun when it spawns
@@ -158,7 +158,7 @@ public:
 #define TRIPMINE_DEFAULT_GIVE		1
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
-#define NYANGUN_DEFAULT_GIVE		37
+#define NYANGUN_DEFAULT_GIVE		750
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -340,6 +340,12 @@ public:
 	void Holster() override;
 	virtual BOOL UseDecrement() { return FALSE; }
 	
+	// AttackPressed System
+	bool m_bIsPrimAttKeyPressed;
+
+	virtual void KeyPressed_PrimaryAttack() {}
+	virtual void KeyReleased_PrimaryAttack() {}
+
 	int	PrimaryAmmoIndex() override;
 	int	SecondaryAmmoIndex() override;
 
@@ -674,6 +680,9 @@ public:
 	void WeaponIdle() override;
 	float m_flNextAnimTime;
 	int m_iShell;
+	 
+	void KeyPressed_PrimaryAttack() override;
+	void KeyReleased_PrimaryAttack() override;
 
 	BOOL UseDecrement() override
 	{

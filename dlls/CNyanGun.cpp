@@ -57,9 +57,9 @@ void CNyanGun::Precache()
 	PRECACHE_SOUND("items/clipinsert1.wav");
 	PRECACHE_SOUND("items/cliprelease1.wav");
 
-	PRECACHE_SOUND ("weapons/hks1.wav");// H to the K
-	PRECACHE_SOUND ("weapons/hks2.wav");// H to the K
-	PRECACHE_SOUND ("weapons/hks3.wav");// H to the K
+	PRECACHE_SOUND ("nyancat/nyan_start.wav");
+	PRECACHE_SOUND ("nyancat/nyan_fireloop.wav");
+	PRECACHE_SOUND ("nyancat/nyan_idleloop.wav");
 
 	PRECACHE_SOUND( "weapons/glauncher.wav" );
 	PRECACHE_SOUND( "weapons/glauncher2.wav" );
@@ -79,7 +79,7 @@ int CNyanGun::GetItemInfo(ItemInfo *p)
 	p->iMaxAmmo1 = NYANAMMO_MAX_CARRY;
 	p->pszAmmo2 = "ARgrenades";
 	p->iMaxAmmo2 = M203_GRENADE_MAX_CARRY;
-	p->iMaxClip = NYANGUN_MAX_CLIP;
+	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 2;
 	p->iPosition = 3;
 	p->iFlags = 0;
@@ -117,7 +117,7 @@ void CNyanGun::PrimaryAttack()
 		return;
 	}
 
-	if (m_iClip <= 0)
+	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		PlayEmptySound();
 		m_flNextPrimaryAttack = 0.15;
@@ -127,7 +127,7 @@ void CNyanGun::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	m_iClip--;
+	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
@@ -156,7 +156,7 @@ void CNyanGun::PrimaryAttack()
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usNYANGUN, 0.0, g_vecZero, g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
@@ -165,7 +165,10 @@ void CNyanGun::PrimaryAttack()
 	if ( m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1;
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
+
+
+	ALERT(at_console, "PRIMAMMO: %d\N", m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
 }
 
 
@@ -214,8 +217,8 @@ void CNyanGun::SecondaryAttack()
 	PLAYBACK_EVENT( flags, m_pPlayer->edict(), m_usNYANGUN2 );
 	
 	m_flNextPrimaryAttack = GetNextAttackDelay(1);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1;
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5;// idle pretty soon after shooting.
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.1;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
 
 	if (!m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType])
 		// HEV suit - indicate out of ammo condition
@@ -233,10 +236,38 @@ void CNyanGun::Reload()
 
 void CNyanGun::WeaponIdle()
 {
+	/*
+	if (!m_bIsFiring)
+	{
+		if (m_pPlayer->pev->button & IN_ATTACK)
+			//if (FBitSet(m_pPlayer->pev->button, IN_ATTACK))
+		{
+			m_bIsFiring = true;
+			ALERT(at_console, "\n true: Is Firing is: %d\n", m_bIsFiring);
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 1, ATTN_IDLE, 0, 100);
+			return;
+		}
+		
+	}
+	else
+	{
+		if (!(m_pPlayer->pev->button & ~IN_ATTACK))
+			//if (!FBitSet(m_pPlayer->pev->button, IN_ATTACK))
+		{
+			ALERT(at_console, "\n false: Is Firing is: %d\n", m_bIsFiring);
+			m_bIsFiring = false;
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
+		}
+
+	}
+	*/
 	ResetEmptySound( );
 
-	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
 
+	/*
+	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+	
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
@@ -256,6 +287,19 @@ void CNyanGun::WeaponIdle()
 	SendWeaponAnim( iAnim );
 
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
+	*/
+}
+
+void CNyanGun::KeyPressed_PrimaryAttack()
+{
+	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 1, ATTN_IDLE, 0, 100);
+	CBasePlayerWeapon::KeyPressed_PrimaryAttack();
+}
+
+void CNyanGun::KeyReleased_PrimaryAttack()
+{
+	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);	
+	CBasePlayerWeapon::KeyReleased_PrimaryAttack();
 }
 
 
@@ -314,7 +358,7 @@ LINK_ENTITY_TO_CLASS( ammo_nyangungrenades, CNyanGunAmmoGrenade );
 
 
 
-
+//special thanks to FranticDreamer
 
 
 

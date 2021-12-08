@@ -366,13 +366,13 @@
     <ClCompile Include="..\..\dlls\toxichoundeye.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="CWaterSquid.cpp">
-      <Filter>Source Files\dlls\wpn_shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\nyancat.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\CNyanGun.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaterSquid.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
   </ItemGroup>

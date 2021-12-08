@@ -370,6 +370,11 @@ cvar_t	sk_plr_hornet_dmg1 = {"sk_plr_hornet_dmg1","0"};
 cvar_t	sk_plr_hornet_dmg2 = {"sk_plr_hornet_dmg2","0"};
 cvar_t	sk_plr_hornet_dmg3 = {"sk_plr_hornet_dmg3","0"};
 
+// NYANCAT
+cvar_t	sk_plr_nyancat_dmg1 = { "sk_plr_nyancat_dmg1","0" };
+cvar_t	sk_plr_nyancat_dmg2 = { "sk_plr_nyancat_dmg2","0" };
+cvar_t	sk_plr_nyancat_dmg3 = { "sk_plr_nyancat_dmg3","0" };
+
 
 // WORLD WEAPONS
 cvar_t	sk_12mm_bullet1 = {"sk_12mm_bullet1","0"};
@@ -389,6 +394,11 @@ cvar_t	sk_9mm_bullet3 = {"sk_9mm_bullet3","0"};
 cvar_t	sk_hornet_dmg1 = {"sk_hornet_dmg1","0"};
 cvar_t	sk_hornet_dmg2 = {"sk_hornet_dmg2","0"};
 cvar_t	sk_hornet_dmg3 = {"sk_hornet_dmg3","0"};
+
+// NYANCAT
+cvar_t	sk_nyancat_dmg1 = { "sk_nyancat_dmg1","0" };
+cvar_t	sk_nyancat_dmg2 = { "sk_nyancat_dmg2","0" };
+cvar_t	sk_nyancat_dmg3 = { "sk_nyancat_dmg3","0" };
 
 // HEALTH/CHARGE
 cvar_t	sk_suitcharger1	= { "sk_suitcharger1","0" };
@@ -813,6 +823,11 @@ void GameDLLInit()
 	CVAR_REGISTER(&sk_plr_hornet_dmg2);// {"sk_plr_hornet_dmg2","0"};
 	CVAR_REGISTER(&sk_plr_hornet_dmg3);// {"sk_plr_hornet_dmg3","0"};
 
+	// NYANCAT
+	CVAR_REGISTER(&sk_plr_nyancat_dmg1);// {"sk_plr_nyancat_dmg1","0"};
+	CVAR_REGISTER(&sk_plr_nyancat_dmg2);// {"sk_plr_nyancat_dmg2","0"};
+	CVAR_REGISTER(&sk_plr_nyancat_dmg3);// {"sk_plr_nyancat_dmg3","0"};
+
 
 	// WORLD WEAPONS
 	CVAR_REGISTER ( &sk_12mm_bullet1 );// {"sk_12mm_bullet1","0"};
@@ -832,6 +847,12 @@ void GameDLLInit()
 	CVAR_REGISTER ( &sk_hornet_dmg1 );// {"sk_hornet_dmg1","0"};
 	CVAR_REGISTER ( &sk_hornet_dmg2 );// {"sk_hornet_dmg2","0"};
 	CVAR_REGISTER ( &sk_hornet_dmg3 );// {"sk_hornet_dmg3","0"};
+
+	// NYANCAT
+	CVAR_REGISTER(&sk_nyancat_dmg1);// {"sk_nyancat_dmg1","0"};
+	CVAR_REGISTER(&sk_nyancat_dmg2);// {"sk_nyancat_dmg2","0"};
+	CVAR_REGISTER(&sk_nyancat_dmg3);// {"sk_nyancat_dmg3","0"};
+
 
 	// HEALTH/SUIT CHARGE DISTRIBUTION
 	CVAR_REGISTER ( &sk_suitcharger1 );
@@ -898,5 +919,6 @@ void GameDLLInit()
 // END REGISTER CVARS FOR SKILL LEVEL STUFF
 
 	SERVER_COMMAND( "exec skill.cfg\n" );
+	SERVER_COMMAND( "exec skilloktay.cfg\n" );
 }
 

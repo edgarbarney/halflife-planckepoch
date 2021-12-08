@@ -62,6 +62,7 @@ void CNyanCat :: Spawn()
 
 	pev->movetype	= MOVETYPE_FLY;
 	pev->solid		= SOLID_BBOX;
+	m_bloodColor	= BLOOD_COLOR_RED;
 	pev->takedamage = DAMAGE_YES;
 	pev->flags		|= FL_MONSTER;
 	pev->health		= 1;// weak!
@@ -79,7 +80,7 @@ void CNyanCat :: Spawn()
 	m_flFieldOfView = 0.9; // +- 25 degrees
 
 
-	m_flFlySpeed = 300;
+	m_flFlySpeed = 800;
 
 	SET_MODEL(ENT( pev ), "models/nyancat.mdl");
 	UTIL_SetSize( pev, Vector( -4, -4, -4 ), Vector( 4, 4, 4 ) );
@@ -111,9 +112,10 @@ void CNyanCat :: Precache()
 	PRECACHE_MODEL("models/nyancat.mdl");
 
 	PRECACHE_SOUND( "nyancat/cathit.wav" );
+	PRECACHE_SOUND( "squeek/sqk_blast1.wav");
 
 	iNyanCatPuff = PRECACHE_MODEL( "sprites/muz1.spr" );
-	iNyanCatTrail = PRECACHE_MODEL("sprites/laserbeam.spr");
+	iNyanCatTrail = PRECACHE_MODEL("sprites/NyanTrail.spr");
 }	
 
 //=========================================================
@@ -330,23 +332,17 @@ void CNyanCat :: TrackTarget ()
 //=========================================================
 void CNyanCat :: TrackTouch ( CBaseEntity *pOther )
 {
-	if ( pOther->edict() == pev->owner || pOther->pev->modelindex == pev->modelindex )
+	//if ( pOther->edict() == pev->owner || pOther->pev->modelindex == pev->modelindex )
+	if (pOther->edict() == pev->owner || FClassnameIs(pOther->pev, STRING(pev->classname)))
 	{// bumped into the guy that shot it.
 		pev->solid = SOLID_NOT;
 		return;
 	}
 
+	
 	if ( IRelationship( pOther ) <= R_NO )
 	{
-		// hit something we don't want to hurt, so turn around.
-
-		pev->velocity = pev->velocity.Normalize();
-
-		pev->velocity.x *= -1;
-		pev->velocity.y *= -1;
-
-		pev->origin = pev->origin + pev->velocity * 4; // bounce the nyancat off a bit.
-		pev->velocity = pev->velocity * m_flFlySpeed;
+		DoDamage(pOther);
 
 		return;
 	}
@@ -356,28 +352,40 @@ void CNyanCat :: TrackTouch ( CBaseEntity *pOther )
 
 void CNyanCat::DartTouch( CBaseEntity *pOther )
 {
+	ALERT(at_console, "\nTouched Object: %s\n", STRING(pOther->pev->classname));
 	DieTouch( pOther );
 }
 
 void CNyanCat::DieTouch ( CBaseEntity *pOther )
 {
-	if ( pOther && pOther->pev->takedamage )
-	{// do the damage
+	DoDamage(pOther);
 
-		switch (RANDOM_LONG(0,2))
-		{// buzz when you plug someone
-			case 0:	EMIT_SOUND( ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 100);	break;
-			case 1:	EMIT_SOUND( ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM,  80);	break;
-			case 2:	EMIT_SOUND( ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 120);	break;
-		}
-			
-		pOther->TakeDamage( pev, VARS( pev->owner ), pev->dmg, DMG_BULLET );
-	}
+	EMIT_SOUND_DYN(ENT(pev), CHAN_ITEM, "squeek/sqk_blast1.wav", 0.3, 0.5, 0, PITCH_NORM);
+	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, SMALL_EXPLOSION_VOLUME, 3.0);
+
+	UTIL_BloodDrips(pev->origin, g_vecZero, BloodColor(), 240);
 
 	pev->modelindex = 0;// so will disappear for the 0.1 secs we wait until NEXTTHINK gets rid
 	pev->solid = SOLID_NOT;
 
 	SetThink ( &CNyanCat::SUB_Remove );
 	pev->nextthink = gpGlobals->time + 1;// stick around long enough for the sound to finish!
+}
+
+void CNyanCat::DoDamage(CBaseEntity *pOther)
+{
+	if (pOther && pOther->pev->takedamage)
+	{// do the damage
+
+		switch (RANDOM_LONG(0, 2))
+		{// buzz when you plug someone
+		case 0:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 100);	break;
+		case 1:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 50);	break;
+		case 2:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 180);	break;
+		}
+
+		pOther->TakeDamage(pev, VARS(pev->owner), pev->dmg, DMG_BULLET);
+	}
+
 }
 

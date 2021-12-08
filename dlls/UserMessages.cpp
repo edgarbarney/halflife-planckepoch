@@ -90,7 +90,7 @@ void LinkUserMessages()
 	gmsgGameMode = REG_USER_MSG("GameMode", 1);
 	gmsgMOTD = REG_USER_MSG("MOTD", -1);
 	gmsgServerName = REG_USER_MSG("ServerName", -1);
-	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 2);
+	gmsgAmmoPickup = REG_USER_MSG("AmmoPickup", 5);
 	gmsgWeapPickup = REG_USER_MSG("WeapPickup", 1);
 	gmsgItemPickup = REG_USER_MSG("ItemPickup", -1);
 	gmsgHideWeapon = REG_USER_MSG("HideWeapon", 1);
@@ -98,7 +98,7 @@ void LinkUserMessages()
 	gmsgShowMenu = REG_USER_MSG("ShowMenu", -1);
 	gmsgShake = REG_USER_MSG("ScreenShake", sizeof(ScreenShake));
 	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
-	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
+	gmsgAmmoX = REG_USER_MSG("AmmoX", 5);
 	gmsgTeamNames = REG_USER_MSG("TeamNames", -1);
 
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);

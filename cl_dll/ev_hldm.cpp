@@ -1597,15 +1597,10 @@ void EV_FireNyanGun(event_args_t* args)
 
 	EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHELL);
 
-	switch (gEngfuncs.pfnRandomLong(0, 1))
-	{
-	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
-		break;
-	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
-		break;
-	}
+	//This ensures no more than 1 of those is ever active at the same time.
+	//gEngfuncs.pEventAPI->EV_StopSound(idx, CHAN_STATIC, "nyancat/nyan_fireloop.wav");
+
+	//gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_STATIC, "nyancat/nyan_fireloop.wav", 0.98, ATTN_NORM, 0, 125);
 
 	EV_GetGunPosition(args, vecSrc, origin);
 	VectorCopy(forward, vecAiming);
