@@ -330,7 +330,7 @@ public:
 
 	void ItemPostFrame() override;	// called each frame by the player PostThink
 	// called by CBasePlayerWeapons ItemPostFrame()
-	virtual void PrimaryAttack() {}				// do "+ATTACK"
+	virtual void PrimaryAttack() {} 				// do "+ATTACK"
 	virtual void SecondaryAttack() {}			// do "+ATTACK2"
 	virtual void Reload() {}						// do "+RELOAD"
 	virtual void WeaponIdle() {}					// called when no buttons pressed
@@ -342,9 +342,13 @@ public:
 	
 	// AttackPressed System
 	bool m_bIsPrimAttKeyPressed;
+	bool m_bIsSecAttKeyPressed;
 
 	virtual void KeyPressed_PrimaryAttack() {}
 	virtual void KeyReleased_PrimaryAttack() {}
+
+	virtual void KeyPressed_SecondaryAttack() {}
+	virtual void KeyReleased_SecondaryAttack() {}
 
 	int	PrimaryAmmoIndex() override;
 	int	SecondaryAmmoIndex() override;
@@ -676,13 +680,19 @@ public:
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
 	BOOL Deploy() override;
+	void Holster() override;
 	void Reload() override;
 	void WeaponIdle() override;
 	float m_flNextAnimTime;
 	int m_iShell;
-	 
+	
+	BOOL PlayEmptySound() override;
+
 	void KeyPressed_PrimaryAttack() override;
 	void KeyReleased_PrimaryAttack() override;
+	
+	//void KeyPressed_SecondaryAttack() override;
+	//void KeyReleased_SecondaryAttack() override;
 
 	BOOL UseDecrement() override
 	{

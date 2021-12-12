@@ -45,7 +45,7 @@ public:
 	void EXPORT TrackTouch ( CBaseEntity *pOther );
 	void EXPORT DartTouch( CBaseEntity *pOther );
 	void EXPORT DieTouch ( CBaseEntity *pOther );
-	void EXPORT DoDamage(CBaseEntity* pOther);
+	virtual void EXPORT DoDamage (CBaseEntity* pOther);
 	
 	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
@@ -54,3 +54,9 @@ public:
 	float			m_flFlySpeed;
 };
 
+class CBigNyan : public CNyanCat
+{
+	void Spawn() override;
+	void Precache() override;
+	virtual void EXPORT DoDamage(CBaseEntity* pOther) override;
+};

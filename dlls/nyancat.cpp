@@ -80,7 +80,7 @@ void CNyanCat :: Spawn()
 	m_flFieldOfView = 0.9; // +- 25 degrees
 
 
-	m_flFlySpeed = 800;
+	m_flFlySpeed = pev->fuser1;
 
 	SET_MODEL(ENT( pev ), "models/nyancat.mdl");
 	UTIL_SetSize( pev, Vector( -4, -4, -4 ), Vector( 4, 4, 4 ) );
@@ -227,6 +227,8 @@ void CNyanCat :: TrackTarget ()
 
 	StudioFrameAdvance( );
 
+	m_flFlySpeed = pev->fuser1;
+
 	if (gpGlobals->time > m_flStopAttack)
 	{
 		SetTouch( NULL );
@@ -248,7 +250,8 @@ void CNyanCat :: TrackTarget ()
 	}
 	else
 	{
-		m_vecEnemyLKP = m_vecEnemyLKP + pev->velocity * m_flFlySpeed * 0.1;
+		//m_vecEnemyLKP = m_vecEnemyLKP + pev->velocity * m_flFlySpeed * 0.1;
+		m_vecEnemyLKP = m_vecEnemyLKP + pev->velocity * m_flFlySpeed;
 	}
 
 	vecDirToEnemy = ( m_vecEnemyLKP - pev->origin ).Normalize();
@@ -286,7 +289,8 @@ void CNyanCat :: TrackTarget ()
 	}
 	
 
-	pev->velocity = pev->velocity * ( m_flFlySpeed * flDelta );// scale the dir by the ( speed * width of turn )
+	//pev->velocity = pev->velocity * ( m_flFlySpeed * flDelta );// scale the dir by the ( speed * width of turn )
+	pev->velocity = pev->velocity *  m_flFlySpeed;
 	pev->nextthink = gpGlobals->time + RANDOM_FLOAT( 0.1, 0.3 );
 
 	//pev->velocity = pev->velocity * m_flFlySpeed;// do not have to slow down to turn.
@@ -333,12 +337,27 @@ void CNyanCat :: TrackTarget ()
 void CNyanCat :: TrackTouch ( CBaseEntity *pOther )
 {
 	//if ( pOther->edict() == pev->owner || pOther->pev->modelindex == pev->modelindex )
-	if (pOther->edict() == pev->owner || FClassnameIs(pOther->pev, STRING(pev->classname)))
+	if (pOther->edict() == pev->owner || pOther->pev->owner == pev->owner)
 	{// bumped into the guy that shot it.
 		pev->solid = SOLID_NOT;
+		
 		return;
 	}
 
+	if (FClassnameIs(pOther->pev, "worldspawn"))
+	{
+		// hit something we don't want to hurt, so turn around.
+
+		pev->velocity = pev->velocity.Normalize();
+
+		pev->velocity.x *= -1;
+		pev->velocity.y *= -1;
+
+		pev->origin = pev->origin + pev->velocity * 4; // bounce the hornet off a bit.
+		pev->velocity = pev->velocity * m_flFlySpeed;
+
+		return;
+	}
 	
 	if ( IRelationship( pOther ) <= R_NO )
 	{
@@ -352,7 +371,6 @@ void CNyanCat :: TrackTouch ( CBaseEntity *pOther )
 
 void CNyanCat::DartTouch( CBaseEntity *pOther )
 {
-	ALERT(at_console, "\nTouched Object: %s\n", STRING(pOther->pev->classname));
 	DieTouch( pOther );
 }
 
@@ -389,3 +407,106 @@ void CNyanCat::DoDamage(CBaseEntity *pOther)
 
 }
 
+LINK_ENTITY_TO_CLASS(bignyancat, CBigNyan);
+
+void CBigNyan::Spawn()
+{
+	Precache();
+
+	pev->movetype = MOVETYPE_FLY;
+	pev->solid = SOLID_BBOX;
+	m_bloodColor = BLOOD_COLOR_RED;
+	pev->takedamage = DAMAGE_YES;
+	pev->flags |= FL_MONSTER;
+	pev->health = 15;// weak!
+
+	if (g_pGameRules->IsMultiplayer())
+	{
+		// nyancats don't live as long in multiplayer
+		m_flStopAttack = gpGlobals->time + 3.5;
+	}
+	else
+	{
+		m_flStopAttack = gpGlobals->time + 5.0;
+	}
+
+	m_flFieldOfView = 0.9; // +- 25 degrees
+
+
+	m_flFlySpeed = pev->fuser1;
+
+	SET_MODEL(ENT(pev), "models/NyanCateBig.mdl");
+	UTIL_SetSize(pev, Vector(-4, -4, -4), Vector(4, 4, 4));
+
+	SetTouch(&CNyanCat::DieTouch);
+	SetThink(&CNyanCat::StartTrack);
+
+	edict_t* pSoundEnt = pev->owner;
+	if (!pSoundEnt)
+		pSoundEnt = edict();
+
+	if (!FNullEnt(pev->owner) && (pev->owner->v.flags & FL_CLIENT))
+	{
+		pev->dmg = gSkillData.plrDmgNyanCat * 8;
+	}
+	else
+	{
+		// no real owner, or owner isn't a client. 
+		pev->dmg = gSkillData.monDmgNyanCat * 8;
+	}
+
+	pev->nextthink = gpGlobals->time + 0.1;
+	ResetSequenceInfo();
+}
+
+void CBigNyan::Precache()
+{
+	PRECACHE_MODEL("models/NyanCateBig.mdl");
+	PRECACHE_SOUND("nyancat/cathit.wav");
+	PRECACHE_SOUND("squeek/sqk_blast1.wav");
+
+	iNyanCatPuff = PRECACHE_MODEL("sprites/muz1.spr");
+	iNyanCatTrail = PRECACHE_MODEL("sprites/NyanTrail.spr");
+}
+
+void CBigNyan::DoDamage(CBaseEntity* pOther)
+{
+	if (pOther)
+	{
+		if (pOther->pev->takedamage)
+		{// do the damage
+
+			switch (RANDOM_LONG(0, 2))
+			{// buzz when you plug someone
+			case 0:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 100);	break;
+			case 1:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 50);	break;
+			case 2:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 180);	break;
+			}
+
+			pOther->TakeDamage(pev, VARS(pev->owner), pev->dmg, DMG_BULLET);
+		}
+
+		if (pOther->MyMonsterPointer())
+		{
+			CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, SMALL_EXPLOSION_VOLUME, 3.0);
+
+			CBaseEntity* pMyOwner = CBaseEntity::Instance(pev->owner);
+
+			MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
+			WRITE_BYTE(TE_EXPLOSION);		// This makes a dynamic light and the explosion sprites/sound
+			WRITE_COORD(pev->origin.x);	// Send to PAS because of the sound
+			WRITE_COORD(pev->origin.y);
+			WRITE_COORD(pev->origin.z);
+			WRITE_SHORT(g_sModelIndexFireball);
+			WRITE_BYTE((pev->dmg) * .60); // scale * 10
+			WRITE_BYTE(15); // framerate
+			WRITE_BYTE(TE_EXPLFLAG_NONE);
+			MESSAGE_END();
+
+			if (pMyOwner)
+				RadiusDamage(pev, pMyOwner->pev, pev->dmg, CLASS_NONE, DMG_BLAST);
+			else
+				RadiusDamage(pev, pev, pev->dmg, CLASS_NONE, DMG_BLAST);
+		}
+	}
+}

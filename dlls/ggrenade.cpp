@@ -355,7 +355,6 @@ void CGrenade:: Spawn()
 	m_fRegisteredSound = FALSE;
 }
 
-
 CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity )
 {
 	CGrenade *pGrenade = GetClassPtr( (CGrenade *)NULL );
@@ -367,7 +366,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->pev->angles = UTIL_VecToAngles (pGrenade->pev->velocity);
 	pGrenade->pev->owner = ENT(pevOwner);
 	
-	// make monsters afaid of it while in the air
+	// make monsters afraid of it while in the air
 	pGrenade->SetThink( &CGrenade::DangerSoundThink );
 	pGrenade->pev->nextthink = gpGlobals->time;
 	

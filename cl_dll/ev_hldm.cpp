@@ -1623,16 +1623,6 @@ void EV_FireNyanGun2(event_args_t* args)
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(NYANGUN_LAUNCH, 2);
 		V_PunchAxis(0, -10);
 	}
-
-	switch (gEngfuncs.pfnRandomLong(0, 1))
-	{
-	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/glauncher.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
-		break;
-	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/glauncher2.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
-		break;
-	}
 }
 //======================
 //	  NYANGUN END
