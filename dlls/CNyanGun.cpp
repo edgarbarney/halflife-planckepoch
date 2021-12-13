@@ -131,6 +131,12 @@ void CNyanGun::PrimaryAttack()
 	{
 		PlayEmptySound();
 		m_flNextPrimaryAttack = 0.15;
+
+		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav", 0, ATTN_IDLE, SND_STOP, 100);
+		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
+
+		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_idleloop.wav", 1, ATTN_IDLE, 0, 100);
+
 		return;
 	}
 

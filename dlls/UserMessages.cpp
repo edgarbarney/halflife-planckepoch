@@ -58,6 +58,8 @@ int gmsgTeamNames = 0;
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0;
 
+int gmsgWeather = 0;
+
 void LinkUserMessages()
 {
 	// Already taken care of?
@@ -103,4 +105,6 @@ void LinkUserMessages()
 
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
+	
+	gmsgWeather = REG_USER_MSG("Weather", -1);
 }

@@ -219,6 +219,17 @@ public:
 	}
 	virtual void Blocked( CBaseEntity *pOther ) { if (m_pfnBlocked) (this->*m_pfnBlocked)( pOther ); }
 
+	void SetNextThink(float fNextThink)
+	{
+		pev->nextthink = gpGlobals->time + fNextThink;
+	}
+
+	void DontThink()
+	{
+		pev->nextthink = 0;
+	}
+
+
 	// allow engine to allocate instance data
     void *operator new( size_t stAllocateBlock, entvars_t *pev )
 	{

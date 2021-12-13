@@ -22,6 +22,8 @@
 #include "r_efx.h"
 
 #include "particleman.h"
+#include "effects/CWeather.h"
+
 extern IParticleMan *g_pParticleMan;
 
 #define MAX_CLIENTS 32
@@ -144,4 +146,31 @@ int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
 	else
 		this->m_StatusIcons.DisableIcon("dmg_concuss");
 	return 1;
+}
+
+void CHud::MsgFunc_Weather(const char* pszName, int iSize, void* pBuf)
+{
+	BEGIN_READ(pBuf, iSize);
+	{
+        auto messageType = READ_BYTE();
+		if (messageType == 1)
+		{
+		    // Precipitation
+			auto type = static_cast<PrecipitationType>(READ_BYTE());
+			auto numParticles = READ_SHORT();
+			auto sprayDensity = READ_BYTE();
+			g_Weather.SetPrecipitation(type, numParticles, sprayDensity);
+		}
+		else if (messageType == 2)
+		{
+		    // Wind
+			auto yaw = READ_COORD();
+			auto speed = READ_COORD();
+			auto yawVariance = READ_COORD();
+			auto speedVariance = READ_COORD();
+			auto changeFrequency = READ_COORD();
+			auto changeSpeed = READ_COORD();
+			g_Weather.SetWind(yaw, speed, yawVariance, speedVariance, changeFrequency, changeSpeed);
+		}
+	}
 }

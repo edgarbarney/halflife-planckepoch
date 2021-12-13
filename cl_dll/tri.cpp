@@ -20,6 +20,9 @@
 
 #include "particleman.h"
 #include "tri.h"
+
+#include "effects/CWeather.h"
+
 extern IParticleMan *g_pParticleMan;
 
 /*
@@ -47,6 +50,8 @@ HUD_DrawTransparentTriangles
 Render any triangles with transparent rendermode needs here
 =================
 */
+//extern ParticleSystemManager* g_pParticleSystems; 
+
 void DLLEXPORT HUD_DrawTransparentTriangles()
 {
 //	RecClDrawTransparentTriangles();
@@ -56,5 +61,8 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 #endif
 
 	if ( g_pParticleMan )
-		 g_pParticleMan->Update();
+		g_pParticleMan->Update();
+		g_Weather.Update();
+		
+	//g_pParticleSystems->UpdateSystems(fTime - fOldTime);
 }

@@ -40,6 +40,12 @@
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{42fd860c-8851-42ea-81e1-ffda08a6174d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\dlls\effects">
+      <UniqueIdentifier>{1afa37dd-6c72-46b6-aa7a-9ff99c5e23dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dlls\effects">
+      <UniqueIdentifier>{f1a61aac-e88a-4b4a-b7ea-12da498b1bfc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\aflock.cpp">
@@ -375,6 +381,9 @@
     <ClCompile Include="CWaterSquid.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\entities\effects\CWeather.cpp">
+      <Filter>Source Files\dlls\effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -649,6 +658,9 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\nyancat.h">
       <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\entities\effects\CWeather.h">
+      <Filter>Header Files\dlls\effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
