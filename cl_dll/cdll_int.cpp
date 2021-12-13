@@ -38,6 +38,8 @@
 #include "vgui_TeamFortressViewport.h"
 #include "../public/interface.h"
 
+#include "effects/CWeather.h"
+
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 TeamFortressViewport *gViewPort = NULL;
@@ -331,6 +333,8 @@ void CL_LoadParticleMan()
 
 		 // Add custom particle classes here BEFORE calling anything else or you will die.
 		 g_pParticleMan->AddCustomParticleClassSize ( sizeof ( CBaseParticle ) );
+		 
+		 g_Weather.RegisterParticleClasses();
 	}
 }
 

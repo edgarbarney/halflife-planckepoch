@@ -660,7 +660,7 @@ void Bench_CheckEntity( int type, struct cl_entity_s *ent, const char *modelname
 	}
 }
 
-//TODO: since vec3_t was aliased to Vector this does nothing (vec3_t decays to pointer, Vector does not)
+//TODO: since Vector was aliased to Vector this does nothing (vec3_t decays to pointer, Vector does not)
 void NormalizeVector(Vector v )
 {
 	int i;

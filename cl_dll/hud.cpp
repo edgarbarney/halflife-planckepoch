@@ -30,6 +30,8 @@
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
 
+#include "effects/CWeather.h"
+
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
 
@@ -125,6 +127,12 @@ int __MsgFunc_Concuss(const char *pszName, int iSize, void *pbuf)
 int __MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 {
 	return gHUD.MsgFunc_GameMode( pszName, iSize, pbuf );
+}
+
+int __MsgFunc_Weather(const char* pszName, int iSize, void* pbuf)
+{
+	gHUD.MsgFunc_Weather(pszName, iSize, pbuf);
+	return 1;
 }
 
 // TFFree Command Menu
@@ -284,6 +292,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( ViewMode );
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
+	HOOK_MESSAGE( Weather );
 
 	// TFFree CommandMenu
 	HOOK_COMMAND( "+commandmenu", OpenCommandMenu );
@@ -362,6 +371,7 @@ void CHud :: Init()
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+	m_Particle.Init(); 
 
 	m_Menu.Init();
 	
@@ -507,6 +517,8 @@ void CHud :: VidInit()
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
 	GetClientVoiceMgr()->VidInit();
+	g_Weather.Initialise();
+	m_Particle.VidInit();
 }
 
 int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)

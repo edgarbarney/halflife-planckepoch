@@ -46,6 +46,8 @@ static globalvars_t	Globals;
 
 static CBasePlayerWeapon *g_pWpns[ 32 ];
 
+Vector g_vPlayerVelocity;
+
 float g_flApplyVel = 0.0;
 int   g_irunninggausspred = 0;
 
@@ -690,6 +692,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	player.ammo_rockets		= (int)from->client.ammo_rockets;
 	player.ammo_nyanammo	= (int)from->client.fuser1;
 
+	g_vPlayerVelocity = player.pev->velocity;
 	
 	// Point to current weapon object
 	if ( from->client.m_iId )

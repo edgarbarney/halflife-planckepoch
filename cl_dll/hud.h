@@ -342,6 +342,16 @@ private:
 };
 
 
+class CHudParticle: public CHudBase
+{
+public:
+	int Init(void);
+	int VidInit(void);
+	int Draw(float flTime);
+	int MsgFunc_Particle(const char *pszName, int iSize, void *pbuf );
+};
+
+
 //
 //-----------------------------------------------------
 //
@@ -615,6 +625,9 @@ public:
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
 
+	
+	CHudParticle	m_Particle;
+
 	void Init();
 	void VidInit();
 	void Think();
@@ -633,6 +646,7 @@ public:
 	void _cdecl MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf);
 	int  _cdecl MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf );
+	void _cdecl MsgFunc_Weather(const char* pszName, int iSize, void* pBuf);
 
 	// Screen information
 	SCREENINFO	m_scrinfo;
