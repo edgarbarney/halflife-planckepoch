@@ -528,3 +528,15 @@ float UTIL_SharedRandomFloat( unsigned int seed, float low, float high );
 float UTIL_WeaponTimeBase();
 
 CBaseEntity* UTIL_FindEntityForward(CBaseEntity* pMe);
+
+// disable 'possible loss of data converting float to int' warning message
+#pragma warning( disable: 4244 )
+// disable 'truncation from 'const double' to 'float' warning message
+#pragma warning( disable: 4305 )
+
+inline void UTIL_UnpackRGB(int& r, int& g, int& b, unsigned long ulRGB)\
+{\
+r = (ulRGB & 0xFF0000) >> 16; \
+g = (ulRGB & 0xFF00) >> 8; \
+b = ulRGB & 0xFF; \
+}

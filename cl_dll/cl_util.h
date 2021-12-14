@@ -175,4 +175,5 @@ inline void UnpackRGB(int &r, int &g, int &b, unsigned long ulRGB)\
 	b = ulRGB & 0xFF;\
 }
 
+
 HSPRITE LoadSprite(const char *pszName);

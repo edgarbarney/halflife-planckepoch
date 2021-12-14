@@ -173,8 +173,10 @@ void CNyanCat :: StartDart ()
 	pev->nextthink = gpGlobals->time + 1;
 }
 
-void CNyanCat::Glowing()
+void CNyanCat::Glowing(unsigned long lightcolour)
 {
+	int r, g, b;
+	UTIL_UnpackRGB(r, g, b, lightcolour);
 	Vector vecSrc = pev->origin;
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
 	WRITE_BYTE(TE_DLIGHT);
@@ -182,12 +184,13 @@ void CNyanCat::Glowing()
 	WRITE_COORD(vecSrc.y);	// Y
 	WRITE_COORD(vecSrc.z);	// Z
 	WRITE_BYTE(9);		// radius * 0.1
-	WRITE_BYTE(RANDOM_LONG(0,255));		// r
-	WRITE_BYTE(RANDOM_LONG(0, 255));		// g
-	WRITE_BYTE(RANDOM_LONG(0, 255));		// b
+	WRITE_BYTE(r);		// r
+	WRITE_BYTE(g);		// g
+	WRITE_BYTE(b);		// b
 	WRITE_BYTE(5);		// time * 10
 	WRITE_BYTE(0);		// decay * 0.1
 	MESSAGE_END();
+	
 
 }
 
@@ -245,9 +248,8 @@ void CNyanCat :: TrackTarget ()
 	Vector	vecDirToEnemy;
 	float	flDelta;
 
-
 	StudioFrameAdvance( );
-	Glowing();
+	Glowing(premadeColours[RANDOM_LONG(0, Colours::_TotalColours - 1)]);
 
 	m_flFlySpeed = pev->fuser1;
 
@@ -535,8 +537,10 @@ void CBigNyan::DoDamage(CBaseEntity* pOther)
 	}
 }
 
-void CBigNyan::Glowing()
+void CBigNyan::Glowing(unsigned long lightcolour)
 {
+	int r, g, b;
+	UTIL_UnpackRGB(r, g, b, lightcolour);
 	Vector vecSrc = pev->origin;
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
 	WRITE_BYTE(TE_DLIGHT);
@@ -544,9 +548,9 @@ void CBigNyan::Glowing()
 	WRITE_COORD(vecSrc.y);	// Y
 	WRITE_COORD(vecSrc.z);	// Z
 	WRITE_BYTE(13);		// radius * 0.1
-	WRITE_BYTE(RANDOM_LONG(0, 255));		// r
-	WRITE_BYTE(RANDOM_LONG(0, 255));		// g
-	WRITE_BYTE(RANDOM_LONG(0, 255));		// b
+	WRITE_BYTE(r);		// r
+	WRITE_BYTE(g);		// g
+	WRITE_BYTE(b);		// b
 	WRITE_BYTE(5);		// time * 10
 	WRITE_BYTE(0);		// decay * 0.1
 	MESSAGE_END();
