@@ -14,10 +14,6 @@
 ****/
 #pragma once
 
-#include    "extdll.h"
-#include    "util.h"
-#include	"cbase.h"
-
 #define SF_WEATHER_START_ON 1
 
 /// <summary>

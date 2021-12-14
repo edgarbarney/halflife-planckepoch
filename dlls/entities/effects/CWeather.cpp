@@ -13,7 +13,11 @@
 *
 ****/
 
-#include "CWeather.h"
+#include    "extdll.h"
+#include    "util.h"
+#include	"cbase.h"
+
+#include    "CWeather.h"
 
 #pragma region CWeather_Precipitation
 
@@ -154,7 +158,8 @@ void CWeatherController::SendWeather()
         WRITE_COORD(this->changeSpeed);
     }
     MESSAGE_END();
-    DontThink();
+    //DontThink();
+    SetNextThink(0.2f);
 }
 
 CWeatherController* CWeatherController::GetInstance()
