@@ -38,6 +38,7 @@ public:
 	int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
+	
 	void IgniteTrail();
 	void EXPORT StartTrack ();
 	void EXPORT StartDart ();
@@ -46,7 +47,8 @@ public:
 	void EXPORT DartTouch( CBaseEntity *pOther );
 	void EXPORT DieTouch ( CBaseEntity *pOther );
 	virtual void EXPORT DoDamage (CBaseEntity* pOther);
-	
+	virtual void EXPORT Glowing();
+
 	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
 	float			m_flStopAttack;
@@ -59,4 +61,6 @@ class CBigNyan : public CNyanCat
 	void Spawn() override;
 	void Precache() override;
 	virtual void EXPORT DoDamage(CBaseEntity* pOther) override;
+	virtual void EXPORT Glowing() override;
+
 };

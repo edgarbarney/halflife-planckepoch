@@ -67,6 +67,8 @@ void CNyanCat :: Spawn()
 	pev->flags		|= FL_MONSTER;
 	pev->health		= 1;// weak!
 	
+	
+
 	if ( g_pGameRules->IsMultiplayer() )
 	{
 		// nyancats don't live as long in multiplayer
@@ -168,7 +170,25 @@ void CNyanCat :: StartDart ()
 	SetTouch( &CNyanCat::DartTouch );
 
 	SetThink( &CNyanCat::SUB_Remove );
-	pev->nextthink = gpGlobals->time + 4;
+	pev->nextthink = gpGlobals->time + 1;
+}
+
+void CNyanCat::Glowing()
+{
+	Vector vecSrc = pev->origin;
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecSrc.x);	// X
+	WRITE_COORD(vecSrc.y);	// Y
+	WRITE_COORD(vecSrc.z);	// Z
+	WRITE_BYTE(9);		// radius * 0.1
+	WRITE_BYTE(RANDOM_LONG(0,255));		// r
+	WRITE_BYTE(RANDOM_LONG(0, 255));		// g
+	WRITE_BYTE(RANDOM_LONG(0, 255));		// b
+	WRITE_BYTE(5);		// time * 10
+	WRITE_BYTE(0);		// decay * 0.1
+	MESSAGE_END();
+
 }
 
 void CNyanCat::IgniteTrail()
@@ -225,7 +245,9 @@ void CNyanCat :: TrackTarget ()
 	Vector	vecDirToEnemy;
 	float	flDelta;
 
+
 	StudioFrameAdvance( );
+	Glowing();
 
 	m_flFlySpeed = pev->fuser1;
 
@@ -291,7 +313,7 @@ void CNyanCat :: TrackTarget ()
 
 	//pev->velocity = pev->velocity * ( m_flFlySpeed * flDelta );// scale the dir by the ( speed * width of turn )
 	pev->velocity = pev->velocity *  m_flFlySpeed;
-	pev->nextthink = gpGlobals->time + RANDOM_FLOAT( 0.1, 0.3 );
+	pev->nextthink = gpGlobals->time + 0.1;
 
 	//pev->velocity = pev->velocity * m_flFlySpeed;// do not have to slow down to turn.
 	//pev->nextthink = gpGlobals->time + 0.1;// fixed think time
@@ -324,7 +346,7 @@ void CNyanCat :: TrackTarget ()
 			case 2:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "nyancat/cathit.wav", 1, ATTN_NORM, 120);	break;
 			}
 			pev->velocity = pev->velocity * 2;
-			pev->nextthink = gpGlobals->time + 1.0;
+			pev->nextthink = gpGlobals->time + 0.1;
 			// don't attack again
 			m_flStopAttack = gpGlobals->time;
 		}
@@ -406,6 +428,8 @@ void CNyanCat::DoDamage(CBaseEntity *pOther)
 	}
 
 }
+
+
 
 LINK_ENTITY_TO_CLASS(bignyancat, CBigNyan);
 
@@ -509,4 +533,21 @@ void CBigNyan::DoDamage(CBaseEntity* pOther)
 				RadiusDamage(pev, pev, pev->dmg, CLASS_NONE, DMG_BLAST);
 		}
 	}
+}
+
+void CBigNyan::Glowing()
+{
+	Vector vecSrc = pev->origin;
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecSrc.x);	// X
+	WRITE_COORD(vecSrc.y);	// Y
+	WRITE_COORD(vecSrc.z);	// Z
+	WRITE_BYTE(13);		// radius * 0.1
+	WRITE_BYTE(RANDOM_LONG(0, 255));		// r
+	WRITE_BYTE(RANDOM_LONG(0, 255));		// g
+	WRITE_BYTE(RANDOM_LONG(0, 255));		// b
+	WRITE_BYTE(5);		// time * 10
+	WRITE_BYTE(0);		// decay * 0.1
+	MESSAGE_END();
 }
