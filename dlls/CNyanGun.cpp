@@ -58,9 +58,11 @@ void CNyanGun::Precache()
 	PRECACHE_SOUND("items/clipinsert1.wav");
 	PRECACHE_SOUND("items/cliprelease1.wav");
 
-	PRECACHE_SOUND ("nyancat/nyan_start.wav");
-	PRECACHE_SOUND ("nyancat/nyan_fireloop.wav");
-	PRECACHE_SOUND ("nyancat/nyan_idleloop.wav");
+	for(auto [sndKey, sndElem] : soundsMap)
+	{
+		if(sndKey != NyangunSounds::None)
+			PRECACHE_SOUND (sndElem);
+	}
 
 	PRECACHE_SOUND( "weapons/glauncher.wav" );
 	PRECACHE_SOUND( "weapons/glauncher2.wav" );
@@ -105,15 +107,14 @@ int CNyanGun::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CNyanGun::Deploy( )
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav", 1, ATTN_IDLE, 0, 100);
+	PlayNyangunSounds(NyangunSounds::Start);
+
 	return DefaultDeploy( "models/v_nyangun.mdl", "models/p_9mmAR.mdl", NYANGUN_DEPLOY, "nyangun" );
 }
 
 void CNyanGun::Holster()
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav",	 0, ATTN_IDLE, SND_STOP, 100);
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_idleloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
+	PlayNyangunSounds(NyangunSounds::None);
 }
 
 
@@ -122,8 +123,10 @@ void CNyanGun::PrimaryAttack()
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
+		PlayNyangunSounds(NyangunSounds::None);
 		PlayEmptySound( );
 		m_flNextPrimaryAttack = 0.15;
+		
 		return;
 	}
 
@@ -131,11 +134,7 @@ void CNyanGun::PrimaryAttack()
 	{
 		PlayEmptySound();
 		m_flNextPrimaryAttack = 0.15;
-
-		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav", 0, ATTN_IDLE, SND_STOP, 100);
-		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
-
-		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_idleloop.wav", 1, ATTN_IDLE, 0, 100);
+		PlayNyangunSounds(NyangunSounds::Idle);
 
 		return;
 	}
@@ -266,7 +265,7 @@ void CNyanGun::WeaponIdle()
 {
 	ResetEmptySound( );
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 
 	/*
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
@@ -304,22 +303,32 @@ BOOL CNyanGun::PlayEmptySound()
 	return 0;
 }
 
+void CNyanGun::PlayNyangunSounds(NyangunSounds soundToPlay)
+{
+
+	for(auto [sndKey, sndElem] : soundsMap)
+	{
+		if (sndKey != NyangunSounds::None)
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, sndElem, 0, ATTN_IDLE, SND_STOP, 100);
+	}
+
+	if (m_pPlayer->pev->waterlevel == 3) 
+		return;
+
+	if (soundToPlay != NyangunSounds::None)
+		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, soundsMap[soundToPlay], 1, ATTN_IDLE, 0, 100);
+}
+
 void CNyanGun::KeyPressed_PrimaryAttack()
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav",    0, ATTN_IDLE, SND_STOP, 100);
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_idleloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
-
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 1, ATTN_IDLE, 0, 100);
+	PlayNyangunSounds(NyangunSounds::Fire);
 
 	CBasePlayerWeapon::KeyPressed_PrimaryAttack();
 }
 
 void CNyanGun::KeyReleased_PrimaryAttack()
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_start.wav",    0, ATTN_IDLE, SND_STOP, 100);
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_fireloop.wav", 0, ATTN_IDLE, SND_STOP, 100);
-
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "nyancat/nyan_idleloop.wav", 1, ATTN_IDLE, 0, 100);
+	PlayNyangunSounds(NyangunSounds::Idle);
 
 	CBasePlayerWeapon::KeyReleased_PrimaryAttack();
 }

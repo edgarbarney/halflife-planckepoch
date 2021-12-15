@@ -203,17 +203,59 @@ LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
 
 class CItemBattery : public CItem
 {
+	
+
 	void Spawn() override
 	{ 
 		Precache( );
 		SET_MODEL(ENT(pev), "models/w_battery.mdl");
+		SetThink(&CItemBattery::GlowThink);
+		pev->nextthink = gpGlobals->time + 0.1;
 		CItem::Spawn( );
 	}
+
+	
+
 	void Precache() override
 	{
 		PRECACHE_MODEL ("models/w_battery.mdl");
 		PRECACHE_SOUND( "items/gunpickup2.wav" );
 	}
+
+	void GlowThink()
+	{
+		Vector vecSrc = pev->origin;
+		
+		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+		WRITE_BYTE(TE_DLIGHT);
+		WRITE_COORD(vecSrc.x);	// X
+		WRITE_COORD(vecSrc.y);	// Y
+		WRITE_COORD(vecSrc.z + 20);	// Z
+		WRITE_BYTE(4);			// radius * 0.1
+		WRITE_BYTE(0);			// r
+		WRITE_BYTE(220);		// g
+		WRITE_BYTE(255);		// b
+		WRITE_BYTE(20);			// time * 10
+		WRITE_BYTE(0);			// decay * 0.1
+		MESSAGE_END();
+
+		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+		WRITE_BYTE(TE_ELIGHT);
+		WRITE_SHORT(entindex());		// entity, attachment
+		WRITE_COORD(vecSrc.x);		// origin
+		WRITE_COORD(vecSrc.y);
+		WRITE_COORD(vecSrc.z);
+		WRITE_COORD(10);	// radius
+		WRITE_BYTE(0);	// R
+		WRITE_BYTE(220);	// G
+		WRITE_BYTE(255);	// B
+		WRITE_BYTE(20);	// life * 10
+		WRITE_COORD(0); // decay
+		MESSAGE_END();
+		
+		pev->nextthink = gpGlobals->time + 0.5;
+	}
+
 	BOOL MyTouch( CBasePlayer *pPlayer ) override
 	{
 		if ( pPlayer->pev->deadflag != DEAD_NO )

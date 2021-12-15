@@ -16,6 +16,7 @@
 #define WEAPONS_H
 
 #include "effects.h"
+#include <map>
 
 class CBasePlayer;
 
@@ -668,6 +669,16 @@ enum nyangun_e
 	NYANGUN_FIRE3,
 };
 
+
+enum class NyangunSounds
+{
+	None,
+	Idle,
+	Start,
+	Fire,
+};
+
+
 class CNyanGun : public CBasePlayerWeapon
 {
 public:
@@ -685,8 +696,18 @@ public:
 	void WeaponIdle() override;
 	float m_flNextAnimTime;
 	int m_iShell;
-	
+
+	std::map<NyangunSounds, const char*> soundsMap =
+	{
+		{NyangunSounds::None,	nullptr						},
+		{NyangunSounds::Idle,	"nyancat/nyan_idleloop.wav"	},
+		{NyangunSounds::Start,	"nyancat/nyan_start.wav"	},
+		{NyangunSounds::Fire,	"nyancat/nyan_fireloop.wav"	},
+	};
+
 	BOOL PlayEmptySound() override;
+	
+	void PlayNyangunSounds(NyangunSounds soundToPlay);
 
 	void KeyPressed_PrimaryAttack() override;
 	void KeyReleased_PrimaryAttack() override;
