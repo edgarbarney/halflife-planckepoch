@@ -173,6 +173,8 @@ void CPython::PrimaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
+	//Weapon Dynamic Light
+	MuzzleFlashDLight();
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 

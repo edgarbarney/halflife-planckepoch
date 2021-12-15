@@ -354,6 +354,14 @@ public:
 	int	PrimaryAmmoIndex() override;
 	int	SecondaryAmmoIndex() override;
 
+#ifndef CLIENT_DLL
+	virtual void MuzzleFlashDLight(unsigned long lightColour = 0xffaa00);
+	virtual void MuzzleFlashDLight(int r, int g, int b);
+#else
+	virtual void MuzzleFlashDLight(unsigned long lightColour = 0xffaa00) {}
+	virtual void MuzzleFlashDLight(int r, int g, int b) {}
+#endif
+
 	void PrintState();
 
 	CBasePlayerItem *GetWeaponPtr() override { return (CBasePlayerItem *)this; }

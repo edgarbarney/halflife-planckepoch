@@ -142,6 +142,9 @@ void CShotgun::PrimaryAttack()
 
 	Vector vecDir;
 
+	//Weapon Dynamic Light
+	MuzzleFlashDLight();
+
 #ifdef CLIENT_DLL
 	if ( bIsMultiplayer() )
 #else
@@ -210,6 +213,9 @@ void CShotgun::SecondaryAttack()
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+
+	//Weapon Dynamic Light
+	MuzzleFlashDLight();
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );

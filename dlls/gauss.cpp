@@ -338,6 +338,8 @@ void CGauss::StartFire()
 #endif
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+
+		MuzzleFlashDLight(0x00FFFF);
 	}
 
 	// time until aftershock 'static discharge' sound

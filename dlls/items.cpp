@@ -200,104 +200,106 @@ class CItemSuit : public CItem
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
 
 
+// Battery
 
-class CItemBattery : public CItem
+void CItemBattery::Spawn()
+{ 
+	Precache( );
+	SET_MODEL(ENT(pev), "models/w_battery.mdl");
+	SetThink(&CItemBattery::GlowThink);
+	pev->nextthink = gpGlobals->time + 0.1;
+	CItem::Spawn( );
+}
+
+void CItemBattery::Materialize()
 {
-	
+	SetThink(&CItemBattery::GlowThink);
+	pev->nextthink = gpGlobals->time + 0.1;
+	CItem::Materialize();
+}
 
-	void Spawn() override
-	{ 
-		Precache( );
-		SET_MODEL(ENT(pev), "models/w_battery.mdl");
-		SetThink(&CItemBattery::GlowThink);
-		pev->nextthink = gpGlobals->time + 0.1;
-		CItem::Spawn( );
-	}
+void CItemBattery::Precache()
+{
+	PRECACHE_MODEL ("models/w_battery.mdl");
+	PRECACHE_SOUND( "items/gunpickup2.wav" );
+}
 
-	
-
-	void Precache() override
-	{
-		PRECACHE_MODEL ("models/w_battery.mdl");
-		PRECACHE_SOUND( "items/gunpickup2.wav" );
-	}
-
-	void GlowThink()
-	{
-		Vector vecSrc = pev->origin;
+void CItemBattery::GlowThink()
+{
+	Vector vecSrc = pev->origin;
 		
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
-		WRITE_BYTE(TE_DLIGHT);
-		WRITE_COORD(vecSrc.x);	// X
-		WRITE_COORD(vecSrc.y);	// Y
-		WRITE_COORD(vecSrc.z + 20);	// Z
-		WRITE_BYTE(4);			// radius * 0.1
-		WRITE_BYTE(0);			// r
-		WRITE_BYTE(220);		// g
-		WRITE_BYTE(255);		// b
-		WRITE_BYTE(20);			// time * 10
-		WRITE_BYTE(0);			// decay * 0.1
-		MESSAGE_END();
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecSrc.x);	// X
+	WRITE_COORD(vecSrc.y);	// Y
+	WRITE_COORD(vecSrc.z + 20);	// Z
+	WRITE_BYTE(4);			// radius * 0.1
+	WRITE_BYTE(0);			// r
+	WRITE_BYTE(220);		// g
+	WRITE_BYTE(255);		// b
+	WRITE_BYTE(20);			// time * 10
+	WRITE_BYTE(0);			// decay * 0.1
+	MESSAGE_END();
 
-		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
-		WRITE_BYTE(TE_ELIGHT);
-		WRITE_SHORT(entindex());		// entity, attachment
-		WRITE_COORD(vecSrc.x);		// origin
-		WRITE_COORD(vecSrc.y);
-		WRITE_COORD(vecSrc.z);
-		WRITE_COORD(10);	// radius
-		WRITE_BYTE(0);	// R
-		WRITE_BYTE(220);	// G
-		WRITE_BYTE(255);	// B
-		WRITE_BYTE(20);	// life * 10
-		WRITE_COORD(0); // decay
-		MESSAGE_END();
+	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+	WRITE_BYTE(TE_ELIGHT);
+	WRITE_SHORT(entindex());		// entity, attachment
+	WRITE_COORD(vecSrc.x);		// origin
+	WRITE_COORD(vecSrc.y);
+	WRITE_COORD(vecSrc.z);
+	WRITE_COORD(10);	// radius
+	WRITE_BYTE(0);	// R
+	WRITE_BYTE(220);	// G
+	WRITE_BYTE(255);	// B
+	WRITE_BYTE(20);	// life * 10
+	WRITE_COORD(0); // decay
+	MESSAGE_END();
 		
-		pev->nextthink = gpGlobals->time + 0.5;
-	}
+	pev->nextthink = gpGlobals->time + 0.5;
+}
 
-	BOOL MyTouch( CBasePlayer *pPlayer ) override
+BOOL CItemBattery::MyTouch(CBasePlayer* pPlayer)
+{
+	if (pPlayer->pev->deadflag != DEAD_NO)
 	{
-		if ( pPlayer->pev->deadflag != DEAD_NO )
-		{
-			return FALSE;
-		}
-
-		if ((pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY) &&
-			(pPlayer->pev->weapons & (1<<WEAPON_SUIT)))
-		{
-			int pct;
-			char szcharge[64];
-
-			pPlayer->pev->armorvalue += gSkillData.batteryCapacity;
-			pPlayer->pev->armorvalue = V_min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
-
-			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
-
-			MESSAGE_BEGIN( MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev );
-				WRITE_STRING( STRING(pev->classname) );
-			MESSAGE_END();
-
-			
-			// Suit reports new power level
-			// For some reason this wasn't working in release build -- round it.
-			pct = (int)( (float)(pPlayer->pev->armorvalue * 100.0) * (1.0/MAX_NORMAL_BATTERY) + 0.5);
-			pct = (pct / 5);
-			if (pct > 0)
-				pct--;
-		
-			sprintf( szcharge,"!HEV_%1dP", pct );
-			
-			//EMIT_SOUND_SUIT(ENT(pev), szcharge);
-			pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
-			return TRUE;		
-		}
 		return FALSE;
 	}
-};
+
+	if ((pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY) &&
+		(pPlayer->pev->weapons & (1 << WEAPON_SUIT)))
+	{
+		int pct;
+		char szcharge[64];
+
+		pPlayer->pev->armorvalue += gSkillData.batteryCapacity;
+		pPlayer->pev->armorvalue = V_min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
+
+		EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+		WRITE_STRING(STRING(pev->classname));
+		MESSAGE_END();
+
+
+		// Suit reports new power level
+		// For some reason this wasn't working in release build -- round it.
+		pct = (int)((float)(pPlayer->pev->armorvalue * 100.0) * (1.0 / MAX_NORMAL_BATTERY) + 0.5);
+		pct = (pct / 5);
+		if (pct > 0)
+			pct--;
+
+		sprintf(szcharge, "!HEV_%1dP", pct);
+
+		//EMIT_SOUND_SUIT(ENT(pev), szcharge);
+		pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
+		return TRUE;
+	}
+	return FALSE;
+}
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
 
+// Battery End
 
 class CItemAntidote : public CItem
 {

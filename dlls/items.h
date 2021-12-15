@@ -22,8 +22,20 @@ public:
 	void	Spawn() override;
 	CBaseEntity*	Respawn() override;
 	void	EXPORT ItemTouch( CBaseEntity *pOther );
-	void	EXPORT Materialize();
+	virtual void EXPORT Materialize();
 	virtual BOOL MyTouch( CBasePlayer *pPlayer ) { return FALSE; }
+};
+
+class CItemBattery : public CItem
+{
+	void Spawn() override;
+	void Precache() override;
+
+	void EXPORT GlowThink();
+
+	virtual void EXPORT Materialize() override;
+
+	BOOL MyTouch(CBasePlayer* pPlayer) override;
 };
 
 #endif // ITEMS_H

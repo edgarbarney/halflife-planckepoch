@@ -106,6 +106,9 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
+	//Weapon Dynamic Light
+	MuzzleFlashDLight();
+
 	int flags;
 
 #if defined( CLIENT_WEAPONS )

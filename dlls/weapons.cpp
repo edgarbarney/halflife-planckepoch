@@ -898,6 +898,30 @@ int CBasePlayerWeapon::SecondaryAmmoIndex()
 	return m_iSecondaryAmmoType;
 }
 
+void CBasePlayerWeapon::MuzzleFlashDLight(unsigned long lightColour)
+{
+	int r, g, b;
+	UTIL_UnpackRGB(r, g, b, lightColour);
+	MuzzleFlashDLight(r, g, b);
+}
+
+void CBasePlayerWeapon::MuzzleFlashDLight(int r, int g, int b)
+{
+	Vector vecSrc = pev->origin;
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
+	WRITE_BYTE(TE_DLIGHT);
+	WRITE_COORD(vecSrc.x);	// X
+	WRITE_COORD(vecSrc.y);	// Y
+	WRITE_COORD(vecSrc.z);	// Z
+	WRITE_BYTE(20);			// radius * 0.1
+	WRITE_BYTE(r);		// r
+	WRITE_BYTE(g);		// g
+	WRITE_BYTE(b);			// b
+	WRITE_BYTE(1);			// time * 10
+	WRITE_BYTE(0);			// decay * 0.1
+	MESSAGE_END();
+}
+
 void CBasePlayerWeapon::Holster()
 { 
 	m_fInReload = FALSE; // cancel any reload in progress.
