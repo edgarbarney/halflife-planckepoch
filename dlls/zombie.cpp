@@ -461,8 +461,6 @@ void CZombie::Spawn()
 //=========================================================
 void CZombie::Precache()
 {
-	int i;
-
 	UTIL_PrecacheOther(ZOMBIE_CRAB);
 
 	if (pev->model)

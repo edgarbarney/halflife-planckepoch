@@ -22,10 +22,15 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 extern "C"
 {
 	// HLDM
+	void EV_Crowbar(struct event_args_s* args);
 	void EV_FireGlock1(event_args_t* args);
 	void EV_FireGlock2(event_args_t* args);
 	void EV_FireShotGunSingle(event_args_t* args);
+	void EV_EjectShell(struct event_args_s* args);
 	void EV_FireMP5(event_args_t* args);
+	void EV_FireAR16(struct event_args_s* args);
+	void EV_FireAR162(struct event_args_s* args);
+	void EV_FireAR163(struct event_args_s* args);
 	void EV_FirePython(event_args_t* args);
 	void EV_FireGauss(event_args_t* args);
 	void EV_SpinGauss(event_args_t* args);

@@ -66,34 +66,37 @@ extern cvar_t *cl_lw;
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
 
-// HLDM
-void EV_Crowbar(struct event_args_s* args);
-void EV_FireGlock1( struct event_args_s *args  );
-void EV_FireGlock2( struct event_args_s *args  );
-void EV_FireShotGunSingle( struct event_args_s *args  );
-void EV_EjectShell( struct event_args_s *args  );
-void EV_FireMP5( struct event_args_s *args  );
-//void EV_FireMP52( struct event_args_s *args  ); replaced by AR16
-void EV_FireAR16(struct event_args_s* args);
-void EV_FireAR162( struct event_args_s *args  );
-void EV_FireAR163(struct event_args_s* args);
-void EV_FirePython( struct event_args_s *args  );
-void EV_FireGauss( struct event_args_s *args  );
-void EV_SpinGauss( struct event_args_s *args  );
-void EV_FireCrossbow( struct event_args_s *args  );
-void EV_FireCrossbow2( struct event_args_s *args  );
-void EV_FireRpg( struct event_args_s *args  );
-void EV_EgonFire( struct event_args_s *args  );
-void EV_EgonStop( struct event_args_s *args  );
-void EV_HornetGunFire( struct event_args_s *args  );
-void EV_TripmineFire( struct event_args_s *args  );
-void EV_SnarkFire( struct event_args_s *args  );
-void EV_GenericFire1( struct event_args_s *args );
-void EV_GenericFire2( struct event_args_s *args );
-void EV_GenericFire3( struct event_args_s *args );
+
+extern "C"
+{
+	// HLDM
+	void EV_Crowbar(struct event_args_s* args);
+	void EV_FireGlock1(struct event_args_s* args);
+	void EV_FireGlock2(struct event_args_s* args);
+	void EV_FireShotGunSingle(struct event_args_s* args);
+	void EV_EjectShell(struct event_args_s* args);
+	void EV_FireMP5(struct event_args_s* args);
+	//void EV_FireMP52( struct event_args_s *args  ); replaced by AR16
+	void EV_FireAR16(struct event_args_s* args);
+	void EV_FireAR162(struct event_args_s* args);
+	void EV_FireAR163(struct event_args_s* args);
+	void EV_FirePython(struct event_args_s* args);
+	void EV_FireGauss(struct event_args_s* args);
+	void EV_SpinGauss(struct event_args_s* args);
+	void EV_FireCrossbow(struct event_args_s* args);
+	void EV_FireCrossbow2(struct event_args_s* args);
+	void EV_FireRpg(struct event_args_s* args);
+	void EV_EgonFire(struct event_args_s* args);
+	void EV_EgonStop(struct event_args_s* args);
+	void EV_HornetGunFire(struct event_args_s* args);
+	void EV_TripmineFire(struct event_args_s* args);
+	void EV_SnarkFire(struct event_args_s* args);
+	void EV_GenericFire1(struct event_args_s* args);
+	void EV_GenericFire2(struct event_args_s* args);
+	void EV_GenericFire3(struct event_args_s* args);
 
 
-void EV_TrainPitchAdjust( struct event_args_s *args );
+	void EV_TrainPitchAdjust(struct event_args_s* args);
 }
 
 #define VECTOR_CONE_1DEGREES Vector( 0.00873, 0.00873, 0.00873 )
