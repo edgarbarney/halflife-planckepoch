@@ -56,6 +56,7 @@ void CPostProcess::TempGrayscaleThink()
 		if (m_fGrayscalePower <= m_fTGS_EndPower)
 		{
 			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
+			if (m_fGrayscalePower > 1) m_fGrayscalePower = 1;
 			if (m_fGrayscalePower < 0)
 			{
 				Reset(m_bTGS_Stay); // Reset
@@ -68,6 +69,7 @@ void CPostProcess::TempGrayscaleThink()
 		if (m_fGrayscalePower >= m_fTGS_EndPower)
 		{
 			m_fGrayscalePower = FranUtils::Lerp(FranUtils::WhereInBetween(gEngfuncs.GetClientTime(), m_fTGS_StartTime, m_fTGS_EndTime), m_fTGS_EndPower, m_fTGS_StartPower);
+			if (m_fGrayscalePower < 0) m_fGrayscalePower = 0;
 			if (m_fGrayscalePower > 1)
 			{
 				Reset(m_bTGS_Stay); // Reset
@@ -83,6 +85,10 @@ float CPostProcess::GetGrayscalePower()
 		return 0;
 
 	float grayscale = m_fGrayscalePower;
+
+	//TODO: Fix grayscale staying bug
+	//if (m_fTGS_StartTime + 10.0f > m_fTGS_EndTime)
+	//	m_fTGS_EndTime = m_fTGS_StartTime + 9.9f;
 
 	if (grayscale > 1) grayscale = 1;
 

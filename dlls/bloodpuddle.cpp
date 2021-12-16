@@ -54,7 +54,6 @@ CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBa
 
 	UTIL_SetOrigin(pPuddle, vecOrigin);
 	pPuddle->pev->angles = vecAngles;
-	pPuddle->Spawn();
 	switch (bloodColor)
 	{
 	//case BLOOD_COLOR_GREEN:
@@ -71,6 +70,8 @@ CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBa
 	pPuddle->pev->scale = bloodScale;
 
 	pPuddle->pev->owner = pOwner->edict();
+
+	pPuddle->Spawn();
 
 	return pPuddle;
 }
@@ -95,14 +96,17 @@ void CBloodPuddle::Spawn()
 		DROP_TO_FLOOR(ENT(pev));
 	//}
 
-	CBaseMonster* pOwner = static_cast<CBaseMonster*>(CBaseEntity::Instance(pev->owner));
+	//m_fStartTime = gpGlobals->time;
+	CBaseMonster* pOwner = dynamic_cast<CBaseMonster*>(CBaseEntity::Instance(pev->owner));
 
-	m_fStartTime = gpGlobals->time;
-
-	if (pOwner)
+	if (pOwner != nullptr)
+	{
 		m_fStartTime = gpGlobals->time += pOwner->m_fBleedTime;
+	}
 	else
+	{
 		m_fStartTime = gpGlobals->time;
+	}
 
 	SetBoneController(0, 0);
 	SetBoneController(1, 0);

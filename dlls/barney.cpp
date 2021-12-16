@@ -27,7 +27,8 @@
 #include	"scripted.h"
 #include	"weapons.h"
 #include	"soundent.h"
-#include	<animation.h>
+#include	"animation.h"
+#include <FranUtils.hpp>
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -652,18 +653,7 @@ void CBarney :: BarneyFirePistol ()
 	m_cAmmoLoaded--;// take away a bullet!
 
 	// Teh_Freak: World Lighting!
-     MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
-          WRITE_BYTE( TE_DLIGHT );
-          WRITE_COORD( vecShootOrigin.x ); // origin
-          WRITE_COORD( vecShootOrigin.y );
-          WRITE_COORD( vecShootOrigin.z );
-          WRITE_BYTE( 16 );     // radius
-          WRITE_BYTE( 255 );     // R
-          WRITE_BYTE( 255 );     // G
-          WRITE_BYTE( 128 );     // B
-          WRITE_BYTE( 0 );     // life * 10
-          WRITE_BYTE( 0 ); // decay
-     MESSAGE_END();
+		FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
 	// Teh_Freak: World Lighting!
 
 }
@@ -962,7 +952,7 @@ BOOL IsFacing(entvars_t* pevTest, const Vector& reference)
 	Vector forward, angle;
 	angle = pevTest->v_angle;
 	angle.x = 0;
-	UTIL_MakeVectorsPrivate(angle, forward, nullptr, nullptr);
+	UTIL_MakeVectorsPrivate( angle, forward, nullptr, nullptr );
 	// He's facing me, he meant it
 	if (DotProduct(forward, vecDir) > 0.96)	// +/- 15 degrees or so
 	{

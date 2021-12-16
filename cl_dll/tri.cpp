@@ -107,7 +107,7 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 #if defined( _TFC )
 	RunEventList();
 #endif
-	
+
 	BlackFog();
 
 	// LRC: find out the time elapsed since the last redraw

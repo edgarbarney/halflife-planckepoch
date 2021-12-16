@@ -3063,51 +3063,52 @@ int HaveCamerasInPVS( edict_t* edict )
 	return 0;
 }
 
+
 //RENDERERS START
 
-void UTIL_CustomDecal( TraceResult *pTrace, const char *name, int persistent )
+void UTIL_CustomDecal(TraceResult* pTrace, const char* name, int persistent)
 {
 	if (pTrace->flFraction == 1.0)
 		return;
 
-	MESSAGE_BEGIN( MSG_ALL, gmsgCreateDecal, nullptr );
-		WRITE_COORD( pTrace->vecEndPos.x );
-		WRITE_COORD( pTrace->vecEndPos.y );
-		WRITE_COORD( pTrace->vecEndPos.z );
-		WRITE_COORD( pTrace->vecPlaneNormal.x );
-		WRITE_COORD( pTrace->vecPlaneNormal.y );
-		WRITE_COORD( pTrace->vecPlaneNormal.z );
-		WRITE_BYTE( persistent );
-		WRITE_STRING( name );
+	MESSAGE_BEGIN(MSG_ALL, gmsgCreateDecal, nullptr);
+	WRITE_COORD(pTrace->vecEndPos.x);
+	WRITE_COORD(pTrace->vecEndPos.y);
+	WRITE_COORD(pTrace->vecEndPos.z);
+	WRITE_COORD(pTrace->vecPlaneNormal.x);
+	WRITE_COORD(pTrace->vecPlaneNormal.y);
+	WRITE_COORD(pTrace->vecPlaneNormal.z);
+	WRITE_BYTE(persistent);
+	WRITE_STRING(name);
 	MESSAGE_END();
 }
 
-void UTIL_StudioDecal( Vector normal, Vector position, const char *name, int entindex )
+void UTIL_StudioDecal(Vector normal, Vector position, const char* name, int entindex)
 {
-	MESSAGE_BEGIN( MSG_BROADCAST, gmsgStudioDecal );
-		WRITE_COORD( position.x );
-		WRITE_COORD( position.y );
-		WRITE_COORD( position.z );
-		WRITE_COORD( normal.x );
-		WRITE_COORD( normal.y );
-		WRITE_COORD( normal.z );
-		WRITE_SHORT( entindex );
-		WRITE_STRING( name );
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgStudioDecal);
+	WRITE_COORD(position.x);
+	WRITE_COORD(position.y);
+	WRITE_COORD(position.z);
+	WRITE_COORD(normal.x);
+	WRITE_COORD(normal.y);
+	WRITE_COORD(normal.z);
+	WRITE_SHORT(entindex);
+	WRITE_STRING(name);
 	MESSAGE_END();
 }
 
-void UTIL_Particle( char *szName, Vector vecOrigin, Vector vDirection, int iType )
+void UTIL_Particle(char* szName, Vector vecOrigin, Vector vDirection, int iType)
 {
 	MESSAGE_BEGIN(MSG_ALL, gmsgCreateSystem, nullptr);
-		WRITE_COORD(vecOrigin.x);
-		WRITE_COORD(vecOrigin.y);
-		WRITE_COORD(vecOrigin.z);
-		WRITE_COORD(vDirection.x);
-		WRITE_COORD(vDirection.y);
-		WRITE_COORD(vDirection.z);
-		WRITE_BYTE(iType);
-		WRITE_STRING(szName);
-		WRITE_LONG(0);
+	WRITE_COORD(vecOrigin.x);
+	WRITE_COORD(vecOrigin.y);
+	WRITE_COORD(vecOrigin.z);
+	WRITE_COORD(vDirection.x);
+	WRITE_COORD(vDirection.y);
+	WRITE_COORD(vDirection.z);
+	WRITE_BYTE(iType);
+	WRITE_STRING(szName);
+	WRITE_LONG(0);
 	MESSAGE_END();
 }
 //RENDERERS END

@@ -251,7 +251,7 @@ void __CmdFunc_ForceCloseCommandMenu()
 	}
 }
 
-void __CmdFunc_StopMP3()
+void __CmdFunc_StopMP3( )
 {
 	gMP3.StopMP3();
 }
@@ -415,7 +415,7 @@ void CHud :: Init()
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
 	HOOK_MESSAGE( HUDColor ); //LRC
-//	HOOK_MESSAGE( KeyedDLight ); //LRC
+	HOOK_MESSAGE( KeyedDLight ); //LRC
 //	HOOK_MESSAGE( KeyedELight ); //LRC
 	HOOK_MESSAGE( Test ); //LRC
 	HOOK_MESSAGE( SetSky ); //LRC
@@ -507,6 +507,9 @@ void CHud :: Init()
 	cl_rollangle = CVAR_CREATE("cl_rollangle", "2.0", 0);
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", 0);
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
+	m_pSpriteList = nullptr;
+
+	RainInfo = gEngfuncs.pfnRegisterVariable( "cl_raininfo", "0", 0 );
 	m_pSpriteList = nullptr;
 
 	// Clear any old HUD list
@@ -603,7 +606,7 @@ void CHud::BRD_SetBorderless(SDL_Window* brd_windowArg)
 	weg = dm.w;
 	heg = dm.h;
 	//gEngfuncs.pfnClientCmd("r_borderless 1\n");
-	gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+	//gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
 	SDL_SetWindowFullscreen(brd_windowArg, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_SetWindowSize(brd_windowArg, weg, heg);
 	SDL_SetWindowBordered(brd_windowArg, SDL_FALSE);
@@ -760,7 +763,6 @@ void CHud :: VidInit()
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
-	GetClientVoiceMgr()->VidInit();
 	GetClientVoiceMgr()->VidInit();
 	//RENDERERS START
 	gTextureLoader.VidInit();

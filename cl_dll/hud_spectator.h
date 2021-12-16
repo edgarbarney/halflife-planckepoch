@@ -48,7 +48,7 @@ typedef struct overviewInfo_s {
 
 typedef struct overviewEntity_s {
 
-	HL_HSPRITE					hSprite;
+	HL_HSPRITE					HL_HSPRITE;
 	struct cl_entity_s *	entity;
 	double					killTime;
 } overviewEntity_t;

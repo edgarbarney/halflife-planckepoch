@@ -47,10 +47,8 @@ public:
 	BOOL SparkWhenHit();
 
 	STATE GetState() override;
-	
-	//RENDERERS START
-	char	*DamageDecal( int bitsDamageType ) override;
-	//RENDERERS END
+
+	char  *DamageDecal( int bitsDamageType ) override;
 
 	void EXPORT		Die();
     int		ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }

@@ -25,7 +25,8 @@
 #include	"effects.h"
 #include	"weapons.h"
 #include	"soundent.h"
-#include <shake.h>
+#include    "shake.h"
+#include	"FranUtils.hpp"
 
 extern DLL_GLOBAL int		g_iSkillLevel;
 
@@ -218,22 +219,8 @@ void CISlave :: IdleSound()
 
 	UTIL_MakeAimVectors( pev->angles );
 	Vector vecSrc = pev->origin + gpGlobals->v_right * 2 * side;
-	/*
-	// Teh_Freak: World Lighting!
-	MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight );
-		//WRITE_BYTE(TE_DLIGHT);
-		WRITE_COORD(vecSrc.x);	// X
-		WRITE_COORD(vecSrc.y);	// Y
-		WRITE_COORD(vecSrc.z);	// Z
-		WRITE_BYTE( 8 );		// radius * 0.1
-		WRITE_BYTE( 0 );		// r
-		WRITE_BYTE( 255 );		// g
-		WRITE_BYTE( 0 );		// b
-		WRITE_BYTE( 1 );		// time * 10
-		WRITE_BYTE( 0 );		// decay * 0.1
-	MESSAGE_END( );
-	// Teh_Freak: World Lighting!
-	*/
+	FranUtils::EmitDlight(vecSrc, 8, { 0, 100, 0 }, 1, 0);
+
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "debris/zap1.wav", 1, ATTN_NORM, 0, 100 );
 #endif
 }
@@ -368,19 +355,7 @@ void CISlave :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			if (m_iBeams == 0)
 			{
 				Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
-				MESSAGE_BEGIN( MSG_PVS, gmsgCreateDLight, vecSrc );
-					//WRITE_BYTE(TE_DLIGHT);
-					WRITE_COORD(vecSrc.x);	// X
-					WRITE_COORD(vecSrc.y);	// Y
-					WRITE_COORD(vecSrc.z);	// Z
-					WRITE_BYTE( 12 );		// radius * 0.1
-					WRITE_BYTE( 0 );		// r
-					WRITE_BYTE( 100 );		// g
-					WRITE_BYTE( 0 );		// b
-					WRITE_BYTE( 2 );		// time * 10
-					WRITE_BYTE( 0 );		// decay * 0.1
-				MESSAGE_END( );
-
+				//FranUtils::EmitDlight(vecSrc, 12, {0, 100, 0}, 2.0f /* pev->framerate*/, 0.0f);
 			}
 			if (m_hDead != nullptr)
 			{
@@ -796,6 +771,9 @@ void CISlave :: BeamGlow( )
 			m_pBeam[i]->SetBrightness( b );
 		}
 	}
+
+	Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
+	FranUtils::EmitDlight(vecSrc, 12, { 0, 100, 0 }, 3.0f /* pev->framerate*/, 5.0f);
 }
 
 

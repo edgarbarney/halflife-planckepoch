@@ -225,13 +225,13 @@ public:
 class CRainSettings : public CBaseEntity
 {
 public:
-	void	Spawn( ) override;
+	void	Spawn() override;
 	void	KeyValue( KeyValueData *pkvd ) override;
 
 	int	ObjectCaps( ) override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float Rain_Distance;
@@ -241,14 +241,14 @@ public:
 class CRainModify : public CBaseEntity
 {
 public:
-	void	Spawn( ) override;
+	void	Spawn() override;
 	void	KeyValue( KeyValueData *pkvd ) override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	int	ObjectCaps( ) override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+    int		Save( CSave &save ) override;
+    int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int Rain_Drips;

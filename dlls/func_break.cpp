@@ -636,7 +636,7 @@ void CBreakable::RespawnThink()
 	}
 }
 
-void CBreakable::DoRespawn ()
+void CBreakable::DoRespawn( )	//AJH Fix for respawnable breakable pushables (BY HAWK777)
 {
 pev->solid = SOLID_BSP;
 } 
@@ -980,8 +980,8 @@ void CBreakable::Die()
 
 
 
-BOOL CBreakable :: IsBreakable() 
-{ 
+BOOL CBreakable :: IsBreakable()
+{
 	return m_Material != matUnbreakableGlass;
 }
 

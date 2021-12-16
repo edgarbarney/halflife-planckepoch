@@ -553,10 +553,8 @@ private:
 //-----------------------------------------------------
 //
 
-//LRC - for the moment, skymode has only two settings
-#define SKY_OFF 0
-#define SKY_ON_DRAWING  2
-#define SKY_ON  1
+//LRC
+//methods actually defined in tri.cpp
 
 class CShinySurface
 {
@@ -587,7 +585,6 @@ public:
 #define SKY_OFF 0
 #define SKY_ON_DRAWING  2
 #define SKY_ON  1
-
 
 class CHud
 {
@@ -702,7 +699,7 @@ public:
 	int  _cdecl MsgFunc_RainData( const char *pszName, int iSize, void *pbuf ); 		//G-Cont
 	int  _cdecl MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf );		//KILLAR
 	int _cdecl MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf);		//LRC
-	//void _cdecl MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf );	//LRC
+	void _cdecl MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf );	//LRC
 	void _cdecl MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf );		//LRC
 	int  _cdecl MsgFunc_CamData( const char *pszName, int iSize, void *pbuf );		//G-Cont
 	int  _cdecl MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf );	//AJH

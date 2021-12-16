@@ -2424,17 +2424,10 @@
 ]
 
 //NEW 1.2
-@PointClass sprite() base(Targetname, Angles, MoveWith, RenderFields) size (-4 -4 -4, 4 4 4) iconsprite("sprites/env.spr") = env_particle : "Particle Effect"
+@PointClass sprite() base(Targetname, Angles, MoveWith, RenderFields) size(-4 -4 -4, 4 4 4) = env_particle : "Particle Effect" 
 [
 	message(string) : "Particle file" : "aurora/smoke.aur"
-	netname(string) : "Child Particles name"
-	spawnflags(flags) = 
-	[
-		1: "Start On" : 0
-		2: "Spawn Use" : 0
-	]
 ]
-
 
 @PointClass base(Targetname, RenderFields) size(-16 -16 -16, 16 16 16) color(100 100 0) = env_render : "Render Controls"
 [
@@ -2581,7 +2574,7 @@
 ]
 
 //NEW 1.1
-@PointClass base(Targetname) iconsprite("sprites/env.spr") = env_sky : "Unreal-Tournament style sky view"
+@PointClass base(Targetname) = env_sky : "Unreal-Tournament style sky view"
 [
 ]
 
@@ -2836,8 +2829,6 @@
 		-20:"Special 1 (Particles)"
 		-21:"Special 2 (Particles)"
 		-22:"Special 3 (Particles)"
-
-
 	]
 	_minlight(string) : "Minimum light level"
 ]

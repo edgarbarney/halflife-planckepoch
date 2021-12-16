@@ -28,10 +28,10 @@
 #include "nodes.h"
 #include "soundent.h"
 #include "decals.h"
+#include "shake.h"
 #include "pm_movevars.h"
 #include "pm_shared.h"
 #include "pm_defs.h"
-#include <shake.h>
 
 #define NadeVectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 
@@ -59,6 +59,24 @@ LINK_ENTITY_TO_CLASS( grenade, CGrenade );
 
 // Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 #define SF_DETONATE		0x0001
+
+void CGrenade::ShootShrapnel()
+{
+	/*
+	int i;
+	TraceResult tr;
+
+	Vector forward = { gpGlobals->v_forward.x, gpGlobals->v_forward.y * m_iLineCountNextRot, gpGlobals->v_forward.z};
+
+	UTIL_TraceLine(pev->origin, pev->origin + Vector(0, 0, -32), ignore_monsters, ENT(pev), &tr);
+
+	// do damage, paint decals
+	if (tr.flFraction != 1.0)
+	{
+
+	}
+	*/
+}
 
 //
 // Grenade Explode
@@ -145,7 +163,7 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 		RadiusDamage ( pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType );
 		float plrHeathDif = plrHeathDif = (plrHeathOld - thePlayerPtr->pev->health) * 8.0f;
 		//UTIL_ScreenShake(pev->origin, plrHeathDif, 255.0f, plrHeathDif / 80.0f, plrHeathDif * 8.0f);
-		//													(plrHeathDif / 8) / 10
+		//												  (plrHeathDif / 8) / 10
 		if (Distance(thePlayerPtr->pev->origin, pev->origin) < 250.0f)
 		{
 			float volu = (150 - Distance(thePlayerPtr->pev->origin, pev->origin)) / 125; if (volu < 0) volu = 0;
@@ -174,6 +192,9 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	{
 		RadiusDamage(pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
 	}
+
+	if (m_bSimulateShrapnel)
+		ShootShrapnel();
 
 	/*
 	if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )

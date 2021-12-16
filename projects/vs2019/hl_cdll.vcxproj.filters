@@ -294,20 +294,22 @@
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp">
       <Filter>Source Files\pm_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\mathlib.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\mp3.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\CustomMenu.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\bsprenderer.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dlls\ar16.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp">
       <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\CGameStateManager.cpp">
+          <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\frustum.cpp">
       <Filter>Source Files\cl_dll</Filter>
@@ -330,20 +332,20 @@
     <ClCompile Include="..\..\cl_dll\watershader.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\bsprenderer.cpp">
+    <ClCompile Include="..\..\common\mathlib.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\weapons_shared.cpp">
+      <Filter>Source Files\_hl\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\postprocess.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\healthshot.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\weapons_shared.cpp">
-      <Filter>Source Files\_hl\dlls</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\stungrenade.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\postprocess.cpp">
-      <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -456,6 +458,12 @@
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\fmod.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\mathlib.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\cdll_dll.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\fmod_errors.h">
@@ -608,6 +616,15 @@
     <ClInclude Include="..\..\cl_dll\bsprenderer.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\cl_dll\mp3.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\glInclude.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\bsprenderer.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\cl_dll\frustum.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
@@ -628,24 +645,6 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\watershader.h">
       <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\edict.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\eiface.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dlls\cdll_dll.h">
-      <Filter>Header Files\cl_dll</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\mathlib.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\progs.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\engine\progdefs.h">
-      <Filter>Header Files\engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\postprocess.h">
       <Filter>Header Files\cl_dll</Filter>

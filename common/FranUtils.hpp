@@ -1,5 +1,9 @@
-#pragma once
+//#pragma once
 
+#ifndef FRANUTILS_H
+#define FRANUTILS_H
+
+#include "UserMessages.h"
 #include <string>
 
 /*
@@ -12,7 +16,7 @@ namespace FranUtils
 {
 
 #pragma region Debug Functions
-
+#ifndef CLIENT_WEAPONS
 	/**
 	* Prints 2 strings with a boolean value inbetween.
 	* Can be used as extrapolation, when lerpfactor is outside of the range [0,1].
@@ -72,11 +76,10 @@ namespace FranUtils
 			return;
 		#endif
 	}
-
+#endif
 #pragma endregion
 
-
-#pragma region Non-ensured Funcitons
+#pragma region Non-ensured Math Funcitons
 
 	/**
 	* Basic linear interpolation.
@@ -108,33 +111,9 @@ namespace FranUtils
 		return (find - min) / (max - min); 
 	}
 
-	/**
-	* ASSEMBLY | For HL Messages - Returns a long that contains float information
-	*
-	* @see FranUtils::ftol
-	* @param x : Float to store
-	* @return Long to send over
-	*/
-	inline long ftol_asm(float x)
-	{
-		__asm mov eax, x;
-	}
-
-	/**
-	* For HL Messages - Returns a long that contains float information
-	*
-	* @see FranUtils::ftol_asm
-	* @param x : Float to store
-	* @return Long to send over
-	*/
-	inline long ftol(float x)
-	{
-		return *(long*)(&x);
-	}
-
 #pragma endregion
 
-#pragma region Ensured Funcitons
+#pragma region Ensured Math Funcitons
 
 	/**
 	* Ensured linear interpolation.
@@ -182,6 +161,111 @@ namespace FranUtils
 		else
 			return calc;
 	}
-}
+
 
 #pragma endregion
+
+#pragma region String Functions
+
+	inline char* strcharstr(const char* mainstr, const char* substr)
+	{
+		const char* buffer1 = mainstr;
+		const char* buffer2 = substr;
+		const char* result = *buffer2 == 0 ? mainstr : 0;
+
+		while (*buffer1 != 0 && *buffer2 != 0)
+		{
+			if (tolower((unsigned char)*buffer1) == tolower((unsigned char)*buffer2))
+			{
+				if (result == 0)
+				{
+					result = buffer1;
+				}
+
+				buffer2++;
+			}
+			else
+			{
+				buffer2 = substr;
+				if (result != 0)
+				{
+					buffer1 = result + 1;
+				}
+
+				if (tolower((unsigned char)*buffer1) == tolower((unsigned char)*buffer2))
+				{
+					result = buffer1;
+					buffer2++;
+				}
+				else
+				{
+					result = 0;
+				}
+			}
+
+			buffer1++;
+		}
+
+		return *buffer2 == 0 ? (char*)result : 0;
+	}
+
+#pragma endregion
+
+#pragma region General Utilities
+
+		/**
+	* ASSEMBLY | For HL Messages - Returns a long that contains float information
+	*
+	* @see FranUtils::ftol
+	* @param x : Float to store
+	* @return Long to send over
+	*/
+	inline long ftol_asm(float x)
+	{
+		__asm mov eax, x;
+	}
+
+	/**
+	* For HL Messages - Returns a long that contains float information
+	*
+	* @see FranUtils::ftol_asm
+	* @param x : Float to store
+	* @return Long to send over
+	*/
+	inline long ftol(float x)
+	{
+		return *(long*)(&x);
+	}
+
+#if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL)
+	/**
+	* For Emitting A Dynamic Light
+	*
+	* @param emitOrigin : Position to Create
+	* @param radius : Radius of the Light * 0.1
+	* @param colour : Colour of the Light. XYZ ~ RGB
+	* @param time : Lifetime
+	* @param decay : Decay Time * 0.1
+	*/
+	inline void EmitDlight(Vector emitOrigin, int radius, Vector colour, float time, int decay)
+	{
+		MESSAGE_BEGIN(MSG_PVS, gmsgCreateDLight, emitOrigin);
+			//WRITE_BYTE(TE_DLIGHT);
+			WRITE_COORD(emitOrigin.x);	// X
+			WRITE_COORD(emitOrigin.y);	// Y
+			WRITE_COORD(emitOrigin.z);	// Z
+			WRITE_BYTE(radius);			// radius * 0.1
+			WRITE_BYTE(colour.x);		// r
+			WRITE_BYTE(colour.y);		// g
+			WRITE_BYTE(colour.z);		// b
+			WRITE_LONG(FranUtils::ftol_asm(time));  //WRITE_BYTE(time);			// time * 10
+			WRITE_BYTE(decay);			// decay * 0.1
+		MESSAGE_END();
+	}
+#endif
+
+#pragma endregion
+
+}
+
+#endif

@@ -719,7 +719,7 @@ void CBasePlayerItem::DefaultTouch( CBaseEntity *pOther )
 	SUB_UseTargets( pOther, USE_TOGGLE, 0 ); // UNDONE: when should this happen?
 }
 
-void CBasePlayerItem::DestroyItem( )
+void CBasePlayerItem::DestroyItem()
 {
 	if ( m_pPlayer )
 	{

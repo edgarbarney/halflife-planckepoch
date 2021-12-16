@@ -19,10 +19,20 @@
 #include "weaponinfo.h"
 #include "UserMessages.h"
 
+/*
 #ifdef CLIENT_DLL
 #define SetWeaponSkin(x) 
 #else
-#define SetWeaponSkin(x) MESSAGE_BEGIN(MSG_ONE, gmsgViewmodelSkin, nullptr, m_pPlayer->pev); WRITE_SHORT(x); MESSAGE_END()
+#define SetWeaponSkin(x){ MESSAGE_BEGIN(MSG_ONE, gmsgViewmodelSkin, nullptr, m_pPlayer->pev); WRITE_SHORT(x); MESSAGE_END()
+#endif // CLIENT
+*/
+
+#ifdef CLIENT_DLL
+#define SetWeaponSkin(x) 
+#else
+//I hate macros.
+#define SWP_BASE(x) MESSAGE_BEGIN(MSG_ONE, gmsgViewmodelSkin, nullptr, m_pPlayer->pev); WRITE_SHORT(x); MESSAGE_END()
+#define SetWeaponSkin(x) if (m_pPlayer) { SWP_BASE(x); } pev->skin = x
 #endif // CLIENT
 
 class CBasePlayer;
@@ -42,6 +52,8 @@ public:
 	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
 	static CGrenade* ShootStun( entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time );
 	static void UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code );
+
+	void ShootShrapnel();
 
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
@@ -75,6 +87,12 @@ public:
 
 	// Ear Ringing
 	float m_fAttackFront, m_fAttackRear, m_fAttackLeft, m_fAttackRight;
+
+	//Shrapnel System
+	BOOL m_bSimulateShrapnel;
+	int m_iLineCount;
+	float m_iLineCountNextRot;
+
 };
 
 

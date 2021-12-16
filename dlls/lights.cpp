@@ -98,7 +98,6 @@ int GetStdLightStyle (int iStyle)
 	}
 }
 
-
 class CLight : public CPointEntity
 {
 public:
@@ -117,16 +116,16 @@ private:
 	int		m_iszPattern;
 	BOOL	m_bAlreadySent;
 };
-LINK_ENTITY_TO_CLASS( light, CLight );
+LINK_ENTITY_TO_CLASS(light, CLight);
 
-TYPEDESCRIPTION	CLight::m_SaveData[] = 
+TYPEDESCRIPTION	CLight::m_SaveData[] =
 {
-	DEFINE_FIELD( CLight, m_iStyle, FIELD_INTEGER ),
-	DEFINE_FIELD( CLight, m_iszPattern, FIELD_STRING ),
-	DEFINE_FIELD( CLight, m_bAlreadySent, FIELD_BOOLEAN ),
+	DEFINE_FIELD(CLight, m_iStyle, FIELD_INTEGER),
+	DEFINE_FIELD(CLight, m_iszPattern, FIELD_STRING),
+	DEFINE_FIELD(CLight, m_bAlreadySent, FIELD_BOOLEAN),
 };
 
-IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
+IMPLEMENT_SAVERESTORE(CLight, CPointEntity);
 
 //
 // Cache user-entity-field values until spawn is called.
@@ -139,25 +138,25 @@ void CLight :: SendInitMessage( CBasePlayer *player )
 	if (m_iStyle >= 32)
 	{
 		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
-			strcpy(szPattern,"a");
+			strcpy(szPattern, "a");
 		else if (m_iszPattern)
-			strcpy(szPattern,(char *)STRING( m_iszPattern ));
+			strcpy(szPattern, (char*)STRING(m_iszPattern));
 		else
-			strcpy(szPattern,"m");
+			strcpy(szPattern, "m");
 
 		if(player)
 			MESSAGE_BEGIN(MSG_ONE, gmsgLightStyle, nullptr, player->pev);
 		else
 			MESSAGE_BEGIN(MSG_ALL, gmsgLightStyle, nullptr);
 
-			WRITE_BYTE( m_iStyle );
-			WRITE_STRING( szPattern );
+		WRITE_BYTE(m_iStyle);
+		WRITE_STRING(szPattern);
 		MESSAGE_END();
 	}
 
 	m_bAlreadySent = TRUE;
 }
-void CLight :: KeyValue( KeyValueData* pkvd)
+void CLight::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
 	{
@@ -171,12 +170,12 @@ void CLight :: KeyValue( KeyValueData* pkvd)
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
-		m_iszPattern = ALLOC_STRING( pkvd->szValue );
+		m_iszPattern = ALLOC_STRING(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
 	{
-		CPointEntity::KeyValue( pkvd );
+		CPointEntity::KeyValue(pkvd);
 	}
 }
 void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -186,20 +185,20 @@ void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 
 	if (m_iStyle >= 32)
 	{
-		if ( !ShouldToggle( useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF) ) )
+		if (!ShouldToggle(useType, !FBitSet(pev->spawnflags, SF_LIGHT_START_OFF)))
 			return;
 
 		if (FBitSet(pev->spawnflags, SF_LIGHT_START_OFF))
 		{
 			if (m_iszPattern)
-				strcpy(szPattern,(char *)STRING( m_iszPattern ));
+				strcpy(szPattern, (char*)STRING(m_iszPattern));
 			else
-				strcpy(szPattern,"m");
+				strcpy(szPattern, "m");
 			ClearBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
 		else
 		{
-			strcpy(szPattern,"a");
+			strcpy(szPattern, "a");
 			SetBits(pev->spawnflags, SF_LIGHT_START_OFF);
 		}
 	}
@@ -208,7 +207,7 @@ void CLight :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 			WRITE_BYTE(m_iStyle);
 			WRITE_STRING(szPattern);
 	MESSAGE_END();
-	LIGHT_STYLE(m_iStyle,szPattern); 
+	LIGHT_STYLE(m_iStyle, szPattern);
 }
 //RENDERERS END
 //

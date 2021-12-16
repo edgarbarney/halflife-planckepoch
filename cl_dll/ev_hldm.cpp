@@ -65,9 +65,6 @@ extern cvar_t *cl_lw;
 
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
-//RENDERERS END
-extern "C"
-{
 
 // HLDM
 void EV_Crowbar(struct event_args_s* args);

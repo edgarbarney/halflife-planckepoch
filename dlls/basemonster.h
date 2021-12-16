@@ -13,11 +13,12 @@
 *
 ****/
 
-#include <string>
+
 #ifndef BASEMONSTER_H
 #define BASEMONSTER_H
 
 #include <vector>
+#include <string>
 
 //
 // generic Monster

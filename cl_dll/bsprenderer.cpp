@@ -346,7 +346,7 @@ void CBSPRenderer::Init( )
 	m_pCvarDetailTextures			= CVAR_CREATE( "te_detail", "1", 0 );
 	m_pCvarWorldShaders				= CVAR_CREATE( "te_world_shaders", "1", FCVAR_ARCHIVE );
 	m_pCvarWireFrame				= CVAR_CREATE( "te_wireframe", "0", 0 );
-	m_pCvarDynamic					= CVAR_CREATE( "te_dynlights", "1", 0 );
+	m_pCvarDynamic					= CVAR_CREATE( "te_dynlights", "1", FCVAR_ARCHIVE);
 	m_pCvarRadialFog				= CVAR_CREATE( "te_radialfog", "1", 0 );
 	m_pCvarPCFShadows				= CVAR_CREATE( "te_shadows_filter", "1", FCVAR_ARCHIVE );
 	m_pCvarShadows					= CVAR_CREATE( "te_shadows", "1", FCVAR_ARCHIVE );
@@ -5954,7 +5954,7 @@ int CBSPRenderer::MsgDynLight(const char *pszName, int iSize, void *pbuf)
 	dl->color.x = (float)READ_BYTE()/255;
 	dl->color.y = (float)READ_BYTE()/255;
 	dl->color.z = (float)READ_BYTE()/255;
-	dl->die = READ_BYTE() + gEngfuncs.GetClientTime();
+	dl->die = READ_FLOAT() + gEngfuncs.GetClientTime();
 	dl->decay = READ_BYTE()*10;
 	return 1;
 }

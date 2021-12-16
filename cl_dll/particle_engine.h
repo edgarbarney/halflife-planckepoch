@@ -69,6 +69,7 @@ public:
 
 	cvar_t *m_pCvarDrawParticles;
 	cvar_t *m_pCvarParticleDebug;
+	cvar_t *m_pCvarParticleMaxPart;
 	cvar_t *m_pCvarGravity;
 
 	float m_flLastDraw;
