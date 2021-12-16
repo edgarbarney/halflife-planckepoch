@@ -34,7 +34,7 @@ Studio models are position independent, so the cache manager can move them.
 #define MAXSTUDIOTRIANGLES	20000	// TODO: tune this - Trinity: 4096
 #define MAXSTUDIOVERTS		8196	// TODO: tune this - Trinity: 8196
 #define MAXSTUDIOSEQUENCES	2048	// total animation sequences -- KSH incremented  - Trinity:256
-#define MAXSTUDIOSKINS		100		// total textures
+#define MAXSTUDIOSKINS		1024	// total textures
 #define MAXSTUDIOSRCBONES	512		// bones allowed at source movement
 #define MAXSTUDIOBONES		128		// total bones actually used
 #define MAXSTUDIOMODELS		32		// sub-models per model
@@ -45,6 +45,7 @@ Studio models are position independent, so the cache manager can move them.
 #define MAXSTUDIOEVENTS		1024
 #define MAXSTUDIOPIVOTS		256
 #define MAXSTUDIOCONTROLLERS 8
+#define MAXSTUDIOFILESIZE	 32		//FDreamer: Was 16. "X*1024*1024" Bs,
 
 typedef struct 
 {
@@ -332,16 +333,16 @@ typedef struct
 #endif
 
 // lighting options
-#define STUDIO_NF_FLATSHADE		0x0001 // 1
-#define STUDIO_NF_CHROME		0x0002 // 2
+#define STUDIO_NF_FLATSHADE			0x0001 // 1
+#define STUDIO_NF_CHROME			0x0002 // 2
 #define STUDIO_NF_FULLBRIGHT		0x0004 // 4
-#define STUDIO_NF_NOMIPS        	0x0008 // 8
-#define STUDIO_NF_ALPHA         	0x0010 // 16
-#define STUDIO_NF_ADDITIVE      	0x0020 // 32
-#define STUDIO_NF_ALPHATEST     	0x0040 // 64
-//#define STUDIO_NF_PHOLDER		0x0080 // 128
-//#define STUDIO_NF_PHOLDER		0x0100 // 256 = WAS Nomipmap in original Trinity 
-//#define STUDIO_NF_PHOLDER		0x0200 // 512 - WAS Fullbright in original Trinity
+#define STUDIO_NF_NOMIPS			0x0008 // 8
+#define STUDIO_NF_ALPHA				0x0010 // 16
+#define STUDIO_NF_ADDITIVE			0x0020 // 32
+#define STUDIO_NF_ALPHATEST			0x0040 // 64
+//#define STUDIO_NF_PHOLDER			0x0080 // 128
+//#define STUDIO_NF_PHOLDER			0x0100 // 256 = WAS Nomipmap in original Trinity 
+//#define STUDIO_NF_PHOLDER			0x0200 // 512 - WAS Fullbright in original Trinity
 #define STUDIO_NF_NOMIPMAP      	0x0008 // 1024
 /*
 - SOHL -
