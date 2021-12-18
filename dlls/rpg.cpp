@@ -644,6 +644,9 @@ void CRpg::WeaponIdle()
 		m_flseekStartTime = 0;
 	}
 
+	m_flTimeWeaponIdle = WEAPON_TIMEBASE + 0.2;
+
+	/*
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		int iAnim;
@@ -676,6 +679,7 @@ void CRpg::WeaponIdle()
 	{
 		m_flTimeWeaponIdle = WEAPON_TIMEBASE + 1;
 	}
+	*/
 }
 
 void CRpg::GetHeatTrace ()
@@ -693,7 +697,11 @@ void CRpg::GetHeatTrace ()
 	//	clsName = STRING(VARS(tr.pHit)->classname);
 
 	//if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP || strstr(clsName, "func_tank") != NULL))
-	if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP))
+	//if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP
+	if (tr.flFraction != 1.0)
+		ALERT(at_console, "Lock name is: %d, %s\n", FClassnameIs(VARS(tr.pHit), "func_tank"), STRING(VARS(tr.pHit)->classname));
+	
+	if (tr.flFraction != 1.0 && (VARS(tr.pHit)->solid != SOLID_BSP || FClassnameIs(VARS(tr.pHit), "func_tank") || FClassnameIs(VARS(tr.pHit), "func_breakable")))
 	{	
 		if (tr.pHit == m_pTempLock && WEAPON_TIMEBASE < m_flseekStartTime)
 		{
@@ -707,7 +715,7 @@ void CRpg::GetHeatTrace ()
 			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/heatseek_blip1.wav", 1, ATTN_NORM, 0, 100);
 			SetWeaponSkin(1);
 			m_pLockedEntForHS = nullptr;
-			m_flseekStartTime = WEAPON_TIMEBASE + 2;
+			m_flseekStartTime = WEAPON_TIMEBASE + 1.5;
 			m_pTempLock = tr.pHit;
 		}
 		else if (tr.pHit == m_pTempLock)
