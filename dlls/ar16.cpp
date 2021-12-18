@@ -11,6 +11,7 @@
 #include "soundent.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+#include <FranUtils.hpp>
 
 LINK_ENTITY_TO_CLASS(weapon_ar16, CAR16);
 LINK_ENTITY_TO_CLASS(weapon_556AR, CAR16);
@@ -136,18 +137,7 @@ void CAR16::PrimaryAttack()
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 #ifndef CLIENT_DLL 
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
-	//WRITE_BYTE(TE_DLIGHT);
-	WRITE_COORD(pev->origin.x); // origin
-	WRITE_COORD(pev->origin.y);
-	WRITE_COORD(pev->origin.z);
-	WRITE_BYTE(16);     // radius
-	WRITE_BYTE(255);    // R
-	WRITE_BYTE(255);    // G
-	WRITE_BYTE(160);    // B
-	WRITE_BYTE(0);      // life * 10
-	WRITE_BYTE(0);      // decay
-	MESSAGE_END();
+	FranUtils::EmitDlight(pev->origin, 16, { 255, 255, 160 }, 0.05f, 0);
 #endif 
 
 	Vector vecSrc = m_pPlayer->GetGunPosition();
