@@ -40,8 +40,8 @@ public:
 	// To spark when hit
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType ) override;
 
-	BOOL IsBreakable();
-	BOOL SparkWhenHit();
+	bool IsBreakable();
+	bool SparkWhenHit();
 
 	STATE GetState() override;
 
@@ -52,7 +52,7 @@ public:
     int		Save( CSave &save ) override;
     int		Restore( CRestore &restore ) override;
 
-	inline BOOL		Explodable() { return ExplosionMagnitude() > 0; }
+	inline bool		Explodable() { return ExplosionMagnitude() > 0; }
 	inline int		ExplosionMagnitude() { return pev->impulse; }
 	inline void		ExplosionSetMagnitude( int magnitude ) { pev->impulse = magnitude; }
 

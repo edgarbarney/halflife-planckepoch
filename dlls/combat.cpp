@@ -265,7 +265,7 @@ void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int notfirst, con
 }
 
 //LRC - work out gibs from blood colour, instead of from class.
-BOOL CBaseMonster :: HasHumanGibs()
+bool CBaseMonster :: HasHumanGibs()
 {
 	int myClass = Classify();
 
@@ -292,7 +292,7 @@ BOOL CBaseMonster :: HasHumanGibs()
 
 
 //LRC - work out gibs from blood colour, instead.
-BOOL CBaseMonster :: HasAlienGibs()
+bool CBaseMonster :: HasAlienGibs()
 {
 	int myClass = Classify();
 
@@ -579,7 +579,7 @@ void CBaseMonster::BecomeDead()
 }
 
 
-BOOL CBaseMonster::ShouldGibMonster( int iGib )
+bool CBaseMonster::ShouldGibMonster( int iGib )
 {
 	if ( ( iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE ) || ( iGib == GIB_ALWAYS ) )
 		return true;
@@ -1235,7 +1235,7 @@ CBaseEntity* CBaseMonster :: CheckTraceHullAttack( float flDist, int iDamage, in
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall. 
 //=========================================================
-BOOL CBaseMonster :: FInViewCone ( CBaseEntity *pEntity )
+bool CBaseMonster :: FInViewCone ( CBaseEntity *pEntity )
 {
 	Vector2D	vec2LOS;
 	float	flDot;
@@ -1262,7 +1262,7 @@ BOOL CBaseMonster :: FInViewCone ( CBaseEntity *pEntity )
 // the caller's forward view cone. The dot product is performed
 // in 2d, making the view cone infinitely tall. 
 //=========================================================
-BOOL CBaseMonster :: FInViewCone ( Vector *pOrigin )
+bool CBaseMonster :: FInViewCone ( Vector *pOrigin )
 {
 	Vector2D	vec2LOS;
 	float		flDot;
@@ -1288,7 +1288,7 @@ BOOL CBaseMonster :: FInViewCone ( Vector *pOrigin )
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target
 //=========================================================
-BOOL CBaseEntity :: FVisible ( CBaseEntity *pEntity )
+bool CBaseEntity :: FVisible ( CBaseEntity *pEntity )
 {
 	TraceResult tr;
 	Vector		vecLookerOrigin;
@@ -1323,7 +1323,7 @@ BOOL CBaseEntity :: FVisible ( CBaseEntity *pEntity )
 // FVisible - returns true if a line can be traced from
 // the caller's eyes to the target vector
 //=========================================================
-BOOL CBaseEntity :: FVisible ( const Vector &vecOrigin )
+bool CBaseEntity :: FVisible ( const Vector &vecOrigin )
 {
 	TraceResult tr;
 	Vector		vecLookerOrigin;

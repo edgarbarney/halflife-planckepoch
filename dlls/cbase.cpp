@@ -640,7 +640,7 @@ void CBaseEntity :: SetEternalThink()
 //LRC - for getting round the engine's preconceptions.
 // MoveWith entities have to be able to think independently of moving.
 // This is how we do so.
-void CBaseEntity :: SetNextThink( float delay, BOOL correctSpeed )
+void CBaseEntity :: SetNextThink( float delay, bool correctSpeed )
 {
 	// now monsters use this method, too.
 	if (m_pMoveWith || m_pChildMoveWith || pev->flags & FL_MONSTER)
@@ -674,7 +674,7 @@ void CBaseEntity :: SetNextThink( float delay, BOOL correctSpeed )
 }
 
 //LRC
-void CBaseEntity :: AbsoluteNextThink( float time, BOOL correctSpeed )
+void CBaseEntity :: AbsoluteNextThink( float time, bool correctSpeed )
 {
 	if (m_pMoveWith || m_pChildMoveWith)
 	{
@@ -939,7 +939,7 @@ int CBaseEntity :: IsDormant()
 	return FBitSet( pev->flags, FL_DORMANT );
 }
 
-BOOL CBaseEntity :: IsInWorld()
+bool CBaseEntity :: IsInWorld()
 {
 	// position 
 	if (pev->origin.x >= 4096) return false;
@@ -959,7 +959,7 @@ BOOL CBaseEntity :: IsInWorld()
 	return true;
 }
 
-BOOL CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState )
+int CBaseEntity::ShouldToggle( USE_TYPE useType, bool currentState )
 {
 	if ( useType != USE_TOGGLE && useType != USE_SET )
 	{

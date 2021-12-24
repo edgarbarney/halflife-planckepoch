@@ -480,7 +480,7 @@ void CCineMonster :: CineThink()
 
 
 // lookup a sequence name and setup the target monster to play it
-BOOL CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL completeOnEmpty )
+bool CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, bool completeOnEmpty )
 {
 //	ALERT( at_console, "StartSequence %s \"%s\"\n", STRING(pev->classname), STRING(pev->targetname));
 
@@ -574,7 +574,7 @@ void CCineMonster :: FixScriptMonsterSchedule( CBaseMonster *pMonster )
 	}
 }
 
-BOOL CBaseMonster :: ExitScriptedSequence( )
+bool CBaseMonster :: ExitScriptedSequence( )
 {
 	if ( pev->deadflag == DEAD_DYING )
 	{
@@ -593,7 +593,7 @@ BOOL CBaseMonster :: ExitScriptedSequence( )
 }
 
 
-void CCineMonster::AllowInterrupt( BOOL fAllow )
+void CCineMonster::AllowInterrupt(bool fAllow )
 {
 	if ( pev->spawnflags & SF_SCRIPT_NOINTERRUPT )
 		return;
@@ -601,7 +601,7 @@ void CCineMonster::AllowInterrupt( BOOL fAllow )
 }
 
 
-BOOL CCineMonster::CanInterrupt()
+bool CCineMonster::CanInterrupt()
 {
 	if ( !m_interruptable )
 		return false;
@@ -757,7 +757,7 @@ void CCineMonster :: Activate()
 }
 
 		
-BOOL CBaseMonster :: CineCleanup( )
+bool CBaseMonster :: CineCleanup( )
 {
 	CCineMonster *pOldCine = m_pCine;
 
@@ -907,8 +907,8 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CBaseMonster *FindEntity( CBaseEntity *pActivator );
-	BOOL AcceptableSpeaker( CBaseMonster *pMonster );
-	BOOL StartSentence( CBaseMonster *pTarget );
+	bool AcceptableSpeaker( CBaseMonster *pMonster );
+	bool StartSentence( CBaseMonster *pTarget );
 
 
 private:
@@ -919,8 +919,8 @@ private:
 	float	m_flRepeat;	// maximum repeat rate
 	float	m_flAttenuation;
 	float	m_flVolume;
-	BOOL	m_active; // is the sentence enabled? (for m_flRepeat)
-	BOOL	m_playing; //LRC- is the sentence playing? (for GetState)
+	bool	m_active; // is the sentence enabled? (for m_flRepeat)
+	bool	m_playing; //LRC- is the sentence playing? (for GetState)
 	int		m_iszListener;	// name of entity to look at while talking
 };
 
@@ -1105,7 +1105,7 @@ void CScriptedSentence :: DelayThink()
 }
 
 
-BOOL CScriptedSentence :: AcceptableSpeaker( CBaseMonster *pMonster )
+bool CScriptedSentence :: AcceptableSpeaker( CBaseMonster *pMonster )
 {
 	if ( pMonster )
 	{
@@ -1164,7 +1164,7 @@ CBaseMonster *CScriptedSentence :: FindEntity( CBaseEntity *pActivator )
 }
 
 
-BOOL CScriptedSentence :: StartSentence( CBaseMonster *pTarget )
+bool CScriptedSentence :: StartSentence( CBaseMonster *pTarget )
 {
 	if ( !pTarget )
 	{

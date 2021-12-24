@@ -87,11 +87,11 @@ public:
 
 	void ReleaseEntity( CBaseMonster *pEntity );
 	void CancelScript();
-	virtual BOOL StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL completeOnEmpty );
+	virtual bool StartSequence( CBaseMonster *pTarget, int iszSeq, bool completeOnEmpty );
 	void SequenceDone ( CBaseMonster *pMonster );
 	virtual void FixScriptMonsterSchedule( CBaseMonster *pMonster );
-	BOOL	CanInterrupt();
-	void	AllowInterrupt( BOOL fAllow );
+	bool	CanInterrupt();
+	void	AllowInterrupt(bool fAllow );
 	int		IgnoreConditions() override;
 
 	int	m_iszIdle;		// string index for idle animation

@@ -452,7 +452,7 @@ int CSqueak::GetItemInfo(ItemInfo *p)
 
 
 
-BOOL CSqueak::Deploy( )
+bool CSqueak::Deploy( )
 {
 	// play hunt sound
 	float flRndSound = RANDOM_FLOAT ( 0 , 1 );

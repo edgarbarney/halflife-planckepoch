@@ -29,7 +29,7 @@
 #include "movewith.h"
 #include "player.h"
 
-extern BOOL FEntIsVisible(entvars_t* pev, entvars_t* pevTarget);
+extern bool FEntIsVisible(entvars_t* pev, entvars_t* pevTarget);
 
 extern DLL_GLOBAL int g_iSkillLevel;
 
@@ -640,7 +640,7 @@ void CBaseToggle :: LinearMoveDoneNow()
 		(this->*m_pfnCallWhenMoveDone)();
 }
 
-BOOL CBaseToggle :: IsLockedByMaster()
+bool CBaseToggle :: IsLockedByMaster()
 {
 	if (UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 		return false;
@@ -797,7 +797,7 @@ FEntIsVisible
 returns true if the passed entity is visible to caller, even if not infront ()
 =============
 */
-	BOOL
+bool
 FEntIsVisible(
 	entvars_t*		pev,
 	entvars_t*		pevTarget)

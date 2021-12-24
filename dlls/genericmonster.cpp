@@ -50,7 +50,7 @@ public:
     int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-    int HasCustomGibs() override { return m_iszGibModel; }
+	bool HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };
@@ -221,7 +221,7 @@ public:
     int		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-    int HasCustomGibs() override { return m_iszGibModel; }
+	bool HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };

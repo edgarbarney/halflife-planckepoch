@@ -473,7 +473,7 @@ public:
 	void EXPORT ManagerReport();
 #endif
 
-	BOOL		HasTarget( string_t targetname ) override;
+	bool		HasTarget( string_t targetname ) override;
 	
 	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
@@ -501,8 +501,8 @@ public:
 	EHANDLE m_hActivator;
 private:
 	USE_TYPE	m_triggerType; //LRC
-	inline BOOL IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) ? true : false; }
-	inline BOOL ShouldClone() 
+	inline bool IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) ? true : false; }
+	inline bool ShouldClone() 
 	{ 
 		if ( IsClone() )
 			return false;
@@ -660,7 +660,7 @@ void CMultiManager :: Spawn()
 }
 
 
-BOOL CMultiManager::HasTarget( string_t targetname )
+bool CMultiManager::HasTarget( string_t targetname )
 { 
 	for ( int i = 0; i < m_cTargets; i++ )
 		if ( FStrEq(STRING(targetname), STRING(m_iTargetName[i])) )
