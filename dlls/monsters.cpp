@@ -3494,7 +3494,7 @@ CBaseEntity* CBaseMonster :: DropItem ( const char *pszItemName, const Vector &v
 	else
 	{
 		ALERT ( at_debug, "DropItem() - Didn't create!\n" );
-		return false;
+		return nullptr;
 	}
 
 }
