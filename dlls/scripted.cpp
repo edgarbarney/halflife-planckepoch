@@ -24,6 +24,8 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "player.h"
+#include "animation.h"
+#include "saverestore.h"
 #include "schedule.h"
 #include "scripted.h"
 #include "defaultai.h"
