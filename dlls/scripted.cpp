@@ -1114,7 +1114,7 @@ bool CScriptedSentence :: AcceptableSpeaker( CBaseMonster *pMonster )
 			if ( pMonster->m_hTargetEnt == NULL || !FClassnameIs(pMonster->m_hTargetEnt->pev, "player") )
 				return false;
 		}
-		BOOL override;
+		bool override;
 		if ( pev->spawnflags & SF_SENTENCE_INTERRUPT )
 			override = true;
 		else
@@ -1172,7 +1172,7 @@ bool CScriptedSentence :: StartSentence( CBaseMonster *pTarget )
 		return false;
 	}
 
-	BOOL bConcurrent = false;
+	bool bConcurrent = false;
 	//LRC: Er... if the "concurrent" flag is NOT set, we make bConcurrent true!?
 	if ( !(pev->spawnflags & SF_SENTENCE_CONCURRENT) )
 		bConcurrent = true;

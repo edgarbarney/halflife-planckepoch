@@ -823,7 +823,7 @@ void CFuncTank::TrackTarget()
 {
 	TraceResult tr;
 //	edict_t *pPlayer;
-	BOOL updateTime = false, lineOfSight;
+	bool updateTime = false, lineOfSight;
 	Vector angles, direction, targetPosition, barrelEnd;
 	Vector v_right, v_up;
 	CBaseEntity *pTarget;
@@ -1110,7 +1110,7 @@ void CFuncTank::TrackTarget()
 	// firing with automatic guns:
 	else if ( CanFire() && ( (fabs(distX) < m_pitchTolerance && fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT) ) )
 	{
-		BOOL fire = false;
+		bool fire = false;
 		Vector forward;
 		UTIL_MakeVectorsPrivate( pev->angles, forward, NULL, NULL );
 

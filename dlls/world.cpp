@@ -468,7 +468,7 @@ LINK_ENTITY_TO_CLASS( worldspawn, CWorld );
 #define SF_WORLD_FORCETEAM	0x0004		// Force teams
 //#define SF_WORLD_STARTSUIT	0x0008		// LRC- Start this level with an HEV suit!
 
-extern DLL_GLOBAL BOOL		g_fGameOver;
+extern DLL_GLOBAL bool		g_fGameOver;
 
 BOOL g_startSuit; //LRC
 
