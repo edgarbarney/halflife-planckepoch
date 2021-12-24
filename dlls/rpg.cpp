@@ -286,8 +286,6 @@ void CRpgRocket :: FollowThink()
 
 void CRpg::Reload()
 {
-	int iResult;
-
 	if ( m_iClip == 1 )
 	{
 		// don't bother with any of this if don't need to reload.
@@ -324,11 +322,13 @@ void CRpg::Reload()
 	}
 #endif
 
-	if ( m_iClip == 0 )
-		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD, 2 );
-	
-	if ( iResult )
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	if (m_iClip == 0)
+	{
+		const int iResult = DefaultReload(RPG_MAX_CLIP, RPG_RELOAD, 2);
+
+		if (iResult)
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
+	}
 	
 }
 
@@ -427,7 +427,7 @@ BOOL CRpg::CanHolster()
 	return TRUE;
 }
 
-void CRpg::Holster( int skiplocal /* = 0 */ )
+void CRpg::Holster()
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
