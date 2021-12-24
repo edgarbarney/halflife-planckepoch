@@ -578,7 +578,7 @@ void CGargantua :: FlameUpdate()
 	static float	offset[2] = { 60, -60 };
 	TraceResult		trace;
 	Vector			vecStart, angleGun;
-	BOOL			streaks = FALSE;
+	BOOL			streaks = false;
 
 	for ( i = 0; i < 2; i++ )
 	{
@@ -791,7 +791,7 @@ void CGargantua :: Spawn()
 
 	MonsterInit();
 
-	m_pEyeGlow = CSprite::SpriteCreate( GARG_EYE_SPRITE_NAME, pev->origin, FALSE );
+	m_pEyeGlow = CSprite::SpriteCreate( GARG_EYE_SPRITE_NAME, pev->origin, false );
 	m_pEyeGlow->SetTransparency( kRenderGlow, 255, 255, 255, 0, kRenderFxNoDissipation );
 	m_pEyeGlow->SetAttachment( edict(), 1 );
 	EyeOff();
@@ -956,7 +956,7 @@ BOOL CGargantua::CheckMeleeAttack1( float flDot, float flDist )
 		if (flDist <= GARG_ATTACKDIST)
 			return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -973,7 +973,7 @@ BOOL CGargantua::CheckMeleeAttack2( float flDot, float flDist )
 				return TRUE;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -995,7 +995,7 @@ BOOL CGargantua::CheckRangeAttack1( float flDot, float flDist )
 				return TRUE;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -1268,7 +1268,7 @@ void CGargantua::RunTask( Task_t *pTask )
 		}
 		else
 		{
-			BOOL cancel = FALSE;
+			BOOL cancel = false;
 
 			Vector angles = g_vecZero;
 

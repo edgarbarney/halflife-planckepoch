@@ -286,7 +286,7 @@ BOOL CAGrunt::ShouldSpeak()
 	if ( m_flNextSpeakTime > gpGlobals->time )
 	{
 		// my time to talk is still in the future.
-		return FALSE;
+		return false;
 	}
 
 	if ( pev->spawnflags & SF_MONSTER_GAG )
@@ -298,7 +298,7 @@ BOOL CAGrunt::ShouldSpeak()
 			// into the future a bit, so we don't talk immediately after 
 			// going into combat
 			m_flNextSpeakTime = gpGlobals->time + 3;
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -923,7 +923,7 @@ BOOL CAGrunt :: FCanCheckAttacks ()
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -937,7 +937,7 @@ BOOL CAGrunt :: CheckMeleeAttack1 ( float flDot, float flDist )
 	{
 		return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -975,7 +975,7 @@ BOOL CAGrunt :: CheckRangeAttack1 ( float flDot, float flDist )
 	}
 	
 	m_flNextHornetAttackCheck = gpGlobals->time + 0.2;// don't check for half second if this check wasn't successful
-	m_fCanHornetAttack = FALSE;
+	m_fCanHornetAttack = false;
 	return m_fCanHornetAttack;
 }
 
@@ -1016,7 +1016,7 @@ void CAGrunt :: StartTask ( Task_t *pTask )
 			TraceResult	tr;
 			BOOL		fSkip;
 
-			fSkip = FALSE;
+			fSkip = false;
 			vecCenter = Center();
 
 			UTIL_VecToAngles( m_vecEnemyLKP - pev->origin );

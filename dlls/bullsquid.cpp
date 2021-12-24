@@ -325,7 +325,7 @@ BOOL CBullsquid :: CheckRangeAttack1 ( float flDot, float flDist )
 	if ( IsMoving() && flDist >= 512 )
 	{
 		// squid will far too far behind if he stops running to spit at this distance from the enemy.
-		return FALSE;
+		return false;
 	}
 
 	if ( flDist > 64 && flDist <= 784 && flDot >= 0.5 && gpGlobals->time >= m_flNextSpitTime )
@@ -335,7 +335,7 @@ BOOL CBullsquid :: CheckRangeAttack1 ( float flDot, float flDist )
 			if ( fabs( pev->origin.z - m_hEnemy->pev->origin.z ) > 256 )
 			{
 				// don't try to spit at someone up really high or down really low.
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -353,7 +353,7 @@ BOOL CBullsquid :: CheckRangeAttack1 ( float flDot, float flDist )
 		return TRUE;
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -366,7 +366,7 @@ BOOL CBullsquid :: CheckMeleeAttack1 ( float flDot, float flDist )
 	{
 		return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -381,7 +381,7 @@ BOOL CBullsquid :: CheckMeleeAttack2 ( float flDot, float flDist )
 	{										// apart (48 * sqrt(3)) and he can still attack (85 is a little more than 48*sqrt(3))
 		return TRUE;
 	}
-	return FALSE;
+	return false;
 }  
 
 //=========================================================
@@ -405,7 +405,7 @@ BOOL CBullsquid :: FValidateHintType ( short sHint )
 	}
 
 	ALERT ( at_aiconsole, "Couldn't validate hint type" );
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -1094,7 +1094,7 @@ Schedule_t *CBullsquid :: GetSchedule()
 				if ( m_fCanThreatDisplay && IRelationship( m_hEnemy ) == R_HT )
 				{
 					// this means squid sees a headcrab!
-					m_fCanThreatDisplay = FALSE;// only do the headcrab dance once per lifetime.
+					m_fCanThreatDisplay = false;// only do the headcrab dance once per lifetime.
 					return GetScheduleOfType ( SCHED_SQUID_SEECRAB );
 				}
 				else

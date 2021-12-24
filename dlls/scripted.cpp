@@ -193,7 +193,7 @@ void CCineMonster :: Spawn()
 		SetNextThink( 1.0 );
 	}
 	if ( pev->spawnflags & SF_SCRIPT_NOINTERRUPT )
-		m_interruptable = FALSE;
+		m_interruptable = false;
 	else
 		m_interruptable = TRUE;
 
@@ -432,7 +432,7 @@ void CCineMonster :: PossessEntity()
 //		if (m_iszIdle)
 //		{
 //			ALERT(at_console, "Possess: Play idle sequence\n");
-//			StartSequence( pTarget, m_iszIdle, FALSE );
+//			StartSequence( pTarget, m_iszIdle, false );
 //			if (FStrEq( STRING(m_iszIdle), STRING(m_iszPlay)))
 //			{
 //				pTarget->pev->framerate = 0;
@@ -487,7 +487,7 @@ BOOL CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL comp
 	if ( !iszSeq && completeOnEmpty )
 	{
 		SequenceDone( pTarget );
-		return FALSE;
+		return false;
 	}
 
 	pTarget->pev->sequence = pTarget->LookupSequence( STRING( iszSeq ) );
@@ -495,7 +495,7 @@ BOOL CCineMonster :: StartSequence( CBaseMonster *pTarget, int iszSeq, BOOL comp
 	{
 		ALERT( at_error, "%s: unknown scripted sequence \"%s\"\n", STRING( pTarget->pev->targetname ), STRING( iszSeq) );
 		pTarget->pev->sequence = 0;
-		// return FALSE;
+		// return false;
 	}
 
 #if 0
@@ -581,7 +581,7 @@ BOOL CBaseMonster :: ExitScriptedSequence( )
 		// is this legal?
 		// BUGBUG -- This doesn't call Killed()
 		m_IdealMonsterState = MONSTERSTATE_DEAD;
-		return FALSE;
+		return false;
 	}
 
 	if (m_pCine)
@@ -604,14 +604,14 @@ void CCineMonster::AllowInterrupt( BOOL fAllow )
 BOOL CCineMonster::CanInterrupt()
 {
 	if ( !m_interruptable )
-		return FALSE;
+		return false;
 
 	CBaseEntity *pTarget = m_hTargetEnt;
 
 	if ( pTarget != NULL && pTarget->pev->deadflag == DEAD_NO )
 		return TRUE;
 
-	return FALSE;
+	return false;
 }
 
 
@@ -806,7 +806,7 @@ BOOL CBaseMonster :: CineCleanup( )
 		StopAnimation();
 		pev->movetype = MOVETYPE_NONE;
 		pev->effects |= EF_NOINTERP;	// Don't interpolate either, assume the corpse is positioned in its final resting place
-		return FALSE;
+		return false;
 	}
 
 	// If we actually played a sequence
@@ -1011,7 +1011,7 @@ void CScriptedSentence :: Spawn()
 	pev->solid = SOLID_NOT;
 	
 	m_active = TRUE;
-	m_playing = FALSE; //LRC
+	m_playing = false; //LRC
 	// if no targetname, start now
 	if ( !pev->targetname )
 	{
@@ -1055,14 +1055,14 @@ void CScriptedSentence :: FindThink()
 		{
 			m_playing = TRUE;
 			if ((STRING(m_iszSentence))[0] == '!')
-				pPlayer->SetSuitUpdate((char*)STRING(m_iszSentence),FALSE,0);
+				pPlayer->SetSuitUpdate((char*)STRING(m_iszSentence),false,0);
 			else
 				pPlayer->SetSuitUpdate((char*)STRING(m_iszSentence),TRUE,0);
 			if ( pev->spawnflags & SF_SENTENCE_ONCE )
 				UTIL_Remove( this );
 			SetThink( &CScriptedSentence::DurationThink );
 			SetNextThink( m_flDuration );
-			m_active = FALSE;
+			m_active = false;
 		}
 		else
 			ALERT( at_debug, "ScriptedSentence: can't find \"player\" to play HEV sentence!?\n");
@@ -1078,7 +1078,7 @@ void CScriptedSentence :: FindThink()
 			UTIL_Remove( this );
 		SetThink( &CScriptedSentence::DurationThink );
 		SetNextThink( m_flDuration );
-		m_active = FALSE;
+		m_active = false;
 //		ALERT( at_console, "%s: found monster %s\n", STRING(m_iszSentence), STRING(m_iszEntity) );
 	}
 	else
@@ -1091,7 +1091,7 @@ void CScriptedSentence :: FindThink()
 //LRC
 void CScriptedSentence :: DurationThink()
 {
-	m_playing = FALSE;
+	m_playing = false;
 	SetNextThink( m_flRepeat );
 	SetThink( &CScriptedSentence::DelayThink );
 }
@@ -1112,17 +1112,17 @@ BOOL CScriptedSentence :: AcceptableSpeaker( CBaseMonster *pMonster )
 		if ( pev->spawnflags & SF_SENTENCE_FOLLOWERS )
 		{
 			if ( pMonster->m_hTargetEnt == NULL || !FClassnameIs(pMonster->m_hTargetEnt->pev, "player") )
-				return FALSE;
+				return false;
 		}
 		BOOL override;
 		if ( pev->spawnflags & SF_SENTENCE_INTERRUPT )
 			override = TRUE;
 		else
-			override = FALSE;
+			override = false;
 		if ( pMonster->CanPlaySentence( override ) )
 			return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -1169,10 +1169,10 @@ BOOL CScriptedSentence :: StartSentence( CBaseMonster *pTarget )
 	if ( !pTarget )
 	{
 		ALERT( at_aiconsole, "Not Playing sentence %s\n", STRING(m_iszSentence) );
-		return FALSE;
+		return false;
 	}
 
-	BOOL bConcurrent = FALSE;
+	BOOL bConcurrent = false;
 	//LRC: Er... if the "concurrent" flag is NOT set, we make bConcurrent true!?
 	if ( !(pev->spawnflags & SF_SENTENCE_CONCURRENT) )
 		bConcurrent = TRUE;

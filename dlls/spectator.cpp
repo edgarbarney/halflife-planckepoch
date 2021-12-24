@@ -74,7 +74,7 @@ void CBaseSpectator::SpectatorImpulseCommand()
 		pCurrentGoal  = (CBaseEntity*)GET_PRIVATE(pGoal);
 		// Start at the current goal, skip the world, and stop if we looped back around
 
-		bFound = FALSE;
+		bFound = false;
 		while (1)
 		{
 			pCurrentGoal = UTIL_FindEntityByClassname(pCurrentGoal, "info_player_deathmatch");
@@ -98,7 +98,7 @@ void CBaseSpectator::SpectatorImpulseCommand()
 		pGoal = ENT(pCurrentGoal->pev);
 		UTIL_SetOrigin( this, pGoal->v.origin );
 		pev->angles = pGoal->v.angles;
-		pev->fixangle = FALSE;
+		pev->fixangle = false;
 		break;
 	default:
 		ALERT(at_debug, "Unknown spectator impulse\n");

@@ -643,7 +643,7 @@ void CBaseToggle :: LinearMoveDoneNow()
 BOOL CBaseToggle :: IsLockedByMaster()
 {
 	if (UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
-		return FALSE;
+		return false;
 	else
 		return TRUE;
 }
@@ -809,12 +809,12 @@ FEntIsVisible(
 	UTIL_TraceLine(vecSpot1, vecSpot2, ignore_monsters, ENT(pev), &tr);
 	
 	if (tr.fInOpen && tr.fInWater)
-		return FALSE;                   // sight line crossed contents
+		return false;                   // sight line crossed contents
 
 	if (tr.flFraction == 1)
 		return TRUE;
 
-	return FALSE;
+	return false;
 	}
 
 

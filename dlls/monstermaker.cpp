@@ -122,7 +122,7 @@ void CMonsterMaker :: Spawn( )
 		if ( pev->spawnflags & SF_MONSTERMAKER_CYCLIC )
 		{
 			SetUse (  &CMonsterMaker::CyclicUse );// drop one monster each time we fire
-			m_fActive = FALSE;
+			m_fActive = false;
 		}
 		else
 		{
@@ -135,7 +135,7 @@ void CMonsterMaker :: Spawn( )
 			}
 			else
 			{// wait to be activated.
-				m_fActive = FALSE;
+				m_fActive = false;
 				SetThink (  &CMonsterMaker::SUB_DoNothing );
 			}
 		}
@@ -149,7 +149,7 @@ void CMonsterMaker :: Spawn( )
 
 	if ( m_cNumMonsters == 1 || (m_cNumMonsters != -1 && pev->spawnflags & SF_MONSTERMAKER_LEAVECORPSE ))
 	{
-		m_fFadeChildren = FALSE;
+		m_fFadeChildren = false;
 	}
 	else
 	{
@@ -302,7 +302,7 @@ void CMonsterMaker :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller,
 
 	if ( m_fActive )
 	{
-		m_fActive = FALSE;
+		m_fActive = false;
 		SetThink ( NULL );
 	}
 	else

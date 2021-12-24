@@ -54,7 +54,7 @@ BOOL CGameRules::CanHaveAmmo( CBasePlayer *pPlayer, const char *pszAmmoName, int
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -85,7 +85,7 @@ BOOL CGameRules::CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerItem *pWeap
 {
 	// only living players can have items
 	if ( pPlayer->pev->deadflag != DEAD_NO )
-		return FALSE;
+		return false;
 
 	if ( pWeapon->pszAmmo1() )
 	{
@@ -95,7 +95,7 @@ BOOL CGameRules::CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerItem *pWeap
 			// have the gun if we aren't already carrying one of this type
 			if ( pPlayer->HasPlayerItem( pWeapon ) )
 			{
-				return FALSE;
+				return false;
 			}
 		}
 	}
@@ -104,7 +104,7 @@ BOOL CGameRules::CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerItem *pWeap
 		// weapon doesn't use ammo, don't take another if you already have it.
 		if ( pPlayer->HasPlayerItem( pWeapon ) )
 		{
-			return FALSE;
+			return false;
 		}
 	}
 

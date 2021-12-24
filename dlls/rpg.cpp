@@ -400,7 +400,7 @@ int CRpg::AddToPlayer( CBasePlayer *pPlayer )
 		MESSAGE_END();
 		return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 BOOL CRpg::Deploy( )
@@ -419,7 +419,7 @@ BOOL CRpg::CanHolster()
 	if ( m_fSpotActive && m_cActiveRockets )
 	{
 		// can't put away while guiding a missile.
-		return FALSE;
+		return false;
 	}
 
 	return TRUE;
@@ -427,7 +427,7 @@ BOOL CRpg::CanHolster()
 
 void CRpg::Holster()
 {
-	m_fInReload = FALSE;// cancel any reload in progress.
+	m_fInReload = false;// cancel any reload in progress.
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	
@@ -608,7 +608,7 @@ class CRpgAmmo : public CBasePlayerAmmo
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
 			return TRUE;
 		}
-		return FALSE;
+		return false;
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_rpgclip, CRpgAmmo );

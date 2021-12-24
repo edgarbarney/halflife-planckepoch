@@ -501,13 +501,13 @@ public:
 	EHANDLE m_hActivator;
 private:
 	USE_TYPE	m_triggerType; //LRC
-	inline BOOL IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) ? TRUE : FALSE; }
+	inline BOOL IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) ? TRUE : false; }
 	inline BOOL ShouldClone() 
 	{ 
 		if ( IsClone() )
-			return FALSE;
+			return false;
 
-		return (pev->spawnflags & SF_MULTIMAN_THREAD) ? TRUE : FALSE; 
+		return (pev->spawnflags & SF_MULTIMAN_THREAD) ? TRUE : false; 
 	}
 	
 	CMultiManager *Clone();
@@ -666,7 +666,7 @@ BOOL CMultiManager::HasTarget( string_t targetname )
 		if ( FStrEq(STRING(targetname), STRING(m_iTargetName[i])) )
 			return TRUE;
 	
-	return FALSE;
+	return false;
 }
 
 void CMultiManager :: UseThink ()
@@ -1173,7 +1173,7 @@ BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 {
 	int i;
 	BOOL b;
-	BOOL xorgot = FALSE;
+	BOOL xorgot = false;
 
 	CBaseEntity* pEntity;
 
@@ -1203,7 +1203,7 @@ BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 			}
 //		}
 
-		b = FALSE;
+		b = false;
 		switch (pEntity->GetState())
 		{
 		case STATE_ON:		 if (!(pev->spawnflags & SF_SWATCHER_NOTON))	b = TRUE; break;
@@ -1222,10 +1222,10 @@ BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 				return TRUE;
 			case SWATCHER_LOGIC_NOR:
 //				ALERT(at_console,"b is TRUE, NOR returns false\n");
-				return FALSE;
+				return false;
 			case SWATCHER_LOGIC_XOR:
 //				ALERT(at_console,"b is TRUE, XOR\n");
-				if (xorgot) return FALSE;
+				if (xorgot) return false;
 				xorgot = TRUE;
 				break;
 			case SWATCHER_LOGIC_XNOR:
@@ -1240,10 +1240,10 @@ BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 			switch (m_fLogic)
 			{
 			case SWATCHER_LOGIC_AND:
-//				ALERT(at_console,"b is FALSE, AND returns false\n");
-				return FALSE;
+//				ALERT(at_console,"b is false, AND returns false\n");
+				return false;
 			case SWATCHER_LOGIC_NAND:
-//				ALERT(at_console,"b is FALSE, NAND returns true\n");
+//				ALERT(at_console,"b is false, NAND returns true\n");
 				return TRUE;
 			}
 		}
@@ -1263,7 +1263,7 @@ BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 		return !xorgot;
 	default: // NAND, OR
 //		ALERT(at_console,"final, NAND/OR returns false\n");
-		return FALSE;
+		return false;
 	}
 }
 
@@ -1474,7 +1474,7 @@ void CRenderFxManager :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 		while ( pTarget != NULL )
 		{
 			Affect( pTarget, first, pActivator );
-			first = FALSE;
+			first = false;
 			pTarget = UTIL_FindEntityByTargetname( pTarget, STRING(pev->target), pActivator );
 		}
 	}
@@ -1768,14 +1768,14 @@ void CEnvCustomize :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		while (pTarget)
 		{
 			Affect(pTarget, useType);
-			fail = FALSE;
+			fail = false;
 			pTarget = UTIL_FindEntityByTargetname(pTarget, STRING(pev->target), pActivator);
 		}
 		pTarget = UTIL_FindEntityByClassname(NULL, STRING(pev->target));
 		while (pTarget)
 		{
 			Affect(pTarget, useType);
-			fail = FALSE;
+			fail = false;
 			pTarget = UTIL_FindEntityByClassname(pTarget, STRING(pev->target));
 		}
 		if (fail && pev->spawnflags & SF_CUSTOM_DEBUG)
@@ -2158,7 +2158,7 @@ BOOL CBaseTrigger :: CanTouch( entvars_t *pevToucher )
 		// If netname is set, it's an entity-specific trigger; we ignore the spawnflags.
 		if (!FClassnameIs(pevToucher, STRING(pev->netname)) &&
 			(!pevToucher->targetname || !FStrEq(STRING(pevToucher->targetname), STRING(pev->netname))))
-			return FALSE;
+			return false;
 	}
 	return TRUE;
 }
@@ -2551,7 +2551,7 @@ void CTriggerHevCharge :: AnnounceThink ( )
 	sprintf( szcharge,"!HEV_%1dP", pct );
 	//ALERT(at_debug, "Announce %s\n", szcharge);
 			
-	((CBasePlayer*)pPlayer)->SetSuitUpdate(szcharge, FALSE, SUIT_REPEAT_OK);
+	((CBasePlayer*)pPlayer)->SetSuitUpdate(szcharge, false, SUIT_REPEAT_OK);
 }
 
 
@@ -2916,7 +2916,7 @@ public:
 	CInOutRegister *Prune();
 	// adds a new entry to the list
 	CInOutRegister *Add( CBaseEntity *pValue );
-	BOOL IsEmpty() { return m_pNext?FALSE:TRUE; };
+	BOOL IsEmpty() { return m_pNext?false:TRUE; };
 
     int		Save( CSave &save ) override;
     int		Restore( CRestore &restore ) override;
@@ -2968,7 +2968,7 @@ BOOL CInOutRegister::IsRegistered ( CBaseEntity *pValue )
 	else if (m_pNext)
 		return m_pNext->IsRegistered( pValue );
 	else
-		return FALSE;
+		return false;
 }
 
 CInOutRegister *CInOutRegister::Add( CBaseEntity *pValue )
@@ -3957,7 +3957,7 @@ BOOL CTriggerOnSight :: VisionCheck()
 	{
 		pLooker = UTIL_FindEntityByTargetname(NULL, STRING(pev->netname));
 		if (!pLooker)
-			return FALSE; // if we can't find the eye entity, give up
+			return false; // if we can't find the eye entity, give up
 	}
 	else
 	{
@@ -3965,7 +3965,7 @@ BOOL CTriggerOnSight :: VisionCheck()
 		if (!pLooker)
 		{
 			ALERT(at_error, "trigger_onsight can't find player!?\n");
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -3985,7 +3985,7 @@ BOOL CTriggerOnSight :: VisionCheck()
 				return TRUE;
 			pSeen = UTIL_FindEntityByClassname(pSeen, STRING(pev->message));
 		}
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -3995,7 +3995,7 @@ BOOL CTriggerOnSight :: VisionCheck()
 				return TRUE;
 			pSeen = UTIL_FindEntityByTargetname(pSeen, STRING(pev->message));
 		}
-		return FALSE;
+		return false;
 	}
 }
 
@@ -4004,7 +4004,7 @@ BOOL CTriggerOnSight :: CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen)
 {
 	// out of range?
 	if (pev->frags && (pLooker->pev->origin - pSeen->pev->origin).Length() > pev->frags)
-		return FALSE;
+		return false;
 
 	// check FOV if appropriate
 	if (pev->max_health < 360)
@@ -4026,12 +4026,12 @@ BOOL CTriggerOnSight :: CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen)
 			if (pMonst)
 				flComp = pMonst->m_flFieldOfView;
 			else
-				return FALSE; // not a monster, can't use M-M-M-MonsterVision
+				return false; // not a monster, can't use M-M-M-MonsterVision
 		}
 
 		// outside field of view
 		if (flDot <= flComp)
-			return FALSE;
+			return false;
 	}
 
 	// check LOS if appropriate
@@ -4043,7 +4043,7 @@ BOOL CTriggerOnSight :: CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen)
 		else
 			UTIL_TraceLine( pLooker->EyePosition(), pSeen->pev->origin, ignore_monsters, dont_ignore_glass, pLooker->edict(), &tr );
 		if (tr.flFraction < 1.0 && tr.pHit != pSeen->edict())
-			return FALSE;
+			return false;
 	}
 
 	return TRUE;
@@ -4936,7 +4936,7 @@ void CTriggerChangeValue::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 		KeyValueData mypkvd;
 		mypkvd.szKeyName = (char*)STRING(pev->netname);
 		mypkvd.szValue = (char*)STRING(m_iszNewValue);
-		mypkvd.fHandled = FALSE;
+		mypkvd.fHandled = false;
 		pTarget->KeyValue(&mypkvd);
 		//Error if not handled?
 	}
@@ -5181,7 +5181,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	if (FBitSet (pev->spawnflags, SF_CAMERA_PLAYER_TAKECONTROL ) )
 	{
-		player->EnableControl(FALSE);
+		player->EnableControl(false);
 	}
 
 	if ( m_sPath )

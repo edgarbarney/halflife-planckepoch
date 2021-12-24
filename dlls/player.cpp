@@ -476,21 +476,21 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 
 	while (fTookDamage && (!ftrivial || (bitsDamage & DMG_TIMEBASED)) && ffound && bitsDamage)
 	{
-		ffound = FALSE;
+		ffound = false;
 
 		if (bitsDamage & DMG_CLUB)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG4", FALSE, SUIT_NEXT_IN_30SEC);	// minor fracture
+				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
 			bitsDamage &= ~DMG_CLUB;
 			ffound = TRUE;
 		}
 		if (bitsDamage & (DMG_FALL | DMG_CRUSH))
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG5", FALSE, SUIT_NEXT_IN_30SEC);	// major fracture
+				SetSuitUpdate("!HEV_DMG5", false, SUIT_NEXT_IN_30SEC);	// major fracture
 			else
-				SetSuitUpdate("!HEV_DMG4", FALSE, SUIT_NEXT_IN_30SEC);	// minor fracture
+				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
 	
 			bitsDamage &= ~(DMG_FALL | DMG_CRUSH);
 			ffound = TRUE;
@@ -499,9 +499,9 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		if (bitsDamage & DMG_BULLET)
 		{
 			if (m_lastDamageAmount > 5)
-				SetSuitUpdate("!HEV_DMG6", FALSE, SUIT_NEXT_IN_30SEC);	// blood loss detected
+				SetSuitUpdate("!HEV_DMG6", false, SUIT_NEXT_IN_30SEC);	// blood loss detected
 			//else
-			//	SetSuitUpdate("!HEV_DMG0", FALSE, SUIT_NEXT_IN_30SEC);	// minor laceration
+			//	SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 			
 			bitsDamage &= ~DMG_BULLET;
 			ffound = TRUE;
@@ -510,9 +510,9 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		if (bitsDamage & DMG_SLASH)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG1", FALSE, SUIT_NEXT_IN_30SEC);	// major laceration
+				SetSuitUpdate("!HEV_DMG1", false, SUIT_NEXT_IN_30SEC);	// major laceration
 			else
-				SetSuitUpdate("!HEV_DMG0", FALSE, SUIT_NEXT_IN_30SEC);	// minor laceration
+				SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 
 			bitsDamage &= ~DMG_SLASH;
 			ffound = TRUE;
@@ -521,35 +521,35 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 		if (bitsDamage & DMG_SONIC)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG2", FALSE, SUIT_NEXT_IN_1MIN);	// internal bleeding
+				SetSuitUpdate("!HEV_DMG2", false, SUIT_NEXT_IN_1MIN);	// internal bleeding
 			bitsDamage &= ~DMG_SONIC;
 			ffound = TRUE;
 		}
 
 		if (bitsDamage & (DMG_POISON | DMG_PARALYZE))
 		{
-			SetSuitUpdate("!HEV_DMG3", FALSE, SUIT_NEXT_IN_1MIN);	// blood toxins detected
+			SetSuitUpdate("!HEV_DMG3", false, SUIT_NEXT_IN_1MIN);	// blood toxins detected
 			bitsDamage &= ~(DMG_POISON | DMG_PARALYZE);
 			ffound = TRUE;
 		}
 
 		if (bitsDamage & DMG_ACID)
 		{
-			SetSuitUpdate("!HEV_DET1", FALSE, SUIT_NEXT_IN_1MIN);	// hazardous chemicals detected
+			SetSuitUpdate("!HEV_DET1", false, SUIT_NEXT_IN_1MIN);	// hazardous chemicals detected
 			bitsDamage &= ~DMG_ACID;
 			ffound = TRUE;
 		}
 
 		if (bitsDamage & DMG_NERVEGAS)
 		{
-			SetSuitUpdate("!HEV_DET0", FALSE, SUIT_NEXT_IN_1MIN);	// biohazard detected
+			SetSuitUpdate("!HEV_DET0", false, SUIT_NEXT_IN_1MIN);	// biohazard detected
 			bitsDamage &= ~DMG_NERVEGAS;
 			ffound = TRUE;
 		}
 
 		if (bitsDamage & DMG_RADIATION)
 		{
-			SetSuitUpdate("!HEV_DET2", FALSE, SUIT_NEXT_IN_1MIN);	// radiation detected
+			SetSuitUpdate("!HEV_DET2", false, SUIT_NEXT_IN_1MIN);	// radiation detected
 			bitsDamage &= ~DMG_RADIATION;
 			ffound = TRUE;
 		}
@@ -566,10 +566,10 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	{
 		// first time we take major damage...
 		// turn automedic on if not on
-		SetSuitUpdate("!HEV_MED1", FALSE, SUIT_NEXT_IN_30MIN);	// automedic on
+		SetSuitUpdate("!HEV_MED1", false, SUIT_NEXT_IN_30MIN);	// automedic on
 
 		// give morphine shot if not given recently
-		SetSuitUpdate("!HEV_HEAL7", FALSE, SUIT_NEXT_IN_30MIN);	// morphine shot
+		SetSuitUpdate("!HEV_HEAL7", false, SUIT_NEXT_IN_30MIN);	// morphine shot
 	}
 	
 	if (fTookDamage && !ftrivial && fcritical && flHealthPrev < 75)
@@ -577,13 +577,13 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 
 		// already took major damage, now it's critical...
 		if (pev->health < 6)
-			SetSuitUpdate("!HEV_HLTH3", FALSE, SUIT_NEXT_IN_10MIN);	// near death
+			SetSuitUpdate("!HEV_HLTH3", false, SUIT_NEXT_IN_10MIN);	// near death
 		else if (pev->health < 20)
-			SetSuitUpdate("!HEV_HLTH2", FALSE, SUIT_NEXT_IN_10MIN);	// health critical
+			SetSuitUpdate("!HEV_HLTH2", false, SUIT_NEXT_IN_10MIN);	// health critical
 	
 		// give critical health warnings
 		if (!RANDOM_LONG(0,3) && flHealthPrev < 50)
-			SetSuitUpdate("!HEV_DMG7", FALSE, SUIT_NEXT_IN_5MIN); //seek medical attention
+			SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
 	}
 
 	// if we're taking time based damage, warn about its continuing effects
@@ -592,10 +592,10 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 			if (flHealthPrev < 50)
 			{
 				if (!RANDOM_LONG(0,3))
-					SetSuitUpdate("!HEV_DMG7", FALSE, SUIT_NEXT_IN_5MIN); //seek medical attention
+					SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
 			}
 			else
-				SetSuitUpdate("!HEV_HLTH1", FALSE, SUIT_NEXT_IN_10MIN);	// health dropping
+				SetSuitUpdate("!HEV_HLTH1", false, SUIT_NEXT_IN_10MIN);	// health dropping
 		}
 
 	return fTookDamage;
@@ -841,7 +841,7 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 		{
 			if (!(1<<pCurrentItem->m_pNext->m_iId & iWeaponMask))
 			{
-				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//remove pCurrentItem->m_pNext from the list
 //				ALERT(at_console, "Removing %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem->m_pNext->Drop( );
@@ -861,7 +861,7 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 		// we've gone through items 2+, now we finish off by checking item 1.
 		if (!(1<<m_rgpPlayerItems[i]->m_iId & iWeaponMask))
 		{
-			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, FALSE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 //			ALERT(at_console, "Removing %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 			m_rgpPlayerItems[i]->Drop( );
 			if (m_pLastItem == m_rgpPlayerItems[i])
@@ -957,7 +957,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 		pev->velocity.z += RANDOM_FLOAT(0,300);
 
 	// clear out the suit message cache so we don't keep chattering
-	SetSuitUpdate(NULL, FALSE, 0);
+	SetSuitUpdate(NULL, false, 0);
 
 	// send "health" update message to zero
 	m_iClientHealth = 0;
@@ -1492,7 +1492,7 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	}
 
 	// clear out the suit message cache so we don't keep chattering
-	SetSuitUpdate(NULL, FALSE, 0);
+	SetSuitUpdate(NULL, false, 0);
 
 	// Tell Ammo Hud that the player is dead
 	MESSAGE_BEGIN( MSG_ONE, gmsgCurWeapon, NULL, pev );
@@ -1532,7 +1532,7 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	MESSAGE_END();
 
 	// Remove all the player's stuff
-	RemoveAllItems( FALSE );
+	RemoveAllItems( false );
 
 	// Move them to the new position
 	UTIL_SetOrigin( this, vecPosition );
@@ -1870,7 +1870,7 @@ void CBasePlayer::UpdateStatusBar()
 		}
 	}
 
-	BOOL bForceResend = FALSE;
+	BOOL bForceResend = false;
 
 	if ( strcmp( sbuf0, m_SbarString0 ) )
 	{
@@ -2233,7 +2233,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 					{
 						m_rgbTimeBasedDamage[i] = 0;
 						m_rgItems[ITEM_ANTIDOTE]--;
-						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
+						SetSuitUpdate("!HEV_HEAL4", false, SUIT_REPEAT_OK);
 					}
 				}
 
@@ -2837,14 +2837,14 @@ BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
 	
 	if ( pSpot->GetState( pPlayer ) != STATE_ON )
 	{
-		return FALSE;
+		return false;
 	}
 
 	while ( (ent = UTIL_FindEntityInSphere( ent, pSpot->pev->origin, 128 )) != NULL )
 	{
 		// if ent is a client, don't spawn on 'em
 		if ( ent->IsPlayer() && ent != pPlayer )
-			return FALSE;
+			return false;
 	}
 
 	return TRUE;
@@ -2976,7 +2976,7 @@ void CBasePlayer::Spawn()
 	m_bitsHUDDamage		= -1;
 	m_bitsDamageType	= 0;
 	m_afPhysicsFlags	= 0;
-	m_fLongJump			= FALSE;// no longjump module. 
+	m_fLongJump			= false;// no longjump module. 
 
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "hl", "1" );
@@ -3024,12 +3024,12 @@ void CBasePlayer::Spawn()
 		ALERT ( at_debug, "Couldn't alloc player sound slot!\n" );
 	}
 
-	m_fNoPlayerSound = FALSE;// normal sound behavior.
+	m_fNoPlayerSound = false;// normal sound behavior.
 
 	m_pLastItem = NULL;
 	m_fInitHUD = TRUE;
 	m_iClientHideHUD = -1;  // force this to be recalculated
-	m_fWeapon = FALSE;
+	m_fWeapon = false;
 	m_pClientActiveItem = NULL;
 	m_iClientBattery = -1;
 
@@ -3298,7 +3298,7 @@ BOOL CBasePlayer::HasWeapons()
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CBasePlayer::SelectPrevItem( int iItem )
@@ -3512,8 +3512,8 @@ void CBasePlayer :: ForceClientDllUpdate()
 	m_iClientHealth  = -1;
 	m_iClientBattery = -1;
 	m_iTrain |= TRAIN_NEW;  // Force new train message.
-	m_fWeapon = FALSE;          // Force weapon send
-	m_fKnownItem = FALSE;    // Force weaponinit messages.
+	m_fWeapon = false;          // Force weapon send
+	m_fKnownItem = false;    // Force weaponinit messages.
 	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
 
 	// Now force all the necessary messages
@@ -3681,7 +3681,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_snark" );
 		GiveNamedItem( "weapon_hornetgun" );
 
-		gEvilImpulse101 = FALSE;
+		gEvilImpulse101 = false;
 		break;
 
 	case 102:
@@ -3710,7 +3710,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			if ( m_fNoPlayerSound )
 			{
 				ALERT ( at_debug, "Player is audible\n" );
-				m_fNoPlayerSound = FALSE;
+				m_fNoPlayerSound = false;
 			}
 			else
 			{
@@ -3831,7 +3831,7 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
 				// FIXME: remove anyway for deathmatch testing
 				pItem->Kill( );
 			}
-			return FALSE;
+			return false;
 		}
 		pInsert = pInsert->m_pNext;
 	}
@@ -3858,7 +3858,7 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
 		// FIXME: remove anyway for deathmatch testing
 		pItem->Kill( );
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -3897,7 +3897,7 @@ int CBasePlayer::RemovePlayerItem( CBasePlayerItem *pItem )
 			return TRUE;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -3981,7 +3981,7 @@ Called every frame by the player PostThink
 */
 void CBasePlayer::ItemPostFrame()
 {
-	static int fInSelect = FALSE;
+	static int fInSelect = false;
 
 	// check if the player is using a tank
 	if ( m_pTank != NULL )
@@ -4068,12 +4068,12 @@ reflecting all of the HUD state info.
 */
 void CBasePlayer :: UpdateClientData()
 {
-	const bool fullHUDInitRequired = m_fInitHUD != FALSE;
+	const bool fullHUDInitRequired = m_fInitHUD != false;
 
 	if (m_fInitHUD)
 	{
-		m_fInitHUD = FALSE;
-		gInitHUD = FALSE;
+		m_fInitHUD = false;
+		gInitHUD = false;
 		
 		MESSAGE_BEGIN( MSG_ONE, gmsgResetHUD, NULL, pev );
 			WRITE_BYTE( 0 );
@@ -4507,7 +4507,7 @@ Vector CBasePlayer :: AutoaimDeflection( Vector &vecSrc, float flDist, float flD
 
 	if ( g_psv_aim->value == 0 )
 	{
-		m_fOnTarget = FALSE;
+		m_fOnTarget = false;
 		return g_vecZero;
 	}
 
@@ -4518,7 +4518,7 @@ Vector CBasePlayer :: AutoaimDeflection( Vector &vecSrc, float flDist, float flD
 	bestdot = flDelta; // +- 10 degrees
 	bestent = NULL;
 
-	m_fOnTarget = FALSE;
+	m_fOnTarget = false;
 
 	UTIL_TraceLine( vecSrc, vecSrc + bestdir * flDist, dont_ignore_monsters, edict(), &tr );
 
@@ -4627,7 +4627,7 @@ void CBasePlayer :: ResetAutoaim( )
 		m_vecAutoAim = Vector( 0, 0, 0 );
 		SET_CROSSHAIRANGLE( edict(), 0, 0 );
 	}
-	m_fOnTarget = FALSE;
+	m_fOnTarget = false;
 }
 
 /*
@@ -4774,7 +4774,7 @@ BOOL CBasePlayer::HasPlayerItem( CBasePlayerItem *pCheckItem )
 		pItem = pItem->m_pNext;
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -4799,7 +4799,7 @@ BOOL CBasePlayer::HasNamedPlayerItem( const char *pszItemName )
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -4809,7 +4809,7 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 {
 	if (pWeapon && !pWeapon->CanDeploy() )
 	{
-		return FALSE;
+		return false;
 	}
 	
 	ResetAutoaim( );
@@ -5033,7 +5033,7 @@ void CStripWeapons :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 	{
 		pPlayer->RemoveItems( pev->spawnflags, m_i9mm, m_i357, m_iBuck, m_iBolt,
 				m_iARGren, m_iRock, m_iUranium, m_iSatchel, m_iSnark, m_iTrip, m_iGren, m_iHornet);
-//		pPlayer->RemoveAllItems( FALSE );
+//		pPlayer->RemoveAllItems( false );
 	}
 }
 
@@ -5165,7 +5165,7 @@ void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		else
 		{
 			// freeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(FALSE);
+			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(false);
 			if (m_flDelay)
 			{
 				m_hActivator = pActivator;
@@ -5265,7 +5265,7 @@ void CHudSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 			pev->spawnflags |= SF_HUDSPR_ACTIVE;
 	}
 
-//		byte   : TRUE = ENABLE icon, FALSE = DISABLE icon
+//		byte   : TRUE = ENABLE icon, false = DISABLE icon
 //		string : the sprite name to display
 //		byte   : red
 //		byte   : green

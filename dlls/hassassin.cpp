@@ -274,7 +274,7 @@ void CHAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				CGrenade::ShootTimed( pev, vecGunPosition, m_vecTossVelocity, 2.0 );
 
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// !!!LATER - when in a group, only try to throw grenade if ordered.
 		}
 		break;
@@ -688,7 +688,7 @@ BOOL CHAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 
 		if ( tr.fStartSolid || tr.flFraction < 1.0)
 		{
-			return FALSE;
+			return false;
 		}
 
 		float flGravity = g_psv_gravity->value;
@@ -699,7 +699,7 @@ BOOL CHAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 
 		return TRUE;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -722,7 +722,7 @@ BOOL CHAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 			return TRUE;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -730,16 +730,16 @@ BOOL CHAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 //=========================================================
 BOOL CHAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 {
-	m_fThrowGrenade = FALSE;
+	m_fThrowGrenade = false;
 	if ( !FBitSet ( m_hEnemy->pev->flags, FL_ONGROUND ) )
 	{
 		// don't throw grenades at anything that isn't on the ground!
-		return FALSE;
+		return false;
 	}
 
 	// don't get grenade happy unless the player starts to piss you off
 	if ( m_iFrustration <= 2)
-		return FALSE;
+		return false;
 
 	if ( m_flNextGrenadeCheck < gpGlobals->time && !HasConditions( bits_COND_ENEMY_OCCLUDED ) && flDist <= 512 /* && flDot >= 0.5 */ /* && NoFriendlyFire() */ )
 	{
@@ -756,7 +756,7 @@ BOOL CHAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 

@@ -315,7 +315,7 @@ void CTurret::Spawn()
 	
 	SetThink(&CTurret::Initialize);	
 
-	m_pEyeGlow = CSprite::SpriteCreate( TURRET_GLOW_SPRITE, pev->origin, FALSE );
+	m_pEyeGlow = CSprite::SpriteCreate( TURRET_GLOW_SPRITE, pev->origin, false );
 	m_pEyeGlow->SetTransparency( kRenderGlow, 255, 0, 0, 0, kRenderFxNoDissipation );
 	m_pEyeGlow->SetAttachment( edict(), 2 );
 	m_eyeBrightness = 0;
@@ -413,7 +413,7 @@ void CBaseTurret::TurretUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 	{
 		m_hEnemy = NULL;
 		SetNextThink( 0.1 );
-		m_iAutoStart = FALSE;// switching off a turret disables autostart
+		m_iAutoStart = false;// switching off a turret disables autostart
 		//!!!! this should spin down first!!BUGBUG
 		SetThink(&CBaseTurret::Retire);
 	}
@@ -558,7 +558,7 @@ void CBaseTurret::ActiveThink()
 
 	// Is the Gun looking at the target
 	if (DotProduct(vecLOS, gpGlobals->v_forward) <= 0.866) // 30 degree slop
-		fAttack = FALSE;
+		fAttack = false;
 	else
 		fAttack = TRUE;
 
@@ -935,7 +935,7 @@ void CBaseTurret::AutoSearchThink()
 
 void CBaseTurret ::	TurretDeath()
 {
-	BOOL iActive = FALSE;
+	BOOL iActive = false;
 
 	StudioFrameAdvance( );
 	SetNextThink( 0.1 );
@@ -1265,7 +1265,7 @@ void CSentry::SentryTouch( CBaseEntity *pOther )
 
 void CSentry ::	SentryDeath()
 {
-	BOOL iActive = FALSE;
+	BOOL iActive = false;
 
 	StudioFrameAdvance( );
 	SetNextThink( 0.1 );

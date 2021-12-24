@@ -157,7 +157,7 @@ public:
 	// Bmodels don't go across transitions
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	inline BOOL IsActive() { return (pev->spawnflags & SF_TANK_ACTIVE)?TRUE:FALSE; }
+	inline BOOL IsActive() { return (pev->spawnflags & SF_TANK_ACTIVE)?TRUE:false; }
 	inline void TankActivate() { pev->spawnflags |= SF_TANK_ACTIVE; SetNextThink(0.1); m_fireLast = 0; }
 	inline void TankDeactivate() { pev->spawnflags &= ~SF_TANK_ACTIVE; m_fireLast = 0; StopRotSound(); }
 	inline BOOL CanFire() { return (gpGlobals->time - m_lastSightTime) < m_persist; }
@@ -480,14 +480,14 @@ void CFuncTank :: KeyValue( KeyValueData *pkvd )
 BOOL CFuncTank :: OnControls( entvars_t *pevTest )
 {
 	if ( !(pev->spawnflags & SF_TANK_CANCONTROL) )
-		return FALSE;
+		return false;
 
 	Vector offset = pevTest->origin - pev->origin;
 
 	if ( (m_vecControllerUsePos - pevTest->origin).Length() < 30 )
 		return TRUE;
 
-	return FALSE;
+	return false;
 } */
 
 BOOL CFuncTank :: StartControl( CBasePlayer* pController, CFuncTankControls *pControls )
@@ -497,7 +497,7 @@ BOOL CFuncTank :: StartControl( CBasePlayer* pController, CFuncTankControls *pCo
 	if ( m_pControls != NULL || m_pSequence != NULL )
 {
 //		ALERT(at_debug,"StartControl failed, already in use\n");
-		return FALSE;
+		return false;
 	}
 
 	// Team only or disabled?
@@ -506,7 +506,7 @@ BOOL CFuncTank :: StartControl( CBasePlayer* pController, CFuncTankControls *pCo
 		if ( !UTIL_IsMasterTriggered( m_iszMaster, pController ) )
 		{
 //			ALERT(at_debug,"StartControl failed, locked\n");
-			return FALSE;
+			return false;
 	}
 	}
 
@@ -783,9 +783,9 @@ int	CFuncTank::IRelationship( CBaseEntity* pTarget )
 BOOL CFuncTank :: InRange( float range )
 {
 	if ( range < m_minRange )
-		return FALSE;
+		return false;
 	if ( m_maxRange > 0 && range > m_maxRange )
-		return FALSE;
+		return false;
 
 	return TRUE;
 }
@@ -823,7 +823,7 @@ void CFuncTank::TrackTarget()
 {
 	TraceResult tr;
 //	edict_t *pPlayer;
-	BOOL updateTime = FALSE, lineOfSight;
+	BOOL updateTime = false, lineOfSight;
 	Vector angles, direction, targetPosition, barrelEnd;
 	Vector v_right, v_up;
 	CBaseEntity *pTarget;
@@ -842,7 +842,7 @@ void CFuncTank::TrackTarget()
 	if (m_pSequence)
 	{
 		UpdateSpot();
-		SetNextThink(0.05, FALSE);
+		SetNextThink(0.05, false);
 
 		if (m_pSequence->m_iTurn == TSEQ_TURN_ENEMY)
 		{
@@ -873,7 +873,7 @@ void CFuncTank::TrackTarget()
 //		ALERT( at_console, "TANK has controller\n");
 		UpdateSpot();
 		pController = m_pControls->m_pController;
-		SetNextThink(0.05, FALSE);
+		SetNextThink(0.05, false);
 
 		// LRC- changed here to allow "match target" as well as "match angles" mode.
 		if (pev->spawnflags & SF_TANK_MATCHTARGET)
@@ -974,7 +974,7 @@ void CFuncTank::TrackTarget()
 		else
 		{
 			// No line of sight, don't track
-			lineOfSight = FALSE;
+			lineOfSight = false;
 		}
 
 		// Track sight origin
@@ -1017,12 +1017,12 @@ void CFuncTank::TrackTarget()
 		if ( angles.y > currentYawCenter + m_yawRange )
 	{
 			angles.y = currentYawCenter + m_yawRange;
-			updateTime = FALSE;	// If player is outside fire arc, we didn't really see him
+			updateTime = false;	// If player is outside fire arc, we didn't really see him
 	}
 		else if ( angles.y < (currentYawCenter - m_yawRange) )
 	{
 			angles.y = (currentYawCenter - m_yawRange);
-			updateTime = FALSE; // If player is outside fire arc, we didn't really see him
+			updateTime = false; // If player is outside fire arc, we didn't really see him
 	}
 	}
 	// we can always 'see' the whole vertical arc, so it's just the yaw we needed to check.
@@ -1110,7 +1110,7 @@ void CFuncTank::TrackTarget()
 	// firing with automatic guns:
 	else if ( CanFire() && ( (fabs(distX) < m_pitchTolerance && fabs(distY) < m_yawTolerance) || (pev->spawnflags & SF_TANK_LINEOFSIGHT) ) )
 	{
-		BOOL fire = FALSE;
+		BOOL fire = false;
 		Vector forward;
 		UTIL_MakeVectorsPrivate( pev->angles, forward, NULL, NULL );
 
@@ -1551,7 +1551,7 @@ int	CFuncTankControls :: ObjectCaps()
 BOOL CFuncTankControls :: OnControls( entvars_t *pevTest )
 {
 //	if ( !(pev->spawnflags & SF_TANK_CANCONTROL) )
-//		return FALSE;
+//		return false;
 
 	Vector offset = pevTest->origin - pev->origin;
 
@@ -1575,9 +1575,9 @@ BOOL CFuncTankControls :: OnControls( entvars_t *pevTest )
 		return TRUE;
 	}
 
-//	ALERT(at_console, "TANK OnControls: FALSE\n");
+//	ALERT(at_console, "TANK OnControls: false\n");
 
-	return FALSE;
+	return false;
 }
 
 void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -1595,7 +1595,7 @@ void CFuncTankControls :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 			return;
 		// if I've already got a controller, or the player's already using
 		// another controls, then forget it.
-		if (m_active != FALSE || ((CBasePlayer*)pActivator)->m_pTank != NULL)
+		if (m_active != false || ((CBasePlayer*)pActivator)->m_pTank != NULL)
 			return;
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.

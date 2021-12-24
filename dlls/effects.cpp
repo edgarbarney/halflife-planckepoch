@@ -419,7 +419,7 @@ public:
 	{
 		if ( m_life == 0 && !(pev->spawnflags & SF_BEAM_RING) )
 			return TRUE;
-		return FALSE;
+		return false;
 	}
 
     int		Save( CSave &save ) override;
@@ -1818,7 +1818,7 @@ void CEnvModel::Think()
 		{
 //		case 1: // loop
 //			pev->animtime = gpGlobals->time;
-//			m_fSequenceFinished = FALSE;
+//			m_fSequenceFinished = false;
 //			m_flLastEventCheck = gpGlobals->time;
 //			pev->frame = 0;
 //			break;
@@ -3583,12 +3583,12 @@ void CEnvRain::Think()
 			break;
 		case EXTENT_ARCING:
 			UTIL_TraceLine( vecSrc, vecDest, ignore_monsters, NULL, &tr);
-			if (tr.flFraction == 1.0) bDraw = FALSE;
+			if (tr.flFraction == 1.0) bDraw = false;
 			vecDest = tr.vecEndPos;
 			break;
 		case EXTENT_ARCING_REVERSE:
 			UTIL_TraceLine( vecDest, vecSrc, ignore_monsters, NULL, &tr);
-			if (tr.flFraction == 1.0) bDraw = FALSE;
+			if (tr.flFraction == 1.0) bDraw = false;
 			vecSrc = tr.vecEndPos;
 			break;
 		}
@@ -4516,7 +4516,7 @@ void CEnvFog :: SendData ( Vector col, int iFadeTime, int iStartDist, int iEndDi
 //			pPlayer->m_iFogStartDist = iStartDist;
 //			pPlayer->m_iFogEndDist = iEndDist;
 //			pPlayer->m_vecFogColor = col;
-//			pPlayer->m_bClientFogRefresh = FALSE;
+//			pPlayer->m_bClientFogRefresh = false;
 		}
 	}
 }

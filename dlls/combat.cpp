@@ -273,7 +273,7 @@ BOOL CBaseMonster :: HasHumanGibs()
 	if ( myClass == CLASS_NONE || myClass == CLASS_MACHINE ||
 		 myClass == CLASS_PLAYER_BIOWEAPON && myClass == CLASS_ALIEN_BIOWEAPON)
 	{
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -287,7 +287,7 @@ BOOL CBaseMonster :: HasHumanGibs()
 //
 //		 return TRUE;
 //
-//	return FALSE;
+//	return false;
 }
 
 
@@ -300,7 +300,7 @@ BOOL CBaseMonster :: HasAlienGibs()
 	if ( myClass == CLASS_NONE || myClass == CLASS_MACHINE ||
 		 myClass == CLASS_PLAYER_BIOWEAPON && myClass == CLASS_ALIEN_BIOWEAPON)
 	{
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -318,7 +318,7 @@ BOOL CBaseMonster :: HasAlienGibs()
 //
 //		 return TRUE;
 //
-//	return FALSE;
+//	return false;
 }
 
 
@@ -340,7 +340,7 @@ void CBaseMonster::FadeMonster()
 void CBaseMonster :: GibMonster()
 {
 	TraceResult	tr;
-	BOOL		gibbed = FALSE;
+	BOOL		gibbed = false;
 	int			iszCustomGibs;
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);		
@@ -408,7 +408,7 @@ Activity CBaseMonster :: GetDeathActivity ()
 
 	vecSrc = Center();
 
-	fTriedDirection = FALSE;
+	fTriedDirection = false;
 	deathActivity = ACT_DIESIMPLE;// in case we can't find any special deaths to do.
 
 	UTIL_MakeVectors ( pev->angles );
@@ -519,7 +519,7 @@ Activity CBaseMonster :: GetSmallFlinchActivity ()
 	BOOL		fTriedDirection;
 	float		flDot;
 
-	fTriedDirection = FALSE;
+	fTriedDirection = false;
 	UTIL_MakeVectors ( pev->angles );
 	flDot = DotProduct ( gpGlobals->v_forward, g_vecAttackDir * -1 );
 	
@@ -584,13 +584,13 @@ BOOL CBaseMonster::ShouldGibMonster( int iGib )
 	if ( ( iGib == GIB_NORMAL && pev->health < GIB_HEALTH_VALUE ) || ( iGib == GIB_ALWAYS ) )
 		return TRUE;
 	
-	return FALSE;
+	return false;
 }
 
 
 void CBaseMonster::CallGibMonster()
 {
-	BOOL fade = FALSE;
+	BOOL fade = false;
 
 	if ( HasHumanGibs() )
 	{
@@ -638,7 +638,7 @@ Killed
 void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 {
 	unsigned int	cCount = 0;
-	BOOL			fDone = FALSE;
+	BOOL			fDone = false;
 
 	if ( HasMemory( bits_MEMORY_KILLED ) )
 	{
@@ -1253,7 +1253,7 @@ BOOL CBaseMonster :: FInViewCone ( CBaseEntity *pEntity )
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -1280,7 +1280,7 @@ BOOL CBaseMonster :: FInViewCone ( Vector *pOrigin )
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -1295,12 +1295,12 @@ BOOL CBaseEntity :: FVisible ( CBaseEntity *pEntity )
 	Vector		vecTargetOrigin;
 	
 	if (FBitSet( pEntity->pev->flags, FL_NOTARGET ))
-		return FALSE;
+		return false;
 
 	// don't look through water
 	if ((pev->waterlevel != 3 && pEntity->pev->waterlevel == 3) 
 		|| (pev->waterlevel == 3 && pEntity->pev->waterlevel == 0))
-		return FALSE;
+		return false;
 
 	vecLookerOrigin = pev->origin + pev->view_ofs;//look through the caller's 'eyes'
 	vecTargetOrigin = pEntity->EyePosition();
@@ -1310,7 +1310,7 @@ BOOL CBaseEntity :: FVisible ( CBaseEntity *pEntity )
 	if (tr.flFraction != 1.0 && tr.pHit != ENT(pEntity->pev)) //LRC - added so that monsters can "see" some bsp objects
 	{
 //		ALERT(at_console, "can't see \"%s\"\n", STRING(pEntity->pev->classname));
-		return FALSE;// Line of sight is not established
+		return false;// Line of sight is not established
 	}
 	else
 	{
@@ -1334,7 +1334,7 @@ BOOL CBaseEntity :: FVisible ( const Vector &vecOrigin )
 	
 	if (tr.flFraction != 1.0)
 	{
-		return FALSE;// Line of sight is not established
+		return false;// Line of sight is not established
 	}
 	else
 	{

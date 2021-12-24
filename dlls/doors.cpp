@@ -156,7 +156,7 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 			int iprev = pls->iLockedSentence;
 			
 			pls->iLockedSentence = SENTENCEG_PlaySequentialSz(ENT(pev), STRING(pls->sLockedSentence), 
-					  0.85, ATTN_NORM, 0, 100, pls->iLockedSentence, FALSE);
+					  0.85, ATTN_NORM, 0, 100, pls->iLockedSentence, false);
 			pls->iUnlockedSentence = 0;
 
 			// make sure we don't keep calling last sentence in list
@@ -192,7 +192,7 @@ void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton)
 			int iprev = pls->iUnlockedSentence;
 			
 			pls->iUnlockedSentence = SENTENCEG_PlaySequentialSz(ENT(pev), STRING(pls->sUnlockedSentence), 
-					  0.85, ATTN_NORM, 0, 100, pls->iUnlockedSentence, FALSE);
+					  0.85, ATTN_NORM, 0, 100, pls->iUnlockedSentence, false);
 			pls->iLockedSentence = 0;
 
 			// make sure we don't keep calling last sentence in list
@@ -562,7 +562,7 @@ void CBaseDoor::DoorTouch( CBaseEntity *pOther )
 	// play 'locked' sound
 
 	if (m_sMaster && !UTIL_IsMasterTriggered(m_sMaster, pOther))
-		PlayLockSounds(pev, &m_ls, TRUE, FALSE);
+		PlayLockSounds(pev, &m_ls, TRUE, false);
 	
 	// If door is somebody's target, then touching does nothing.
 	// You have to activate the owner (e.g. button).
@@ -570,7 +570,7 @@ void CBaseDoor::DoorTouch( CBaseEntity *pOther )
 	if (!FStringNull(pev->targetname) && !FBitSet(pev->spawnflags,SF_DOOR_FORCETOUCHABLE))
 	{
 		// play locked sound
-		PlayLockSounds(pev, &m_ls, TRUE, FALSE);
+		PlayLockSounds(pev, &m_ls, TRUE, false);
 		return; 
 	}
 	
@@ -598,7 +598,7 @@ void CBaseDoor::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		{
 			if (m_toggle_state == TS_AT_BOTTOM)
 			{
-				PlayLockSounds(pev, &m_ls, FALSE, FALSE);
+				PlayLockSounds(pev, &m_ls, false, false);
 				DoorGoUp();
 			}
 			return;
@@ -649,7 +649,7 @@ int CBaseDoor::DoorActivate( )
 		}
 
 		// play door unlock sounds
-		PlayLockSounds(pev, &m_ls, FALSE, FALSE);
+		PlayLockSounds(pev, &m_ls, false, false);
 		
 		DoorGoUp();
 	}
