@@ -133,8 +133,8 @@ public:
 	float m_flAttenuation;		// attenuation value
 	dynpitchvol_t m_dpv;	
 
-	BOOL	m_fActive;	// only true when the entity is playing a looping sound
-	BOOL	m_fLooping;	// true when the sound played will loop
+	bool	m_fActive;	// only true when the entity is playing a looping sound
+	bool	m_fLooping;	// true when the sound played will loop
 	edict_t *m_pPlayFrom; //LRC - the entity to play from
 	int		m_iChannel; //LRC - the channel to play from, for "play from X" sounds
 };

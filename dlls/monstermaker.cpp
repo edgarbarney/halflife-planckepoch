@@ -61,8 +61,8 @@ public:
 
 	float m_flGround; // z coord of the ground under me, used to make sure no monsters are under the maker when it drops a new child
 
-	BOOL m_fActive;
-	BOOL m_fFadeChildren;// should we make the children fadeout?
+	bool m_fActive;
+	bool m_fFadeChildren;// should we make the children fadeout?
 	float m_fSpawnDelay;// LRC- delay between triggering targets and making a child (for env_warpball, mainly)
 };
 

@@ -771,7 +771,7 @@ public:
 
 	entvars_t	*m_pevCurrentTarget;
 	int			m_sounds;
-//LRC - now part of CBaseEntity:	BOOL		m_activated;
+//LRC - now part of CBaseEntity:	bool		m_activated;
 	STATE		m_iState;
 	float		m_fStoredThink;
 	Vector		m_vecAvelocity;
@@ -2752,7 +2752,7 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 private:
-	BOOL			m_on;
+	bool			m_on;
 };
 
 

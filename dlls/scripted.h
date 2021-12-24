@@ -118,7 +118,7 @@ public:
 	int	m_saved_solid;
 	int m_saved_effects;
 //	Vector m_vecOrigOrigin;
-	BOOL m_interruptable;
+	bool m_interruptable;
 };
 
 //LRC - removed CCineAI, obsolete

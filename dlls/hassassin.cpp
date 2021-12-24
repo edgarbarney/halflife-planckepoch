@@ -96,7 +96,7 @@ public:
 
 	float m_flNextGrenadeCheck;
 	Vector	m_vecTossVelocity;
-	BOOL	m_fThrowGrenade;
+	bool	m_fThrowGrenade;
 
 	int		m_iTargetRanderamt;
 
