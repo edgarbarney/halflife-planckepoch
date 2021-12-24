@@ -697,7 +697,7 @@ BOOL CHAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 		float speed = flGravity * time / 160;
 		m_vecJumpVelocity = (vecDest - pev->origin) * speed;
 
-		return TRUE;
+		return true;
 	}
 	return false;
 }
@@ -719,7 +719,7 @@ BOOL CHAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 
 		if ( tr.flFraction == 1 || tr.pHit == m_hEnemy->edict() )
 		{
-			return TRUE;
+			return true;
 		}
 	}
 	return false;
@@ -750,9 +750,9 @@ BOOL CHAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 
-			return TRUE;
+			return true;
 		}
 	}
 

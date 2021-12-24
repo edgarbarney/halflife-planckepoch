@@ -152,47 +152,47 @@ void CLight :: KeyValue( KeyValueData* pkvd)
 	if (FStrEq(pkvd->szKeyName, "m_iOnStyle"))
 	{
 		m_iOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iOffStyle"))
 	{
 		m_iOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnStyle"))
 	{
 		m_iTurnOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffStyle"))
 	{
 		m_iTurnOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnTime"))
 	{
 		m_iTurnOnTime = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffTime"))
 	{
 		m_iTurnOffTime = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
 		pev->angles.x = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "firetarget"))
 	{
 		pev->target = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 	{
@@ -361,7 +361,7 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 		g = pow( g / 114.0, 0.6 ) * 264;
 		b = pow( b / 114.0, 0.6 ) * 264;
 
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 		sprintf( szColor, "%d", r );
 		CVAR_SET_STRING( "sv_skycolor_r", szColor );
 		sprintf( szColor, "%d", g );
@@ -578,17 +578,17 @@ void CTriggerLightstyle::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iFade"))
 	{
 		m_iFade = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iWait"))
 	{
 		m_iWait = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CBaseEntity::KeyValue( pkvd );

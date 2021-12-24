@@ -313,7 +313,7 @@ void CheckDesiredList()
 //	BOOL liststart = false;
 	if (g_doingDesired)
 		ALERT(at_debug, "CheckDesiredList: doingDesired is already set!?\n");
-	g_doingDesired = TRUE;
+	g_doingDesired = true;
 
 	if (!g_pWorld)
 	{
@@ -415,7 +415,7 @@ void UTIL_DesiredThink ( CBaseEntity *pEnt )
 // LRC- change the origin to the given position, and bring any movewiths along too.
 void UTIL_AssignOrigin( CBaseEntity *pEntity, const Vector vecOrigin )
 {
-	UTIL_AssignOrigin( pEntity, vecOrigin, TRUE);
+	UTIL_AssignOrigin( pEntity, vecOrigin, true);
 }
 
 // LRC- bInitiator is true if this is being called directly, rather than because pEntity is moving with something else.
@@ -474,7 +474,7 @@ void UTIL_AssignOrigin( CBaseEntity *pEntity, const Vector vecOrigin, BOOL bInit
 
 void UTIL_SetAngles( CBaseEntity *pEntity, const Vector vecAngles )
 {
-	UTIL_SetAngles( pEntity, vecAngles, TRUE );
+	UTIL_SetAngles( pEntity, vecAngles, true );
 }
 
 void UTIL_SetAngles( CBaseEntity *pEntity, const Vector vecAngles, BOOL bInitiator)

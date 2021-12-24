@@ -53,7 +53,7 @@ BOOL g_markFrameBounds = 0; //LRC
 extern DLL_GLOBAL int		g_iSkillLevel, gDisplayTitle;
 
 
-BOOL gInitHUD = TRUE;
+BOOL gInitHUD = true;
 
 extern void CopyToBodyQue(entvars_t* pev);
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
@@ -373,7 +373,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 {
 	// have suit diagnose the problem - ie: report damage type
 	int bitsDamage = bitsDamageType;
-	int ffound = TRUE;
+	int ffound = true;
 	int fmajor;
 	int fcritical;
 	int fTookDamage;
@@ -483,7 +483,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 			if (fmajor)
 				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
 			bitsDamage &= ~DMG_CLUB;
-			ffound = TRUE;
+			ffound = true;
 		}
 		if (bitsDamage & (DMG_FALL | DMG_CRUSH))
 		{
@@ -493,7 +493,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
 	
 			bitsDamage &= ~(DMG_FALL | DMG_CRUSH);
-			ffound = TRUE;
+			ffound = true;
 		}
 		
 		if (bitsDamage & DMG_BULLET)
@@ -504,7 +504,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 			//	SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 			
 			bitsDamage &= ~DMG_BULLET;
-			ffound = TRUE;
+			ffound = true;
 		}
 
 		if (bitsDamage & DMG_SLASH)
@@ -515,7 +515,7 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 				SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 
 			bitsDamage &= ~DMG_SLASH;
-			ffound = TRUE;
+			ffound = true;
 		}
 		
 		if (bitsDamage & DMG_SONIC)
@@ -523,40 +523,40 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 			if (fmajor)
 				SetSuitUpdate("!HEV_DMG2", false, SUIT_NEXT_IN_1MIN);	// internal bleeding
 			bitsDamage &= ~DMG_SONIC;
-			ffound = TRUE;
+			ffound = true;
 		}
 
 		if (bitsDamage & (DMG_POISON | DMG_PARALYZE))
 		{
 			SetSuitUpdate("!HEV_DMG3", false, SUIT_NEXT_IN_1MIN);	// blood toxins detected
 			bitsDamage &= ~(DMG_POISON | DMG_PARALYZE);
-			ffound = TRUE;
+			ffound = true;
 		}
 
 		if (bitsDamage & DMG_ACID)
 		{
 			SetSuitUpdate("!HEV_DET1", false, SUIT_NEXT_IN_1MIN);	// hazardous chemicals detected
 			bitsDamage &= ~DMG_ACID;
-			ffound = TRUE;
+			ffound = true;
 		}
 
 		if (bitsDamage & DMG_NERVEGAS)
 		{
 			SetSuitUpdate("!HEV_DET0", false, SUIT_NEXT_IN_1MIN);	// biohazard detected
 			bitsDamage &= ~DMG_NERVEGAS;
-			ffound = TRUE;
+			ffound = true;
 		}
 
 		if (bitsDamage & DMG_RADIATION)
 		{
 			SetSuitUpdate("!HEV_DET2", false, SUIT_NEXT_IN_1MIN);	// radiation detected
 			bitsDamage &= ~DMG_RADIATION;
-			ffound = TRUE;
+			ffound = true;
 		}
 		if (bitsDamage & DMG_SHOCK)
 		{
 			bitsDamage &= ~DMG_SHOCK;
-			ffound = TRUE;
+			ffound = true;
 		}
 	}
 
@@ -628,7 +628,7 @@ void CBasePlayer::PackDeadPlayerItems()
 	if ( iWeaponRules == GR_PLR_DROP_GUN_NO && iAmmoRules == GR_PLR_DROP_AMMO_NO )
 	{
 		// nothing to pack. Remove the weapons and return. Don't call create on the box!
-		RemoveAllItems( TRUE );
+		RemoveAllItems( true );
 		return;
 	}
 
@@ -730,7 +730,7 @@ void CBasePlayer::PackDeadPlayerItems()
 
 	pWeaponBox->pev->velocity = pev->velocity * 1.2;// weaponbox has player's velocity, then some.
 
-	RemoveAllItems( TRUE );// now strip off everything that wasn't handled by the code above.
+	RemoveAllItems( true );// now strip off everything that wasn't handled by the code above.
 }
 
 void CBasePlayer::RemoveAllItems( BOOL removeSuit )
@@ -852,7 +852,7 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 			else
 			{
 				//we're keeping this, so we need to empty the clip
-				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//now, leave pCurrentItem->m_pNext in the list and go on to the next
 //				ALERT(at_console, "Keeping %s. (id = %d)\n", pCurrentItem->m_pNext->pszName(), pCurrentItem->m_pNext->m_iId);
 				pCurrentItem = pCurrentItem->m_pNext;
@@ -870,7 +870,7 @@ void CBasePlayer::RemoveItems( int iWeaponMask, int i9mm, int i357, int iBuck, i
 		}
 		else
 		{
-			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, TRUE, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
+			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, true, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 //			ALERT(at_console, "Keeping %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 		}
 	}
@@ -1318,7 +1318,7 @@ void CBasePlayer::WaterMove()
 }
 
 
-// TRUE if the player is attached to a ladder
+// true if the player is attached to a ladder
 BOOL CBasePlayer::IsOnLadder()
 { 
 	return ( pev->movetype == MOVETYPE_FLY );
@@ -1466,7 +1466,7 @@ void CBasePlayer::StartDeathCam()
 
 	m_afPhysicsFlags |= PFLAG_OBSERVER;
 	pev->view_ofs = g_vecZero;
-	pev->fixangle = TRUE;
+	pev->fixangle = true;
 	pev->solid = SOLID_NOT;
 	pev->takedamage = DAMAGE_NO;
 	pev->movetype = MOVETYPE_NONE;
@@ -1513,7 +1513,7 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	pev->effects = EF_NODRAW;
 	pev->view_ofs = g_vecZero;
 	pev->angles = pev->v_angle = vecViewAngle;
-	pev->fixangle = TRUE;
+	pev->fixangle = true;
 	pev->solid = SOLID_NOT;
 	pev->takedamage = DAMAGE_NO;
 	pev->movetype = MOVETYPE_NONE;
@@ -1523,7 +1523,7 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	pev->health = 1;
 
 	// Clear out the status bar
-	m_fInitHUD = TRUE;
+	m_fInitHUD = true;
 
 	pev->team =  0;
 	MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo );
@@ -1882,7 +1882,7 @@ void CBasePlayer::UpdateStatusBar()
 		strcpy( m_SbarString0, sbuf0 );
 
 		// make sure everything's resent
-		bForceResend = TRUE;
+		bForceResend = true;
 	}
 
 	if ( strcmp( sbuf1, m_SbarString1 ) )
@@ -1895,7 +1895,7 @@ void CBasePlayer::UpdateStatusBar()
 		strcpy( m_SbarString1, sbuf1 );
 
 		// make sure everything's resent
-		bForceResend = TRUE;
+		bForceResend = true;
 	}
 
 	// Check values and send if they don't match
@@ -2847,7 +2847,7 @@ BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
 			return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 
@@ -3027,7 +3027,7 @@ void CBasePlayer::Spawn()
 	m_fNoPlayerSound = false;// normal sound behavior.
 
 	m_pLastItem = NULL;
-	m_fInitHUD = TRUE;
+	m_fInitHUD = true;
 	m_iClientHideHUD = -1;  // force this to be recalculated
 	m_fWeapon = false;
 	m_pClientActiveItem = NULL;
@@ -3088,7 +3088,7 @@ void CBasePlayer :: Precache()
 	m_iUpdateTime = 5;  // won't update for 1/2 a second
 
 	if ( gInitHUD )
-		m_fInitHUD = TRUE;
+		m_fInitHUD = true;
 
 #ifdef XENWARRIOR
 	g_fEnvFadeTime = 0;
@@ -3139,7 +3139,7 @@ int CBasePlayer::Restore( CRestore &restore )
 	pev->v_angle.z = 0;	// Clear out roll
 	pev->angles = pev->v_angle;
 
-	pev->fixangle = TRUE;           // turn this way immediately
+	pev->fixangle = true;           // turn this way immediately
 
 // Copied from spawn() for now
 	m_bloodColor	= BLOOD_COLOR_RED;
@@ -3294,7 +3294,7 @@ BOOL CBasePlayer::HasWeapons()
 	{
 		if ( m_rgpPlayerItems[ i ] )
 		{
-			return TRUE;
+			return true;
 		}
 	}
 
@@ -3369,7 +3369,7 @@ void CSprayCan::Think()
 	}
 	else
 	{
-		UTIL_PlayerDecalTrace( &tr, playernum, pev->frame, TRUE );
+		UTIL_PlayerDecalTrace( &tr, playernum, pev->frame, true );
 		// Just painted last custom frame.
 		if ( pev->frame++ >= (nFrames - 1))
 			UTIL_Remove( this );
@@ -3514,7 +3514,7 @@ void CBasePlayer :: ForceClientDllUpdate()
 	m_iTrain |= TRAIN_NEW;  // Force new train message.
 	m_fWeapon = false;          // Force weapon send
 	m_fKnownItem = false;    // Force weaponinit messages.
-	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
+	m_fInitHUD = true;		// Force HUD gmsgResetHUD message
 
 	// Now force all the necessary messages
 	//  to be sent.
@@ -3655,7 +3655,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 
 
 	case 101:
-		gEvilImpulse101 = TRUE;
+		gEvilImpulse101 = true;
 		GiveNamedItem( "item_suit" );
 		GiveNamedItem( "item_battery" );
 		GiveNamedItem( "weapon_crowbar" );
@@ -3715,7 +3715,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			else
 			{
 				ALERT ( at_debug, "Player is silent\n" );
-				m_fNoPlayerSound = TRUE;
+				m_fNoPlayerSound = true;
 			}
 			break;
 		}
@@ -3851,7 +3851,7 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
 			SwitchWeapon( pItem );
 		}
 
-		return TRUE;
+		return true;
 	}
 	else if (gEvilImpulse101)
 	{
@@ -3883,7 +3883,7 @@ int CBasePlayer::RemovePlayerItem( CBasePlayerItem *pItem )
 	if (pPrev == pItem)
 	{
 		m_rgpPlayerItems[pItem->iItemSlot()] = pItem->m_pNext;
-		return TRUE;
+		return true;
 	}
 	else
 	{
@@ -3894,7 +3894,7 @@ int CBasePlayer::RemovePlayerItem( CBasePlayerItem *pItem )
 		if (pPrev)
 		{
 			pPrev->m_pNext = pItem->m_pNext;
-			return TRUE;
+			return true;
 		}
 	}
 	return false;
@@ -4085,7 +4085,7 @@ void CBasePlayer :: UpdateClientData()
 			MESSAGE_END();
 
 			g_pGameRules->InitHUD( this );
-			m_fGameHUDInitialized = TRUE;
+			m_fGameHUDInitialized = true;
 			
 			m_iObserverLastMode = OBS_ROAMING;
 			
@@ -4251,7 +4251,7 @@ void CBasePlayer :: UpdateClientData()
 	//
 	if (!m_fKnownItem)
 	{
-		m_fKnownItem = TRUE;
+		m_fKnownItem = true;
 
 	// WeaponInit Message
 	// byte  = # of weapons
@@ -4341,7 +4341,7 @@ void CBasePlayer :: UpdateClientData()
 BOOL CBasePlayer :: FBecomeProne ()
 {
 	m_afPhysicsFlags |= PFLAG_ONBARNACLE;
-	return TRUE;
+	return true;
 }
 
 //=========================================================
@@ -4530,7 +4530,7 @@ Vector CBasePlayer :: AutoaimDeflection( Vector &vecSrc, float flDist, float flD
 			|| (pev->waterlevel == 3 && tr.pHit->v.waterlevel == 0)))
 		{
 			if (tr.pHit->v.takedamage == DAMAGE_AIM)
-				m_fOnTarget = TRUE;
+				m_fOnTarget = true;
 
 			return m_vecAutoAim;
 		}
@@ -4611,7 +4611,7 @@ Vector CBasePlayer :: AutoaimDeflection( Vector &vecSrc, float flDist, float flD
 		bestdir = bestdir - pev->v_angle - pev->punchangle;
 
 		if (bestent->v.takedamage == DAMAGE_AIM)
-			m_fOnTarget = TRUE;
+			m_fOnTarget = true;
 
 		return bestdir;
 	}
@@ -4769,7 +4769,7 @@ BOOL CBasePlayer::HasPlayerItem( CBasePlayerItem *pCheckItem )
 	{
 		if (FClassnameIs( pItem->pev, STRING( pCheckItem->pev->classname) ))
 		{
-			return TRUE;
+			return true;
 		}
 		pItem = pItem->m_pNext;
 	}
@@ -4793,7 +4793,7 @@ BOOL CBasePlayer::HasNamedPlayerItem( const char *pszItemName )
 		{
 			if ( !strcmp( pszItemName, STRING( pItem->pev->classname ) ) )
 			{
-				return TRUE;
+				return true;
 			}
 			pItem = pItem->m_pNext;
 		}
@@ -4826,7 +4826,7 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 		pWeapon->Deploy();
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CBasePlayer::SetPrefsFromUserinfo(char* infobuffer)
@@ -4866,7 +4866,7 @@ void CDeadHEV::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
 		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else 
 		CBaseMonster::KeyValue( pkvd );
@@ -4955,62 +4955,62 @@ void CStripWeapons :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "bullets"))
 	{
 		m_i9mm= atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "magnum"))
 	{
 		m_i357 = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "shotgun"))
 	{
 		m_iBuck = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "crossbow"))
 	{
 		m_iBolt = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "argrenades"))
 	{
 		m_iARGren = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "rockets"))
 	{
 		m_iRock = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "uranium"))
 	{
 		m_iUranium = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "satchels"))
 	{
 		m_iSatchel = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "snarks"))
 	{
 		m_iSnark = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "tripmines"))
 	{
 		m_iTrip = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "handgrenades"))
 	{
 		m_iGren = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "hornetgun"))
 	{
 		m_iHornet = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CBaseEntity::KeyValue( pkvd );
@@ -5080,22 +5080,22 @@ void CRevertSaved :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "duration"))
 	{
 		SetDuration( atof(pkvd->szValue) );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "holdtime"))
 	{
 		SetHoldTime( atof(pkvd->szValue) );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messagetime"))
 	{
 		SetMessageTime( atof(pkvd->szValue) );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "loadtime"))
 	{
 		SetLoadTime( atof(pkvd->szValue) );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else 
 		CPointEntity::KeyValue( pkvd );
@@ -5158,7 +5158,7 @@ void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		if (pActivator->pev->flags & FL_FROZEN)
 		{
 			// unfreeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(TRUE);
+			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(true);
 			m_hActivator = NULL;
 			DontThink();
 		}
@@ -5265,7 +5265,7 @@ void CHudSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 			pev->spawnflags |= SF_HUDSPR_ACTIVE;
 	}
 
-//		byte   : TRUE = ENABLE icon, false = DISABLE icon
+//		byte   : true = ENABLE icon, false = DISABLE icon
 //		string : the sprite name to display
 //		byte   : red
 //		byte   : green

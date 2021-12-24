@@ -74,7 +74,7 @@ void CBaseDMStart::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "master"))
 	{
 		pev->netname = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CPointEntity::KeyValue( pkvd );
@@ -211,12 +211,12 @@ void CBaseDelay :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "delay"))
 	{
 		m_flDelay = atof( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "killtarget"))
 	{
 		m_iszKillTarget = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 	{
@@ -481,22 +481,22 @@ void CBaseToggle::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "lip"))
 	{
 		m_flLip = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "wait"))
 	{
 		m_flWait = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "master"))
 	{
 		m_sMaster = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "distance"))
 	{
 		m_flMoveDistance = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CBaseDelay::KeyValue( pkvd );
@@ -572,7 +572,7 @@ void CBaseToggle :: LinearMoveNow()
 	float flTravelTime = vecDestDelta.Length() / m_flLinearMoveSpeed;
 
 	// set nextthink to trigger a call to LinearMoveDone when dest is reached
-	SetNextThink( flTravelTime, TRUE );
+	SetNextThink( flTravelTime, true );
 	SetThink( &CBaseToggle::LinearMoveDone );
 
 	// scale the destdelta vector by the time spent traveling to get velocity
@@ -621,7 +621,7 @@ void CBaseToggle :: LinearMoveDoneNow()
 
 //	ALERT(at_console, "LMDone %s\n", STRING(pev->targetname));
 
-	UTIL_SetVelocity(this, g_vecZero);//, TRUE);
+	UTIL_SetVelocity(this, g_vecZero);//, true);
 //	pev->velocity = g_vecZero;
 	if (m_pMoveWith)
 	{
@@ -645,7 +645,7 @@ BOOL CBaseToggle :: IsLockedByMaster()
 	if (UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 		return false;
 	else
-		return TRUE;
+		return true;
 }
 
 //LRC- mapping toggle-states to global states
@@ -716,7 +716,7 @@ void CBaseToggle :: AngularMoveNow()
 	float flTravelTime = vecDestDelta.Length() / m_flAngularMoveSpeed;
 
 	// set nextthink to trigger a call to AngularMoveDone when dest is reached
-	SetNextThink( flTravelTime, TRUE );
+	SetNextThink( flTravelTime, true );
 	SetThink( &CBaseToggle::AngularMoveDone );
 
 	// scale the destdelta vector by the time spent traveling to get velocity
@@ -794,7 +794,7 @@ float CBaseToggle :: AxisDelta( int flags, const Vector &angle1, const Vector &a
 =============
 FEntIsVisible
 
-returns TRUE if the passed entity is visible to caller, even if not infront ()
+returns true if the passed entity is visible to caller, even if not infront ()
 =============
 */
 	BOOL
@@ -812,7 +812,7 @@ FEntIsVisible(
 		return false;                   // sight line crossed contents
 
 	if (tr.flFraction == 1)
-		return TRUE;
+		return true;
 
 	return false;
 	}

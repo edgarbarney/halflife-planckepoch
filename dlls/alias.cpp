@@ -121,7 +121,7 @@ void CInfoGroup :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "defaultmember"))
 	{
 		m_iszDefaultMember = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	// this assumes that additional fields are targetnames and their values are delay values.
 	else if ( m_cMembers < MAX_MULTI_TARGETS )
@@ -131,7 +131,7 @@ void CInfoGroup :: KeyValue( KeyValueData *pkvd )
 		m_iszMemberName [ m_cMembers ] = ALLOC_STRING( tmp );
 		m_iszMemberValue [ m_cMembers ] = ALLOC_STRING (pkvd->szValue);
 		m_cMembers++;
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 	{
@@ -212,7 +212,7 @@ void CMultiAlias :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "m_iMode"))
 	{
 		m_iMode = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	// this assumes that additional fields are targetnames and their values are probability values.
 	else if ( m_cTargets < MAX_MULTI_TARGETS )
@@ -226,7 +226,7 @@ void CMultiAlias :: KeyValue( KeyValueData *pkvd )
 		m_iTotalValue += m_iValues [ m_cTargets ];
 		m_cTargets++;
 
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 	{

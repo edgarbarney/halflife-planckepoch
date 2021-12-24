@@ -68,12 +68,12 @@ void CGenericMonster::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CBaseMonster::KeyValue( pkvd );
@@ -240,12 +240,12 @@ void CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CBaseMonster::KeyValue( pkvd );

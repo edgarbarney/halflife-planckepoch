@@ -56,7 +56,7 @@ void CPathCorner :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
 		m_flWait = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "turnspeed")) //LRC
 	{
@@ -65,7 +65,7 @@ void CPathCorner :: KeyValue( KeyValueData *pkvd )
 			pev->spawnflags |= SF_CORNER_AVELOCITY;
 			UTIL_StringToVector( (float*)pev->avelocity, pkvd->szValue);
 		}
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else 
 		CPointEntity::KeyValue( pkvd );
@@ -147,7 +147,7 @@ void CPathTrack :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "altpath"))
 	{
 		m_altName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "turnspeed")) //LRC
 	{
@@ -156,7 +156,7 @@ void CPathTrack :: KeyValue( KeyValueData *pkvd )
 			pev->spawnflags |= SF_PATH_AVELOCITY;
 			UTIL_StringToVector( (float*)pev->avelocity, pkvd->szValue);
 		}
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 		CPointEntity::KeyValue( pkvd );

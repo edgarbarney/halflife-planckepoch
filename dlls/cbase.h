@@ -236,17 +236,17 @@ public:
 		if (FStrEq(pkvd->szKeyName, "movewith"))
 		{
 			m_MoveWith = ALLOC_STRING(pkvd->szValue);
-			pkvd->fHandled = TRUE;
+			pkvd->fHandled = true;
 		}
 		else if (FStrEq(pkvd->szKeyName, "skill"))
 		{
 			m_iLFlags = atoi(pkvd->szValue);
-			pkvd->fHandled = TRUE;
+			pkvd->fHandled = true;
 		}
 		else if (FStrEq(pkvd->szKeyName, "style"))
 		{
 			m_iStyle = atoi(pkvd->szValue);
-			pkvd->fHandled = TRUE;
+			pkvd->fHandled = true;
 		}
 		else pkvd->fHandled = false;
 	}
@@ -284,7 +284,7 @@ public:
 	virtual int		BloodColor() { return DONT_BLEED; }
 	virtual void	TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
 //LRC- superceded by GetState ( pActivator ).
-//	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return TRUE;}
+//	virtual BOOL    IsTriggered( CBaseEntity *pActivator ) {return true;}
 	virtual CBaseMonster *MyMonsterPointer() { return NULL;}
 	virtual CSquadMonster *MySquadMonsterPointer() { return NULL;}
 	virtual	int		GetToggleState() { return TS_AT_TOP; }
@@ -854,7 +854,7 @@ extern BOOL g_startSuit;
 class CBaseAlias : public CPointEntity
 {
 public:
-	BOOL IsAlias() override { return TRUE; };
+	BOOL IsAlias() override { return true; };
 	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; };
 	virtual void ChangeValue( int iszValue ) { ALERT(at_error, "%s entities cannot change value!", STRING(pev->classname)); }
 	virtual void ChangeValue( CBaseEntity *pValue ) { ChangeValue(pValue->pev->targetname); }

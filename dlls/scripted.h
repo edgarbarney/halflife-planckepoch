@@ -81,7 +81,7 @@ public:
 	//	if (m_fMoveTo == 0) { ALERT(at_console,"preciseattack fails check 2\n"); return false; }
 	//	if (m_fMoveTo != 5 && m_iszAttack == 0) { ALERT(at_console,"preciseattack fails check 3\n"); return false; }
 	//	ALERT(at_console,"preciseattack passes!\n");
-	//	return TRUE;
+	//	return true;
 		return m_fTurnType == 1 && ( m_fMoveTo == 5 || (m_fMoveTo != 0 && !FStrEq(STRING(m_iszAttack), STRING(m_iszMoveTarget)) ));
 	};
 

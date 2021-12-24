@@ -116,7 +116,7 @@ extern "C" {
 	}
 	
 	memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
-	return TRUE;
+	return true;
 }
 
 int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion )
@@ -129,7 +129,7 @@ int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion )
 	}
 	
 	memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
-	return TRUE;
+	return true;
 }
 
 int GetNewDLLFunctions(NEW_DLL_FUNCTIONS* pFunctionTable, int* interfaceVersion)
@@ -141,7 +141,7 @@ int GetNewDLLFunctions(NEW_DLL_FUNCTIONS* pFunctionTable, int* interfaceVersion)
 	}
 
 	memcpy(pFunctionTable, &gNewDLLFunctions, sizeof(gNewDLLFunctions));
-	return TRUE;
+	return true;
 }
 }
 
@@ -542,7 +542,7 @@ void CBaseEntity::Activate()
 	}
 
 	if (m_activated) return;
-	m_activated = TRUE;
+	m_activated = true;
 	InitMoveWith();
 	PostSpawn();
 }
@@ -956,7 +956,7 @@ BOOL CBaseEntity :: IsInWorld()
 	if (pev->velocity.y <= -2000) return false;
 	if (pev->velocity.z <= -2000) return false;
 
-	return TRUE;
+	return true;
 }
 
 BOOL CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState )
@@ -966,7 +966,7 @@ BOOL CBaseEntity::ShouldToggle( USE_TYPE useType, BOOL currentState )
 		if ( (currentState && useType == USE_ON) || (!currentState && useType == USE_OFF) )
 			return false;
 	}
-	return TRUE;
+	return true;
 }
 
 BOOL CBaseEntity::ShouldToggle( USE_TYPE useType )
@@ -986,7 +986,7 @@ BOOL CBaseEntity::ShouldToggle( USE_TYPE useType )
 			break;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 
