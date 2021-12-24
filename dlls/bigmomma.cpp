@@ -12,7 +12,6 @@
 *   use or distribution of this code by or to any unlicensed person is illegal.
 *
 ****/
-#if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 
 //=========================================================
 // monster template
@@ -1312,5 +1311,3 @@ void CBMortar::Touch( CBaseEntity *pOther )
 	RadiusDamage( pev->origin, pev, pevOwner, gSkillData.bigmommaDmgBlast, gSkillData.bigmommaRadiusBlast, CLASS_NONE, DMG_ACID );
 	UTIL_Remove( this );
 }
-
-#endif

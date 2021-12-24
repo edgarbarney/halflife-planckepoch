@@ -12,7 +12,6 @@
 *   use or distribution of this code by or to any unlicensed person is illegal.
 *
 ****/
-#if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 
 //=========================================================
 // icthyosaur - evin, satan fish monster
@@ -1143,5 +1142,3 @@ Vector CIchthyosaur::DoProbe(const Vector &Probe)
 	}
 	return Vector(0, 0, 0);
 }
-
-#endif
