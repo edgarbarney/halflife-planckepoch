@@ -55,4 +55,6 @@ inline int gmsgStatusIcon = 0; //LRC
 inline int gmsgStatusText = 0;
 inline int gmsgStatusValue = 0;
 
+inline int gmsgWeapons = 0;
+
 void LinkUserMessages();
