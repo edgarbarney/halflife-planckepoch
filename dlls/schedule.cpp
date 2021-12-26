@@ -82,11 +82,11 @@ void CBaseMonster :: ChangeSchedule ( Schedule_t *pNewSchedule )
 	m_afConditions		= 0;// clear all of the conditions
 	m_failSchedule		= SCHED_NONE;
 
-	if ( m_pSchedule->iInterruptMask & bits_COND_HEAR_SOUND && !(m_pSchedule->iSoundMask) )
+	if ( (m_pSchedule->iInterruptMask & bits_COND_HEAR_SOUND) != 0 && (m_pSchedule->iSoundMask) == 0 )
 	{
 		ALERT ( at_aiconsole, "COND_HEAR_SOUND with no sound mask!\n" );
 	}
-	else if ( m_pSchedule->iSoundMask && !(m_pSchedule->iInterruptMask & bits_COND_HEAR_SOUND) )
+	else if ( 0 != m_pSchedule->iSoundMask && (m_pSchedule->iInterruptMask & bits_COND_HEAR_SOUND) == 0 )
 	{
 		ALERT ( at_aiconsole, "Sound mask without COND_HEAR_SOUND!\n" );
 	}
@@ -236,8 +236,8 @@ void CBaseMonster :: MaintainSchedule ()
 			{
 				// if we're here, then either we're being told to do something (besides dying or playing a script)
 				// or our current schedule (besides dying) is invalid. -- LRC
-				if (	(m_afConditions && !HasConditions(bits_COND_SCHEDULE_DONE)) ||
-						(m_pSchedule && (m_pSchedule->iInterruptMask & bits_COND_SCHEDULE_DONE)) ||
+				if (	(0 != m_afConditions && !HasConditions(bits_COND_SCHEDULE_DONE)) ||
+						(m_pSchedule && (m_pSchedule->iInterruptMask & bits_COND_SCHEDULE_DONE) != 0) ||
 						((m_MonsterState == MONSTERSTATE_COMBAT) && (m_hEnemy == NULL))	)
 				{
 					GetIdealState();
@@ -1287,7 +1287,7 @@ case TASK_GET_PATH_TO_BESTSCENT:
 			{
 				TaskComplete(); //LRC - start playing immediately
 			}
-			else if (!m_pCine->IsAction() && m_pCine->m_iszIdle)
+			else if (!m_pCine->IsAction() && !FStringNull(m_pCine->m_iszIdle))
 			{
 				m_pCine->StartSequence( (CBaseMonster *)this, m_pCine->m_iszIdle, false );
 				if (FStrEq( STRING(m_pCine->m_iszIdle), STRING(m_pCine->m_iszPlay)))
@@ -1341,7 +1341,7 @@ case TASK_GET_PATH_TO_BESTSCENT:
 		}
 	case TASK_ENABLE_SCRIPT:
 		{
-			m_pCine->DelayStart( 0 );
+			m_pCine->DelayStart( false );
 			TaskComplete();
 			break;
 		}

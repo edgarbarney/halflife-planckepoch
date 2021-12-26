@@ -31,13 +31,13 @@ extern void			UTIL_DesiredPostAssist ( CBaseEntity *pEnt );
 extern void			UTIL_AddToAssistList ( CBaseEntity *pEnt );
 
 
-extern void			UTIL_MarkForAssist ( CBaseEntity *pEnt, BOOL correctSpeed );
+extern void			UTIL_MarkForAssist ( CBaseEntity *pEnt, bool correctSpeed );
 
 extern void			UTIL_AssignOrigin		( CBaseEntity* pEntity, const Vector vecOrigin );
-extern void			UTIL_AssignOrigin		( CBaseEntity* pEntity, const Vector vecOrigin, BOOL bInitiator );
+extern void			UTIL_AssignOrigin		( CBaseEntity* pEntity, const Vector vecOrigin, bool bInitiator );
 extern void			UTIL_SetVelocity		( CBaseEntity *pEnt,	const Vector vecSet );
 extern void			UTIL_SetAngles			( CBaseEntity* pEntity, const Vector vecAngles );
-extern void			UTIL_SetAngles			( CBaseEntity* pEntity, const Vector vecAngles, BOOL bInitiator );
+extern void			UTIL_SetAngles			( CBaseEntity* pEntity, const Vector vecAngles, bool bInitiator );
 extern void			UTIL_SetAvelocity		( CBaseEntity *pEnt, const Vector vecSet );
 
 extern void			UTIL_SetMoveWithVelocity( CBaseEntity *pEnt, const Vector vecSet, int loopbreaker );

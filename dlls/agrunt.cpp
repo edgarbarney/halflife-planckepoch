@@ -108,8 +108,8 @@ public:
 
 	CUSTOM_SCHEDULES;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	static const char *pAttackHitSounds[];
@@ -226,7 +226,7 @@ int CAGrunt :: ISoundMask ()
 //=========================================================
 void CAGrunt :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
-	if ( ptr->iHitgroup == 10 && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_CLUB)))
+	if ( ptr->iHitgroup == 10 && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_CLUB)) != 0)
 	{
 		// hit armor
 		if ( pev->dmgtime != gpGlobals->time || (RANDOM_LONG(0,10) < 1) )
@@ -289,7 +289,7 @@ bool CAGrunt::ShouldSpeak()
 		return false;
 	}
 
-	if ( pev->spawnflags & SF_MONSTER_GAG )
+	if ( (pev->spawnflags & SF_MONSTER_GAG) != 0 )
 	{
 		if ( m_MonsterState != MONSTERSTATE_COMBAT )
 		{
@@ -1094,7 +1094,7 @@ Schedule_t *CAGrunt :: GetSchedule ()
 		pSound = PBestSound();
 
 		ASSERT( pSound != NULL );
-		if ( pSound && (pSound->m_iType & bits_SOUND_DANGER) )
+		if ( pSound && (pSound->m_iType & bits_SOUND_DANGER) != 0 )
 		{
 			// dangerous sound nearby!
 			return GetScheduleOfType( SCHED_TAKE_COVER_FROM_BEST_SOUND );

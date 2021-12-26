@@ -26,7 +26,7 @@ public:
 	// basic functions
 	void Spawn() override;
 	void Precache() override;
-	void KeyValue( KeyValueData* pkvd) override;
+	bool KeyValue( KeyValueData* pkvd) override;
 	void EXPORT BreakTouch( CBaseEntity *pOther );
 	void EXPORT BreakUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT RespawnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
@@ -36,7 +36,7 @@ public:
     int Classify () override { return m_iClass; }
 
 	// breakables use an overridden takedamage
-    int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	// To spark when hit
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType ) override;
 
@@ -48,9 +48,9 @@ public:
 	int	 DamageDecal( int bitsDamageType ) override;
 
 	void EXPORT		Die();
-    int		ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	int		ObjectCaps() override { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	inline bool		Explodable() { return ExplosionMagnitude() > 0; }
 	inline int		ExplosionMagnitude() { return pev->impulse; }

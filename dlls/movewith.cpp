@@ -7,7 +7,7 @@
 
 CWorld *g_pWorld = NULL; //LRC
 
-BOOL g_doingDesired = false; //LRC - marks whether the Desired functions are currently
+bool g_doingDesired = false; //LRC - marks whether the Desired functions are currently
 									// being processed.
 
 void UTIL_AddToAssistList( CBaseEntity *pEnt )
@@ -310,7 +310,7 @@ void CheckDesiredList()
 {
 	CBaseEntity *pListMember;
 	int loopbreaker = 100; //assume this is the max. number of entities which will use DesiredList in any one frame
-//	BOOL liststart = false;
+//	bool liststart = false;
 	if (g_doingDesired)
 		ALERT(at_debug, "CheckDesiredList: doingDesired is already set!?\n");
 	g_doingDesired = true;
@@ -358,7 +358,7 @@ void CheckDesiredList()
 
 
 
-void UTIL_MarkForAssist( CBaseEntity *pEnt, BOOL correctSpeed )
+void UTIL_MarkForAssist( CBaseEntity *pEnt, bool correctSpeed )
 {
 	pEnt->m_iLFlags |= LF_DOASSIST;
 
@@ -419,7 +419,7 @@ void UTIL_AssignOrigin( CBaseEntity *pEntity, const Vector vecOrigin )
 }
 
 // LRC- bInitiator is true if this is being called directly, rather than because pEntity is moving with something else.
-void UTIL_AssignOrigin( CBaseEntity *pEntity, const Vector vecOrigin, BOOL bInitiator)
+void UTIL_AssignOrigin( CBaseEntity *pEntity, const Vector vecOrigin, bool bInitiator)
 {
 //	ALERT(at_console, "AssignOrigin before %f, after %f\n", pEntity->pev->origin.x, vecOrigin.x);
 	Vector vecDiff = vecOrigin - pEntity->pev->origin;
@@ -477,7 +477,7 @@ void UTIL_SetAngles( CBaseEntity *pEntity, const Vector vecAngles )
 	UTIL_SetAngles( pEntity, vecAngles, true );
 }
 
-void UTIL_SetAngles( CBaseEntity *pEntity, const Vector vecAngles, BOOL bInitiator)
+void UTIL_SetAngles( CBaseEntity *pEntity, const Vector vecAngles, bool bInitiator)
 {
 	Vector vecDiff = vecAngles - pEntity->pev->angles;
 	if (vecDiff.Length() > 0.01 && CVAR_GET_FLOAT("sohl_mwdebug"))

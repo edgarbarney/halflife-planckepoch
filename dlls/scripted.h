@@ -46,15 +46,15 @@ class CCineMonster : public CBaseMonster
 {
 public:
 	void Spawn() override;
-    void KeyValue( KeyValueData *pkvd ) override;
-    void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-    void Blocked( CBaseEntity *pOther ) override;
-    void Touch( CBaseEntity *pOther ) override;
-    int	 ObjectCaps() override { return (CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-    void Activate() override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
+	void Blocked( CBaseEntity *pOther ) override;
+	void Touch( CBaseEntity *pOther ) override;
+	int	 ObjectCaps() override { return (CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	void Activate() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -67,15 +67,15 @@ public:
 	void EXPORT InitIdleThink(); //LRC
 	void Pain();
 	void Die();
-	void DelayStart( int state );
+	void DelayStart( bool state );
 	CBaseMonster* FindEntity( const char* sName, CBaseEntity *pActivator );
 	virtual void PossessEntity();
 
-	inline BOOL IsAction() { return FClassnameIs(pev,"scripted_action"); }; //LRC
+	inline bool IsAction() { return FClassnameIs(pev,"scripted_action"); }; //LRC
 
 	//LRC: Should the monster do a precise attack for this scripted_action?
 	// (Do a precise attack if we'll be turning to face the target, but we haven't just walked to the target.)
-	BOOL PreciseAttack()
+	bool PreciseAttack()
 	{
 	//	if (m_fTurnType != 1) { ALERT(at_console,"preciseattack fails check 1\n"); return false; }
 	//	if (m_fMoveTo == 0) { ALERT(at_console,"preciseattack fails check 2\n"); return false; }

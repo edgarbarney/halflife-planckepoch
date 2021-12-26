@@ -230,28 +230,29 @@ public:
 	// initialization functions
 	virtual void	Spawn() { return; }
 	virtual void	Precache() { return; }
-	virtual void	KeyValue( KeyValueData* pkvd)
+	virtual bool	KeyValue( KeyValueData* pkvd)
 	{
 		//LRC - MoveWith for all!
 		if (FStrEq(pkvd->szKeyName, "movewith"))
 		{
 			m_MoveWith = ALLOC_STRING(pkvd->szValue);
-			pkvd->fHandled = true;
+			return true;
 		}
 		else if (FStrEq(pkvd->szKeyName, "skill"))
 		{
 			m_iLFlags = atoi(pkvd->szValue);
-			pkvd->fHandled = true;
+			return true;
 		}
 		else if (FStrEq(pkvd->szKeyName, "style"))
 		{
 			m_iStyle = atoi(pkvd->szValue);
-			pkvd->fHandled = true;
+			return true;
 		}
-		else pkvd->fHandled = false;
+
+		return false;
 	}
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
+	virtual bool		Save( CSave &save );
+	virtual bool		Restore( CRestore &restore );
 	//LRC - if I MoveWith something, then only cross transitions if the MoveWith entity does too.
 	virtual int		ObjectCaps() { return m_pMoveWith?m_pMoveWith->ObjectCaps()&FCAP_ACROSS_TRANSITION:FCAP_ACROSS_TRANSITION; }
 	virtual void	Activate(); //LRC
@@ -278,8 +279,8 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	virtual void	TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	virtual int		TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
-	virtual int		TakeHealth( float flHealth, int bitsDamageType );
+	virtual bool	TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
+	virtual bool	TakeHealth( float flHealth, int bitsDamageType );
 	virtual void	Killed( entvars_t *pevAttacker, int iGib );
 	virtual int		BloodColor() { return DONT_BLEED; }
 	virtual void	TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
@@ -294,7 +295,7 @@ public:
 	virtual bool	RemovePlayerItem( CBasePlayerItem *pItem ) { return 0; }
 	virtual int 	GiveAmmo( int iAmount, const char *szName, int iMax ) { return -1; }
 	virtual float	GetDelay() { return 0; }
-	virtual int		IsMoving() { return pev->velocity != g_vecZero; }
+	virtual bool	IsMoving() { return pev->velocity != g_vecZero; }
 	virtual void	OverrideReset() {}
 	virtual int		DamageDecal( int bitsDamageType );
 	// This is ONLY used by the node graph to test movement through a door
@@ -354,8 +355,8 @@ public:
 	void EXPORT SUB_FadeOut ();
 	void EXPORT SUB_CallUseToggle() // a think function used at spawn time. Don't apply the moveWith fix to it.
 	{ this->Use( this, this, USE_TOGGLE, 0 );	}
-	int			ShouldToggle( USE_TYPE useType, bool currentState );
-	int			ShouldToggle( USE_TYPE useType ); //LRC this version uses GetState()
+	bool			ShouldToggle( USE_TYPE useType, bool currentState );
+	bool			ShouldToggle( USE_TYPE useType ); //LRC this version uses GetState()
 	void		FireBullets( unsigned int cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL  );
 	Vector		FireBulletsPlayer( unsigned int cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL, int shared_rand = 0 );
 
@@ -363,9 +364,9 @@ public:
 
 	void SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, float value );
 	// Do the bounding boxes of these two intersect?
-	int		Intersects( CBaseEntity *pOther );
+	bool	Intersects( CBaseEntity *pOther );
 	void	MakeDormant();
-	int		IsDormant();
+	bool	IsDormant();
 	bool    IsLockedByMaster() { return false; }
 
 	static CBaseEntity *Instance( edict_t *pent )
@@ -530,7 +531,7 @@ typedef struct locksounds			// sounds that doors and buttons make when locked/un
 	byte	bEOFUnlocked;			// true if hit end of list of unlocked sentences
 } locksound_t;
 
-void PlayLockSounds(entvars_t *pev, locksound_t *pls, int flocked, int fbutton);
+void PlayLockSounds(entvars_t *pev, locksound_t *pls, bool flocked, bool fbutton);
 
 //
 // MultiSouce
@@ -543,12 +544,12 @@ class CMultiSource : public CPointEntity
 {
 public:
 	void Spawn( ) override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	STATE GetState() override;
 	void EXPORT Register();
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -570,9 +571,9 @@ public:
 	int			m_iszKillTarget;
 	EHANDLE		m_hActivator; //LRC - moved here from CBaseToggle
 
-    void	KeyValue( KeyValueData* pkvd) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	KeyValue( KeyValueData* pkvd) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 	// common member functions
@@ -584,8 +585,8 @@ public:
 class CBaseAnimating : public CBaseDelay
 {
 public:
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -612,7 +613,7 @@ public:
 	int GetBoneCount();
 	void SetBones( float (*data)[3], int datasize );
 
-	int ExtractBbox( int sequence, float *mins, float *maxs );
+	bool ExtractBbox( int sequence, float *mins, float *maxs );
 	void SetSequenceBox();
 
 	// animation needs
@@ -632,7 +633,7 @@ public:
 class CBaseToggle : public CBaseAnimating
 {
 public:
-	void				KeyValue( KeyValueData *pkvd ) override;
+	bool				KeyValue( KeyValueData *pkvd ) override;
 
 	TOGGLE_STATE		m_toggle_state;
 	float				m_flActivateFinished;//like attack_finished, but for doors
@@ -657,8 +658,8 @@ public:
 
 	int					m_bitsDamageInflict;	// DMG_ damage type that the door or tigger does
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -744,7 +745,7 @@ public:
     void PostSpawn() override; //LRC
     void Precache() override;
 	void RotSpawn();
-    void KeyValue( KeyValueData* pkvd) override;
+	bool KeyValue( KeyValueData* pkvd) override;
 
 	void ButtonActivate( );
 	void SparkSoundCache();
@@ -757,9 +758,9 @@ public:
 	void EXPORT ButtonBackHome();
 	void EXPORT ButtonUse_IgnorePlayer( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT ButtonUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-    int		TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	
 	enum BUTTON_CODE { BUTTON_NOTHING, BUTTON_ACTIVATE, BUTTON_RETURN };
 	BUTTON_CODE	ButtonResponseToTouch();
@@ -852,7 +853,7 @@ typedef struct _SelAmmo
 } SelAmmo;
 
 //LRC- much as I hate to add new globals, I can't see how to read data from the World entity.
-extern BOOL g_startSuit;
+extern bool g_startSuit;
 
 //LRC- moved here from alias.cpp so that util functions can use these defs.
 class CBaseAlias : public CPointEntity
@@ -864,8 +865,8 @@ public:
 	virtual void ChangeValue( CBaseEntity *pValue ) { ChangeValue(pValue->pev->targetname); }
 	virtual void FlushChanges() {};
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CBaseAlias *m_pNextAlias;
@@ -874,12 +875,12 @@ public:
 class CInfoGroup : public CPointEntity
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 	int GetMember( const char* szMemberName );
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -892,10 +893,10 @@ public:
 class CMultiAlias : public CBaseAlias
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -920,7 +921,7 @@ class CWorld : public CBaseEntity
 public:
 	void Spawn() override;
 	void Precache() override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	CBaseAlias *m_pFirstAlias;
 };

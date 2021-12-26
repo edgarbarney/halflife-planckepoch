@@ -99,13 +99,13 @@ int GetStdLightStyle (int iStyle)
 class CLight : public CPointEntity
 {
 public:
-    void	KeyValue( KeyValueData* pkvd ) override;
-    void	Spawn() override;
+	bool	KeyValue( KeyValueData* pkvd ) override;
+	void	Spawn() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void	Think() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
     STATE	GetState() override { return m_iState; }; //LRC
 	
 	static	TYPEDESCRIPTION m_SaveData[];
@@ -147,57 +147,55 @@ IMPLEMENT_SAVERESTORE( CLight, CPointEntity );
 //
 // Cache user-entity-field values until spawn is called.
 //
-void CLight :: KeyValue( KeyValueData* pkvd)
+bool CLight :: KeyValue( KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_iOnStyle"))
 	{
 		m_iOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iOffStyle"))
 	{
 		m_iOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnStyle"))
 	{
 		m_iTurnOnStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffStyle"))
 	{
 		m_iTurnOffStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOnTime"))
 	{
 		m_iTurnOnTime = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTurnOffTime"))
 	{
 		m_iTurnOffTime = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
 		pev->angles.x = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "firetarget"))
 	{
 		pev->target = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		CPointEntity::KeyValue( pkvd );
-	}
+
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CLight :: SetStyle ( int iszPattern )
@@ -332,13 +330,13 @@ LINK_ENTITY_TO_CLASS( light_spot, CLight );
 class CEnvLight : public CLight
 {
 public:
-	void	KeyValue( KeyValueData* pkvd ) override; 
+	bool	KeyValue( KeyValueData* pkvd ) override;
 	void	Spawn() override;
 };
 
 LINK_ENTITY_TO_CLASS( light_environment, CEnvLight );
 
-void CEnvLight::KeyValue( KeyValueData* pkvd )
+bool CEnvLight::KeyValue( KeyValueData* pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
@@ -361,18 +359,17 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 		g = pow( g / 114.0, 0.6 ) * 264;
 		b = pow( b / 114.0, 0.6 ) * 264;
 
-		pkvd->fHandled = true;
 		sprintf( szColor, "%d", r );
 		CVAR_SET_STRING( "sv_skycolor_r", szColor );
 		sprintf( szColor, "%d", g );
 		CVAR_SET_STRING( "sv_skycolor_g", szColor );
 		sprintf( szColor, "%d", b );
 		CVAR_SET_STRING( "sv_skycolor_b", szColor );
+
+		return true;
 	}
-	else
-	{
-		CLight::KeyValue( pkvd );
-	}
+
+	return CLight::KeyValue( pkvd );
 }
 
 
@@ -477,8 +474,8 @@ class CLightFader : public CPointEntity
 public:
 	void EXPORT FadeThink();
 	void EXPORT WaitThink();
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -550,10 +547,10 @@ void CLightFader::WaitThink()
 class CTriggerLightstyle : public CPointEntity
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 private:
@@ -573,25 +570,24 @@ TYPEDESCRIPTION	CTriggerLightstyle::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerLightstyle,CBaseEntity);
 
-void CTriggerLightstyle::KeyValue( KeyValueData *pkvd )
+bool CTriggerLightstyle::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
 		m_iszPattern = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iFade"))
 	{
 		m_iFade = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iWait"))
 	{
 		m_iWait = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 void CTriggerLightstyle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )

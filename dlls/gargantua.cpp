@@ -82,8 +82,8 @@ public:
 	void Think() override;
 	static CStomp *StompCreate( const Vector &origin, const Vector &end, float speed );
 
-	int		Save(CSave& save) override;
-	int		Restore(CRestore& restore) override;
+	bool	Save(CSave& save) override;
+	bool	Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float m_flLastThinkTime;
@@ -227,7 +227,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int  Classify () override;
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType ) override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 
@@ -262,8 +262,8 @@ public:
 
 	void FlameDamage( Vector vecStart, Vector vecEnd, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CUSTOM_SCHEDULES;
@@ -864,7 +864,7 @@ void CGargantua::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vec
 	}
 
 	// UNDONE: Hit group specific damage?
-	if ( bitsDamageType & (GARG_DAMAGE|DMG_BLAST) )
+	if ( (bitsDamageType & (GARG_DAMAGE|DMG_BLAST)) != 0 )
 	{
 		if ( m_painSoundTime < gpGlobals->time )
 		{
@@ -893,15 +893,15 @@ void CGargantua::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vec
 
 
 
-int CGargantua::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CGargantua::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	ALERT( at_aiconsole, "CGargantua::TakeDamage\n");
 
 	if ( IsAlive() )
 	{
-		if ( !(bitsDamageType & GARG_DAMAGE) )
+		if ( (bitsDamageType & GARG_DAMAGE) == 0 )
 			flDamage *= 0.01;
-		if ( bitsDamageType & DMG_BLAST )
+		if ( (bitsDamageType & DMG_BLAST) != 0 )
 			SetConditions( bits_COND_LIGHT_DAMAGE );
 	}
 
@@ -1015,7 +1015,7 @@ void CGargantua::HandleAnimEvent(MonsterEvent_t *pEvent)
 			CBaseEntity *pHurt = GargantuaCheckTraceHullAttack( GARG_ATTACKDIST + 10.0, gSkillData.gargantuaDmgSlash, DMG_SLASH );
 			if (pHurt)
 			{
-				if ( pHurt->pev->flags & (FL_MONSTER|FL_CLIENT) )
+				if ( (pHurt->pev->flags & (FL_MONSTER|FL_CLIENT)) != 0 )
 				{
 					pHurt->pev->punchangle.x = -30; // pitch
 					pHurt->pev->punchangle.y = -30;	// yaw

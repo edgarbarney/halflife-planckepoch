@@ -53,7 +53,7 @@ float CBaseAnimating :: StudioFrameAdvance ( float flInterval )
 			return 0.0;
 		}
 	}
-	if (! pev->animtime)
+	if (0 == pev->animtime)
 		flInterval = 0.0;
 	
 	pev->frame += flInterval * m_flFrameRate * pev->framerate;
@@ -256,7 +256,7 @@ void CBaseAnimating :: SetBones( float (*data)[3], int datasize )
 	::SetBones( GET_MODEL_PTR( ENT(pev) ), data, datasize );
 }
 
-int CBaseAnimating :: ExtractBbox( int sequence, float *mins, float *maxs )
+bool CBaseAnimating :: ExtractBbox( int sequence, float *mins, float *maxs )
 {
 	return ::ExtractBbox( GET_MODEL_PTR( ENT(pev) ), sequence, mins, maxs );
 }

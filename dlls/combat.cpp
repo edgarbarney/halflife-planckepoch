@@ -181,7 +181,7 @@ void CGib :: SpawnHeadGib( entvars_t *pevVictim, const char* szGibModel )
 	pGib->LimitVelocity();
 }
 
-void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int human )
+void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, bool human )
 {
 	if ( g_Language == LANGUAGE_GERMAN )
 		SpawnRandomGibs(pevVictim, cGibs, 1, "models/germangibs.mdl");
@@ -192,7 +192,7 @@ void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int human )
 }
 
 //LRC - changed signature, to support custom gib models
-void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int notfirst, const char *szGibModel )
+void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, bool notfirst, const char *szGibModel )
 {
 	if (cGibs == 0) return; // spawn nothing!
 
@@ -360,7 +360,7 @@ void CBaseMonster :: GibMonster()
 		if ( CVAR_GET_FLOAT("violence_hgibs") != 0 )// Only the player will ever fail this test
 		{
 			CGib::SpawnHeadGib( pev );
-			CGib::SpawnRandomGibs( pev, 4, 1 );	// throw some human gibs.
+			CGib::SpawnRandomGibs( pev, 4, true );	// throw some human gibs.
 		}
 		gibbed = true;
 	}
@@ -368,7 +368,7 @@ void CBaseMonster :: GibMonster()
 	{
 		if ( CVAR_GET_FLOAT("violence_agibs") != 0 )// Should never fail this test, but someone might call it directly
 		{
-			CGib::SpawnRandomGibs( pev, 4, 0 );	// Throw alien gibs
+			CGib::SpawnRandomGibs( pev, 4, false );	// Throw alien gibs
 		}
 		gibbed = true;
 	}
@@ -667,7 +667,7 @@ void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 		CallGibMonster();
 		return;
 	}
-	else if ( pev->flags & FL_MONSTER )
+	else if ( (pev->flags & FL_MONSTER) != 0 )
 	{
 		SetTouch( NULL );
 		BecomeDead();
@@ -763,7 +763,7 @@ void CGib :: BounceGibTouch ( CBaseEntity *pOther )
 	//if ( RANDOM_LONG(0,1) )
 	//	return;// don't bleed everytime
 
-	if (pev->flags & FL_ONGROUND)
+	if ((pev->flags & FL_ONGROUND) != 0)
 	{
 		pev->velocity = pev->velocity * 0.9;
 		pev->angles.x = 0;
@@ -853,10 +853,10 @@ void CGib :: Spawn( const char *szGibModel )
 }
 
 // take health
-int CBaseMonster :: TakeHealth (float flHealth, int bitsDamageType)
+bool CBaseMonster :: TakeHealth (float flHealth, int bitsDamageType)
 {
-	if (!pev->takedamage)
-		return 0;
+	if (0 == pev->takedamage)
+		return false;
 
 	// clear out any damage types we healed.
 	// UNDONE: generic health should not heal any
@@ -883,13 +883,13 @@ When a monster is poisoned via an arrow etc it takes all the poison damage at on
 GLOBALS ASSUMED SET:  g_iSkillLevel
 ============
 */
-int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	float	flTake;
 	Vector	vecDir;
 
-	if (!pev->takedamage)
-		return 0;
+	if (0 == pev->takedamage)
+		return false;
 
 	if ( !IsAlive() )
 	{
@@ -931,9 +931,9 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 		pev->dmg_take += flTake;
 
 		// check for godmode or invincibility
-		if ( pev->flags & FL_GODMODE )
+		if ( (pev->flags & FL_GODMODE) != 0 )
 		{
-			return 0;
+			return false;
 		}
 	}
 
@@ -951,18 +951,18 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 	if ( m_MonsterState == MONSTERSTATE_SCRIPT )
 	{
 		SetConditions( bits_COND_LIGHT_DAMAGE );
-		return 0;
+		return false;
 	}
 
 	if ( pev->health <= 0 )
 	{
 		g_pevLastInflictor = pevInflictor;
 
-		if ( bitsDamageType & DMG_ALWAYSGIB )
+		if ( (bitsDamageType & DMG_ALWAYSGIB) != 0 )
 		{
 			Killed( pevAttacker, GIB_ALWAYS );
 		}
-		else if ( bitsDamageType & DMG_NEVERGIB )
+		else if ( (bitsDamageType & DMG_NEVERGIB) != 0 )
 		{
 			Killed( pevAttacker, GIB_NEVER );
 		}
@@ -973,11 +973,11 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 		g_pevLastInflictor = NULL;
 
-		return 0;
+		return false;
 	}
 
 	// react to the damage (get mad)
-	if ( (pev->flags & FL_MONSTER) && !FNullEnt(pevAttacker) )
+	if ( (pev->flags & FL_MONSTER) != 0 && !FNullEnt(pevAttacker) )
 	{
 		//LRC - new behaviours, for m_iPlayerReact.
 		if (pevAttacker->flags & FL_CLIENT)
@@ -1000,7 +1000,7 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 			}
 		}
 
-		if ( pevAttacker->flags & (FL_MONSTER | FL_CLIENT) )
+		if ( (pevAttacker->flags & (FL_MONSTER | FL_CLIENT)) != 0 )
 		{// only if the attack was a monster or client!
 			
 			// enemy's last known position is somewhere down the vector that the attack came from.
@@ -1033,14 +1033,14 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 		}
 	}
 
-	return 1;
+	return true;
 }
 
 //=========================================================
 // DeadTakeDamage - takedamage function called when a monster's
 // corpse is damaged.
 //=========================================================
-int CBaseMonster :: DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CBaseMonster :: DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	Vector			vecDir;
 
@@ -1070,19 +1070,19 @@ int CBaseMonster :: DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttac
 #endif
 
 	// kill the corpse if enough damage was done to destroy the corpse and the damage is of a type that is allowed to destroy the corpse.
-	if ( bitsDamageType & DMG_GIB_CORPSE )
+	if ( (bitsDamageType & DMG_GIB_CORPSE) != 0 )
 	{
 		if ( pev->health <= flDamage )
 		{
 			pev->health = -50;
 			Killed( pevAttacker, GIB_ALWAYS );
-			return 0;
+			return false;
 		}
 		// Accumulate corpse gibbing damage, so you can gib with multiple hits
 		pev->health -= flDamage * 0.1;
 	}
 	
-	return 1;
+	return true;
 }
 
 
@@ -1111,12 +1111,12 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 	float		flAdjustedDamage, falloff;
 	Vector		vecSpot;
 
-	if ( flRadius )
+	if ( 0 != flRadius )
 		falloff = flDamage / flRadius;
 	else
 		falloff = 1.0;
 
-	int bInWater = (UTIL_PointContents ( vecSrc ) == CONTENTS_WATER);
+	const bool bInWater = (UTIL_PointContents ( vecSrc ) == CONTENTS_WATER);
 
 	vecSrc.z += 1;// in case grenade is lying on the ground
 
@@ -1146,7 +1146,7 @@ void RadiusDamage( Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacke
 
 			if ( tr.flFraction == 1.0 || tr.pHit == pEntity->edict() )
 			{// the explosion can 'see' this entity, so hurt them!
-				if (tr.fStartSolid)
+				if (0 != tr.fStartSolid)
 				{
 					// if we're stuck inside them, fixup the position and distance
 					tr.vecEndPos = vecSrc;
@@ -1351,7 +1351,7 @@ void CBaseEntity::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vec
 {
 	Vector vecOrigin = ptr->vecEndPos - vecDir * 4;
 
-	if ( pev->takedamage )
+	if ( 0 != pev->takedamage )
 	{
 		AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
 
@@ -1396,7 +1396,7 @@ void CBaseMonster::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector ve
 //=========================================================
 void CBaseMonster :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
-	if ( pev->takedamage )
+	if ( 0 != pev->takedamage )
 	{
 		m_LastHitGroup = ptr->iHitgroup;
 
@@ -1443,7 +1443,7 @@ This version is used by Monsters.
 void CBaseEntity::FireBullets(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker )
 {
 	static int tracerCount;
-	int tracer;
+	bool tracer;
 	TraceResult tr;
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
@@ -1472,7 +1472,7 @@ void CBaseEntity::FireBullets(unsigned int cShots, Vector vecSrc, Vector vecDirS
 		vecEnd = vecSrc + vecDir * flDistance;
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev)/*pentIgnore*/, &tr);
 
-		tracer = 0;
+		tracer = false;
 		if (iTracerFreq != 0 && (tracerCount++ % iTracerFreq) == 0)
 		{
 			Vector vecTracerSrc;
@@ -1487,7 +1487,7 @@ void CBaseEntity::FireBullets(unsigned int cShots, Vector vecSrc, Vector vecDirS
 			}
 			
 			if ( iTracerFreq != 1 )		// guns that always trace also always decal
-				tracer = 1;
+				tracer = true;
 			switch( iBulletType )
 			{
 			case BULLET_MONSTER_MP5:
@@ -1511,7 +1511,7 @@ void CBaseEntity::FireBullets(unsigned int cShots, Vector vecSrc, Vector vecDirS
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
-			if ( iDamage )
+			if ( 0 != iDamage )
 			{
 				pEntity->TraceAttack(pevAttacker, iDamage, vecDir, &tr, DMG_BULLET | ((iDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB) );
 				
@@ -1626,7 +1626,7 @@ Vector CBaseEntity::FireBulletsPlayer (unsigned int cShots, Vector vecSrc, Vecto
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
-			if ( iDamage )
+			if ( 0 != iDamage )
 			{
 				pEntity->TraceAttack(pevAttacker, iDamage, vecDir, &tr, DMG_BULLET | ((iDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB) );
 				
@@ -1681,7 +1681,7 @@ void CBaseEntity :: TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr,
 	if (flDamage == 0)
 		return;
 
-	if (! (bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_MORTAR)))
+	if ((bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_MORTAR)) == 0)
 		return;
 	
 	// make blood decal on the wall! 

@@ -68,20 +68,20 @@ class CBubbling : public CBaseEntity
 public:
 	void	Spawn() override;
 	void	Precache() override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 	
 	void	EXPORT FizzThink();
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
-    int		ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
+	int		ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int		m_density;
 	int		m_frequency;
 	int		m_bubbleModel;
-	int		m_state;
+	bool		m_state;
 
     STATE GetState() override { return m_state?STATE_ON:STATE_OFF; };
 };
@@ -92,7 +92,7 @@ TYPEDESCRIPTION	CBubbling::m_SaveData[] =
 {
 	DEFINE_FIELD( CBubbling, m_density, FIELD_INTEGER ),
 	DEFINE_FIELD( CBubbling, m_frequency, FIELD_INTEGER ),
-	DEFINE_FIELD( CBubbling, m_state, FIELD_INTEGER ),
+	DEFINE_FIELD( CBubbling, m_state, FIELD_BOOLEAN ),
 	// Let spawn restore this!
 	//	DEFINE_FIELD( CBubbling, m_bubbleModel, FIELD_INTEGER ),
 };
@@ -118,14 +118,14 @@ void CBubbling::Spawn()
 	pev->rendercolor.z = (pev->speed < 0) ? 1 : 0;
 
 
-	if ( !(pev->spawnflags & SF_BUBBLES_STARTOFF) )
+	if ( (pev->spawnflags & SF_BUBBLES_STARTOFF) == 0 )
 	{
 		SetThink( &CBubbling::FizzThink );
 		SetNextThink( 2.0 );
-		m_state = 1;
+		m_state = true;
 	}
 	else 
-		m_state = 0;
+		m_state = false;
 }
 
 void CBubbling::Precache()
@@ -151,25 +151,25 @@ void CBubbling::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 }
 
 
-void CBubbling::KeyValue( KeyValueData *pkvd )
+bool CBubbling::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "density"))
 	{
 		m_density = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "frequency"))
 	{
 		m_frequency = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "current"))
 	{
 		pev->speed = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 
@@ -356,7 +356,7 @@ void CBeam::SetObjectCollisionBox()
 
 void CBeam::TriggerTouch( CBaseEntity *pOther )
 {
-	if ( pOther->pev->flags & (FL_CLIENT | FL_MONSTER) )
+	if ( (pOther->pev->flags & (FL_CLIENT | FL_MONSTER)) != 0 )
 	{
 		if ( pev->owner )
 		{
@@ -386,13 +386,13 @@ CBaseEntity *CBeam::RandomTargetname( const char *szName )
 
 void CBeam::DoSparks( const Vector &start, const Vector &end )
 {
-	if ( pev->spawnflags & (SF_BEAM_SPARKSTART|SF_BEAM_SPARKEND) )
+	if ( (pev->spawnflags & (SF_BEAM_SPARKSTART|SF_BEAM_SPARKEND)) != 0 )
 	{
-		if ( pev->spawnflags & SF_BEAM_SPARKSTART )
+		if ( (pev->spawnflags & SF_BEAM_SPARKSTART) != 0 )
 		{
 			UTIL_Sparks( start );
 		}
-		if ( pev->spawnflags & SF_BEAM_SPARKEND )
+		if ( (pev->spawnflags & SF_BEAM_SPARKEND) != 0 )
 		{
 			UTIL_Sparks( end );
 		}
@@ -404,7 +404,7 @@ class CLightning : public CBeam
 public:
 	void	Spawn() override;
 	void	Precache() override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 	void	Activate() override;
 
 	void	EXPORT StrikeThink();
@@ -417,13 +417,13 @@ public:
 	
 	inline bool ServerSide()
 	{
-		if ( m_life == 0 && !(pev->spawnflags & SF_BEAM_RING) )
+		if ( m_life == 0 && (pev->spawnflags & SF_BEAM_RING) == 0 )
 			return true;
 		return false;
 	}
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void	BeamUpdatePoints(); //LRC
@@ -431,7 +431,7 @@ public:
 
     STATE GetState() override { return m_active?STATE_OFF:STATE_ON; };
 
-	int		m_active;
+	bool		m_active;
 	int		m_iszStartEntity;
 	int		m_iszEndEntity;
 	float	m_life;
@@ -471,7 +471,7 @@ void CTripBeam::Spawn()
 
 TYPEDESCRIPTION	CLightning::m_SaveData[] = 
 {
-	DEFINE_FIELD( CLightning, m_active, FIELD_INTEGER ),
+	DEFINE_FIELD( CLightning, m_active, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CLightning, m_iszStartEntity, FIELD_STRING ),
 	DEFINE_FIELD( CLightning, m_iszEndEntity, FIELD_STRING ),
 	DEFINE_FIELD( CLightning, m_life, FIELD_FLOAT ),
@@ -518,23 +518,23 @@ void CLightning::Spawn()
 			SetThink( &CLightning::TripThink );
 			SetNextThink( 0.1 );
 		}
-		if ( pev->targetname )
+		if ( !FStringNull(pev->targetname) )
 		{
-			if ( !(pev->spawnflags & SF_BEAM_STARTON) )
+			if ( (pev->spawnflags & SF_BEAM_STARTON) == 0 )
 			{
 				pev->effects = EF_NODRAW;
-				m_active = 0;
+				m_active = false;
 				DontThink();
 			}
 			else
-				m_active = 1;
+				m_active = true;
 		
 			SetUse( &CLightning::ToggleUse );
 		}
 	}
 	else
 	{
-		m_active = 0;
+		m_active = false;
 		if ( !FStringNull(pev->targetname) )
 		{
 			SetUse( &CLightning::StrikeUse );
@@ -563,65 +563,65 @@ void CLightning::Activate()
 }
 
 
-void CLightning::KeyValue( KeyValueData *pkvd )
+bool CLightning::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "LightningStart"))
 	{
 		m_iszStartEntity = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "LightningEnd"))
 	{
 		m_iszEndEntity = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "life"))
 	{
 		m_life = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "BoltWidth"))
 	{
 		m_boltWidth = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "NoiseAmplitude"))
 	{
 		m_noiseAmplitude = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "TextureScroll"))
 	{
 		m_speed = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "StrikeTime"))
 	{
 		m_restrike = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "texture"))
 	{
 		m_iszSpriteName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "framestart"))
 	{
 		m_frameStart = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "Radius"))
 	{
 		m_radius = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "damage"))
 	{
 		pev->dmg = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBeam::KeyValue( pkvd );
+
+	return CBeam::KeyValue( pkvd );
 }
 
 
@@ -631,14 +631,14 @@ void CLightning::ToggleUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		return;
 	if ( m_active )
 	{
-		m_active = 0;
+		m_active = false;
 		SUB_UseTargets( this, USE_OFF, 0 ); //LRC
 		pev->effects |= EF_NODRAW;
 		DontThink();
 	}
 	else
 	{
-		m_active = 1;
+		m_active = true;
 		SUB_UseTargets( this, USE_ON, 0 ); //LRC
 		BeamUpdatePoints();
 		pev->effects &= ~EF_NODRAW;
@@ -659,7 +659,7 @@ void CLightning::StrikeUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 	if ( m_active )
 	{
-		m_active = 0;
+		m_active = false;
 		SetThink( NULL );
 	}
 	else
@@ -673,13 +673,13 @@ void CLightning::StrikeUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 }
 
 
-int IsPointEntity( CBaseEntity *pEnt )
+bool IsPointEntity( CBaseEntity *pEnt )
 {
 //	ALERT(at_console, "IsPE: %s, %d\n", STRING(pEnt->pev->classname), pEnt->pev->modelindex);
 	if (pEnt->pev->modelindex && !FClassnameIs(pEnt->pev, "env_beam")) //LRC- follow (almost) any entity that has a model
-		return 0;
+		return false;
 	else
-		return 1;
+		return true;
 }
 
 
@@ -687,12 +687,12 @@ void CLightning::StrikeThink()
 {
 	if ( m_life != 0 && m_restrike != -1) //LRC non-restriking beams! what an idea!
 	{
-		if ( pev->spawnflags & SF_BEAM_RANDOM )
+		if ( (pev->spawnflags & SF_BEAM_RANDOM) != 0 )
 			SetNextThink( m_life + RANDOM_FLOAT( 0, m_restrike ) );
 		else
 			SetNextThink( m_life + m_restrike );
 	}
-	m_active = 1;
+	m_active = true;
 
 	if (FStringNull(m_iszEndEntity))
 	{
@@ -719,7 +719,7 @@ void CLightning::StrikeThink()
 		//SDK 2.2 bug fix
 		if ( IsPointEntity( pStart ) || IsPointEntity( pEnd ) )
 		{
-			if ( pev->spawnflags & SF_BEAM_RING)
+			if ( (pev->spawnflags & SF_BEAM_RING) != 0)
 			{
 				// don't work
 				//LRC- FIXME: tell the user there's a problem.
@@ -759,7 +759,7 @@ void CLightning::StrikeThink()
 			}
 			else
 			{
-				if ( pev->spawnflags & SF_BEAM_RING)
+				if ( (pev->spawnflags & SF_BEAM_RING) != 0)
 					WRITE_BYTE( TE_BEAMRING );
 				else
 					WRITE_BYTE( TE_BEAMENTS );
@@ -835,7 +835,7 @@ void CBeam::BeamDamage( TraceResult *ptr )
 				ClearMultiDamage();
 				pHit->TraceAttack( pev, pev->dmg * (gpGlobals->time - pev->dmgtime), (ptr->vecEndPos - pev->origin).Normalize(), ptr, pev->frags );
 				ApplyMultiDamage( pev, pev );
-				if ( pev->spawnflags & SF_BEAM_DECALS )
+				if ( (pev->spawnflags & SF_BEAM_DECALS ) != 0)
 				{
 					if ( pHit->IsBSPModel() )
 						UTIL_DecalTrace( ptr, DECAL_BIGSHOT1 + RANDOM_LONG(0,4) );
@@ -1001,7 +1001,7 @@ void CLightning::RandomPoint( Vector &vecSrc )
 void CLightning::BeamUpdatePoints()
 {
 	int beamType;
-	int pointStart, pointEnd;
+	bool pointStart, pointEnd;
 
 	CBaseEntity *pStart = UTIL_FindEntityByTargetname ( NULL, STRING(m_iszStartEntity) );
 	CBaseEntity *pEnd   = UTIL_FindEntityByTargetname ( NULL, STRING(m_iszEndEntity) );
@@ -1019,7 +1019,7 @@ void CLightning::BeamUpdatePoints()
 			pTemp = pStart;
 			pStart = pEnd;
 			pEnd = pTemp;
-			int swap = pointStart;
+			bool swap = pointStart;
 			pointStart = pointEnd;
 			pointEnd = swap;
 		}
@@ -1062,9 +1062,9 @@ void CLightning::BeamUpdateVars()
 	SetNoise( m_noiseAmplitude );
 	SetFrame( m_frameStart );
 	SetScrollRate( m_speed );
-	if ( pev->spawnflags & SF_BEAM_SHADEIN )
+	if ( (pev->spawnflags & SF_BEAM_SHADEIN ) != 0)
 		SetFlags( BEAM_FSHADEIN );
-	else if ( pev->spawnflags & SF_BEAM_SHADEOUT )
+	else if ( (pev->spawnflags & SF_BEAM_SHADEOUT ) != 0)
 		SetFlags( BEAM_FSHADEOUT );
 	else if ( pev->spawnflags & SF_BEAM_SOLID )
 		SetFlags( BEAM_FSOLID );
@@ -1167,7 +1167,7 @@ void CLaser::PostSpawn()
 	else
 		PointsInit( pev->origin, pev->origin );
 
-	if ( pev->targetname && !(pev->spawnflags & SF_BEAM_STARTON) )
+	if ( !FStringNull(pev->targetname) && (pev->spawnflags & SF_BEAM_STARTON) == 0 )
 		TurnOff();
 	else
 		TurnOn();
@@ -1208,75 +1208,74 @@ void CLaser::Precache()
 }
 
 
-void CLaser::KeyValue( KeyValueData *pkvd )
+bool CLaser::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "LaserStart"))
 	{
 		m_iszStartPosition = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "LaserTarget"))
 	{
 		pev->message = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iTowardsMode"))
 	{
 		m_iTowardsMode = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "width"))
 	{
 		SetWidth( (int) atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "NoiseAmplitude"))
 	{
 		SetNoise( atoi(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "TextureScroll"))
 	{
 		SetScrollRate( atoi(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "texture"))
 	{
 		pev->model = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "StartSprite"))
 	{
 		m_iszStartSpriteName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "EndSprite"))
 	{
 		m_iszEndSpriteName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "framestart"))
 	{
 		pev->frame = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "damage"))
 	{
 		pev->dmg = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iProjection"))
 	{
 		m_iProjection = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iStoppedBy"))
 	{
 		m_iStoppedBy = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBeam::KeyValue( pkvd );
+	return CBeam::KeyValue( pkvd );
 }
 
 void CLaser::TurnOff()
@@ -1321,7 +1320,7 @@ void CLaser::TurnOn()
 
 void CLaser::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	int active = (GetState() == STATE_ON);
+	bool active = (GetState() == STATE_ON);
 
 	if ( !ShouldToggle( useType, active ) )
 		return;
@@ -1437,8 +1436,8 @@ public:
 	void Spawn() override;
 	void Think() override;
 	void Animate( float frames );
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	float		m_lastTime;
@@ -1510,7 +1509,7 @@ void CSprite::Spawn()
 	SET_MODEL( ENT(pev), STRING(pev->model) );
 
 	m_maxFrame = (float) MODEL_FRAMES( pev->modelindex ) - 1;
-	if ( pev->targetname && !(pev->spawnflags & SF_SPRITE_STARTON) )
+	if ( !FStringNull(pev->targetname) && (pev->spawnflags & SF_SPRITE_STARTON) == 0 )
 		TurnOff();
 	else
 		TurnOn();
@@ -1614,7 +1613,7 @@ void CSprite::Animate( float frames )
 	pev->frame += frames;
 	if ( pev->frame > m_maxFrame )
 	{
-		if ( pev->spawnflags & SF_SPRITE_ONCE )
+		if ( (pev->spawnflags & SF_SPRITE_ONCE ) != 0)
 		{
 			TurnOff();
 		}
@@ -1645,7 +1644,7 @@ void CSprite::TurnOn()
 			return;
 	}
 	pev->effects = 0;
-	if ( (pev->framerate && m_maxFrame > 1.0) || (pev->spawnflags & SF_SPRITE_ONCE) )
+	if ( (0 != pev->framerate && m_maxFrame > 1.0) || (pev->spawnflags & SF_SPRITE_ONCE) != 0 )
 	{
 		SetThink( &CSprite::AnimateThink );
 		SetNextThink( 0 );
@@ -1657,7 +1656,7 @@ void CSprite::TurnOn()
 
 void CSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	int on = pev->effects != EF_NODRAW;
+	bool on = pev->effects != EF_NODRAW;
 	if ( ShouldToggle( useType, on ) )
 	{
 		if ( on )
@@ -1685,13 +1684,13 @@ class CEnvModel : public CBaseAnimating
 	void Spawn() override;
 	void Precache() override;
 	void EXPORT Think() override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	STATE GetState() override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool		Save( CSave &save ) override;
+    bool		Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void SetSequence();
@@ -1713,32 +1712,29 @@ TYPEDESCRIPTION CEnvModel::m_SaveData[] =
 IMPLEMENT_SAVERESTORE( CEnvModel, CBaseAnimating );
 LINK_ENTITY_TO_CLASS( env_model, CEnvModel );
 
-void CEnvModel::KeyValue( KeyValueData *pkvd )
+bool CEnvModel::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszSequence_On"))
 	{
 		m_iszSequence_On = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszSequence_Off"))
 	{
 		m_iszSequence_Off = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iAction_On"))
 	{
 		m_iAction_On = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iAction_Off"))
 	{
 		m_iAction_Off = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		CBaseAnimating::KeyValue( pkvd );
-	}
+	return CBaseAnimating::KeyValue( pkvd );
 }
 
 void CEnvModel :: Spawn()
@@ -1886,14 +1882,14 @@ class CGibShooter : public CBaseDelay
 public:
     void	Spawn() override;
 	void	Precache() override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 	void EXPORT ShootThink();
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	virtual CBaseEntity *CreateGib( Vector vecPos, Vector vecVel );
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int	m_iGibs;
@@ -1949,62 +1945,60 @@ void CGibShooter :: Precache ()
 }
 
 
-void CGibShooter::KeyValue( KeyValueData *pkvd )
+bool CGibShooter::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iGibs"))
 	{
 		m_iGibs = m_iGibCapacity = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flVelocity"))
 	{
 		m_iszVelFactor = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flVariance"))
 	{
 		m_flVariance = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flGibLife"))
 	{
 		m_flGibLife = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszTargetName"))
 	{
 		m_iszTargetname = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{
 		m_iszPosition = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszVelocity"))
 	{
 		m_iszVelocity = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszVelFactor"))
 	{
 		m_iszVelFactor = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszSpawnTarget"))
 	{
 		m_iszSpawnTarget = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iBloodColor"))
 	{
 		m_iBloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		CBaseDelay::KeyValue( pkvd );
-	}
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 void CGibShooter::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -2151,7 +2145,7 @@ void CGibShooter :: ShootThink ()
 
 	if ( m_iGibs <= 0 )
 	{
-		if ( pev->spawnflags & SF_GIBSHOOTER_REPEATABLE )
+		if ( (pev->spawnflags & SF_GIBSHOOTER_REPEATABLE ) != 0)
 		{
 			m_iGibs = m_iGibCapacity;
 			SetThink ( NULL );
@@ -2190,9 +2184,9 @@ void CShot :: Touch ( CBaseEntity *pOther )
 class CEnvShooter : public CGibShooter
 {
 	void		Precache() override;
-	void		KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool		KeyValue( KeyValueData *pkvd ) override;
+    bool		Save( CSave &save ) override;
+    bool		Restore( CRestore &restore ) override;
 	void		Spawn() override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
@@ -2225,17 +2219,17 @@ void CEnvShooter::Spawn()
 	pev->body = iBody;
 }
 
-void CEnvShooter :: KeyValue( KeyValueData *pkvd )
+bool CEnvShooter :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "shootmodel"))
 	{
 		pev->model = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "shootsounds"))
 	{
 		int iNoise = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+
 		switch( iNoise )
 		{
 		case 0:
@@ -2259,37 +2253,36 @@ void CEnvShooter :: KeyValue( KeyValueData *pkvd )
 			m_iGibMaterial = matNone;
 			break;
 		}
+
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszTouch"))
 	{
 		m_iszTouch = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszTouchOther"))
 	{
 		m_iszTouchOther = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iPhysics"))
 	{
 		m_iPhysics = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fFriction"))
 	{
 		m_fFriction = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_vecSize"))
 	{
 		UTIL_StringToVector((float*)m_vecSize, pkvd->szValue);
 		m_vecSize = m_vecSize/2;
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		CGibShooter::KeyValue( pkvd );
-	}
+	return CGibShooter::KeyValue( pkvd );
 }
 
 
@@ -2414,7 +2407,7 @@ class CTestEffect : public CBaseDelay
 public:
 	void	Spawn() override;
 	void	Precache() override;
-	// void	KeyValue( KeyValueData *pkvd );
+	// bool	KeyValue( KeyValueData *pkvd );
 	void EXPORT TestThink();
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
@@ -2519,7 +2512,7 @@ class CBlood : public CPointEntity
 public:
 	void	Spawn() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 
 	inline	int		Color() { return pev->impulse; }
 	inline	float 	BloodAmount() { return pev->dmg; }
@@ -2553,7 +2546,7 @@ void CBlood::Spawn()
 }
 
 
-void CBlood::KeyValue( KeyValueData *pkvd )
+bool CBlood::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "color"))
 	{
@@ -2565,21 +2558,21 @@ void CBlood::KeyValue( KeyValueData *pkvd )
 			break;
 		}
 
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "amount"))
 	{
 		SetBloodAmount( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+
+	return CPointEntity::KeyValue( pkvd );
 }
 
 
 Vector CBlood::Direction( CBaseEntity *pActivator )
 {
-	if ( pev->spawnflags & SF_BLOOD_RANDOM )
+	if ( (pev->spawnflags & SF_BLOOD_RANDOM ) != 0)
 		return UTIL_RandomBloodVector();
 	else if (pev->netname)
 		return CalcLocus_Velocity(this, pActivator, STRING(pev->netname));
@@ -2590,7 +2583,7 @@ Vector CBlood::Direction( CBaseEntity *pActivator )
 
 Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 {
-	if ( pev->spawnflags & SF_BLOOD_PLAYER )
+	if ( (pev->spawnflags & SF_BLOOD_PLAYER ) != 0)
 	{
 		edict_t *pPlayer;
 
@@ -2615,12 +2608,12 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 
 void CBlood::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if ( pev->spawnflags & SF_BLOOD_STREAM )
+	if ( (pev->spawnflags & SF_BLOOD_STREAM) != 0 )
 		UTIL_BloodStream( BloodPosition(pActivator), Direction(pActivator), (Color() == BLOOD_COLOR_RED) ? 70 : Color(), BloodAmount() );
 	else
 		UTIL_BloodDrips( BloodPosition(pActivator), Direction(pActivator), Color(), BloodAmount() );
 
-	if ( pev->spawnflags & SF_BLOOD_DECAL )
+	if ( (pev->spawnflags & SF_BLOOD_DECAL ) != 0)
 	{
 		Vector forward = Direction(pActivator);
 		Vector start = BloodPosition( pActivator );
@@ -2640,7 +2633,7 @@ class CShake : public CPointEntity
 public:
 	void	Spawn() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 
 	inline	float	Amplitude() { return pev->scale; }
 	inline	float	Frequency() { return pev->dmg_save; }
@@ -2681,35 +2674,35 @@ void CShake::Spawn()
 
 	m_iState = STATE_OFF; //LRC
 
-	if ( pev->spawnflags & SF_SHAKE_EVERYONE )
+	if ( (pev->spawnflags & SF_SHAKE_EVERYONE ) != 0)
 		pev->dmg = 0;
 }
 
 
-void CShake::KeyValue( KeyValueData *pkvd )
+bool CShake::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "amplitude"))
 	{
 		SetAmplitude( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "frequency"))
 	{
 		SetFrequency( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "duration"))
 	{
 		SetDuration( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "radius"))
 	{
 		SetRadius( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+
+	return CPointEntity::KeyValue( pkvd );
 }
 
 
@@ -2726,7 +2719,7 @@ class CFade : public CPointEntity
 public:
 	void	Spawn() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 
     STATE GetState() override { return m_iState; }; // LRC
 	void	Think() override; //LRC
@@ -2761,20 +2754,20 @@ void CFade::Spawn()
 }
 
 
-void CFade::KeyValue( KeyValueData *pkvd )
+bool CFade::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "duration"))
 	{
 		SetDuration( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "holdtime"))
 	{
 		SetHoldTime( atof(pkvd->szValue) );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+
+	return CPointEntity::KeyValue( pkvd );
 }
 
 
@@ -2785,16 +2778,16 @@ void CFade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType
 	m_iState = STATE_TURN_ON; //LRC
 	SetNextThink( Duration() ); //LRC
 
-	if ( !(pev->spawnflags & SF_FADE_IN) )
+	if ( (pev->spawnflags & SF_FADE_IN) == 0 )
 		fadeFlags |= FFADE_OUT;
 
-	if ( pev->spawnflags & SF_FADE_MODULATE )
+	if ( (pev->spawnflags & SF_FADE_MODULATE) != 0 )
 		fadeFlags |= FFADE_MODULATE;
 
 	if ( pev->spawnflags & SF_FADE_PERMANENT )	//LRC
 		fadeFlags |= FFADE_STAYOUT;				//LRC
 
-	if ( pev->spawnflags & SF_FADE_ONLYONE )
+	if ( (pev->spawnflags & SF_FADE_ONLYONE) != 0 )
 	{
 		if ( pActivator->IsNetClient() )
 		{
@@ -2849,7 +2842,7 @@ public:
 	void	Spawn() override;
 	void	Precache() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 private:
 };
 
@@ -2896,25 +2889,24 @@ void CMessage::Precache()
 		PRECACHE_SOUND( (char *)STRING(pev->noise) );
 }
 
-void CMessage::KeyValue( KeyValueData *pkvd )
+bool CMessage::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "messagesound"))
 	{
 		pev->noise = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messagevolume"))
 	{
 		pev->scale = atof(pkvd->szValue) * 0.1;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "messageattenuation"))
 	{
 		pev->impulse = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 
@@ -3351,11 +3343,11 @@ public:
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void	Think() override;
 	void	Precache() override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	STATE	m_iState;
@@ -3406,72 +3398,71 @@ void CEnvRain::Precache()
 	m_spriteTexture = PRECACHE_MODEL( (char *)STRING(m_iszSpriteName) );
 }
 
-void CEnvRain::KeyValue( KeyValueData *pkvd )
+bool CEnvRain::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_dripSize"))
 	{
 		m_dripSize = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_burstSize"))
 	{
 		m_burstSize = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_dripSpeed"))
 	{
 		int temp = atoi(pkvd->szValue);
 		m_maxDripSpeed = temp + (temp/4);
 		m_minDripSpeed = temp - (temp/4);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_brightness"))
 	{
 		m_brightness = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flUpdateTime"))
 	{
 		m_flUpdateTime = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flMaxUpdateTime"))
 	{
 		m_flMaxUpdateTime = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
 		m_pitch = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "texture"))
 	{
 		m_iszSpriteName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_axis"))
 	{
 		m_axis = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iExtent"))
 	{
 		m_iExtent = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fLifeTime"))
 	{
 		m_fLifeTime = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iNoise"))
 	{
 		m_iNoise = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 void CEnvRain::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -3551,7 +3542,7 @@ void CEnvRain::Think()
 	int drawn = 0;
 	int tries = 0;
 	TraceResult tr;
-	BOOL bDraw;
+	bool bDraw;
 
 	while (drawn < repeats && tries < (repeats*3))
 	{
@@ -3716,9 +3707,9 @@ public:
 	void	Precache() override;
 	void	Spawn() override { Precache(); }
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void	KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void DoEffect( Vector vecPos );
@@ -3758,55 +3749,54 @@ void CEnvShockwave::Precache()
 	m_iSpriteTexture = PRECACHE_MODEL( (char *)STRING(pev->netname) );
 }
 
-void CEnvShockwave::KeyValue( KeyValueData *pkvd )
+bool CEnvShockwave::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iTime"))
 	{
 		m_iTime = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iRadius"))
 	{
 		m_iRadius = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iHeight"))
 	{
 		m_iHeight = atoi(pkvd->szValue)/2; //LRC- the actual height is doubled when drawn
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iScrollRate"))
 	{
 		m_iScrollRate = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iNoise"))
 	{
 		m_iNoise = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iFrameRate"))
 	{
 		m_iFrameRate = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iStartFrame"))
 	{
 		m_iStartFrame = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{
 		m_iszPosition = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_cType"))
 	{
 		m_cType = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 void CEnvShockwave::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -3865,8 +3855,8 @@ public:
 	void	Think() override;
 	void	DesiredAction() override;
 	virtual void	MakeLight( int iTime );
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	STATE	GetState() override
     {
@@ -4001,8 +3991,8 @@ class CEnvELight : public CEnvDLight
 public:
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void	MakeLight(int iTime) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE m_hAttach;
@@ -4299,9 +4289,9 @@ public:
 	void EXPORT FadeInDone();
 	void EXPORT FadeOutDone();
 	void SendData( Vector col, int fFadeTime, int StartDist, int iEndDist);
-	void KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
@@ -4327,35 +4317,34 @@ TYPEDESCRIPTION	CEnvFog::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CEnvFog, CBaseEntity );
 
-void CEnvFog :: KeyValue( KeyValueData *pkvd )
+bool CEnvFog :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "startdist"))
 	{
 		m_iStartDist = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "enddist"))
 	{
 		m_iEndDist = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "fadein"))
 	{
 		m_iFadeIn = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "fadeout"))
 	{
 		m_iFadeOut = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "holdtime"))
 	{
 		m_fHoldTime = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 STATE CEnvFog::GetState()

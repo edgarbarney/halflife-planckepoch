@@ -63,7 +63,7 @@ int gmsgStatusValue = 0;
 void LinkUserMessages()
 {
 	// Already taken care of?
-	if (gmsgSelAmmo)
+	if (0 != gmsgSelAmmo)
 	{
 		return;
 	}

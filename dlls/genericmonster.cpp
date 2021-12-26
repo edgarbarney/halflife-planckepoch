@@ -44,10 +44,10 @@ public:
 	int  Classify () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
 	int ISoundMask () override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	bool HasCustomGibs() override { return m_iszGibModel; }
@@ -63,20 +63,19 @@ TYPEDESCRIPTION	CGenericMonster::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CGenericMonster, CBaseMonster );
 
-void CGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CGenericMonster::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue( pkvd );
 }
 
 //=========================================================
@@ -180,7 +179,7 @@ void CGenericMonster :: Spawn()
 
 	MonsterInit();
 
-	if ( pev->spawnflags & SF_GENERICMONSTER_NOTSOLID )
+	if ( (pev->spawnflags & SF_GENERICMONSTER_NOTSOLID) != 0 )
 	{
 		pev->solid = SOLID_NOT;
 		pev->takedamage = DAMAGE_NO;
@@ -215,10 +214,10 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int	Classify () override { return CLASS_PLAYER_ALLY; }
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	bool HasCustomGibs() override { return m_iszGibModel; }
@@ -235,20 +234,19 @@ TYPEDESCRIPTION	CDeadGenericMonster::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CDeadGenericMonster, CBaseMonster );
 
-void CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue( pkvd );
 }
 
 //=========================================================

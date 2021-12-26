@@ -52,10 +52,10 @@ class CFrictionModifier : public CBaseEntity
 {
 public:
 	void		Spawn() override;
-	void		KeyValue( KeyValueData *pkvd ) override;
+	bool		KeyValue( KeyValueData *pkvd ) override;
 	void EXPORT	ChangeFriction( CBaseEntity *pOther );
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool		Save( CSave &save ) override;
+	bool		Restore( CRestore &restore ) override;
 
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
@@ -95,15 +95,15 @@ void CFrictionModifier :: ChangeFriction( CBaseEntity *pOther )
 
 
 // Sets toucher's friction to m_frictionFraction (1.0 = normal friction)
-void CFrictionModifier :: KeyValue( KeyValueData *pkvd )
+bool CFrictionModifier :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "modifier"))
 	{
 		m_frictionFraction = atof(pkvd->szValue) / 100.0;
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 
@@ -116,13 +116,13 @@ void CFrictionModifier :: KeyValue( KeyValueData *pkvd )
 class CAutoTrigger : public CBaseDelay
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Activate() override;
 	void DesiredAction() override;
 
 	int ObjectCaps() override { return CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -140,12 +140,12 @@ TYPEDESCRIPTION	CAutoTrigger::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CAutoTrigger,CBaseDelay);
 
-void CAutoTrigger::KeyValue( KeyValueData *pkvd )
+bool CAutoTrigger::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "globalstate"))
 	{
 		m_globalstate = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "triggerstate"))
 	{
@@ -162,10 +162,10 @@ void CAutoTrigger::KeyValue( KeyValueData *pkvd )
 			triggerType = USE_ON;
 			break;
 		}
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 void CAutoTrigger::Activate()
@@ -205,13 +205,13 @@ void CAutoTrigger::DesiredAction()
 class CTriggerRelay : public CBaseDelay
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Spawn() override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	int ObjectCaps() override { return CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -230,17 +230,17 @@ TYPEDESCRIPTION	CTriggerRelay::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerRelay,CBaseDelay);
 
-void CTriggerRelay::KeyValue( KeyValueData *pkvd )
+bool CTriggerRelay::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "master"))
 	{
 		m_sMaster = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszAltTarget"))
 	{
 		m_iszAltTarget = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "triggerstate"))
 	{
@@ -266,10 +266,10 @@ void CTriggerRelay::KeyValue( KeyValueData *pkvd )
 			m_triggerType = USE_ON;
 			break;
 		}
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 
@@ -375,8 +375,8 @@ public:
 //	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void Think() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -463,7 +463,7 @@ void CTriggerRotTest::Think()
 class CMultiManager : public CBaseEntity//Toggle
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Spawn () override;
 	void EXPORT UseThink ();
 	void EXPORT ManagerThink ();
@@ -477,8 +477,8 @@ public:
 	
 	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -501,13 +501,13 @@ public:
 	EHANDLE m_hActivator;
 private:
 	USE_TYPE	m_triggerType; //LRC
-	inline bool IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) ? true : false; }
+	inline bool IsClone() { return (pev->spawnflags & SF_MULTIMAN_CLONE) != 0; }
 	inline bool ShouldClone() 
 	{ 
 		if ( IsClone() )
 			return false;
 
-		return (pev->spawnflags & SF_MULTIMAN_THREAD) ? true : false; 
+		return (pev->spawnflags & SF_MULTIMAN_THREAD) != 0; 
 	}
 	
 	CMultiManager *Clone();
@@ -535,7 +535,7 @@ TYPEDESCRIPTION	CMultiManager::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CMultiManager,CBaseEntity);
 
-void CMultiManager :: KeyValue( KeyValueData *pkvd )
+bool CMultiManager :: KeyValue( KeyValueData *pkvd )
 {
 	
 	// UNDONE: Maybe this should do something like this:
@@ -549,32 +549,32 @@ void CMultiManager :: KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
 		m_flWait = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "maxwait"))
 	{
 		m_flMaxWait = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "master")) //LRC
 	{
 		m_sMaster = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszThreadName")) //LRC
 	{
 		m_iszThreadName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszLocusThread")) //LRC
 	{
 		m_iszLocusThread = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "mode")) //LRC
 	{
 		m_iMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "triggerstate")) //LRC
 	{
@@ -587,7 +587,7 @@ void CMultiManager :: KeyValue( KeyValueData *pkvd )
 			default: m_triggerType = USE_TOGGLE; break; //compatible.
 		}
 		pev->spawnflags |= SF_MULTIMAN_TRIGCHOSEN;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else // add this field to the target list
 	{
@@ -600,13 +600,15 @@ void CMultiManager :: KeyValue( KeyValueData *pkvd )
 			m_iTargetName [ m_cTargets ] = ALLOC_STRING( tmp );
 			m_flTargetDelay [ m_cTargets ] = atof (pkvd->szValue);
 			m_cTargets++;
-			pkvd->fHandled = true;
+			return true;
 		}
 		else //LRC - keep a count of how many targets, for the error message
 		{
 			m_cTargets++;
 		}
 	}
+
+	return false;
 }
 
 
@@ -630,11 +632,11 @@ void CMultiManager :: Spawn()
 	
 	// Sort targets
 	// Quick and dirty bubble sort
-	int swapped = 1;
+	bool swapped = true;
 
 	while ( swapped )
 	{
-		swapped = 0;
+		swapped = false;
 		for ( int i = 1; i < m_cTargets; i++ )
 		{
 			if ( m_flTargetDelay[i] < m_flTargetDelay[i-1] )
@@ -646,7 +648,7 @@ void CMultiManager :: Spawn()
 				m_flTargetDelay[i] = m_flTargetDelay[i-1];
 				m_iTargetName[i-1] = name;
 				m_flTargetDelay[i-1] = delay;
-				swapped = 1;
+				swapped = true;
 			}
 		}
 	}
@@ -1032,13 +1034,13 @@ class CStateWatcher : public CBaseToggle
 public:
 	void Spawn () override;
 	void EXPORT Think () override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
     STATE GetState() override;
     STATE GetState( CBaseEntity *pActivator ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -1047,7 +1049,7 @@ public:
 	int		m_iTargetName	[ MAX_MULTI_TARGETS ];// list of indexes into global string array
 //	CBaseEntity*	m_pTargetEnt	[ MAX_MULTI_TARGETS ];
 
-	BOOL	EvalLogic ( CBaseEntity *pEntity );
+	bool	EvalLogic ( CBaseEntity *pEntity );
 };
 
 LINK_ENTITY_TO_CLASS( multi_watcher, CStateWatcher );
@@ -1063,13 +1065,13 @@ TYPEDESCRIPTION	CStateWatcher::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CStateWatcher,CBaseToggle);
 
-void CStateWatcher :: KeyValue( KeyValueData *pkvd )
+bool CStateWatcher :: KeyValue( KeyValueData *pkvd )
 {
 	char tmp[128];
     if (FStrEq(pkvd->szKeyName, "m_fLogic"))
 	{
 		m_fLogic = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
     else if (FStrEq(pkvd->szKeyName, "m_iszWatch"))
 	{
@@ -1077,11 +1079,12 @@ void CStateWatcher :: KeyValue( KeyValueData *pkvd )
 		{
 			m_iTargetName [ m_cTargets ] = ALLOC_STRING(pkvd->szValue);
 			m_cTargets++;
-			pkvd->fHandled = true;
+			return true;
 		}
 		else
 		{
 			ALERT(at_debug,"%s: Too many targets for %s \"%s\" (limit is %d)\n",pkvd->szKeyName,STRING(pev->classname),STRING(pev->targetname), MAX_MULTI_TARGETS);
+			return false;
 		}
 	}
 	else // add this field to the target list
@@ -1092,11 +1095,12 @@ void CStateWatcher :: KeyValue( KeyValueData *pkvd )
 			UTIL_StripToken( pkvd->szKeyName, tmp );
 			m_iTargetName [ m_cTargets ] = ALLOC_STRING( tmp );
 			m_cTargets++;
-			pkvd->fHandled = true;
+			return true;
 		}
 		else
 		{
 			ALERT(at_debug,"WARNING - %s: Too many targets for %s \"%s\" (limit is %d)\n",pkvd->szKeyName,STRING(pev->classname),STRING(pev->targetname), MAX_MULTI_TARGETS);
+			return false;
 		}
 	}
 }
@@ -1169,11 +1173,11 @@ void CStateWatcher :: Think ()
 	}
 }
 
-BOOL CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
+bool CStateWatcher :: EvalLogic ( CBaseEntity *pActivator )
 {
 	int i;
-	BOOL b;
-	BOOL xorgot = false;
+	bool b;
+	bool xorgot = false;
 
 	CBaseEntity* pEntity;
 
@@ -1354,8 +1358,8 @@ class CRenderFxFader : public CBaseEntity
 public:
 	void Spawn () override;
 	void EXPORT FadeThink ();
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	static	TYPEDESCRIPTION m_SaveData[];
@@ -1447,22 +1451,21 @@ class CRenderFxManager : public CPointEntity
 {
 public:
 	void Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void Affect( CBaseEntity *pEntity, BOOL bIsLocus, CBaseEntity *pActivator );
+	void Affect( CBaseEntity *pEntity, bool bIsLocus, CBaseEntity *pActivator );
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 };
 
 LINK_ENTITY_TO_CLASS( env_render, CRenderFxManager );
 
-void CRenderFxManager :: KeyValue( KeyValueData *pkvd )
+bool CRenderFxManager :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_fScale"))
 	{
 		pev->scale = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CRenderFxManager :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -1470,7 +1473,7 @@ void CRenderFxManager :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	if (!FStringNull(pev->target))
 	{
 		CBaseEntity* pTarget = UTIL_FindEntityByTargetname( NULL, STRING(pev->target), pActivator);
-		BOOL first = true;
+		bool first = true;
 		while ( pTarget != NULL )
 		{
 			Affect( pTarget, first, pActivator );
@@ -1486,7 +1489,7 @@ void CRenderFxManager :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	}
 }
 
-void CRenderFxManager::Affect( CBaseEntity *pTarget, BOOL bIsFirst, CBaseEntity *pActivator )
+void CRenderFxManager::Affect( CBaseEntity *pTarget, bool bIsFirst, CBaseEntity *pActivator )
 {
 	entvars_t *pevTarget = pTarget->pev;
 
@@ -1593,9 +1596,9 @@ public:
 
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -1641,90 +1644,89 @@ TYPEDESCRIPTION	CEnvCustomize::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CEnvCustomize,CBaseEntity);
 
-void CEnvCustomize :: KeyValue( KeyValueData *pkvd )
+bool CEnvCustomize :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iVisible"))
 	{
 		m_iVisible = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iSolid"))
 	{
 		m_iSolid = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszModel"))
 	{
 		m_iszModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_voicePitch"))
 	{
 		m_voicePitch = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iPrisoner"))
 	{
 		m_iPrisoner = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iMonsterClip"))
 	{
 		m_iMonsterClip = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iClass"))
 	{
 		m_iClass = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iPlayerReact"))
 	{
 		m_iPlayerReact = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_flRadius"))
 	{
 		m_flRadius = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iProvoked"))
 	{
 		m_iProvoked = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_bloodColor") || FStrEq(pkvd->szKeyName, "m_iBloodColor"))
 	{
 		m_iBloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fFramerate"))
 	{
 		m_fFramerate = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fController0"))
 	{
 		m_fController0 = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fController1"))
 	{
 		m_fController1 = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fController2"))
 	{
 		m_fController2 = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fController3"))
 	{
 		m_fController3 = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 void CEnvCustomize :: Spawn ()
@@ -1763,7 +1765,7 @@ void CEnvCustomize :: Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	}
 	else
 	{
-		BOOL fail = true;
+		bool fail = true;
 		CBaseEntity *pTarget = UTIL_FindEntityByTargetname(NULL, STRING(pev->target), pActivator);
 		while (pTarget)
 		{
@@ -2132,14 +2134,14 @@ public:
 	// subclasses where they belonged.
 	void InitTrigger();
 	void EXPORT ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	BOOL CanTouch( entvars_t *pevToucher );
+	bool CanTouch( entvars_t *pevToucher );
 
     int	ObjectCaps() override { return CBaseToggle :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 };
 
 LINK_ENTITY_TO_CLASS( trigger, CBaseTrigger );
 
-BOOL CBaseTrigger :: CanTouch( entvars_t *pevToucher )
+bool CBaseTrigger :: CanTouch( entvars_t *pevToucher )
 {
 	if ( !pev->netname )
 	{
@@ -2210,22 +2212,22 @@ public:
 	void Spawn() override;
 	void EXPORT RadiationThink();
 	void EXPORT HurtTouch ( CBaseEntity *pOther );
-    void KeyValue( KeyValueData *pkvd ) override;
+    bool KeyValue( KeyValueData *pkvd ) override;
 };
 
 LINK_ENTITY_TO_CLASS( trigger_hurt, CTriggerHurt );
 
-void CTriggerHurt :: KeyValue( KeyValueData *pkvd )
+bool CTriggerHurt :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "damage"))
 	{
 		pev->dmg = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "damagetype"))
 	{
 		m_bitsDamageInflict |= atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "cangib"))
 	{
@@ -2236,10 +2238,9 @@ void CTriggerHurt :: KeyValue( KeyValueData *pkvd )
 		case 2:
 			m_bitsDamageInflict |= DMG_NEVERGIB;
 		}
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseToggle::KeyValue( pkvd );
+	return CBaseToggle::KeyValue( pkvd );
 }
 
 void CTriggerHurt :: Spawn()
@@ -2282,7 +2283,7 @@ void CTriggerHurt :: HurtTouch ( CBaseEntity *pOther )
 		return;
 	}
 
-	if ( (pev->spawnflags & SF_TRIGGER_HURT_NO_CLIENTS) && pOther->IsPlayer() )
+	if ( (pev->spawnflags & SF_TRIGGER_HURT_NO_CLIENTS) != 0 && pOther->IsPlayer() )
 		return;
 
 	// HACKHACK -- In multiplayer, players touch this based on packet receipt.
@@ -2299,7 +2300,7 @@ void CTriggerHurt :: HurtTouch ( CBaseEntity *pOther )
 					int playerMask = 1 << (pOther->entindex() - 1);
 
 					// If I've already touched this player (this time), then bail out
-					if ( pev->impulse & playerMask )
+					if ( (pev->impulse & playerMask ) != 0)
 						return;
 
 					// Mark this player as touched
@@ -2372,10 +2373,10 @@ void CTriggerHurt :: HurtTouch ( CBaseEntity *pOther )
 
   
 	
-	if ( pev->target )
+	if ( !FStringNull(pev->target ))
 	{
 		// trigger has a target it wants to fire. 
-		if ( pev->spawnflags & SF_TRIGGER_HURT_CLIENTONLYFIRE )
+		if ( (pev->spawnflags & SF_TRIGGER_HURT_CLIENTONLYFIRE ) != 0)
 		{
 			// if the toucher isn't a client, don't fire the target!
 			if ( !pOther->IsPlayer() )
@@ -2385,7 +2386,7 @@ void CTriggerHurt :: HurtTouch ( CBaseEntity *pOther )
 		}
 
 		SUB_UseTargets( pOther, USE_TOGGLE, 0 );
-		if ( pev->spawnflags & SF_TRIGGER_HURT_TARGETONCE )
+		if ( (pev->spawnflags & SF_TRIGGER_HURT_TARGETONCE ) != 0)
 			pev->target = 0;
 	}
 }
@@ -2705,7 +2706,7 @@ class CTargetCDAudio : public CPointEntity
 {
 public:
 	void			Spawn() override;
-	void			KeyValue( KeyValueData *pkvd ) override;
+	bool			KeyValue( KeyValueData *pkvd ) override;
 
     void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void			Think() override;
@@ -2714,15 +2715,14 @@ public:
 
 LINK_ENTITY_TO_CLASS( target_cdaudio, CTargetCDAudio );
 
-void CTargetCDAudio :: KeyValue( KeyValueData *pkvd )
+bool CTargetCDAudio :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "radius"))
 	{
 		pev->scale = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CTargetCDAudio :: Spawn()
@@ -2910,16 +2910,16 @@ class CInOutRegister : public CPointEntity
 {
 public:
 	// returns true if found in the list
-	BOOL IsRegistered ( CBaseEntity *pValue );
+	bool IsRegistered ( CBaseEntity *pValue );
 	// remove all invalid entries from the list, trigger their targets as appropriate
 	// returns the new list
 	CInOutRegister *Prune();
 	// adds a new entry to the list
 	CInOutRegister *Add( CBaseEntity *pValue );
-	BOOL IsEmpty() { return m_pNext?false:true; };
+	bool IsEmpty() { return m_pNext?false:true; };
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CTriggerInOut *m_pField;
@@ -2936,9 +2936,9 @@ public:
 	void FireOnEntry( CBaseEntity *pOther );
 	void FireOnLeaving( CBaseEntity *pOther );
 
-	void KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	STATE GetState() override { return m_pRegister->IsEmpty()?STATE_OFF:STATE_ON; }
@@ -2961,7 +2961,7 @@ TYPEDESCRIPTION	CInOutRegister::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CInOutRegister,CPointEntity);
 LINK_ENTITY_TO_CLASS( inout_register, CInOutRegister );
 
-BOOL CInOutRegister::IsRegistered ( CBaseEntity *pValue )
+bool CInOutRegister::IsRegistered ( CBaseEntity *pValue )
 {
 	if (m_hValue == pValue)
 		return true;
@@ -3054,20 +3054,19 @@ TYPEDESCRIPTION	CTriggerInOut::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerInOut,CBaseTrigger);
 
-void CTriggerInOut::KeyValue( KeyValueData *pkvd )
+bool CTriggerInOut::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszAltTarget"))
 	{
 		m_iszAltTarget = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszBothTarget"))
 	{
 		m_iszBothTarget = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseTrigger::KeyValue( pkvd );
+	return CBaseTrigger::KeyValue( pkvd );
 }
 
 void CTriggerInOut :: Spawn()
@@ -3131,19 +3130,18 @@ class CTriggerCounter : public CTriggerMultiple
 public:
 	void Spawn() override;
 	void EXPORT CounterUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 };
 LINK_ENTITY_TO_CLASS( trigger_counter, CTriggerCounter );
 
-void CTriggerCounter :: KeyValue( KeyValueData *pkvd )
+bool CTriggerCounter :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "count"))
 	{
 		m_cTriggersLeft = (int) atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CTriggerMultiple::KeyValue( pkvd );
+	return CTriggerMultiple::KeyValue( pkvd );
 }
 
 void CTriggerCounter :: Spawn()
@@ -3250,7 +3248,7 @@ class CChangeLevel : public CBaseTrigger
 {
 public:
 	void Spawn() override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void EXPORT UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT TriggerChangeLevel();
 	void EXPORT ExecuteChangeLevel();
@@ -3262,8 +3260,8 @@ public:
 	static int AddTransitionToList( LEVELLIST *pLevelList, int listCount, const char *pMapName, const char *pLandmarkName, edict_t *pentLandmark );
 	static int InTransitionVolume( CBaseEntity *pEntity, char *pVolumeName );
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -3289,7 +3287,7 @@ IMPLEMENT_SAVERESTORE(CChangeLevel,CBaseTrigger);
 // Cache user-entity-field values until spawn is called.
 //
 
-void CChangeLevel :: KeyValue( KeyValueData *pkvd )
+bool CChangeLevel :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "map"))
 	{
@@ -3303,27 +3301,26 @@ void CChangeLevel :: KeyValue( KeyValueData *pkvd )
 		for (int i = 0; m_szMapName[i]; i++) { m_szMapName[i] = tolower(m_szMapName[i]); }
 //		ALERT(at_console, "changed to %s\n", m_szMapName);
 
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "landmark"))
 	{
 		if (strlen(pkvd->szValue) >= cchMapNameMost)
 			ALERT( at_error, "Landmark name '%s' too long (32 chars)\n", pkvd->szValue );
 		strcpy(m_szLandmarkName, pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "changetarget"))
 	{
 		m_changeTarget = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "changedelay"))
 	{
 		m_changeTargetDelay = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseTrigger::KeyValue( pkvd );
+	return CBaseTrigger::KeyValue( pkvd );
 }
 
 
@@ -3676,16 +3673,16 @@ void NextLevel()
 class CLadder : public CBaseTrigger
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Spawn() override;
 	void Precache() override;
 };
 LINK_ENTITY_TO_CLASS( func_ladder, CLadder );
 
 
-void CLadder :: KeyValue( KeyValueData *pkvd )
+bool CLadder :: KeyValue( KeyValueData *pkvd )
 {
-	CBaseTrigger::KeyValue( pkvd );
+	return CBaseTrigger::KeyValue( pkvd );
 }
 
 
@@ -3725,11 +3722,11 @@ class CTriggerPush : public CBaseTrigger
 {
 public:
 	void Spawn() override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Touch( CBaseEntity *pOther ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int m_iszPushVel;
@@ -3745,20 +3742,19 @@ TYPEDESCRIPTION	CTriggerPush::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerPush,CBaseTrigger);
 
-void CTriggerPush :: KeyValue( KeyValueData *pkvd )
+bool CTriggerPush :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPushSpeed"))
 	{
 		m_iszPushSpeed = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszPushVel"))
 	{
 		m_iszPushVel = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseTrigger::KeyValue( pkvd );
+	return CBaseTrigger::KeyValue( pkvd );
 }
 
 
@@ -3886,8 +3882,8 @@ class CTriggerOnSight : public CBaseDelay
 public:
 	void Spawn() override;
 	void Think() override;
-	BOOL VisionCheck();
-	BOOL CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen);
+	bool VisionCheck();
+	bool CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen);
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	STATE GetState() override;
@@ -3950,7 +3946,7 @@ void CTriggerOnSight :: Think()
 	}
 }
 
-BOOL CTriggerOnSight :: VisionCheck()
+bool CTriggerOnSight :: VisionCheck()
 {
 	CBaseEntity *pLooker;
 	if (pev->netname)
@@ -4000,7 +3996,7 @@ BOOL CTriggerOnSight :: VisionCheck()
 }
 
 // by the criteria we're using, can the Looker see the Seen entity?
-BOOL CTriggerOnSight :: CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen)
+bool CTriggerOnSight :: CanSee(CBaseEntity *pLooker, CBaseEntity *pSeen)
 {
 	// out of range?
 	if (pev->frags && (pLooker->pev->origin - pSeen->pev->origin).Length() > pev->frags)
@@ -4209,7 +4205,7 @@ class CTriggerEndSection : public CBaseTrigger
 public:
 	void Spawn() override;
 	void EXPORT EndSectionTouch( CBaseEntity *pOther );
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void EXPORT EndSectionUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 };
 LINK_ENTITY_TO_CLASS( trigger_endsection, CTriggerEndSection );
@@ -4261,17 +4257,16 @@ void CTriggerEndSection::EndSectionTouch( CBaseEntity *pOther )
 	UTIL_Remove( this );
 }
 
-void CTriggerEndSection :: KeyValue( KeyValueData *pkvd )
+bool CTriggerEndSection :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "section"))
 	{
 //		m_iszSectionName = ALLOC_STRING( pkvd->szValue );
 		// Store this in message so we don't have to write save/restore for this ent
 		pev->message = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseTrigger::KeyValue( pkvd );
+	return CBaseTrigger::KeyValue( pkvd );
 }
 
 
@@ -4307,13 +4302,13 @@ void CTriggerGravity::GravityTouch( CBaseEntity *pOther )
 class CTriggerSetPatrol : public CBaseDelay
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Spawn() override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	int ObjectCaps() override { return CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -4329,15 +4324,14 @@ TYPEDESCRIPTION	CTriggerSetPatrol::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerSetPatrol,CBaseDelay);
 
-void CTriggerSetPatrol::KeyValue( KeyValueData *pkvd )
+bool CTriggerSetPatrol::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPath"))
 	{
 		m_iszPath = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 void CTriggerSetPatrol::Spawn()
@@ -4367,11 +4361,11 @@ class CTriggerMotion : public CPointEntity
 public:
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 
 	int m_iszPosition;
 	int m_iPosMode;
@@ -4398,50 +4392,49 @@ TYPEDESCRIPTION	CTriggerMotion::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerMotion,CPointEntity);
 
-void CTriggerMotion::KeyValue( KeyValueData *pkvd )
+bool CTriggerMotion::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{
 		m_iszPosition = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iPosMode"))
 	{
 		m_iPosMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszAngles"))
 	{
 		m_iszAngles = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iAngMode"))
 	{
 		m_iAngMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszVelocity"))
 	{
 		m_iszVelocity = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iVelMode"))
 	{
 		m_iVelMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszAVelocity"))
 	{
 		m_iszAVelocity = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iAVelMode"))
 	{
 		m_iAVelMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CTriggerMotion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -4581,8 +4574,8 @@ class CMotionThread : public CPointEntity
 public:
 	void Think() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int m_iszPosition;
@@ -4731,12 +4724,12 @@ class CMotionManager : public CPointEntity
 {
 public:
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Affect( CBaseEntity *pTarget, CBaseEntity *pActivator );
 	void PostSpawn() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int m_iszPosition;
@@ -4756,30 +4749,29 @@ TYPEDESCRIPTION	CMotionManager::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CMotionManager,CPointEntity);
 
-void CMotionManager::KeyValue( KeyValueData *pkvd )
+bool CMotionManager::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{
 		m_iszPosition = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iPosMode"))
 	{
 		m_iPosMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszFacing"))
 	{
 		m_iszFacing = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iFaceMode"))
 	{
 		m_iFaceMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CMotionManager::PostSpawn()
@@ -4829,13 +4821,13 @@ void CMotionManager::Affect( CBaseEntity *pTarget, CBaseEntity *pActivator )
 class CTriggerChangeTarget : public CBaseDelay
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Spawn() override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	int ObjectCaps() override { return CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -4851,15 +4843,15 @@ TYPEDESCRIPTION	CTriggerChangeTarget::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerChangeTarget,CBaseDelay);
 
-void CTriggerChangeTarget::KeyValue( KeyValueData *pkvd )
+bool CTriggerChangeTarget::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszNewTarget"))
 	{
 		m_iszNewTarget = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 void CTriggerChangeTarget::Spawn()
@@ -4895,12 +4887,12 @@ void CTriggerChangeTarget::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, U
 class CTriggerChangeValue : public CBaseDelay
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
 	int ObjectCaps() override { return CBaseDelay::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -4916,15 +4908,14 @@ TYPEDESCRIPTION	CTriggerChangeValue::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CTriggerChangeValue,CBaseDelay);
 
-void CTriggerChangeValue::KeyValue( KeyValueData *pkvd )
+bool CTriggerChangeValue::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszNewValue"))
 	{
 		m_iszNewValue = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 void CTriggerChangeValue::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -4974,8 +4965,8 @@ class CTriggerChangeCVar : public CBaseEntity
 public:
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void EXPORT Think() override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	static	TYPEDESCRIPTION m_SaveData[];
@@ -5041,14 +5032,14 @@ class CTriggerCamera : public CBaseDelay
 {
 public:
 	void Spawn() override;
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 	void EXPORT FollowTarget();
 	void Move();
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
-    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
+	int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE m_hPlayer;
@@ -5063,7 +5054,7 @@ public:
 	float m_initialSpeed;
 	float m_acceleration;
 	float m_deceleration;
-	int	  m_state;
+	bool m_state;
 	int	  m_iszViewEntity;
 	
 };
@@ -5084,7 +5075,7 @@ TYPEDESCRIPTION	CTriggerCamera::m_SaveData[] =
 	DEFINE_FIELD( CTriggerCamera, m_initialSpeed, FIELD_FLOAT ),
 	DEFINE_FIELD( CTriggerCamera, m_acceleration, FIELD_FLOAT ),
 	DEFINE_FIELD( CTriggerCamera, m_deceleration, FIELD_FLOAT ),
-	DEFINE_FIELD( CTriggerCamera, m_state, FIELD_INTEGER ),
+	DEFINE_FIELD( CTriggerCamera, m_state, FIELD_BOOLEAN ),
 	DEFINE_FIELD( CTriggerCamera, m_iszViewEntity, FIELD_STRING ),
 };
 
@@ -5105,35 +5096,35 @@ void CTriggerCamera::Spawn()
 }
 
 
-void CTriggerCamera :: KeyValue( KeyValueData *pkvd )
+bool CTriggerCamera :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "wait"))
 	{
 		m_flWait = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "moveto"))
 	{
 		m_sPath = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "acceleration"))
 	{
 		m_acceleration = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "deceleration"))
 	{
 		m_deceleration = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszViewEntity"))
 	{
 		m_iszViewEntity = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 
@@ -5145,7 +5136,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 	// Toggle state
 	m_state = !m_state;
-	if (m_state == 0)
+	if (!m_state)
 	{
 		m_flReturnTime = gpGlobals->time;
 		return;
@@ -5184,7 +5175,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		player->EnableControl(false);
 	}
 
-	if ( m_sPath )
+	if ( !FStringNull(m_sPath ))
 	{
 		m_pentPath = UTIL_FindEntityByTargetname( NULL, STRING(m_sPath) );
 	}
@@ -5263,7 +5254,7 @@ void CTriggerCamera::FollowTarget( )
 
 		SUB_UseTargets( this, USE_TOGGLE, 0 );
 		pev->avelocity = Vector( 0, 0, 0 );
-		m_state = 0;
+		m_state = false;
 		return;
 	}
 
@@ -5318,7 +5309,7 @@ void CTriggerCamera::Move()
 	if ( m_moveDistance <= 0 )
 	{
 		// Fire the passtarget if there is one
-		if ( m_pentPath->pev->message )
+		if ( !FStringNull(m_pentPath->pev->message ))
 		{
 			FireTargets( STRING(m_pentPath->pev->message), this, this, USE_TOGGLE, 0 );
 			if ( FBitSet( m_pentPath->pev->spawnflags, SF_CORNER_FIREONCE ) )

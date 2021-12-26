@@ -75,7 +75,7 @@ void CBaseSpectator::SpectatorImpulseCommand()
 		// Start at the current goal, skip the world, and stop if we looped back around
 
 		bFound = false;
-		while (1)
+		while (true)
 		{
 			pCurrentGoal = UTIL_FindEntityByClassname(pCurrentGoal, "info_player_deathmatch");
 			// Looped around, failure
@@ -98,7 +98,7 @@ void CBaseSpectator::SpectatorImpulseCommand()
 		pGoal = ENT(pCurrentGoal->pev);
 		UTIL_SetOrigin( this, pGoal->v.origin );
 		pev->angles = pGoal->v.angles;
-		pev->fixangle = false;
+		pev->fixangle = 0;
 		break;
 	default:
 		ALERT(at_debug, "Unknown spectator impulse\n");
@@ -117,7 +117,7 @@ Called every frame after physics are run
 */
 void  CBaseSpectator::SpectatorThink()
 {
-	if (!(pev->flags & FL_SPECTATOR))
+	if ((pev->flags & FL_SPECTATOR) == 0)
 	{
 		pev->flags = FL_SPECTATOR;
 	}
@@ -125,7 +125,7 @@ void  CBaseSpectator::SpectatorThink()
 	pev->solid	   = SOLID_NOT;
 	pev->movetype  = MOVETYPE_NOCLIP;
 
-	if (pev->impulse)
+	if (0 != pev->impulse)
 		SpectatorImpulseCommand();
 }
 

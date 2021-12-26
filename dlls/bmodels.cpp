@@ -85,7 +85,7 @@ void CFuncWall :: Spawn()
 
 void CFuncWall :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if ( ShouldToggle( useType, (int)(pev->frame)) )
+	if ( ShouldToggle( useType, pev->frame != 0) )
 	{
 		pev->frame = 1 - pev->frame;
 		if (m_iStyle >= 32)
@@ -123,7 +123,7 @@ LINK_ENTITY_TO_CLASS( func_wall_toggle, CFuncWallToggle );
 void CFuncWallToggle :: Spawn()
 {
 	CFuncWall::Spawn();
-	if ( pev->spawnflags & SF_WALL_START_OFF )
+	if ( (pev->spawnflags & SF_WALL_START_OFF) != 0 )
 		TurnOff();
 }
 
@@ -146,7 +146,7 @@ void CFuncWallToggle :: TurnOn()
 
 void CFuncWallToggle :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	BOOL status = (GetState() == STATE_ON);
+	bool status = (GetState() == STATE_ON);
 
 	if ( ShouldToggle( useType, status ) )
 	{
@@ -175,11 +175,11 @@ void CFuncConveyor :: Spawn()
 	SetMovedir( pev );
 	CFuncWall::Spawn();
 
-	if ( !(pev->spawnflags & SF_CONVEYOR_VISUAL) )
+	if ( (pev->spawnflags & SF_CONVEYOR_VISUAL) == 0 )
 		SetBits( pev->flags, FL_CONVEYOR );
 
 	// HACKHACK - This is to allow for some special effects
-	if ( pev->spawnflags & SF_CONVEYOR_NOTSOLID )
+	if ( (pev->spawnflags & SF_CONVEYOR_NOTSOLID) != 0 )
 	{
 		pev->solid = SOLID_NOT;
 		pev->skin = 0;		// Don't want the engine thinking we've got special contents on this brush
@@ -227,22 +227,22 @@ class CFuncIllusionary : public CBaseToggle
 public:
 	void Spawn() override;
 	void EXPORT SloshTouch( CBaseEntity *pOther );
-	void KeyValue( KeyValueData *pkvd ) override;
-    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	bool KeyValue( KeyValueData *pkvd ) override;
+	int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 };
 
 LINK_ENTITY_TO_CLASS( func_illusionary, CFuncIllusionary );
 
-void CFuncIllusionary :: KeyValue( KeyValueData *pkvd )
+bool CFuncIllusionary :: KeyValue( KeyValueData *pkvd )
 {
 	// LRC- surely it just parses this automatically? pev values are handled by the engine.
 	if (FStrEq(pkvd->szKeyName, "skin"))//skin is used for content type
 	{
 		pev->skin = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseToggle::KeyValue( pkvd );
+
+	return CBaseToggle::KeyValue( pkvd );
 }
 
 void CFuncIllusionary :: Spawn()
@@ -297,16 +297,16 @@ public:
 	void Precache() override;
 	void EXPORT SpinUp ();
 	void EXPORT SpinDown ();
-	void KeyValue( KeyValueData* pkvd) override;
+	bool KeyValue( KeyValueData* pkvd) override;
 	void EXPORT HurtTouch ( CBaseEntity *pOther );
 	void EXPORT RotatingUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT WaitForStart (); //LRC - get round 1.1.0.8's bizarre behaviour on startup
 	void EXPORT Rotate ();
-	void RampPitchVol (int fUp );
+	void RampPitchVol (bool fUp );
 	void Blocked( CBaseEntity *pOther ) override;
     int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool		Save( CSave &save ) override;
+    bool		Restore( CRestore &restore ) override;
 	
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -340,12 +340,12 @@ IMPLEMENT_SAVERESTORE( CFuncRotating, CBaseEntity );
 
 LINK_ENTITY_TO_CLASS( func_rotating, CFuncRotating );
 
-void CFuncRotating :: KeyValue( KeyValueData* pkvd)
+bool CFuncRotating :: KeyValue( KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "fanfriction"))
 	{
 		m_flFanFriction = atof(pkvd->szValue)/100;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "Volume"))
 	{
@@ -355,7 +355,7 @@ void CFuncRotating :: KeyValue( KeyValueData* pkvd)
 			m_flVolume = 1.0;
 		if (m_flVolume < 0.0)
 			m_flVolume = 0.0;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "spawnorigin"))
 	{
@@ -363,20 +363,20 @@ void CFuncRotating :: KeyValue( KeyValueData* pkvd)
 		UTIL_StringToVector( (float *)tmp, pkvd->szValue );
 		if ( tmp != g_vecZero )
 			pev->origin = tmp;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "sounds"))
 	{
 		m_sounds = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "axes"))
 	{
 		UTIL_StringToVector( (float *)(pev->movedir), pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else 
-		CBaseEntity::KeyValue( pkvd );
+
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 /*QUAKED func_rotating (0 .5 .8) ? START_ON REVERSE X_AXIS Y_AXIS
@@ -571,7 +571,7 @@ void CFuncRotating :: HurtTouch ( CBaseEntity *pOther )
 	entvars_t	*pevOther = pOther->pev;
 
 	// we can't hurt this thing, so we're not concerned with it
-	if ( !pevOther->takedamage )
+	if ( 0 == pevOther->takedamage )
 		return;
 
 	// calculate damage based on rotation speed
@@ -590,7 +590,7 @@ void CFuncRotating :: HurtTouch ( CBaseEntity *pOther )
 #define FANPITCHMIN		30
 #define FANPITCHMAX		100
 
-void CFuncRotating :: RampPitchVol (int fUp)
+void CFuncRotating :: RampPitchVol (bool fUp)
 {
 
 	float fvol;
@@ -766,15 +766,15 @@ class CPendulum : public CBaseEntity
 {
 public:
 	void	Spawn () override;
-	void	KeyValue( KeyValueData *pkvd ) override;
+	bool	KeyValue( KeyValueData *pkvd ) override;
 	void	EXPORT SwingThink();
 	void	EXPORT PendulumUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void	EXPORT StopThink();
 	void	Touch( CBaseEntity *pOther ) override;
 	void	EXPORT RopeTouch ( CBaseEntity *pOther );// this touch func makes the pendulum a rope
-    int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	int	ObjectCaps() override { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	bool	Save( CSave &save ) override;
+	bool	Restore( CRestore &restore ) override;
 	void	Blocked( CBaseEntity *pOther ) override;
     STATE GetState() override { return (pev->speed)?STATE_ON:STATE_OFF; }
 
@@ -808,25 +808,25 @@ IMPLEMENT_SAVERESTORE( CPendulum, CBaseEntity );
 
 
 
-void CPendulum :: KeyValue( KeyValueData *pkvd )
+bool CPendulum :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "distance"))
 	{
 		m_distance = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "axes"))
 	{
 		UTIL_StringToVector( (float*)(pev->movedir), pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "damp"))
 	{
 		m_damp = atof(pkvd->szValue) * 0.001;
-		pkvd->fHandled = true;
+		return true;
 	}
-	else 
-		CBaseEntity::KeyValue( pkvd );
+
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 
@@ -866,7 +866,7 @@ void CPendulum :: Spawn()
 
 void CPendulum :: PendulumUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if ( pev->speed )		// Pendulum is moving, stop it and auto-return if necessary
+	if ( 0 != pev->speed )		// Pendulum is moving, stop it and auto-return if necessary
 	{
 		if ( FBitSet( pev->spawnflags, SF_PENDULUM_AUTO_RETURN ) )
 		{		
@@ -945,7 +945,7 @@ void CPendulum :: SwingThink()
 //	if (m_pMoveWith) // correct MoveWith problems associated with fast-thinking entities
 //		UTIL_AssignOrigin(this, m_vecMoveWithOffset + m_pMoveWith->pev->origin);
 
-	if ( m_damp )
+	if ( 0 != m_damp )
 	{
 		m_dampSpeed -= m_damp * m_dampSpeed * dt;
 		if ( m_dampSpeed < 30.0 )
@@ -975,7 +975,7 @@ void CPendulum :: Touch ( CBaseEntity *pOther )
 		return;
 
 	// we can't hurt this thing, so we're not concerned with it
-	if ( !pevOther->takedamage )
+	if ( 0 == pevOther->takedamage )
 		return;
 
 	// calculate damage based on rotation speed

@@ -58,7 +58,7 @@ LINK_ENTITY_TO_CLASS(info_compile_parameters,CNullEntity);
 class CBaseDMStart : public CPointEntity
 {
 public:
-	void		KeyValue( KeyValueData *pkvd ) override;
+	bool		KeyValue( KeyValueData *pkvd ) override;
 	STATE		GetState( CBaseEntity *pEntity ) override;
 
 private:
@@ -69,15 +69,15 @@ LINK_ENTITY_TO_CLASS(info_player_deathmatch,CBaseDMStart);
 LINK_ENTITY_TO_CLASS(info_player_start,CPointEntity);
 LINK_ENTITY_TO_CLASS(info_landmark,CPointEntity);
 
-void CBaseDMStart::KeyValue( KeyValueData *pkvd )
+bool CBaseDMStart::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "master"))
 	{
 		pev->netname = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+
+	return CPointEntity::KeyValue( pkvd );
 }
 
 STATE CBaseDMStart::GetState( CBaseEntity *pEntity )
@@ -167,7 +167,7 @@ void CBaseEntity::UpdateOnRemove()
 			}
 		}
 	}
-	if ( pev->globalname )
+	if ( !FStringNull(pev->globalname ))
 		gGlobalState.EntitySetState( pev->globalname, GLOBAL_DEAD );
 }
 
@@ -206,22 +206,20 @@ TYPEDESCRIPTION	CBaseDelay::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE( CBaseDelay, CBaseEntity );
 
-void CBaseDelay :: KeyValue( KeyValueData *pkvd )
+bool CBaseDelay :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "delay"))
 	{
 		m_flDelay = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "killtarget"))
 	{
 		m_iszKillTarget = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		CBaseEntity::KeyValue( pkvd );
-	}
+
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 
@@ -321,7 +319,7 @@ void FireTargets( const char *targetName, CBaseEntity *pActivator, CBaseEntity *
 
 	do // start firing targets
 	{
-		if ( !(pTarget->pev->flags & FL_KILLME) )	// Don't use dying ents
+		if ((pTarget->pev->flags & FL_KILLME) == 0)	// Don't use dying ents
 		{
 			if (useType == USE_KILL)
 			{
@@ -349,7 +347,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 	//
 	// exit immediatly if we don't have a target or kill target
 	//
-	if (FStringNull(pev->target) && !m_iszKillTarget)
+	if (FStringNull(pev->target) && FStringNull(m_iszKillTarget))
 		return;
 
 	//
@@ -383,7 +381,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 	// kill the killtargets
 	//
 
-	if ( m_iszKillTarget )
+	if ( !FStringNull(m_iszKillTarget ))
 	{
 		edict_t *pentKillTarget = NULL;
 
@@ -476,30 +474,30 @@ TYPEDESCRIPTION	CBaseToggle::m_SaveData[] =
 IMPLEMENT_SAVERESTORE( CBaseToggle, CBaseAnimating );
 
 
-void CBaseToggle::KeyValue( KeyValueData *pkvd )
+bool CBaseToggle::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "lip"))
 	{
 		m_flLip = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "wait"))
 	{
 		m_flWait = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "master"))
 	{
 		m_sMaster = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "distance"))
 	{
 		m_flMoveDistance = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseDelay::KeyValue( pkvd );
+
+	return CBaseDelay::KeyValue( pkvd );
 }
 
 
@@ -516,7 +514,7 @@ calculate pev->velocity and pev->nextthink to reach vecDest from
 pev->origin traveling at flSpeed
 ===============
 */
-void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed )//, BOOL bNow )
+void CBaseToggle ::  LinearMove( Vector	vecInput, float flSpeed )//, bool bNow )
 {
 //	ALERT(at_console, "LMove %s: %f %f %f, speed %f\n", STRING(pev->targetname), vecInput.x, vecInput.y, vecInput.z, flSpeed);
 	ASSERTSZ(flSpeed != 0, "LinearMove:  no speed is defined!");
@@ -642,10 +640,7 @@ void CBaseToggle :: LinearMoveDoneNow()
 
 bool CBaseToggle :: IsLockedByMaster()
 {
-	if (UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
-		return false;
-	else
-		return true;
+	return !FStringNull(m_sMaster) && !UTIL_IsMasterTriggered(m_sMaster, m_hActivator);
 }
 
 //LRC- mapping toggle-states to global states
@@ -808,7 +803,7 @@ FEntIsVisible(
 
 	UTIL_TraceLine(vecSpot1, vecSpot2, ignore_monsters, ENT(pev), &tr);
 	
-	if (tr.fInOpen && tr.fInWater)
+	if (0 != tr.fInOpen && 0 != tr.fInWater)
 		return false;                   // sight line crossed contents
 
 	if (tr.flFraction == 1)

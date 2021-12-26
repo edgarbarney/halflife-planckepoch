@@ -81,8 +81,8 @@ public:
 	CBaseEntity		*FollowAlias( CBaseEntity *pFrom ) override;
 	void	FlushChanges() override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE	m_hValue;
@@ -148,9 +148,9 @@ public:
 	void	Precache() override;
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) override;
 
-	void KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -187,65 +187,64 @@ TYPEDESCRIPTION	CLocusBeam::m_SaveData[] =
 LINK_ENTITY_TO_CLASS( locus_beam, CLocusBeam );
 IMPLEMENT_SAVERESTORE(CLocusBeam,CPointEntity);
 
-void CLocusBeam :: KeyValue( KeyValueData *pkvd )
+bool CLocusBeam :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszSprite"))
 	{
 		m_iszSprite = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszTargetName"))
 	{
 		m_iszTargetName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszStart"))
 	{
 		m_iszStart = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszEnd"))
 	{
 		m_iszEnd = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iWidth"))
 	{
 		m_iWidth = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iDistortion"))
 	{
 		m_iDistortion = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fFrame"))
 	{
 		m_fFrame = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iScrollRate"))
 	{
 		m_iScrollRate = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fDuration"))
 	{
 		m_fDuration = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fDamage"))
 	{
 		m_fDamage = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iDamageType"))
 	{
 		m_iDamageType = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CBaseEntity::KeyValue( pkvd );
+	return CBaseEntity::KeyValue( pkvd );
 }
 
 void CLocusBeam :: Precache ()
@@ -674,9 +673,9 @@ public:
 	Vector	CalcVelocity(CBaseEntity *pLocus) override { return pev->movedir; }
 	float	CalcRatio(CBaseEntity *pLocus) override { return pev->frags; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
+    bool	Save( CSave &save ) override;
+    bool	Restore( CRestore &restore ) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -701,40 +700,39 @@ TYPEDESCRIPTION	CLocusVariable::m_SaveData[] =
 IMPLEMENT_SAVERESTORE( CLocusVariable, CLocusVariable );
 LINK_ENTITY_TO_CLASS( locus_variable, CLocusVariable );
 
-void CLocusVariable :: KeyValue( KeyValueData *pkvd )
+bool CLocusVariable :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iszPosition"))
 	{
 		m_iszPosition = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszVelocity"))
 	{
 		m_iszVelocity = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszRatio"))
 	{
 		m_iszRatio = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszTargetName"))
 	{
 		m_iszTargetName = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszFireOnSpawn"))
 	{
 		m_iszFireOnSpawn = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_fDuration"))
 	{
 		m_fDuration = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-		CPointEntity::KeyValue( pkvd );
+	return CPointEntity::KeyValue( pkvd );
 }
 
 void CLocusVariable::Spawn()

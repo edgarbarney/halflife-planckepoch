@@ -116,12 +116,12 @@ TYPEDESCRIPTION	CInfoGroup::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CInfoGroup,CBaseEntity);
 
-void CInfoGroup :: KeyValue( KeyValueData *pkvd )
+bool CInfoGroup :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "defaultmember"))
 	{
 		m_iszDefaultMember = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	// this assumes that additional fields are targetnames and their values are delay values.
 	else if ( m_cMembers < MAX_MULTI_TARGETS )
@@ -131,11 +131,12 @@ void CInfoGroup :: KeyValue( KeyValueData *pkvd )
 		m_iszMemberName [ m_cMembers ] = ALLOC_STRING( tmp );
 		m_iszMemberValue [ m_cMembers ] = ALLOC_STRING (pkvd->szValue);
 		m_cMembers++;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
 		ALERT(at_error,"Too many members for info_group %s (limit is %d)\n",STRING(pev->targetname),MAX_MULTI_TARGETS);
+		return false;
 	}
 }
 
@@ -207,12 +208,12 @@ TYPEDESCRIPTION	CMultiAlias::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CMultiAlias,CBaseAlias);
 
-void CMultiAlias :: KeyValue( KeyValueData *pkvd )
+bool CMultiAlias :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "m_iMode"))
 	{
 		m_iMode = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	// this assumes that additional fields are targetnames and their values are probability values.
 	else if ( m_cTargets < MAX_MULTI_TARGETS )
@@ -226,11 +227,12 @@ void CMultiAlias :: KeyValue( KeyValueData *pkvd )
 		m_iTotalValue += m_iValues [ m_cTargets ];
 		m_cTargets++;
 
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
 		ALERT(at_error,"Too many targets for multi_alias %s (limit is %d)\n",STRING(pev->targetname), MAX_MULTI_TARGETS);
+		return false;
 	}
 }
 
