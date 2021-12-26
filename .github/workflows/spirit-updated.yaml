@@ -1,0 +1,54 @@
+name: SOHL Updated
+
+on:
+  push:
+    branches:
+      - spirit/*
+
+jobs:
+  linux:
+    name: Linux-x86
+    runs-on: ubuntu-latest
+    env:
+      CONFIGURATION: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Update system
+        run: sudo apt update
+      - name: Install G++ Multilib
+        run: sudo apt install -y g++-multilib
+      - name: Build
+        run: cd linux && CFG=release make
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: Linux-x86
+          path: |
+            linux/release/client.so
+            linux/release/client.so.dbg
+            linux/release/spirit.so
+            linux/release/spirit.so.dbg
+  win32:
+    name: Win32
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Build
+        run: MSBuild.exe projects/vs2019/projects.sln /p:Configuration=Release /p:Platform=Win32
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: Win32
+          path: |
+            projects/vs2019/Release/hl_cdll/client.dll
+            projects/vs2019/Release/hl_cdll/client.exp
+            projects/vs2019/Release/hl_cdll/client.lib
+            projects/vs2019/Release/hl_cdll/client.pdb
+            projects/vs2019/Release/hldll/spirit.dll
+            projects/vs2019/Release/hldll/spirit.exp
+            projects/vs2019/Release/hldll/spirit.lib
+            projects/vs2019/Release/hldll/spirit.pdb 
