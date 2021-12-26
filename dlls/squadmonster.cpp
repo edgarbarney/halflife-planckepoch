@@ -629,7 +629,8 @@ Schedule_t* CSquadMonster::GetScheduleOfType(int iType)
 	switch (iType)
 	{
 
-	case SCHED_CHASE_ENEMY_FAILED: {
+	case SCHED_CHASE_ENEMY_FAILED:
+	{
 		return &slChaseEnemyFailed[0];
 	}
 

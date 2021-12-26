@@ -305,7 +305,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	switch (pTask->iTask)
 	{
 	case TASK_TURN_RIGHT:
-	case TASK_TURN_LEFT: {
+	case TASK_TURN_LEFT:
+	{
 		ChangeYaw(pev->yaw_speed);
 
 		if (FacingIdeal())
@@ -316,7 +317,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	}
 
 	case TASK_PLAY_SEQUENCE_FACE_ENEMY:
-	case TASK_PLAY_SEQUENCE_FACE_TARGET: {
+	case TASK_PLAY_SEQUENCE_FACE_TARGET:
+	{
 		CBaseEntity* pTarget;
 
 		if (pTask->iTask == TASK_PLAY_SEQUENCE_FACE_TARGET)
@@ -334,7 +336,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	break;
 
 	case TASK_PLAY_SEQUENCE:
-	case TASK_PLAY_ACTIVE_IDLE: {
+	case TASK_PLAY_ACTIVE_IDLE:
+	{
 		if (m_fSequenceFinished)
 		{
 			TaskComplete();
@@ -343,7 +346,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	}
 
 
-	case TASK_FACE_ENEMY: {
+	case TASK_FACE_ENEMY:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 
 		ChangeYaw(pev->yaw_speed);
@@ -358,7 +362,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	case TASK_FACE_LASTPOSITION:
 	case TASK_FACE_TARGET:
 	case TASK_FACE_IDEAL:
-	case TASK_FACE_ROUTE: {
+	case TASK_FACE_ROUTE:
+	{
 		ChangeYaw(pev->yaw_speed);
 
 		if (FacingIdeal())
@@ -367,26 +372,30 @@ void CBaseMonster::RunTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_WAIT_PVS: {
+	case TASK_WAIT_PVS:
+	{
 		if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())))
 		{
 			TaskComplete();
 		}
 		break;
 	}
-	case TASK_WAIT_INDEFINITE: {
+	case TASK_WAIT_INDEFINITE:
+	{
 		// don't do anything.
 		break;
 	}
 	case TASK_WAIT:
-	case TASK_WAIT_RANDOM: {
+	case TASK_WAIT_RANDOM:
+	{
 		if (gpGlobals->time >= m_flWaitFinished)
 		{
 			TaskComplete();
 		}
 		break;
 	}
-	case TASK_WAIT_FACE_ENEMY: {
+	case TASK_WAIT_FACE_ENEMY:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 		ChangeYaw(pev->yaw_speed);
 
@@ -396,7 +405,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_MOVE_TO_TARGET_RANGE: {
+	case TASK_MOVE_TO_TARGET_RANGE:
+	{
 		float distance;
 
 		if (m_hTargetEnt == NULL)
@@ -427,7 +437,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 
 		break;
 	}
-	case TASK_WAIT_FOR_MOVEMENT: {
+	case TASK_WAIT_FOR_MOVEMENT:
+	{
 		if (MovementIsComplete())
 		{
 			TaskComplete();
@@ -435,7 +446,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_DIE: {
+	case TASK_DIE:
+	{
 		if (m_fSequenceFinished && pev->frame >= 255)
 		{
 			pev->deadflag = DEAD_DEAD;
@@ -470,7 +482,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	case TASK_MELEE_ATTACK1_NOTURN:
 	case TASK_MELEE_ATTACK2_NOTURN:
 	case TASK_RANGE_ATTACK2_NOTURN:
-	case TASK_RELOAD_NOTURN: {
+	case TASK_RELOAD_NOTURN:
+	{
 		if (m_fSequenceFinished)
 		{
 			m_Activity = ACT_RESET;
@@ -484,7 +497,8 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	case TASK_RANGE_ATTACK2:
 	case TASK_SPECIAL_ATTACK1:
 	case TASK_SPECIAL_ATTACK2:
-	case TASK_RELOAD: {
+	case TASK_RELOAD:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 		ChangeYaw(pev->yaw_speed);
 
@@ -495,21 +509,24 @@ void CBaseMonster::RunTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_SMALL_FLINCH: {
+	case TASK_SMALL_FLINCH:
+	{
 		if (m_fSequenceFinished)
 		{
 			TaskComplete();
 		}
 	}
 	break;
-	case TASK_WAIT_FOR_SCRIPT: {
+	case TASK_WAIT_FOR_SCRIPT:
+	{
 		if (m_pCine->m_iDelay <= 0 && gpGlobals->time >= m_pCine->m_startTime)
 		{
 			TaskComplete();
 		}
 		break;
 	}
-	case TASK_PLAY_SCRIPT: {
+	case TASK_PLAY_SCRIPT:
+	{
 		//			ALERT(at_console, "Play Script\n");
 		if (m_fSequenceFinished)
 		{
@@ -560,7 +577,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_TURN_RIGHT: {
+	case TASK_TURN_RIGHT:
+	{
 		float flCurrentYaw;
 
 		flCurrentYaw = UTIL_AngleMod(pev->angles.y);
@@ -568,7 +586,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		SetTurnActivity();
 		break;
 	}
-	case TASK_TURN_LEFT: {
+	case TASK_TURN_LEFT:
+	{
 		float flCurrentYaw;
 
 		flCurrentYaw = UTIL_AngleMod(pev->angles.y);
@@ -576,17 +595,20 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		SetTurnActivity();
 		break;
 	}
-	case TASK_REMEMBER: {
+	case TASK_REMEMBER:
+	{
 		Remember((int)pTask->flData);
 		TaskComplete();
 		break;
 	}
-	case TASK_FORGET: {
+	case TASK_FORGET:
+	{
 		Forget((int)pTask->flData);
 		TaskComplete();
 		break;
 	}
-	case TASK_FIND_HINTNODE: {
+	case TASK_FIND_HINTNODE:
+	{
 		m_iHintNode = FindHintNode();
 
 		if (m_iHintNode != NO_NODE)
@@ -599,22 +621,26 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_STORE_LASTPOSITION: {
+	case TASK_STORE_LASTPOSITION:
+	{
 		m_vecLastPosition = pev->origin;
 		TaskComplete();
 		break;
 	}
-	case TASK_CLEAR_LASTPOSITION: {
+	case TASK_CLEAR_LASTPOSITION:
+	{
 		m_vecLastPosition = g_vecZero;
 		TaskComplete();
 		break;
 	}
-	case TASK_CLEAR_HINTNODE: {
+	case TASK_CLEAR_HINTNODE:
+	{
 		m_iHintNode = NO_NODE;
 		TaskComplete();
 		break;
 	}
-	case TASK_STOP_MOVING: {
+	case TASK_STOP_MOVING:
+	{
 		if (m_IdealActivity == m_movementActivity)
 		{
 			m_IdealActivity = GetStoppedActivity();
@@ -626,17 +652,20 @@ void CBaseMonster::StartTask(Task_t* pTask)
 	}
 	case TASK_PLAY_SEQUENCE_FACE_ENEMY:
 	case TASK_PLAY_SEQUENCE_FACE_TARGET:
-	case TASK_PLAY_SEQUENCE: {
+	case TASK_PLAY_SEQUENCE:
+	{
 		m_IdealActivity = (Activity)(int)pTask->flData;
 		break;
 	}
-	case TASK_PLAY_ACTIVE_IDLE: {
+	case TASK_PLAY_ACTIVE_IDLE:
+	{
 		// monsters verify that they have a sequence for the node's activity BEFORE
 		// moving towards the node, so it's ok to just set the activity without checking here.
 		m_IdealActivity = (Activity)WorldGraph.m_pNodes[m_iHintNode].m_sHintActivity;
 		break;
 	}
-	case TASK_SET_SCHEDULE: {
+	case TASK_SET_SCHEDULE:
+	{
 		Schedule_t* pNewSchedule;
 
 		pNewSchedule = GetScheduleOfType((int)pTask->flData);
@@ -652,7 +681,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 
 		break;
 	}
-	case TASK_FIND_NEAR_NODE_COVER_FROM_ENEMY: {
+	case TASK_FIND_NEAR_NODE_COVER_FROM_ENEMY:
+	{
 		if (m_hEnemy == NULL)
 		{
 			TaskFail();
@@ -671,7 +701,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_FIND_FAR_NODE_COVER_FROM_ENEMY: {
+	case TASK_FIND_FAR_NODE_COVER_FROM_ENEMY:
+	{
 		if (m_hEnemy == NULL)
 		{
 			TaskFail();
@@ -690,7 +721,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_FIND_NODE_COVER_FROM_ENEMY: {
+	case TASK_FIND_NODE_COVER_FROM_ENEMY:
+	{
 		if (m_hEnemy == NULL)
 		{
 			TaskFail();
@@ -709,7 +741,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_FIND_COVER_FROM_ENEMY: {
+	case TASK_FIND_COVER_FROM_ENEMY:
+	{
 		entvars_t* pevCover;
 
 		if (m_hEnemy == NULL)
@@ -741,7 +774,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_FIND_COVER_FROM_ORIGIN: {
+	case TASK_FIND_COVER_FROM_ORIGIN:
+	{
 		if (FindCover(pev->origin, pev->view_ofs, 0, CoverRadius()))
 		{
 			// then try for plain ole cover
@@ -755,7 +789,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 	}
 	break;
-	case TASK_FIND_COVER_FROM_BEST_SOUND: {
+	case TASK_FIND_COVER_FROM_BEST_SOUND:
+	{
 		CSound* pBestSound;
 
 		pBestSound = PBestSound();
@@ -783,7 +818,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_FACE_HINTNODE: {
+	case TASK_FACE_HINTNODE:
+	{
 		pev->ideal_yaw = WorldGraph.m_pNodes[m_iHintNode].m_flHintYaw;
 		SetTurnActivity();
 		break;
@@ -803,16 +839,19 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		else
 			TaskFail();
 		break;
-	case TASK_FACE_ENEMY: {
+	case TASK_FACE_ENEMY:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 		SetTurnActivity();
 		break;
 	}
-	case TASK_FACE_IDEAL: {
+	case TASK_FACE_IDEAL:
+	{
 		SetTurnActivity();
 		break;
 	}
-	case TASK_FACE_ROUTE: {
+	case TASK_FACE_ROUTE:
+	{
 		if (FRouteClear())
 		{
 			ALERT(at_aiconsole, "No route to face!\n");
@@ -826,20 +865,24 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		break;
 	}
 	case TASK_WAIT_PVS:
-	case TASK_WAIT_INDEFINITE: {
+	case TASK_WAIT_INDEFINITE:
+	{
 		// don't do anything.
 		break;
 	}
 	case TASK_WAIT:
-	case TASK_WAIT_FACE_ENEMY: { // set a future time that tells us when the wait is over.
+	case TASK_WAIT_FACE_ENEMY:
+	{ // set a future time that tells us when the wait is over.
 		m_flWaitFinished = gpGlobals->time + pTask->flData;
 		break;
 	}
-	case TASK_WAIT_RANDOM: { // set a future time that tells us when the wait is over.
+	case TASK_WAIT_RANDOM:
+	{ // set a future time that tells us when the wait is over.
 		m_flWaitFinished = gpGlobals->time + RANDOM_FLOAT(0.1, pTask->flData);
 		break;
 	}
-	case TASK_MOVE_TO_TARGET_RANGE: {
+	case TASK_MOVE_TO_TARGET_RANGE:
+	{
 		if ((m_hTargetEnt->pev->origin - pev->origin).Length() < 1)
 			TaskComplete();
 		else
@@ -851,7 +894,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		break;
 	}
 	case TASK_RUN_TO_SCRIPT:
-	case TASK_WALK_TO_SCRIPT: {
+	case TASK_WALK_TO_SCRIPT:
+	{
 		Activity newActivity;
 
 		if (!m_pGoalEnt || (m_pGoalEnt->pev->origin - pev->origin).Length() < 1)
@@ -890,50 +934,60 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 	}
-	case TASK_CLEAR_MOVE_WAIT: {
+	case TASK_CLEAR_MOVE_WAIT:
+	{
 		m_flMoveWaitFinished = gpGlobals->time;
 		TaskComplete();
 		break;
 	}
 	case TASK_MELEE_ATTACK1_NOTURN:
-	case TASK_MELEE_ATTACK1: {
+	case TASK_MELEE_ATTACK1:
+	{
 		m_IdealActivity = ACT_MELEE_ATTACK1;
 		break;
 	}
 	case TASK_MELEE_ATTACK2_NOTURN:
-	case TASK_MELEE_ATTACK2: {
+	case TASK_MELEE_ATTACK2:
+	{
 		m_IdealActivity = ACT_MELEE_ATTACK2;
 		break;
 	}
 	case TASK_RANGE_ATTACK1_NOTURN:
-	case TASK_RANGE_ATTACK1: {
+	case TASK_RANGE_ATTACK1:
+	{
 		m_IdealActivity = ACT_RANGE_ATTACK1;
 		break;
 	}
 	case TASK_RANGE_ATTACK2_NOTURN:
-	case TASK_RANGE_ATTACK2: {
+	case TASK_RANGE_ATTACK2:
+	{
 		m_IdealActivity = ACT_RANGE_ATTACK2;
 		break;
 	}
 	case TASK_RELOAD_NOTURN:
-	case TASK_RELOAD: {
+	case TASK_RELOAD:
+	{
 		m_IdealActivity = ACT_RELOAD;
 		break;
 	}
-	case TASK_SPECIAL_ATTACK1: {
+	case TASK_SPECIAL_ATTACK1:
+	{
 		m_IdealActivity = ACT_SPECIAL_ATTACK1;
 		break;
 	}
-	case TASK_SPECIAL_ATTACK2: {
+	case TASK_SPECIAL_ATTACK2:
+	{
 		m_IdealActivity = ACT_SPECIAL_ATTACK2;
 		break;
 	}
-	case TASK_SET_ACTIVITY: {
+	case TASK_SET_ACTIVITY:
+	{
 		m_IdealActivity = (Activity)(int)pTask->flData;
 		TaskComplete();
 		break;
 	}
-	case TASK_GET_PATH_TO_ENEMY_LKP: {
+	case TASK_GET_PATH_TO_ENEMY_LKP:
+	{
 		if (BuildRoute(m_vecEnemyLKP, bits_MF_TO_LOCATION, NULL))
 		{
 			TaskComplete();
@@ -950,7 +1004,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_ENEMY: {
+	case TASK_GET_PATH_TO_ENEMY:
+	{
 		CBaseEntity* pEnemy = m_hEnemy;
 
 		if (pEnemy == NULL)
@@ -975,7 +1030,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_ENEMY_CORPSE: {
+	case TASK_GET_PATH_TO_ENEMY_CORPSE:
+	{
 		UTIL_MakeVectors(pev->angles);
 		if (BuildRoute(m_vecEnemyLKP - gpGlobals->v_forward * 64, bits_MF_TO_LOCATION, NULL))
 		{
@@ -988,7 +1044,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 	}
 	break;
-	case TASK_GET_PATH_TO_SPOT: {
+	case TASK_GET_PATH_TO_SPOT:
+	{
 		CBaseEntity* pPlayer = UTIL_FindEntityByClassname(NULL, "player");
 		if (BuildRoute(m_vecMoveGoal, bits_MF_TO_LOCATION, pPlayer))
 		{
@@ -1003,7 +1060,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		break;
 	}
 
-	case TASK_GET_PATH_TO_TARGET: {
+	case TASK_GET_PATH_TO_TARGET:
+	{
 		RouteClear();
 		if (m_hTargetEnt != NULL && MoveToTarget(m_movementActivity, 1))
 		{
@@ -1045,7 +1103,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_LASTPOSITION: {
+	case TASK_GET_PATH_TO_LASTPOSITION:
+	{
 		m_vecMoveGoal = m_vecLastPosition;
 
 		if (MoveToLocation(m_movementActivity, 2, m_vecMoveGoal))
@@ -1060,7 +1119,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_BESTSOUND: {
+	case TASK_GET_PATH_TO_BESTSOUND:
+	{
 		CSound* pSound;
 
 		pSound = PBestSound();
@@ -1077,7 +1137,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_BESTSCENT: {
+	case TASK_GET_PATH_TO_BESTSCENT:
+	{
 		CSound* pScent;
 
 		pScent = PBestScent();
@@ -1095,7 +1156,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_RUN_PATH: {
+	case TASK_RUN_PATH:
+	{
 		// UNDONE: This is in some default AI and some monsters can't run? -- walk instead?
 		if (LookupActivity(ACT_RUN) != ACTIVITY_NOT_AVAILABLE)
 		{
@@ -1108,7 +1170,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 	}
-	case TASK_WALK_PATH: {
+	case TASK_WALK_PATH:
+	{
 		if (pev->movetype == MOVETYPE_FLY)
 		{
 			m_movementActivity = ACT_FLY;
@@ -1124,7 +1187,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 	}
-	case TASK_STRAFE_PATH: {
+	case TASK_STRAFE_PATH:
+	{
 		Vector2D vec2DirToPoint;
 		Vector2D vec2RightSide;
 
@@ -1149,7 +1213,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 	}
 
 
-	case TASK_WAIT_FOR_MOVEMENT: {
+	case TASK_WAIT_FOR_MOVEMENT:
+	{
 		if (FRouteClear())
 		{
 			TaskComplete();
@@ -1157,16 +1222,19 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		break;
 	}
 
-	case TASK_EAT: {
+	case TASK_EAT:
+	{
 		Eat(pTask->flData);
 		TaskComplete();
 		break;
 	}
-	case TASK_SMALL_FLINCH: {
+	case TASK_SMALL_FLINCH:
+	{
 		m_IdealActivity = GetSmallFlinchActivity();
 		break;
 	}
-	case TASK_DIE: {
+	case TASK_DIE:
+	{
 		RouteClear();
 
 		m_IdealActivity = GetDeathActivity();
@@ -1174,38 +1242,45 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		pev->deadflag = DEAD_DYING;
 		break;
 	}
-	case TASK_SOUND_WAKE: {
+	case TASK_SOUND_WAKE:
+	{
 		AlertSound();
 		TaskComplete();
 		break;
 	}
-	case TASK_SOUND_DIE: {
+	case TASK_SOUND_DIE:
+	{
 		DeathSound();
 		TaskComplete();
 		break;
 	}
-	case TASK_SOUND_IDLE: {
+	case TASK_SOUND_IDLE:
+	{
 		IdleSound();
 		TaskComplete();
 		break;
 	}
-	case TASK_SOUND_PAIN: {
+	case TASK_SOUND_PAIN:
+	{
 		PainSound();
 		TaskComplete();
 		break;
 	}
-	case TASK_SOUND_DEATH: {
+	case TASK_SOUND_DEATH:
+	{
 		DeathSound();
 		TaskComplete();
 		break;
 	}
-	case TASK_SOUND_ANGRY: {
+	case TASK_SOUND_ANGRY:
+	{
 		// sounds are complete as soon as we get here, cause we've already played them.
 		ALERT(at_aiconsole, "SOUND\n");
 		TaskComplete();
 		break;
 	}
-	case TASK_WAIT_FOR_SCRIPT: {
+	case TASK_WAIT_FOR_SCRIPT:
+	{
 		if (m_pCine->m_iDelay <= 0 && gpGlobals->time >= m_pCine->m_startTime)
 		{
 			TaskComplete(); //LRC - start playing immediately
@@ -1223,7 +1298,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 
 		break;
 	}
-	case TASK_PLAY_SCRIPT: {
+	case TASK_PLAY_SCRIPT:
+	{
 		if (m_pCine->IsAction())
 		{
 			//ALERT(at_console,"PlayScript: setting idealactivity %d\n",m_pCine->m_fAction);
@@ -1269,13 +1345,15 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		m_scriptState = SCRIPT_PLAYING;
 		break;
 	}
-	case TASK_ENABLE_SCRIPT: {
+	case TASK_ENABLE_SCRIPT:
+	{
 		m_pCine->DelayStart(false);
 		TaskComplete();
 		break;
 	}
 		//LRC
-	case TASK_END_SCRIPT: {
+	case TASK_END_SCRIPT:
+	{
 		m_pCine->SequenceDone(this);
 		TaskComplete();
 		break;
@@ -1304,7 +1382,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 	}
-	case TASK_FACE_SCRIPT: {
+	case TASK_FACE_SCRIPT:
+	{
 		if (m_pCine != NULL && m_pCine->m_fMoveTo != 0) // movetype "no move" makes us ignore turntype
 		{
 			switch (m_pCine->m_fTurnType)
@@ -1329,7 +1408,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		break;
 	}
 
-	case TASK_SUGGEST_STATE: {
+	case TASK_SUGGEST_STATE:
+	{
 		m_IdealMonsterState = (MONSTERSTATE)(int)pTask->flData;
 		TaskComplete();
 		break;
@@ -1345,7 +1425,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 
-	default: {
+	default:
+	{
 		ALERT(at_aiconsole, "No StartTask entry for %d\n", (SHARED_TASKS)pTask->iTask);
 		break;
 	}
@@ -1379,15 +1460,18 @@ Schedule_t* CBaseMonster::GetSchedule()
 {
 	switch (m_MonsterState)
 	{
-	case MONSTERSTATE_PRONE: {
+	case MONSTERSTATE_PRONE:
+	{
 		return GetScheduleOfType(SCHED_BARNACLE_VICTIM_GRAB);
 		break;
 	}
-	case MONSTERSTATE_NONE: {
+	case MONSTERSTATE_NONE:
+	{
 		ALERT(at_aiconsole, "MONSTERSTATE IS NONE!\n");
 		break;
 	}
-	case MONSTERSTATE_IDLE: {
+	case MONSTERSTATE_IDLE:
+	{
 		if (HasConditions(bits_COND_HEAR_SOUND))
 		{
 			return GetScheduleOfType(SCHED_ALERT_FACE);
@@ -1404,7 +1488,8 @@ Schedule_t* CBaseMonster::GetSchedule()
 		}
 		break;
 	}
-	case MONSTERSTATE_ALERT: {
+	case MONSTERSTATE_ALERT:
+	{
 		if (HasConditions(bits_COND_ENEMY_DEAD) && LookupActivity(ACT_VICTORY_DANCE) != ACTIVITY_NOT_AVAILABLE)
 		{
 			return GetScheduleOfType(SCHED_VICTORY_DANCE);
@@ -1432,7 +1517,8 @@ Schedule_t* CBaseMonster::GetSchedule()
 		}
 		break;
 	}
-	case MONSTERSTATE_COMBAT: {
+	case MONSTERSTATE_COMBAT:
+	{
 		if (HasConditions(bits_COND_ENEMY_DEAD))
 		{
 			// clear the current (dead) enemy and try to find another.
@@ -1509,11 +1595,13 @@ Schedule_t* CBaseMonster::GetSchedule()
 		}
 		break;
 	}
-	case MONSTERSTATE_DEAD: {
+	case MONSTERSTATE_DEAD:
+	{
 		return GetScheduleOfType(SCHED_DIE);
 		break;
 	}
-	case MONSTERSTATE_SCRIPT: {
+	case MONSTERSTATE_SCRIPT:
+	{
 		ASSERT(m_pCine != NULL);
 		if (!m_pCine)
 		{
@@ -1525,7 +1613,8 @@ Schedule_t* CBaseMonster::GetSchedule()
 
 		return GetScheduleOfType(SCHED_AISCRIPT);
 	}
-	default: {
+	default:
+	{
 		ALERT(at_aiconsole, "Invalid State for GetSchedule!\n");
 		break;
 	}

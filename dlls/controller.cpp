@@ -267,7 +267,8 @@ void CController::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	switch (pEvent->event)
 	{
-	case CONTROLLER_AE_HEAD_OPEN: {
+	case CONTROLLER_AE_HEAD_OPEN:
+	{
 		//ALERT(at_console,"Controller Head Open\n");
 		Vector vecStart, angleGun;
 
@@ -294,7 +295,8 @@ void CController::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case CONTROLLER_AE_BALL_SHOOT: {
+	case CONTROLLER_AE_BALL_SHOOT:
+	{
 		//ALERT(at_console,"Controller Ball Shoot\n");
 		Vector vecStart, angleGun;
 
@@ -331,14 +333,16 @@ void CController::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case CONTROLLER_AE_SMALL_SHOOT: {
+	case CONTROLLER_AE_SMALL_SHOOT:
+	{
 		//ALERT(at_console,"Controller Small Shoot\n");
 		AttackSound();
 		m_flShootTime = gpGlobals->time;
 		m_flShootEnd = m_flShootTime + atoi(pEvent->options) / 15.0;
 	}
 	break;
-	case CONTROLLER_AE_POWERUP_FULL: {
+	case CONTROLLER_AE_POWERUP_FULL:
+	{
 		//ALERT(at_console,"Controller Powerup Full\n");
 		m_iBall[0] = 255;
 		m_iBallTime[0] = gpGlobals->time + atoi(pEvent->options) / 15.0;
@@ -346,7 +350,8 @@ void CController::HandleAnimEvent(MonsterEvent_t* pEvent)
 		m_iBallTime[1] = gpGlobals->time + atoi(pEvent->options) / 15.0;
 	}
 	break;
-	case CONTROLLER_AE_POWERUP_HALF: {
+	case CONTROLLER_AE_POWERUP_HALF:
+	{
 		//ALERT(at_console,"Controller Powerup Half\n");
 		m_iBall[0] = 192;
 		m_iBallTime[0] = gpGlobals->time + atoi(pEvent->options) / 15.0;
@@ -509,7 +514,8 @@ void CController::StartTask(Task_t* pTask)
 	case TASK_RANGE_ATTACK1:
 		CSquadMonster::StartTask(pTask);
 		break;
-	case TASK_GET_PATH_TO_ENEMY_LKP: {
+	case TASK_GET_PATH_TO_ENEMY_LKP:
+	{
 		if (BuildNearestRoute(m_vecEnemyLKP, pev->view_ofs, pTask->flData, (m_vecEnemyLKP - pev->origin).Length() + 1024))
 		{
 			TaskComplete();
@@ -522,7 +528,8 @@ void CController::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_ENEMY: {
+	case TASK_GET_PATH_TO_ENEMY:
+	{
 		CBaseEntity* pEnemy = m_hEnemy;
 
 		if (pEnemy == NULL)
@@ -754,7 +761,8 @@ Schedule_t* CController::GetSchedule()
 	case MONSTERSTATE_ALERT:
 		break;
 
-	case MONSTERSTATE_COMBAT: {
+	case MONSTERSTATE_COMBAT:
+	{
 		Vector vecTmp = Intersect(Vector(0, 0, 0), Vector(100, 4, 7), Vector(2, 10, -3), 20.0);
 
 		// dead enemy

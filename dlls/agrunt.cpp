@@ -431,7 +431,8 @@ void CAGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case AGRUNT_AE_HORNET2:
 	case AGRUNT_AE_HORNET3:
 	case AGRUNT_AE_HORNET4:
-	case AGRUNT_AE_HORNET5: {
+	case AGRUNT_AE_HORNET5:
+	{
 		// m_vecEnemyLKP should be center of enemy body
 		Vector vecArmPos, vecArmDir;
 		Vector vecDirToEnemy;
@@ -534,7 +535,8 @@ void CAGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 		break;
 
-	case AGRUNT_AE_LEFT_PUNCH: {
+	case AGRUNT_AE_LEFT_PUNCH:
+	{
 		CBaseEntity* pHurt = CheckTraceHullAttack(AGRUNT_MELEE_DIST, gSkillData.agruntDmgPunch, DMG_CLUB);
 
 		if (pHurt)
@@ -563,7 +565,8 @@ void CAGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case AGRUNT_AE_RIGHT_PUNCH: {
+	case AGRUNT_AE_RIGHT_PUNCH:
+	{
 		CBaseEntity* pHurt = CheckTraceHullAttack(AGRUNT_MELEE_DIST, gSkillData.agruntDmgPunch, DMG_CLUB);
 
 		if (pHurt)
@@ -980,7 +983,8 @@ void CAGrunt::StartTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_AGRUNT_GET_PATH_TO_ENEMY_CORPSE: {
+	case TASK_AGRUNT_GET_PATH_TO_ENEMY_CORPSE:
+	{
 		UTIL_MakeVectors(pev->angles);
 		if (BuildRoute(m_vecEnemyLKP - gpGlobals->v_forward * 50, bits_MF_TO_LOCATION, NULL))
 		{
@@ -1096,7 +1100,8 @@ Schedule_t* CAGrunt::GetSchedule()
 
 	switch (m_MonsterState)
 	{
-	case MONSTERSTATE_COMBAT: {
+	case MONSTERSTATE_COMBAT:
+	{
 		// dead enemy
 		if (HasConditions(bits_COND_ENEMY_DEAD))
 		{

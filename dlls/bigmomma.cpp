@@ -443,7 +443,8 @@ void CBigMomma::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case BIG_AE_MELEE_ATTACKBR:
 	case BIG_AE_MELEE_ATTACKBL:
-	case BIG_AE_MELEE_ATTACK1: {
+	case BIG_AE_MELEE_ATTACK1:
+	{
 		Vector forward, right;
 
 		UTIL_MakeVectorsPrivate(pev->angles, forward, right, NULL);
@@ -542,7 +543,8 @@ void CBigMomma::HandleAnimEvent(MonsterEvent_t* pEvent)
 		pev->velocity = (gpGlobals->v_forward * 200) + gpGlobals->v_up * 500;
 		break;
 
-	case BIG_AE_EARLY_TARGET: {
+	case BIG_AE_EARLY_TARGET:
+	{
 		CBaseEntity* pTarget = m_hTargetEnt;
 		if (pTarget && !FStringNull(pTarget->pev->message))
 			FireTargets(STRING(pTarget->pev->message), this, this, USE_TOGGLE, 0);
@@ -980,7 +982,8 @@ void CBigMomma::StartTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_FIND_NODE: {
+	case TASK_FIND_NODE:
+	{
 		CBaseEntity* pTarget = m_hTargetEnt;
 		if (!HasMemory(bits_MEMORY_ADVANCE_NODE))
 		{
@@ -1006,7 +1009,8 @@ void CBigMomma::StartTask(Task_t* pTask)
 		break;
 
 	case TASK_PLAY_NODE_PRESEQUENCE:
-	case TASK_PLAY_NODE_SEQUENCE: {
+	case TASK_PLAY_NODE_SEQUENCE:
+	{
 		int sequence;
 		if (pTask->iTask == TASK_PLAY_NODE_SEQUENCE)
 			sequence = GetNodeSequence();
@@ -1044,7 +1048,8 @@ void CBigMomma::StartTask(Task_t* pTask)
 		break;
 
 
-	case TASK_MOVE_TO_NODE_RANGE: {
+	case TASK_MOVE_TO_NODE_RANGE:
+	{
 		CBaseEntity* pTarget = m_hTargetEnt;
 		if (!pTarget)
 			TaskFail();
@@ -1089,7 +1094,8 @@ void CBigMomma::RunTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_MOVE_TO_NODE_RANGE: {
+	case TASK_MOVE_TO_NODE_RANGE:
+	{
 		float distance;
 
 		if (m_hTargetEnt == NULL)

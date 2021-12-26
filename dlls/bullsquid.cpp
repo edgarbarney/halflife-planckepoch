@@ -540,7 +540,8 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	switch (pEvent->event)
 	{
-	case BSQUID_AE_SPIT: {
+	case BSQUID_AE_SPIT:
+	{
 		if (m_hEnemy)
 		{
 			Vector vecSpitOffset;
@@ -590,7 +591,8 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case BSQUID_AE_BITE: {
+	case BSQUID_AE_BITE:
+	{
 		// SOUND HERE!
 		CBaseEntity* pHurt = CheckTraceHullAttack(70, gSkillData.bullsquidDmgBite, DMG_SLASH);
 
@@ -604,7 +606,8 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case BSQUID_AE_TAILWHIP: {
+	case BSQUID_AE_TAILWHIP:
+	{
 		CBaseEntity* pHurt = CheckTraceHullAttack(70, gSkillData.bullsquidDmgWhip, DMG_CLUB | DMG_ALWAYSGIB);
 		if (pHurt)
 		{
@@ -616,13 +619,15 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case BSQUID_AE_BLINK: {
+	case BSQUID_AE_BLINK:
+	{
 		// close eye.
 		pev->skin = 1;
 	}
 	break;
 
-	case BSQUID_AE_HOP: {
+	case BSQUID_AE_HOP:
+	{
 		float flGravity = g_psv_gravity->value;
 
 		// throw the squid up into the air on this frame.
@@ -637,7 +642,8 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	break;
 
-	case BSQUID_AE_THROW: {
+	case BSQUID_AE_THROW:
+	{
 		int iPitch;
 
 		// squid throws its prey IF the prey is a client.
@@ -1024,7 +1030,8 @@ Schedule_t* CBullsquid::GetSchedule()
 {
 	switch (m_MonsterState)
 	{
-	case MONSTERSTATE_ALERT: {
+	case MONSTERSTATE_ALERT:
+	{
 		if (HasConditions(bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE))
 		{
 			return GetScheduleOfType(SCHED_SQUID_HURTHOP);
@@ -1058,7 +1065,8 @@ Schedule_t* CBullsquid::GetSchedule()
 
 		break;
 	}
-	case MONSTERSTATE_COMBAT: {
+	case MONSTERSTATE_COMBAT:
+	{
 		// dead enemy
 		if (HasConditions(bits_COND_ENEMY_DEAD))
 		{
@@ -1166,7 +1174,8 @@ void CBullsquid::StartTask(Task_t* pTask)
 
 	switch (pTask->iTask)
 	{
-	case TASK_MELEE_ATTACK2: {
+	case TASK_MELEE_ATTACK2:
+	{
 		switch (RANDOM_LONG(0, 2))
 		{
 		case 0:
@@ -1183,12 +1192,14 @@ void CBullsquid::StartTask(Task_t* pTask)
 		CBaseMonster::StartTask(pTask);
 		break;
 	}
-	case TASK_SQUID_HOPTURN: {
+	case TASK_SQUID_HOPTURN:
+	{
 		SetActivity(ACT_HOP);
 		MakeIdealYaw(m_vecEnemyLKP);
 		break;
 	}
-	case TASK_GET_PATH_TO_ENEMY: {
+	case TASK_GET_PATH_TO_ENEMY:
+	{
 		if (BuildRoute(m_hEnemy->pev->origin, bits_MF_TO_ENEMY, m_hEnemy))
 		{
 			m_iTaskStatus = TASKSTATUS_COMPLETE;
@@ -1200,7 +1211,8 @@ void CBullsquid::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	default: {
+	default:
+	{
 		CBaseMonster::StartTask(pTask);
 		break;
 	}
@@ -1214,7 +1226,8 @@ void CBullsquid::RunTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_SQUID_HOPTURN: {
+	case TASK_SQUID_HOPTURN:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 		ChangeYaw(pev->yaw_speed);
 
@@ -1224,7 +1237,8 @@ void CBullsquid::RunTask(Task_t* pTask)
 		}
 		break;
 	}
-	default: {
+	default:
+	{
 		CBaseMonster::RunTask(pTask);
 		break;
 	}

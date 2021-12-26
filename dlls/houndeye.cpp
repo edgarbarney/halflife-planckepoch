@@ -283,7 +283,8 @@ void CHoundeye::HandleAnimEvent(MonsterEvent_t* pEvent)
 		WarmUpSound();
 		break;
 
-	case HOUND_AE_HOPBACK: {
+	case HOUND_AE_HOPBACK:
+	{
 		float flGravity = g_psv_gravity->value;
 
 		pev->flags &= ~FL_ONGROUND;
@@ -686,35 +687,42 @@ void CHoundeye::StartTask(Task_t* pTask)
 
 	switch (pTask->iTask)
 	{
-	case TASK_HOUND_FALL_ASLEEP: {
+	case TASK_HOUND_FALL_ASLEEP:
+	{
 		m_fAsleep = true; // signal that hound is lying down (must stand again before doing anything else!)
 		m_iTaskStatus = TASKSTATUS_COMPLETE;
 		break;
 	}
-	case TASK_HOUND_WAKE_UP: {
+	case TASK_HOUND_WAKE_UP:
+	{
 		m_fAsleep = false; // signal that hound is standing again
 		m_iTaskStatus = TASKSTATUS_COMPLETE;
 		break;
 	}
-	case TASK_HOUND_OPEN_EYE: {
+	case TASK_HOUND_OPEN_EYE:
+	{
 		m_fDontBlink = false; // turn blinking back on and that code will automatically open the eye
 		m_iTaskStatus = TASKSTATUS_COMPLETE;
 		break;
 	}
-	case TASK_HOUND_CLOSE_EYE: {
+	case TASK_HOUND_CLOSE_EYE:
+	{
 		pev->skin = 0;
 		m_fDontBlink = true; // tell blink code to leave the eye alone.
 		break;
 	}
-	case TASK_HOUND_THREAT_DISPLAY: {
+	case TASK_HOUND_THREAT_DISPLAY:
+	{
 		m_IdealActivity = ACT_IDLE_ANGRY;
 		break;
 	}
-	case TASK_HOUND_HOP_BACK: {
+	case TASK_HOUND_HOP_BACK:
+	{
 		m_IdealActivity = ACT_LEAP;
 		break;
 	}
-	case TASK_RANGE_ATTACK1: {
+	case TASK_RANGE_ATTACK1:
+	{
 		m_IdealActivity = ACT_RANGE_ATTACK1;
 
 		/*
@@ -754,15 +762,18 @@ void CHoundeye::StartTask(Task_t* pTask)
 
 		break;
 	}
-	case TASK_SPECIAL_ATTACK1: {
+	case TASK_SPECIAL_ATTACK1:
+	{
 		m_IdealActivity = ACT_SPECIAL_ATTACK1;
 		break;
 	}
-	case TASK_GUARD: {
+	case TASK_GUARD:
+	{
 		m_IdealActivity = ACT_GUARD;
 		break;
 	}
-	default: {
+	default:
+	{
 		CSquadMonster::StartTask(pTask);
 		break;
 	}
@@ -776,7 +787,8 @@ void CHoundeye::RunTask(Task_t* pTask)
 {
 	switch (pTask->iTask)
 	{
-	case TASK_HOUND_THREAT_DISPLAY: {
+	case TASK_HOUND_THREAT_DISPLAY:
+	{
 		MakeIdealYaw(m_vecEnemyLKP);
 		ChangeYaw(pev->yaw_speed);
 
@@ -787,21 +799,24 @@ void CHoundeye::RunTask(Task_t* pTask)
 
 		break;
 	}
-	case TASK_HOUND_CLOSE_EYE: {
+	case TASK_HOUND_CLOSE_EYE:
+	{
 		if (pev->skin < HOUNDEYE_EYE_FRAMES - 1)
 		{
 			pev->skin++;
 		}
 		break;
 	}
-	case TASK_HOUND_HOP_BACK: {
+	case TASK_HOUND_HOP_BACK:
+	{
 		if (m_fSequenceFinished)
 		{
 			TaskComplete();
 		}
 		break;
 	}
-	case TASK_SPECIAL_ATTACK1: {
+	case TASK_SPECIAL_ATTACK1:
+	{
 		pev->skin = RANDOM_LONG(0, HOUNDEYE_EYE_FRAMES - 1);
 
 		MakeIdealYaw(m_vecEnemyLKP);
@@ -830,7 +845,8 @@ void CHoundeye::RunTask(Task_t* pTask)
 
 		break;
 	}
-	default: {
+	default:
+	{
 		CSquadMonster::RunTask(pTask);
 		break;
 	}
@@ -1159,7 +1175,8 @@ Schedule_t* CHoundeye::GetScheduleOfType(int Type)
 	}
 	switch (Type)
 	{
-	case SCHED_IDLE_STAND: {
+	case SCHED_IDLE_STAND:
+	{
 		// we may want to sleep instead of stand!
 		if (InSquad() && !IsLeader() && !m_fAsleep && RANDOM_LONG(0, 29) < 1)
 		{
@@ -1170,7 +1187,8 @@ Schedule_t* CHoundeye::GetScheduleOfType(int Type)
 			return CSquadMonster::GetScheduleOfType(Type);
 		}
 	}
-	case SCHED_RANGE_ATTACK1: {
+	case SCHED_RANGE_ATTACK1:
+	{
 		return &slHoundRangeAttack[0];
 		/*
 			if ( InSquad() )
@@ -1181,19 +1199,24 @@ Schedule_t* CHoundeye::GetScheduleOfType(int Type)
 			return &slHoundRangeAttack[ 1 ];
 */
 	}
-	case SCHED_SPECIAL_ATTACK1: {
+	case SCHED_SPECIAL_ATTACK1:
+	{
 		return &slHoundSpecialAttack1[0];
 	}
-	case SCHED_GUARD: {
+	case SCHED_GUARD:
+	{
 		return &slHoundGuardPack[0];
 	}
-	case SCHED_HOUND_AGITATED: {
+	case SCHED_HOUND_AGITATED:
+	{
 		return &slHoundAgitated[0];
 	}
-	case SCHED_HOUND_HOP_RETREAT: {
+	case SCHED_HOUND_HOP_RETREAT:
+	{
 		return &slHoundHopRetreat[0];
 	}
-	case SCHED_FAIL: {
+	case SCHED_FAIL:
+	{
 		if (m_MonsterState == MONSTERSTATE_COMBAT)
 		{
 			if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())))
@@ -1212,7 +1235,8 @@ Schedule_t* CHoundeye::GetScheduleOfType(int Type)
 			return CSquadMonster::GetScheduleOfType(Type);
 		}
 	}
-	default: {
+	default:
+	{
 		return CSquadMonster::GetScheduleOfType(Type);
 	}
 	}
@@ -1225,7 +1249,8 @@ Schedule_t* CHoundeye::GetSchedule()
 {
 	switch (m_MonsterState)
 	{
-	case MONSTERSTATE_COMBAT: {
+	case MONSTERSTATE_COMBAT:
+	{
 		// dead enemy
 		if (HasConditions(bits_COND_ENEMY_DEAD))
 		{
