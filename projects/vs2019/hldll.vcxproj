@@ -44,7 +44,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(Configuration)\$(ProjectName)\int\</IntDir>
-    <TargetName>hl</TargetName>
+    <TargetName>spirit</TargetName>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -211,7 +211,7 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\weapons.cpp" />
     <ClCompile Include="..\..\dlls\weapons_shared.cpp" />
     <ClCompile Include="..\..\dlls\world.cpp" />
-    <ClCompile Include="..\..\dlls\wpn_shared\hl_wpn_glock.cpp" />
+    <ClCompile Include="..\..\dlls\glock.cpp" />
     <ClCompile Include="..\..\dlls\xen.cpp" />
     <ClCompile Include="..\..\dlls\zombie.cpp" />
     <ClCompile Include="..\..\game_shared\filesystem_utils.cpp" />
