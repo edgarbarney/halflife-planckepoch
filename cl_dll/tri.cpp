@@ -1,6 +1,6 @@
 //========= Copyright � 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -20,7 +20,7 @@
 
 #include "particleman.h"
 #include "tri.h"
-extern IParticleMan *g_pParticleMan;
+extern IParticleMan* g_pParticleMan;
 
 extern float g_fFogColor[4];
 extern float g_fStartDist;
@@ -29,11 +29,11 @@ extern int g_iWaterLevel;
 
 //LRCT
 
-void RenderFog ()
+void RenderFog()
 {
 	//Not in water and we want fog.
 	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
-	gEngfuncs.pTriAPI->Fog ( g_fFogColor, g_fStartDist, g_fEndDist, bFog );
+	gEngfuncs.pTriAPI->Fog(g_fFogColor, g_fStartDist, g_fEndDist, bFog);
 }
 
 /*
@@ -45,12 +45,12 @@ Non-transparent triangles-- add them here
 */
 void DLLEXPORT HUD_DrawNormalTriangles()
 {
-//	RecClDrawNormalTriangles();
+	//	RecClDrawNormalTriangles();
 
 	gHUD.m_Spectator.DrawOverview();
 }
 
-#if defined( _TFC )
+#if defined(_TFC)
 void RunEventList();
 #endif
 
@@ -63,14 +63,14 @@ Render any triangles with transparent rendermode needs here
 */
 void DLLEXPORT HUD_DrawTransparentTriangles()
 {
-//	RecClDrawTransparentTriangles();
+	//	RecClDrawTransparentTriangles();
 
-#if defined( _TFC )
+#if defined(_TFC)
 	RunEventList();
 #endif
 
-	if ( g_pParticleMan )
-		 g_pParticleMan->Update();
+	if (g_pParticleMan)
+		g_pParticleMan->Update();
 
 	RenderFog();
 }

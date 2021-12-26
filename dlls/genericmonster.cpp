@@ -15,21 +15,21 @@
 //=========================================================
 // Generic Monster - purely for scripted sequence work.
 //=========================================================
-#include	"extdll.h"
-#include	"util.h"
-#include	"cbase.h"
-#include	"monsters.h"
-#include	"schedule.h"
-#include	"animation.h"
+#include "extdll.h"
+#include "util.h"
+#include "cbase.h"
+#include "monsters.h"
+#include "schedule.h"
+#include "animation.h"
 #include "soundent.h"
 
 // For holograms, make them not solid so the player can walk through them
 //LRC- this seems to interfere with SF_MONSTER_CLIP
-#define	SF_GENERICMONSTER_NOTSOLID					 4 
-#define SF_GENERICMONSTER_PLAYERMODEL				 8
-#define SF_GENERICMONSTER_INVULNERABLE				32
+#define SF_GENERICMONSTER_NOTSOLID 4
+#define SF_GENERICMONSTER_PLAYERMODEL 8
+#define SF_GENERICMONSTER_INVULNERABLE 32
 //Not implemented:
-#define SF_GENERICMONSTER_CORPSE					64
+#define SF_GENERICMONSTER_CORPSE 64
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -41,29 +41,29 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void SetYawSpeed() override;
-	int  Classify () override;
-	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	int ISoundMask () override;
-	bool KeyValue( KeyValueData *pkvd ) override;
+	int Classify() override;
+	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
+	int ISoundMask() override;
+	bool KeyValue(KeyValueData* pkvd) override;
 
-    bool	Save( CSave &save ) override;
-    bool	Restore( CRestore &restore ) override;
-	static	TYPEDESCRIPTION m_SaveData[];
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
 
 	bool HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };
-LINK_ENTITY_TO_CLASS( monster_generic, CGenericMonster );
+LINK_ENTITY_TO_CLASS(monster_generic, CGenericMonster);
 
-TYPEDESCRIPTION	CGenericMonster::m_SaveData[] = 
-{
-	DEFINE_FIELD( CGenericMonster, m_iszGibModel, FIELD_STRING ),
+TYPEDESCRIPTION CGenericMonster::m_SaveData[] =
+	{
+		DEFINE_FIELD(CGenericMonster, m_iszGibModel, FIELD_STRING),
 };
 
-IMPLEMENT_SAVERESTORE( CGenericMonster, CBaseMonster );
+IMPLEMENT_SAVERESTORE(CGenericMonster, CBaseMonster);
 
-bool CGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CGenericMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
@@ -75,27 +75,27 @@ bool CGenericMonster::KeyValue( KeyValueData *pkvd )
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
 		return true;
 	}
-	return CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue(pkvd);
 }
 
 //=========================================================
-// Classify - indicates this monster's place in the 
+// Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int	CGenericMonster :: Classify ()
+int CGenericMonster ::Classify()
 {
-	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
+	return m_iClass ? m_iClass : CLASS_PLAYER_ALLY;
 }
 
 //=========================================================
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CGenericMonster :: SetYawSpeed ()
+void CGenericMonster ::SetYawSpeed()
 {
 	int ys;
 
-	switch ( m_Activity )
+	switch (m_Activity)
 	{
 	case ACT_IDLE:
 	default:
@@ -109,13 +109,13 @@ void CGenericMonster :: SetYawSpeed ()
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CGenericMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
+void CGenericMonster ::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
-	switch( pEvent->event )
+	switch (pEvent->event)
 	{
 	case 0:
 	default:
-		CBaseMonster::HandleAnimEvent( pEvent );
+		CBaseMonster::HandleAnimEvent(pEvent);
 		break;
 	}
 }
@@ -123,15 +123,15 @@ void CGenericMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 //=========================================================
 // ISoundMask - generic monster can't hear.
 //=========================================================
-int CGenericMonster :: ISoundMask ()
+int CGenericMonster ::ISoundMask()
 {
-	return	bits_SOUND_NONE;
+	return bits_SOUND_NONE;
 }
 
 //=========================================================
 // Spawn
 //=========================================================
-void CGenericMonster :: Spawn()
+void CGenericMonster ::Spawn()
 {
 	// store the size, so we can use it to set up the hulls after Set_Model overwrites it.
 	Vector vecSize = pev->size;
@@ -148,13 +148,13 @@ void CGenericMonster :: Spawn()
 
 	Precache();
 
-	SET_MODEL( ENT(pev), STRING(pev->model) );
+	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	if (vecSize != g_vecZero)
 	{
-		Vector vecMax = vecSize/2;
+		Vector vecMax = vecSize / 2;
 		Vector vecMin = -vecMax;
-		if (!FBitSet(pev->spawnflags,SF_GENERICMONSTER_PLAYERMODEL))
+		if (!FBitSet(pev->spawnflags, SF_GENERICMONSTER_PLAYERMODEL))
 		{
 			vecMin.z = 0;
 			vecMax.z = vecSize.z;
@@ -162,29 +162,30 @@ void CGenericMonster :: Spawn()
 		UTIL_SetSize(pev, vecMin, vecMax);
 	}
 	else if (
-			pev->spawnflags & SF_GENERICMONSTER_PLAYERMODEL ||
-			FStrEq( STRING(pev->model), "models/player.mdl" ) ||
-			FStrEq( STRING(pev->model), "models/holo.mdl" )
-		)
+		pev->spawnflags & SF_GENERICMONSTER_PLAYERMODEL ||
+		FStrEq(STRING(pev->model), "models/player.mdl") ||
+		FStrEq(STRING(pev->model), "models/holo.mdl"))
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 	else
 		UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
-	pev->solid			= SOLID_SLIDEBOX;
-	pev->movetype		= MOVETYPE_STEP;
-	if (!m_bloodColor) m_bloodColor = BLOOD_COLOR_RED;
-	if (!pev->health) pev->health = 8;
-	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
-	m_MonsterState		= MONSTERSTATE_NONE;
+	pev->solid = SOLID_SLIDEBOX;
+	pev->movetype = MOVETYPE_STEP;
+	if (!m_bloodColor)
+		m_bloodColor = BLOOD_COLOR_RED;
+	if (!pev->health)
+		pev->health = 8;
+	m_flFieldOfView = 0.5; // indicates the width of this monster's forward view cone ( as a dotproduct result )
+	m_MonsterState = MONSTERSTATE_NONE;
 
 	MonsterInit();
 
-	if ( (pev->spawnflags & SF_GENERICMONSTER_NOTSOLID) != 0 )
+	if ((pev->spawnflags & SF_GENERICMONSTER_NOTSOLID) != 0)
 	{
 		pev->solid = SOLID_NOT;
 		pev->takedamage = DAMAGE_NO;
 	}
-	else if ( pev->spawnflags & SF_GENERICMONSTER_INVULNERABLE )
+	else if (pev->spawnflags & SF_GENERICMONSTER_INVULNERABLE)
 	{
 		pev->takedamage = DAMAGE_NO;
 	}
@@ -193,12 +194,12 @@ void CGenericMonster :: Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CGenericMonster :: Precache()
+void CGenericMonster ::Precache()
 {
-	PRECACHE_MODEL( (char *)STRING(pev->model) );
+	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)
-		PRECACHE_MODEL( (char*)STRING(m_iszGibModel) ); //LRC
-}	
+		PRECACHE_MODEL((char*)STRING(m_iszGibModel)); //LRC
+}
 
 //=========================================================
 // AI Schedules Specific to this monster
@@ -213,28 +214,28 @@ class CDeadGenericMonster : public CBaseMonster
 public:
 	void Spawn() override;
 	void Precache() override;
-	int	Classify () override { return CLASS_PLAYER_ALLY; }
-	bool KeyValue( KeyValueData *pkvd ) override;
+	int Classify() override { return CLASS_PLAYER_ALLY; }
+	bool KeyValue(KeyValueData* pkvd) override;
 
-    bool	Save( CSave &save ) override;
-    bool	Restore( CRestore &restore ) override;
-	static	TYPEDESCRIPTION m_SaveData[];
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
 
 	bool HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };
 
-LINK_ENTITY_TO_CLASS( monster_generic_dead, CDeadGenericMonster );
+LINK_ENTITY_TO_CLASS(monster_generic_dead, CDeadGenericMonster);
 
-TYPEDESCRIPTION	CDeadGenericMonster::m_SaveData[] = 
-{
-	DEFINE_FIELD( CDeadGenericMonster, m_iszGibModel, FIELD_STRING ),
+TYPEDESCRIPTION CDeadGenericMonster::m_SaveData[] =
+	{
+		DEFINE_FIELD(CDeadGenericMonster, m_iszGibModel, FIELD_STRING),
 };
 
-IMPLEMENT_SAVERESTORE( CDeadGenericMonster, CBaseMonster );
+IMPLEMENT_SAVERESTORE(CDeadGenericMonster, CBaseMonster);
 
-bool CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CDeadGenericMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
@@ -246,52 +247,52 @@ bool CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
 		return true;
 	}
-	return CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue(pkvd);
 }
 
 //=========================================================
 // ********** DeadGenericMonster SPAWN **********
 //=========================================================
-void CDeadGenericMonster :: Spawn()
+void CDeadGenericMonster ::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	pev->effects		= 0;
-	pev->yaw_speed		= 8; //LRC -- what?
-	pev->sequence		= 0;
+	pev->effects = 0;
+	pev->yaw_speed = 8; //LRC -- what?
+	pev->sequence = 0;
 
 	if (pev->netname)
 	{
-		pev->sequence = LookupSequence( STRING(pev->netname) );
+		pev->sequence = LookupSequence(STRING(pev->netname));
 
 		if (pev->sequence == -1)
 		{
-			ALERT ( at_debug, "Invalid sequence name \"%s\" in monster_generic_dead\n", STRING(pev->netname) );
+			ALERT(at_debug, "Invalid sequence name \"%s\" in monster_generic_dead\n", STRING(pev->netname));
 		}
 	}
 	else
 	{
-		pev->sequence = LookupActivity( pev->frags );
-//		if (pev->sequence == -1)
-//		{
-//			ALERT ( at_error, "monster_generic_dead - specify a sequence name or choose a different death type: model \"%s\" has no available death sequences.\n", STRING(pev->model) );
-//		}
+		pev->sequence = LookupActivity(pev->frags);
+		//		if (pev->sequence == -1)
+		//		{
+		//			ALERT ( at_error, "monster_generic_dead - specify a sequence name or choose a different death type: model \"%s\" has no available death sequences.\n", STRING(pev->model) );
+		//		}
 		//...and if that doesn't work, forget it.
 	}
 
 	// Corpses have less health
-	pev->health			= 8;
+	pev->health = 8;
 
 	MonsterInitDead();
 
-	ResetSequenceInfo( );
+	ResetSequenceInfo();
 	pev->frame = 255; // pose at the _end_ of its death sequence.
 }
 
-void CDeadGenericMonster :: Precache()
+void CDeadGenericMonster ::Precache()
 {
-	PRECACHE_MODEL( (char*)STRING(pev->model) );
+	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)
-		PRECACHE_MODEL( (char*)STRING(m_iszGibModel) ); //LRC
+		PRECACHE_MODEL((char*)STRING(m_iszGibModel)); //LRC
 }
