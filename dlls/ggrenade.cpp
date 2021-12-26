@@ -33,6 +33,8 @@
 #include "pm_shared.h"
 #include "pm_defs.h"
 
+#include "FranUtils.hpp"
+
 #define NadeVectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
 
 float Distance(const float* v1, const float* v2);
@@ -252,18 +254,7 @@ void CGrenade::StunExplode(TraceResult* pTrace, int bitsDamageType)
 
 	int iContents = UTIL_PointContents(pev->origin);
 
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgCreateDLight);
-		//WRITE_BYTE(TE_DLIGHT);
-		WRITE_COORD(pev->origin.x); // origin
-		WRITE_COORD(pev->origin.y);
-		WRITE_COORD(pev->origin.z);
-		WRITE_BYTE(500);     // radius
-		WRITE_BYTE(255);     // R
-		WRITE_BYTE(255);     // G
-		WRITE_BYTE(255);     // B
-		WRITE_BYTE(0.1f);     // life * 10
-		WRITE_BYTE(0); // decay
-	MESSAGE_END();
+	FranUtils::EmitDlight(pev->origin, 500, Vector(255, 255, 255), 0.1f, 0);
 
 	//RENDERERS START
 	if (iContents != CONTENTS_WATER)
