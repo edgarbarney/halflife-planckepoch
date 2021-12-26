@@ -32,8 +32,6 @@ float g_fEndDist;
 int g_iFinalEndDist;   //for fading
 float g_fFadeDuration; //negative = fading out
 
-#define MAX_CLIENTS 32
-
 #if !defined(_TFC)
 extern BEAM* pBeam;
 extern BEAM* pBeam2;

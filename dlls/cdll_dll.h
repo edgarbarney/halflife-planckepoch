@@ -19,7 +19,8 @@
 
 #pragma once
 
-#define MAX_WEAPONS 32 // ???
+constexpr int MAX_PLAYERS = 32;
+#define MAX_WEAPONS 64 // ???
 
 #define MAX_WEAPON_SLOTS 5 // hud item selection slots
 #define MAX_ITEM_TYPES 6   // hud item selection slots
@@ -40,8 +41,28 @@
 #define HUD_PRINTTALK 3
 #define HUD_PRINTCENTER 4
 
+enum WeaponId
+{
+	WEAPON_NONE = 0,
+	WEAPON_CROWBAR,
+	WEAPON_GLOCK,
+	WEAPON_PYTHON,
+	WEAPON_MP5,
+	WEAPON_CHAINGUN,
+	WEAPON_CROSSBOW,
+	WEAPON_SHOTGUN,
+	WEAPON_RPG,
+	WEAPON_GAUSS,
+	WEAPON_EGON,
+	WEAPON_HORNETGUN,
+	WEAPON_HANDGRENADE,
+	WEAPON_TRIPMINE,
+	WEAPON_SATCHEL,
+	WEAPON_SNARK,
 
-#define WEAPON_SUIT 31
+	WEAPON_SUIT = 31
+};
+
 
 // used by suit voice to indicate damage sustained and repaired type to player
 
