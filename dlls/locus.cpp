@@ -688,7 +688,7 @@ TYPEDESCRIPTION CLocusVariable::m_SaveData[] =
 		DEFINE_FIELD(CLocusVariable, m_fDuration, FIELD_FLOAT),
 };
 
-IMPLEMENT_SAVERESTORE(CLocusVariable, CLocusVariable);
+IMPLEMENT_SAVERESTORE(CLocusVariable, CPointEntity);
 LINK_ENTITY_TO_CLASS(locus_variable, CLocusVariable);
 
 bool CLocusVariable::KeyValue(KeyValueData* pkvd)
