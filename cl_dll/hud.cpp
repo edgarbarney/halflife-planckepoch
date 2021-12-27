@@ -18,6 +18,9 @@
 // implementation of CHud class
 //
 
+//LRC - define to help track what calls are made on changelevel, save/restore, etc
+#define ENGINE_DEBUG
+
 #include "hud.h"
 #include "cl_util.h"
 #include <string.h>
@@ -130,11 +133,17 @@ int __MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf)
 
 int __MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf)
 {
+#ifdef ENGINE_DEBUG
+	CONPRINT("## ResetHUD\n");
+#endif
 	return static_cast<int>(gHUD.MsgFunc_ResetHUD(pszName, iSize, pbuf));
 }
 
 int __MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 {
+#ifdef ENGINE_DEBUG
+	CONPRINT("## InitHUD\n");
+#endif
 	gHUD.MsgFunc_InitHUD(pszName, iSize, pbuf);
 	return 1;
 }
@@ -315,6 +324,9 @@ int __MsgFunc_AllowSpec(const char* pszName, int iSize, void* pbuf)
 // This is called every time the DLL is loaded
 void CHud::Init()
 {
+#ifdef ENGINE_DEBUG
+	CONPRINT("## CHud::Init\n");
+#endif
 	HOOK_MESSAGE(Logo);
 	HOOK_MESSAGE(ResetHUD);
 	HOOK_MESSAGE(GameMode);
@@ -408,6 +420,7 @@ void CHud::Init()
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+	m_Particle.Init(); // (LRC) -- 30/08/02 November235: Particles to Order
 
 	m_Menu.Init();
 
@@ -418,6 +431,9 @@ void CHud::Init()
 // cleans up memory allocated for m_rg* arrays
 CHud::~CHud()
 {
+#ifdef ENGINE_DEBUG
+	CONPRINT("## CHud::destructor\n");
+#endif
 	delete[] m_rghSprites;
 	delete[] m_rgrcRects;
 	delete[] m_rgszSpriteNames;
@@ -453,6 +469,9 @@ int CHud::GetSpriteIndex(const char* SpriteName)
 
 void CHud::VidInit()
 {
+#ifdef ENGINE_DEBUG
+	CONPRINT("## CHud::VidInit\n");
+#endif
 	m_scrinfo.iSize = sizeof(m_scrinfo);
 	GetScreenInfo(&m_scrinfo);
 
@@ -553,6 +572,7 @@ void CHud::VidInit()
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
 	GetClientVoiceMgr()->VidInit();
+	m_Particle.VidInit(); // (LRC) -- 30/08/02 November235: Particles to Order
 }
 
 bool CHud::MsgFunc_Logo(const char* pszName, int iSize, void* pbuf)

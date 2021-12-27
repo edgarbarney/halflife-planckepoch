@@ -343,6 +343,19 @@ private:
 //
 //-----------------------------------------------------
 //
+// (LRC) -- 30/08/02 November235: Particles to Order
+class CHudParticle : public CHudBase
+{
+public:
+	bool Init(void) override;
+	bool VidInit(void) override;
+	bool Draw(float flTime) override;
+	int MsgFunc_Particle(const char* pszName, int iSize, void* pbuf);
+};
+
+//
+//-----------------------------------------------------
+//
 class CHudFlashlight : public CHudBase
 {
 public:
@@ -609,6 +622,7 @@ public:
 	CHudAmmoSecondary m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
+	CHudParticle m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
 
 	void Init();
 	void VidInit();
@@ -616,7 +630,7 @@ public:
 	bool Redraw(float flTime, bool intermission);
 	bool UpdateClientData(client_data_t* cdata, float time);
 
-	CHud() : m_iSpriteCount(0), m_pHudList(NULL) {}
+	CHud() : m_iSpriteCount(0), m_pHudList(NULL), m_pShinySurface(NULL) {}
 	~CHud(); // destructor, frees allocated memory
 
 	// user messages

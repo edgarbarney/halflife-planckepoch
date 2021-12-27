@@ -77,6 +77,7 @@ public:
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
+	int m_iBaseBody; //LRC - for barneys with different bodies
 	bool m_fGunDrawn;
 	float m_painTime;
 	float m_checkAttackTime;
@@ -92,6 +93,7 @@ LINK_ENTITY_TO_CLASS(monster_barney, CBarney);
 
 TYPEDESCRIPTION CBarney::m_SaveData[] =
 	{
+		DEFINE_FIELD(CBarney, m_iBaseBody, FIELD_INTEGER), //LRC
 		DEFINE_FIELD(CBarney, m_fGunDrawn, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBarney, m_painTime, FIELD_TIME),
 		DEFINE_FIELD(CBarney, m_checkAttackTime, FIELD_TIME),
@@ -396,13 +398,13 @@ void CBarney::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case BARNEY_AE_DRAW:
 		// barney's bodygroup switches here so he can pull gun from holster
-		pev->body = BARNEY_BODY_GUNDRAWN;
+		pev->body = m_iBaseBody + BARNEY_BODY_GUNDRAWN;
 		m_fGunDrawn = true;
 		break;
 
 	case BARNEY_AE_HOLSTER:
 		// change bodygroup to replace gun in holster
-		pev->body = BARNEY_BODY_GUNHOLSTERED;
+		pev->body = m_iBaseBody + BARNEY_BODY_GUNHOLSTERED;
 		m_fGunDrawn = false;
 		break;
 
@@ -433,7 +435,8 @@ void CBarney::Spawn()
 	m_flFieldOfView = VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so npc will notice player and say hello
 	m_MonsterState = MONSTERSTATE_NONE;
 
-	pev->body = 0; // gun in holster
+	m_iBaseBody = pev->body;							//LRC
+	pev->body = m_iBaseBody + BARNEY_BODY_GUNHOLSTERED; // gun in holster
 	m_fGunDrawn = false;
 
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
@@ -688,12 +691,12 @@ void CBarney::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir,
 
 void CBarney::Killed(entvars_t* pevAttacker, int iGib)
 {
-	if (pev->body < BARNEY_BODY_GUNGONE && !(pev->spawnflags & SF_MONSTER_NO_WPN_DROP))
+	if (pev->body < m_iBaseBody + BARNEY_BODY_GUNGONE && !(pev->spawnflags & SF_MONSTER_NO_WPN_DROP))
 	{ // drop the gun!
 		Vector vecGunPos;
 		Vector vecGunAngles;
 
-		pev->body = BARNEY_BODY_GUNGONE;
+		pev->body = m_iBaseBody + BARNEY_BODY_GUNGONE;
 
 		GetAttachment(0, vecGunPos, vecGunAngles);
 
