@@ -23,8 +23,7 @@
 #pragma once
 
 #define FOG_LIMIT 30000
-
-#define RGB_YELLOWISH 0x00FFA000 //255,160,0 -- no longer used
+#define RGB_YELLOWISH 0x00FFA000 //255,160,0
 #define RGB_REDISH 0x00FF1010	 //255,160,0
 #define RGB_GREENISH 0x0000A000	 //0,160,0
 
@@ -481,6 +480,39 @@ private:
 //-----------------------------------------------------
 //
 
+//LRC
+//methods actually defined in tri.cpp
+
+class CShinySurface
+{
+	float m_fMinX, m_fMinY, m_fMaxX, m_fMaxY, m_fZ;
+	char m_fScale;
+	float m_fAlpha; // texture scale and brighness
+	HSPRITE m_hsprSprite;
+	char m_szSprite[128];
+
+public:
+	CShinySurface* m_pNext;
+
+	CShinySurface(float fScale, float fAlpha, float fMinX, float fMaxX, float fMinY, float fMaxY, float fZ, char* szSprite);
+	~CShinySurface();
+
+	// draw the surface as seen from the given position
+	void Draw(const Vector& org);
+
+	void DrawAll(const Vector& org);
+};
+
+//
+//-----------------------------------------------------
+//
+
+
+//LRC - for the moment, skymode has only two settings
+#define SKY_OFF 0
+#define SKY_ON 1
+
+
 
 class CHud
 {
@@ -508,6 +540,9 @@ public:
 	int m_iRes;
 	cvar_t* m_pCvarStealMouse;
 	cvar_t* m_pCvarDraw;
+	CShinySurface* m_pShinySurface; //LRC
+	Vector m_vecSkyPos;				//LRC
+	int m_iSkyMode;					//LRC
 
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b);
@@ -533,7 +568,7 @@ public:
 	{
 		return (m_iWeaponBits & ~static_cast<std::uint64_t>(WEAPON_SUIT)) != 0;
 	}
-	
+
 	int m_iHUDColor; //LRC
 
 private:
@@ -588,14 +623,18 @@ public:
 	bool MsgFunc_Damage(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Logo(const char* pszName, int iSize, void* pbuf);
-	bool MsgFunc_HUDColor(const char* pszName, int iSize, void* pbuf); //LRC
 	bool MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf);
 	void MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf);
-	void MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf); //LRC
 	void MsgFunc_ViewMode(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_SetFOV(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Concuss(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf);
+
+	bool MsgFunc_HUDColor(const char* pszName, int iSize, void* pbuf);	  //LRC
+	void MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf);	  //LRC
+	void MsgFunc_KeyedDLight(const char* pszName, int iSize, void* pbuf); //LRC
+	void MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf);	  //LRC
+	void MsgFunc_AddShine(const char* pszName, int iSize, void* pbuf);	  //LRC
 
 	// Screen information
 	SCREENINFO m_scrinfo;

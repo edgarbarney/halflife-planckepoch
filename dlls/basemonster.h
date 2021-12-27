@@ -194,7 +194,9 @@ public:
 	virtual Schedule_t* GetScheduleOfType(int Type);
 	virtual Schedule_t* GetSchedule();
 	virtual void ScheduleChange() {}
+	//	virtual bool CanPlaySequence(void) { return ((m_pCine == NULL) && (m_MonsterState == MONSTERSTATE_NONE || m_MonsterState == MONSTERSTATE_IDLE || m_IdealMonsterState == MONSTERSTATE_IDLE)); }
 	virtual bool CanPlaySequence(int interruptFlags);
+	//	virtual bool CanPlaySequence(bool fDisregardState, int interruptLevel);
 	virtual bool CanPlaySentence(bool fDisregardState) { return IsAlive(); }
 	virtual void PlaySentence(const char* pszSentence, float duration, float volume, float attenuation);
 	virtual void PlayScriptedSentence(const char* pszSentence, float duration, float volume, float attenuation, bool bConcurrent, CBaseEntity* pListener);
@@ -365,5 +367,10 @@ public:
 
 	CBaseEntity* DropItem(const char* pszItemName, const Vector& vecPos, const Vector& vecAng); // drop an item.
 
-	float CalcRatio() { return pev->health / pev->max_health; } //LRC
+	//LRC
+	float CalcRatio(CBaseEntity* pLocus)
+	{
+		/*ALERT(at_console, "monster CR: %f/%f = %f\n", pev->health, pev->max_health, pev->health / pev->max_health);*/
+		return pev->health / pev->max_health;
+	}
 };

@@ -42,7 +42,13 @@ void LinkUserMessages()
 	gmsgWeaponList = REG_USER_MSG("WeaponList", -1);
 	gmsgResetHUD = REG_USER_MSG("ResetHUD", 1); // called every respawn
 	gmsgInitHUD = REG_USER_MSG("InitHUD", 0);	// called every time a new player joins the server
-	gmsgSetFog = REG_USER_MSG("SetFog", 9);		//LRC
+
+	gmsgSetFog = REG_USER_MSG("SetFog", 9);			   //LRC
+	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1); //LRC
+	gmsgSetSky = REG_USER_MSG("SetSky", 7);			   //LRC
+	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		   //LRC
+	gmsgAddShine = REG_USER_MSG("AddShine", -1);	   // LRC
+
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
 	gmsgDeathMsg = REG_USER_MSG("DeathMsg", -1);
 	gmsgScoreInfo = REG_USER_MSG("ScoreInfo", 9);
@@ -61,8 +67,8 @@ void LinkUserMessages()
 	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
 	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
 	gmsgTeamNames = REG_USER_MSG("TeamNames", -1);
-	gmsgHUDColor = REG_USER_MSG("HUDColor", 4); //LRC
 	gmsgStatusIcon = REG_USER_MSG("StatusIcon", -1);
+
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 

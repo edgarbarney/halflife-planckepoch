@@ -12,6 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
+// Robin, 4-22-98: Moved set_suicide_frame() here from player.cpp to allow us to
+//				   have one without a hardcoded player.mdl in tf_client.cpp
 
 /*
 
@@ -45,6 +47,22 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 extern void CopyToBodyQue(entvars_t* pev);
 
 void LinkUserMessages();
+
+/*
+ * used by kill command and disconnect command
+ * ROBIN: Moved here from player.cpp, to allow multiple player models
+ */
+void set_suicide_frame(entvars_t* pev)
+{
+	if (!FStrEq(STRING(pev->model), "models/player.mdl"))
+		return; // allready gibbed
+
+	//	pev->frame		= $deatha11;
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_TOSS;
+	pev->deadflag = DEAD_DEAD;
+	pev->nextthink = -1;
+}
 
 
 /*
@@ -759,6 +777,9 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 	LinkUserMessages();
 }
 
+// a cached version of gpGlobals->frametime. The engine sets frametime to 0 if the player is frozen... so we just cache it in prethink,
+// allowing it to be restored later and used by CheckDesiredList.
+float cached_frametime = 0.0f;
 
 /*
 ================
@@ -774,6 +795,8 @@ void PlayerPreThink(edict_t* pEntity)
 
 	if (pPlayer)
 		pPlayer->PreThink();
+
+	cached_frametime = gpGlobals->frametime;
 }
 
 /*
@@ -790,6 +813,9 @@ void PlayerPostThink(edict_t* pEntity)
 
 	if (pPlayer)
 		pPlayer->PostThink();
+
+	// use the old frametime, even if the engine has reset it
+	gpGlobals->frametime = cached_frametime;
 
 	//LRC - moved to here from CBasePlayer::PostThink, so that
 	// things don't stop when the player dies

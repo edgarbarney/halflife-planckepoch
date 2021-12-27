@@ -1907,13 +1907,6 @@ void CBasePlayer::UpdateStatusBar()
 }
 
 
-
-
-
-
-
-
-
 #define CLIMB_SHAKE_FREQUENCY 22 // how many frames in between screen shakes when climbing
 #define MAX_CLIMB_SPEED 200		 // fastest vertical climbing speed possible
 #define CLIMB_SPEED_DEC 15		 // climbing deceleration rate
@@ -1958,7 +1951,7 @@ void CBasePlayer::PreThink()
 			SET_VIEW(edict(), viewEntity->edict());
 		}
 	}
-	
+
 	// in the event that the player JUST spawned, and the level node graph
 	// was loaded, fix all of the node graph pointers before the game starts.
 

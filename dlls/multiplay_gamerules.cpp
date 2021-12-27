@@ -627,8 +627,10 @@ void CHalfLifeMultiplay::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, 
 		FireTargets("game_playerkill", ktmp, ktmp, USE_TOGGLE, 0);
 	}
 	else
-	{ // killed by the world
-		pKiller->frags -= 1;
+	{	// killed by the world
+		//MH	pKiller->frags -= 1;	this should be victim (we don't want to give the world frags)
+		pVictim->pev->frags -= 1;
+		//END
 	}
 
 	// update the scores
@@ -1388,7 +1390,7 @@ bool ReloadMapCycleFile(char* filename, mapcycle_t* cycle)
 			}
 			else
 			{
-				ALERT(at_debug, "Skipping %s from mapcycle, not a valid map\n", szMap);
+				ALERT(at_console, "Skipping %s from mapcycle, not a valid map\n", szMap);
 			}
 		}
 
@@ -1545,7 +1547,7 @@ void CHalfLifeMultiplay::ChangeLevel()
 
 		if (!ReloadMapCycleFile(mapcfile, &mapcycle) || (!mapcycle.items))
 		{
-			ALERT(at_debug, "Unable to load map cycle file %s\n", mapcfile);
+			ALERT(at_console, "Unable to load map cycle file %s\n", mapcfile);
 			do_cycle = false;
 		}
 	}
@@ -1622,14 +1624,14 @@ void CHalfLifeMultiplay::ChangeLevel()
 
 	g_fGameOver = true;
 
-	ALERT(at_debug, "CHANGE LEVEL: %s\n", szNextMap);
+	ALERT(at_console, "CHANGE LEVEL: %s\n", szNextMap);
 	if (0 != minplayers || 0 != maxplayers)
 	{
-		ALERT(at_debug, "PLAYER COUNT:  min %i max %i current %i\n", minplayers, maxplayers, curplayers);
+		ALERT(at_console, "PLAYER COUNT:  min %i max %i current %i\n", minplayers, maxplayers, curplayers);
 	}
 	if (strlen(szRules) > 0)
 	{
-		ALERT(at_debug, "RULES:  %s\n", szRules);
+		ALERT(at_console, "RULES:  %s\n", szRules);
 	}
 
 	CHANGE_LEVEL(szNextMap, NULL);

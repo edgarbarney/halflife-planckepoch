@@ -309,8 +309,8 @@ void CheckAssistList()
 void CheckDesiredList()
 {
 	CBaseEntity* pListMember;
-	int loopbreaker = 100; //assume this is the max. number of entities which will use DesiredList in any one frame
-						   //	bool liststart = false;
+	int loopbreaker = 1000; //assume this is the max. number of entities which will use DesiredList in any one frame
+							//	bool liststart = false;
 	if (g_doingDesired)
 		ALERT(at_debug, "CheckDesiredList: doingDesired is already set!?\n");
 	g_doingDesired = true;
