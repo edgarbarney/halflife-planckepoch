@@ -374,7 +374,7 @@ void CBaseMonster::RunTask(Task_t* pTask)
 	}
 	case TASK_WAIT_PVS:
 	{
-		if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())))
+		if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())) || HaveCamerasInPVS(edict()))
 		{
 			TaskComplete();
 		}
@@ -1075,7 +1075,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		}
 		break;
 	}
-	case TASK_GET_PATH_TO_SCRIPT: {
+	case TASK_GET_PATH_TO_SCRIPT:
+	{
 		RouteClear();
 		if (m_pCine != NULL && MoveToLocation(m_movementActivity, 1, m_pCine->pev->origin))
 		{
@@ -1358,7 +1359,8 @@ void CBaseMonster::StartTask(Task_t* pTask)
 		TaskComplete();
 		break;
 	}
-	case TASK_PLANT_ON_SCRIPT: {
+	case TASK_PLANT_ON_SCRIPT:
+	{
 		if (m_pCine != NULL)
 		{
 			// Plant on script

@@ -299,7 +299,7 @@ bool CSatchel::Deploy()
 
 void CSatchel::Holster()
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 
 	if (0 != m_chargeReady)
 	{

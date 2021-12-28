@@ -163,6 +163,10 @@ bool CHud::Redraw(float flTime, bool intermission)
 	// if no redrawing is necessary
 	// return 0;
 
+	// trigger_viewset stuff
+	if ((viewFlags & 1) && !(viewFlags & 2)) // custom view active, and flag "draw hud" isnt set
+		return true;
+
 	// draw all registered HUD elements
 	if (0 != m_pCvarDraw->value)
 	{

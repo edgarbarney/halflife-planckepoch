@@ -15,7 +15,7 @@
 //
 //  hud_msg.cpp
 //
-
+#include "mp3.h" //AJH - Killar MP3
 #include "hud.h"
 #include "cl_util.h"
 #include "parsemsg.h"
@@ -65,6 +65,7 @@ bool CHud::MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf)
 	//LRC - reset fog
 	g_fStartDist = 0;
 	g_fEndDist = 0;
+	numMirrors = 0;
 
 	return true;
 }
@@ -82,13 +83,6 @@ void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 	//LRC - clear the fog
 	g_fStartDist = 0;
 	g_fEndDist = 0;
-
-	//LRC - clear all shiny surfaces
-	if (m_pShinySurface)
-	{
-		delete m_pShinySurface;
-		m_pShinySurface = NULL;
-	}
 
 	m_iSkyMode = SKY_OFF; //LRC
 
@@ -275,5 +269,23 @@ bool CHud::MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf)
 
 	m_iWeaponBits = lowerBits | (upperBits << 32ULL);
 
+	return true;
+}
+
+bool CHud ::MsgFunc_PlayMP3(const char* pszName, int iSize, void* pbuf) //AJH -Killar MP3
+{
+	BEGIN_READ(pbuf, iSize);
+
+	gMP3.PlayMP3(READ_STRING());
+
+	return true;
+}
+// trigger_viewset message
+bool CHud ::MsgFunc_CamData(const char* pszName, int iSize, void* pbuf) // rain stuff
+{
+	BEGIN_READ(pbuf, iSize);
+	gHUD.viewEntityIndex = READ_SHORT();
+	gHUD.viewFlags = READ_SHORT();
+	//	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
 	return true;
 }

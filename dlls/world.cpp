@@ -474,6 +474,8 @@ LINK_ENTITY_TO_CLASS(worldspawn, CWorld);
 #define SF_WORLD_FORCETEAM 0x0004 // Force teams
 //#define SF_WORLD_STARTSUIT	0x0008		// LRC- Start this level with an HEV suit!
 
+bool g_allowGJump;
+
 bool g_startSuit; //LRC
 
 void CWorld::Spawn()
@@ -508,6 +510,18 @@ void CWorld::Precache()
 	g_pGameRules = InstallGameRules();
 
 	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
+
+	/*	if ( WorldGraph.m_fGraphPresent && !WorldGraph.m_fGraphPointersSet )
+	{
+		if ( !WorldGraph.FSetGraphPointers() )
+		{
+			ALERT ( at_debug, "**Graph pointers were not set!\n");
+		}
+		else
+		{
+			ALERT ( at_debug, "**Graph Pointers Set!\n" );
+		} 
+	}*/
 
 	///!!!LATER - do we want a sound ent in deathmatch? (sjb)
 	//pSoundEnt = CBaseEntity::Create( "soundent", g_vecZero, g_vecZero, edict() );
@@ -724,6 +738,13 @@ bool CWorld::KeyValue(KeyValueData* pkvd)
 		return true;
 	}
 	//LRC- ends
+
+	//AJH- Gauss Jump in single play
+	else if (FStrEq(pkvd->szKeyName, "allow_sp_gjump"))
+	{
+		g_allowGJump = atoi(pkvd->szValue);
+		return true;
+	}
 
 	return CBaseEntity::KeyValue(pkvd);
 }

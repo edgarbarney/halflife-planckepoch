@@ -525,6 +525,14 @@ public:
 #define SKY_OFF 0
 #define SKY_ON 1
 
+typedef struct cl_mirror_s
+{
+	Vector origin;
+	int enabled;
+	float radius;
+	int type;
+} cl_mirror_t;
+
 
 
 class CHud
@@ -563,6 +571,10 @@ public:
 	int DrawHudStringReverse(int xpos, int ypos, int iMinX, const char* szString, int r, int g, int b);
 	int DrawHudNumberString(int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b);
 	int GetNumWidth(int iNumber, int iFlags);
+	int viewEntityIndex; // for trigger_viewset
+	int viewFlags;
+	struct cl_mirror_s Mirrors[32]; //Limit - 32 mirrors!
+	int numMirrors;
 
 	int GetHudNumberWidth(int number, int width, int flags);
 	int DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b);
@@ -643,12 +655,13 @@ public:
 	bool MsgFunc_SetFOV(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Concuss(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf);
-
+	bool MsgFunc_PlayMP3(const char* pszName, int iSize, void* pbuf);	  //KILLAR
 	bool MsgFunc_HUDColor(const char* pszName, int iSize, void* pbuf);	  //LRC
 	void MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf);	  //LRC
 	void MsgFunc_KeyedDLight(const char* pszName, int iSize, void* pbuf); //LRC
 	void MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf);	  //LRC
-	void MsgFunc_AddShine(const char* pszName, int iSize, void* pbuf);	  //LRC
+	bool MsgFunc_CamData(const char* pszName, int iSize, void* pbuf);
+	void MsgFunc_AddShine(const char* pszName, int iSize, void* pbuf); //LRC
 
 	// Screen information
 	SCREENINFO m_scrinfo;

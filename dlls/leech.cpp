@@ -317,7 +317,12 @@ bool CLeech::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float f
 	{
 		pev->velocity = (pev->origin - pevInflictor->origin).Normalize() * 25;
 	}
-
+	else if (pev->movetype == MOVETYPE_TOSS)
+	{
+		ALERT(at_console, "Waterlevel is out\n");
+		//		if ( RANDOM_LONG( 0, 99 ) < 1 )
+		pev->dmg += 2;
+	}
 	return CBaseMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
 
@@ -525,6 +530,12 @@ void CLeech::UpdateMotion()
 		pev->movetype = MOVETYPE_FLY;
 		pev->flags &= ~FL_ONGROUND;
 		RecalculateWaterlevel();
+		ALERT(at_console, "Waterlevel is out\n");
+		if (RANDOM_LONG(0, 99) < 1)
+		{
+			pev->gravity = 0.02;
+			pev->takedamage += 2;
+		}
 		m_waterTime = gpGlobals->time + 2; // Recalc again soon, water may be rising
 	}
 
@@ -567,7 +578,7 @@ void CLeech::SwimThink()
 	float targetYaw = 0;
 	CBaseEntity* pTarget;
 
-	if (FNullEnt(FIND_CLIENT_IN_PVS(edict())))
+	if (FNullEnt(FIND_CLIENT_IN_PVS(edict())) && !HaveCamerasInPVS(edict()))
 	{
 		SetNextThink(RANDOM_FLOAT(1, 1.5));
 		pev->velocity = g_vecZero;
@@ -695,7 +706,7 @@ void CLeech::Killed(entvars_t* pevAttacker, int iGib)
 	Vector vecSplatDir;
 	TraceResult tr;
 
-	//ALERT(at_aiconsole, "Leech: killed\n");
+	ALERT(at_aiconsole, "Leech: killed\n");
 	// tell owner ( if any ) that we're dead.This is mostly for MonsterMaker functionality.
 	CBaseEntity* pOwner = CBaseEntity::Instance(pev->owner);
 	if (pOwner)

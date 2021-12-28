@@ -23,6 +23,7 @@
 #include "player.h"
 #include "talkmonster.h"
 #include "gamerules.h"
+#include "locus.h"
 
 static char* memfgets(byte* pMemFile, int fileSize, int& filePos, char* pBuffer, int bufferSize);
 
@@ -724,6 +725,10 @@ void CAmbientGeneric::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 		// init all ramp params for startup
 
 		InitModulationParms();
+
+		// AJH / MJB - [LR] volume field:
+		if (pev->noise)
+			m_dpv.vol = CalcLocus_Ratio(this, STRING(pev->noise), 0);
 
 		if (m_pPlayFrom)
 		{

@@ -30,7 +30,7 @@
 #define NOCOLOR
 #define NOCTLMGR
 #define NODRAWTEXT
-#define NOGDI
+//#define NOGDI //Need wglGetProcAddress in glow.cpp
 #define NOKERNEL
 //#define NOUSER //Need GetCursorPos in the mouse thread code
 #define NONLS

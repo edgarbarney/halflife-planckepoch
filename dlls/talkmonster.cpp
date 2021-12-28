@@ -972,7 +972,7 @@ bool CTalkMonster::FOkToSpeak()
 		return false;
 
 	// if player is not in pvs, don't speak
-	if (!IsAlive() || FNullEnt(FIND_CLIENT_IN_PVS(edict())))
+	if (!IsAlive() || (FNullEnt(FIND_CLIENT_IN_PVS(edict())) && !HaveCamerasInPVS(edict())))
 		return false;
 
 	// don't talk if you're in combat

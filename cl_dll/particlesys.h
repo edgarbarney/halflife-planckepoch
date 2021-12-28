@@ -135,6 +135,7 @@ public:
 	RandomRange m_SprayForce;
 	RandomRange m_SprayPitch;
 	RandomRange m_SprayYaw;
+	RandomRange m_SprayRoll;
 	ParticleType* m_pSprayType;
 
 	RandomRange m_Gravity;

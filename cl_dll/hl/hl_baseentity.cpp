@@ -262,7 +262,6 @@ void CBasePlayer::Precache() {}
 bool CBasePlayer::Save(CSave& save) { return false; }
 void CBasePlayer::RenewItems() {}
 bool CBasePlayer::Restore(CRestore& restore) { return false; }
-void CBasePlayer::SelectNextItem(int iItem) {}
 bool CBasePlayer::HasWeapons() { return false; }
 void CBasePlayer::SelectPrevItem(int iItem) {}
 bool CBasePlayer::FlashlightIsOn() { return false; }
@@ -273,7 +272,6 @@ void CBasePlayer::ImpulseCommands() {}
 void CBasePlayer::CheatImpulseCommands(int iImpulse) {}
 bool CBasePlayer::AddPlayerItem(CBasePlayerItem* pItem) { return false; }
 bool CBasePlayer::RemovePlayerItem(CBasePlayerItem* pItem) { return false; }
-void CBasePlayer::ItemPreFrame() {}
 void CBasePlayer::ItemPostFrame() {}
 int CBasePlayer::AmmoInventory(int iAmmoIndex) { return -1; }
 int CBasePlayer::GetAmmoIndex(const char* psz) { return -1; }
@@ -291,7 +289,6 @@ void CBasePlayer::SetCustomDecalFrames(int nFrames) {}
 int CBasePlayer::GetCustomDecalFrames() { return -1; }
 void CBasePlayer::DropPlayerItem(char* pszItemName) {}
 bool CBasePlayer::HasPlayerItem(CBasePlayerItem* pCheckItem) { return false; }
-bool CBasePlayer::SwitchWeapon(CBasePlayerItem* pWeapon) { return false; }
 Vector CBasePlayer::GetGunPosition() { return g_vecZero; }
 const char* CBasePlayer::TeamID() { return ""; }
 int CBasePlayer::GiveAmmo(int iCount, const char* szName, int iMax) { return 0; }
@@ -325,6 +322,7 @@ void CBasePlayerItem::Drop() {}
 void CBasePlayerItem::Kill() {}
 void CBasePlayerItem::Holster() {}
 void CBasePlayerItem::AttachToPlayer(CBasePlayer* pPlayer) {}
+void CBasePlayerItem::Spawn() {}
 bool CBasePlayerWeapon::AddDuplicate(CBasePlayerItem* pOriginal) { return false; }
 bool CBasePlayerWeapon::AddToPlayer(CBasePlayer* pPlayer) { return false; }
 bool CBasePlayerWeapon::UpdateClientData(CBasePlayer* pPlayer) { return false; }

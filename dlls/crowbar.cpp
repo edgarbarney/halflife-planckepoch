@@ -49,8 +49,6 @@ void CCrowbar::Precache()
 	PRECACHE_SOUND("weapons/cbar_hitbod2.wav");
 	PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
 	PRECACHE_SOUND("weapons/cbar_miss1.wav");
-
-	m_usCrowbar = PRECACHE_EVENT(1, "events/crowbar.sc");
 }
 
 bool CCrowbar::GetItemInfo(ItemInfo* p)
@@ -77,7 +75,7 @@ bool CCrowbar::Deploy()
 
 void CCrowbar::Holster()
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	SendWeaponAnim(CROWBAR_HOLSTER);
 }
 
@@ -177,18 +175,20 @@ bool CCrowbar::Swing(bool fFirst)
 	}
 #endif
 
-	PLAYBACK_EVENT_FULL(FEV_NOTHOST, m_pPlayer->edict(), m_usCrowbar,
-		0.0, g_vecZero, g_vecZero, 0, 0, 0,
-		0.0, 0, 0.0);
-
-
 	if (tr.flFraction >= 1.0)
 	{
 		if (fFirst)
 		{
 			// miss
-			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-
+			switch ((m_iSwing++) % 3)
+			{
+			case 0: SendWeaponAnim(CROWBAR_ATTACK1MISS); break;
+			case 1: SendWeaponAnim(CROWBAR_ATTACK2MISS); break;
+			case 2: SendWeaponAnim(CROWBAR_ATTACK3MISS); break;
+			}
+			m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+			// play wiff or swish sound
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/cbar_miss1.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0, 0xF));
 			// player "shoot" animation
 			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		}
@@ -285,12 +285,8 @@ bool CCrowbar::Swing(bool fFirst)
 			// also play crowbar strike
 			switch (RANDOM_LONG(0, 1))
 			{
-			case 0:
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
-			case 1:
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
+			case 0: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3)); break;
+			case 1: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/cbar_hit2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3)); break;
 			}
 
 			// delay the decal a bit

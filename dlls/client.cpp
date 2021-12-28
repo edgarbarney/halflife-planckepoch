@@ -493,6 +493,8 @@ ClientCommand
 called each time a player uses a "cmd" command
 ============
 */
+extern int gmsgPlayMP3; //AJH - Killars MP3player
+
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
 void ClientCommand(edict_t* pEntity)
 {
@@ -568,6 +570,12 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "fullupdate"))
 	{
 		player->ForceClientDllUpdate();
+	}
+	else if (FStrEq(pcmd, "playaudio")) //AJH - MP3/OGG player (based on killars MP3)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgPlayMP3, NULL, ENT(pev));
+		WRITE_STRING((char*)CMD_ARGV(1));
+		MESSAGE_END();
 	}
 	else if (FStrEq(pcmd, "give"))
 	{
@@ -959,11 +967,6 @@ void ClientPrecache()
 	PRECACHE_SOUND("common/wpn_select.wav");
 	PRECACHE_SOUND("common/wpn_denyselect.wav");
 
-#ifdef XENWARRIOR
-	PRECACHE_SOUND(SOUND_FLASHLIGHT_IDLE);
-#endif
-
-
 	// geiger sounds
 
 	PRECACHE_SOUND("player/geiger6.wav");
@@ -1122,7 +1125,19 @@ void SetupVisibility(edict_t* pViewEntity, edict_t* pClient, unsigned char** pvs
 	{
 		pView = pViewEntity;
 	}
-
+	// for trigger_viewset
+	CBasePlayer* pPlayer = (CBasePlayer*)CBaseEntity::Instance((struct edict_s*)pClient);
+	if (pPlayer->viewFlags & 1) // custom view active
+	{
+		CBaseEntity* pViewEnt = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->viewEntity));
+		if (!FNullEnt(pViewEnt))
+		{
+			//	ALERT(at_console, "setting PAS/PVS to entity %s\n", STRING(pPlayer->viewEntity));
+			pView = pViewEnt->edict();
+		}
+		else
+			pPlayer->viewFlags = 0;
+	}
 	if ((pClient->v.flags & FL_PROXY) != 0)
 	{
 		*pvs = NULL; // the spectator proxy sees
@@ -1180,7 +1195,8 @@ int AddToFullPack(struct entity_state_s* state, int e, edict_t* ent, edict_t* ho
 	{
 		if (!ENGINE_CHECK_VISIBILITY((const struct edict_s*)ent, pSet))
 		{
-			return 0;
+			if (ent->v.renderfx != kRenderFxEntInPVS)
+				return 0;
 		}
 	}
 
@@ -1759,6 +1775,33 @@ void UpdateClientData(const edict_t* ent, int sendweapons, struct clientdata_s* 
 	cd->weaponanim = pev->weaponanim;
 
 	cd->pushmsec = pev->pushmsec;
+
+	// Custom data (trigger_viewset)
+	CBasePlayer* pPlayer = (CBasePlayer*)CBaseEntity::Instance((struct edict_s*)ent);
+	if (pPlayer && pPlayer->m_fGameHUDInitialized && pPlayer->viewNeedsUpdate != 0)
+	{
+		CBaseEntity* pViewEnt = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->viewEntity));
+		int indexToSend;
+		if (!FNullEnt(pViewEnt))
+		{
+			indexToSend = pViewEnt->entindex();
+			ALERT(at_aiconsole, "View data : activated with index %i and flags %i\n", indexToSend, pPlayer->viewFlags);
+		}
+		else
+		{
+			indexToSend = 0;
+			pPlayer->viewFlags = 0; // clear possibly ACTIVE flag
+			ALERT(at_aiconsole, "View data : deactivated\n");
+		}
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgCamData, NULL, (struct edict_s*)ent);
+		WRITE_SHORT(indexToSend);
+		WRITE_SHORT(pPlayer->viewFlags);
+		MESSAGE_END();
+
+		pPlayer->viewNeedsUpdate = 0;
+	}
+	// end custom data
 
 	//Spectator mode
 	if (pevOrg != NULL)

@@ -27,6 +27,7 @@ inline int gmsgSetSky = 0;		// LRC
 inline int gmsgHUDColor = 0;	// LRC
 inline int gmsgAddShine = 0;	// LRC
 inline int gmsgParticle = 0;	// LRC
+inline int gmsgPlayMP3 = 0;		// Killar
 inline int gmsgShowGameTitle = 0;
 inline int gmsgCurWeapon = 0;
 inline int gmsgHealth = 0;
@@ -58,6 +59,7 @@ inline int gmsgTeamNames = 0;
 inline int gmsgStatusIcon = 0; //LRC
 inline int gmsgStatusText = 0;
 inline int gmsgStatusValue = 0;
+inline int gmsgCamData = 0; // for trigger_viewset
 
 inline int gmsgWeapons = 0;
 

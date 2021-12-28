@@ -50,10 +50,13 @@ Vector VecBModelOrigin(entvars_t* pevBModel)
 /*QUAKED func_wall (0 .5 .8) ?
 This is just a solid wall if not inhibited
 */
+#define SF_FUNCWALL_ROTATE 1
+
 class CFuncWall : public CBaseEntity
 {
 public:
 	void Spawn() override;
+	//void	PostSpawn(void);	 //AJH
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 
 	STATE GetState() override { return pev->frame ? STATE_ON : STATE_OFF; };
@@ -68,14 +71,23 @@ LINK_ENTITY_TO_CLASS(func_wall, CFuncWall);
 
 void CFuncWall::Spawn()
 {
-	pev->angles = g_vecZero;
-	pev->movetype = MOVETYPE_PUSH; // so it doesn't get pushed by anything
-	pev->solid = SOLID_BSP;
-	SET_MODEL(ENT(pev), STRING(pev->model));
-
 	// If it can't move/go away, it's really part of the world
 	if (!m_pMoveWith) //LRC
 		pev->flags |= FL_WORLDBRUSH;
+
+	pev->angles = g_vecZero;
+
+	/*	if (pev->spawnflags & SF_FUNCWALL_ROTATE){	//AJH - Now we can rotate complex stuff on spawn - Doesn't work!!!
+		ALERT(at_debug,"DEBUG: Rotate flag set, rotating brush in 0.1seconds\n");		
+		pev->flags &= !FL_WORLDBRUSH;
+		SetThink(&CFuncWall::PostSpawn);
+		SetNextThink(0.1);
+		
+	}
+*/
+	pev->movetype = MOVETYPE_PUSH; // so it doesn't get pushed by anything
+	pev->solid = SOLID_BSP;
+	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	//LRC
 	if (m_iStyle >= 32)
@@ -84,6 +96,16 @@ void CFuncWall::Spawn()
 		LIGHT_STYLE(-m_iStyle, "z");
 }
 
+/*
+void CFuncWall :: PostSpawn (){					//AJH - Bug, this doesn't work, I have no idea why.
+	ALERT(at_debug,"DEBUG: Rotating from %f %f %f ", pev->angles.x,pev->angles.y,pev->angles.z);
+	//UTIL_SetAngles(this,pev->vuser1);
+	pev->angles = pev->vuser1;
+	ALERT(at_debug,"to %f %f %f\n",pev->angles.x,pev->angles.y,pev->angles.z);
+	ALERT(at_debug,"String vuser1 = %s\n",pev->vuser1);
+	DontThink();
+}
+*/
 
 void CFuncWall::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
@@ -388,6 +410,8 @@ public:
 	float m_pitch;
 	int m_sounds;
 
+	EHANDLE m_hActivator; //AJH
+
 	float m_fCurSpeed; //LRC - during spin-up and spin-down, this is
 					   // the current speed factor (between 0 and 1).
 					   // storing this here lets us avoid the hassle of deriving it
@@ -541,9 +565,7 @@ void CFuncRotating::Spawn()
 	//	if (pev->dmg == 0)
 	//		pev->dmg = 2;
 
-	// instant-use brush?
-	//LRC - start immediately if unnamed, too.
-	if (FBitSet(pev->spawnflags, SF_BRUSH_ROTATE_INSTANT) || FStringNull(pev->targetname))
+	if (FBitSet(pev->spawnflags, SF_BRUSH_ROTATE_INSTANT))
 	{
 		SetThink(&CFuncRotating::WaitForStart);
 		SetNextThink(1.5); // leave a magic delay for client to start up
@@ -652,7 +674,10 @@ void CFuncRotating::HurtTouch(CBaseEntity* pOther)
 	pev->dmg = m_fCurSpeed / 10; //LRC
 								 //	pev->dmg = pev->avelocity.Length() / 10;
 
-	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
+	if (m_hActivator)
+		pOther->TakeDamage(pev, m_hActivator->pev, pev->dmg, DMG_CRUSH); //AJH Attribute damage to he who switched me.
+	else
+		pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 
 	pevOther->velocity = (pevOther->origin - VecBModelOrigin(pev)).Normalize() * pev->dmg;
 }
@@ -761,6 +786,8 @@ void CFuncRotating::Rotate()
 //=========================================================
 void CFuncRotating::RotatingUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
+	m_hActivator = pActivator; //AJH
+
 	if (!ShouldToggle(useType))
 		return;
 
@@ -827,7 +854,10 @@ void CFuncRotating::RotatingUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 void CFuncRotating::Blocked(CBaseEntity* pOther)
 
 {
-	pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
+	if (m_hActivator)
+		pOther->TakeDamage(pev, m_hActivator->pev, pev->dmg, DMG_CRUSH); //AJH Attribute damage to he who switched me.
+	else
+		pOther->TakeDamage(pev, pev, pev->dmg, DMG_CRUSH);
 }
 
 
@@ -864,6 +894,8 @@ public:
 	float m_dampSpeed;
 	Vector m_center;
 	Vector m_start;
+
+	EHANDLE m_hActivator; //AJH (give frags to this entity)
 };
 
 LINK_ENTITY_TO_CLASS(func_pendulum, CPendulum);
@@ -949,6 +981,8 @@ void CPendulum::PendulumUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 {
 	if (!ShouldToggle(useType))
 		return;
+
+	m_hActivator = pActivator; //AJH
 
 	if (0 != pev->speed) // Pendulum is moving, stop it and auto-return if necessary
 	{
@@ -1067,7 +1101,10 @@ void CPendulum::Touch(CBaseEntity* pOther)
 	if (damage < 0)
 		damage = -damage;
 
-	pOther->TakeDamage(pev, pev, damage, DMG_CRUSH);
+	if (m_hActivator)
+		pOther->TakeDamage(pev, m_hActivator->pev, damage, DMG_CRUSH);
+	else
+		pOther->TakeDamage(pev, pev, damage, DMG_CRUSH);
 
 	pevOther->velocity = (pevOther->origin - VecBModelOrigin(pev)).Normalize() * damage;
 }

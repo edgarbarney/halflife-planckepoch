@@ -1057,12 +1057,6 @@ void UTIL_ScreenFadeAll(const Vector& color, float fadeTime, float fadeHold, int
 	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity* pPlayer = UTIL_PlayerByIndex(i);
-
-#ifdef XENWARRIOR
-		if (((CBasePlayer*)pPlayer)->FlashlightIsOn())
-			((CBasePlayer*)pPlayer)->FlashlightTurnOff();
-#endif
-
 		UTIL_ScreenFadeWrite(fade, pPlayer);
 	}
 }
@@ -2110,12 +2104,12 @@ static int gSizes[FIELD_TYPECOUNT] =
 #else
 		sizeof(int*), // FIELD_FUNCTION
 #endif
-		sizeof(byte),  // FIELD_BOOLEAN
-		sizeof(short), // FIELD_SHORT
-		sizeof(char),  // FIELD_CHARACTER
-		sizeof(float), // FIELD_TIME
-		sizeof(int),   // FIELD_MODELNAME
-		sizeof(int),   // FIELD_SOUNDNAME
+		sizeof(byte),		   // FIELD_BOOLEAN
+		sizeof(short),		   // FIELD_SHORT
+		sizeof(char),		   // FIELD_CHARACTER
+		sizeof(float),		   // FIELD_TIME
+		sizeof(int),		   // FIELD_MODELNAME
+		sizeof(int),		   // FIELD_SOUNDNAME
 		sizeof(std::uint64_t), //FIELD_INT64
 };
 
@@ -2999,6 +2993,38 @@ bool CRestore::BufferCheckZString(const char* string)
 	{
 		if (0 == strncmp(string, m_data.pCurrentData, len))
 			return true;
+	}
+	return false;
+}
+
+//for trigger_viewset
+bool HaveCamerasInPVS(edict_t* edict)
+{
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBaseEntity* pEntity = UTIL_PlayerByIndex(i);
+		CBasePlayer* pPlayer = (CBasePlayer*)pEntity;
+		if (pPlayer->viewFlags & 1) // custom view active
+		{
+			CBaseEntity* pViewEnt = UTIL_FindEntityByTargetname(NULL, STRING(pPlayer->viewEntity));
+			if (!pViewEnt)
+			{
+				ALERT(at_error, "bad entity string in CamerasInPVS\n");
+				return false;
+			}
+			edict_t* view = pViewEnt->edict();
+			edict_t* pent = UTIL_EntitiesInPVS(edict);
+
+			while (!FNullEnt(pent))
+			{
+				if (pent == view)
+				{
+					//	ALERT(at_console, "CamerasInPVS found camera named %s\n", STRING(pPlayer->viewEntity));
+					return true;
+				}
+				pent = pent->v.chain;
+			}
+		}
 	}
 	return false;
 }

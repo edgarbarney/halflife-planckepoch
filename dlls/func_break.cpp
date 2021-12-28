@@ -418,6 +418,11 @@ void CBreakable::Precache()
 // play shard sound when func_breakable takes damage.
 // the more damage, the louder the shard sound.
 
+float CBreakable::CalcRatio(CBaseEntity* plocus, int mode)
+{ //AJH added 'mode' = ratio to return
+	return pev->health / m_iInitialHealth;
+}
+
 
 void CBreakable::DamageSound()
 {
@@ -605,16 +610,30 @@ void CBreakable::RespawnThink()
 			}
 		}
 		//		ALERT(at_debug,"Respawn OK\n");
+		/*	if (FStrEq("func_pushable",STRING(pev->classname))){	//AJH Fix for respawnable breakable pushables
+			pev->solid = SOLID_BBOX;							//For some reason this code must be executed outside of 
+			pev->origin.z+=1;									//the RespawnThink function. Uses DoRespawn()
+			UTIL_SetOrigin(this,pev->origin);
+		}else{
 		pev->solid = SOLID_BSP;
+		}
+		*/
+		DoRespawn(); //AJH Fix for respawnable breakable pushables (BY HAWK777)
+		SetUse(&CBreakable::BreakUse);
 		pev->effects &= ~EF_NODRAW;
 		pev->health = m_iInitialHealth;
-		SetUse(&CBreakable::BreakUse);
+
 		if (!FBitSet(pev->spawnflags, SF_BREAK_TRIGGER_ONLY))
 			pev->takedamage = DAMAGE_YES;
 
 		// trigger the "fire on respawn" target
 		FireTargets(STRING(pev->netname), this, this, USE_TOGGLE, 0);
 	}
+}
+
+void CBreakable::DoRespawn(void) //AJH Fix for respawnable breakable pushables (BY HAWK777)
+{
+	pev->solid = SOLID_BSP;
 }
 
 void CBreakable::RespawnFadeThink()
@@ -665,8 +684,23 @@ void CBreakable::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	//LRC
 	if (m_iszWhenHit)
 	{
+		if (m_pHitProxy == NULL)
+		{ //AJH may need to reset this as it's null after save/load
+			m_pHitProxy = GetClassPtr((CPointEntity*)NULL);
+		}
+
 		m_pHitProxy->pev->origin = ptr->vecEndPos;
+		if (pev->spawnflags & SF_BREAKABLE_INVERT)
+		{ //AJH
+			vecDir.y = -vecDir.y;
+			//vecDir.z=-vecDir.z;
+			vecDir.x = -vecDir.x;
+			//ALERT(at_debug,"INVERTING Breakables 'hit' vector (x&y components only) \n");
+		}
 		m_pHitProxy->pev->velocity = vecDir;
+		m_pHitProxy->pev->angles = UTIL_VecToAngles(vecDir); //AJH
+
+		//ALERT(at_debug,"Func_breakable fires %s \n",STRING(m_iszWhenHit));
 		FireTargets(STRING(m_iszWhenHit), m_pHitProxy, this, USE_TOGGLE, 0);
 	}
 
@@ -984,6 +1018,7 @@ public:
 	void Move(CBaseEntity* pMover, bool push);
 	bool KeyValue(KeyValueData* pkvd) override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+	void DoRespawn() override; //AJH Fix for respawnable breakable pushables (BY HAWK777)
 	void EXPORT StopSound();
 	//	virtual void	SetActivator( CBaseEntity *pActivator ) { m_pPusher = pActivator; }
 
@@ -1211,4 +1246,11 @@ bool CPushable::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 		return CBreakable::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 
 	return true;
+}
+
+void CPushable::DoRespawn(void)
+{ //AJH Fix for respawnable breakable pushables (BY HAWK777)
+	pev->solid = SOLID_BBOX;
+	pev->origin.z += 1;
+	UTIL_SetOrigin(this, pev->origin);
 }

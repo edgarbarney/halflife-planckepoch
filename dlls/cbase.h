@@ -99,6 +99,7 @@ typedef enum
 	USE_SET = 2,
 	USE_TOGGLE = 3,
 	USE_KILL = 4,
+	USE_SPAWN = 7, //AJH
 	// special signals, never actually get sent:
 	USE_SAME = 5,
 	USE_NOT = 6,
@@ -226,7 +227,7 @@ public:
 	//LRC - loci
 	virtual Vector CalcPosition(CBaseEntity* pLocus) { return pev->origin; }
 	virtual Vector CalcVelocity(CBaseEntity* pLocus) { return pev->velocity; }
-	virtual float CalcRatio(CBaseEntity* pLocus) { return 0; }
+	virtual float CalcRatio(CBaseEntity* pLocus, int mode) { return 0; } //AJH added 'mode' = ratio to return
 
 	//LRC - aliases
 	virtual bool IsAlias() { return false; }
@@ -675,6 +676,14 @@ public:
 	Vector m_vecFinalDest;
 	float m_flLinearMoveSpeed;	// LRC- allows a LinearMove to be delayed until a think.
 	float m_flAngularMoveSpeed; // LRC
+
+	float m_flLinearAccel; //AJH - For acceleration, used in subs.cpp
+	float m_flLinearDecel; //AJH
+	float m_flCurrentTime; //AJH
+	float m_flAccelTime;   //AJH
+	float m_flDecelTime;   //AJH
+	bool m_bDecelerate;	   //AJH
+
 	Vector m_vecFinalAngle;
 
 	int m_bitsDamageInflict; // DMG_ damage type that the door or tigger does
@@ -693,8 +702,8 @@ public:
 
 	// common member functions
 	void LinearMove(Vector vecInput, float flSpeed);
-	//void LinearMove( Vector	vecInput, float flSpeed, bool bNow );
-	void EXPORT LinearMoveNow(); //LRC- think function that lets us guarantee a LinearMove gets done as a think.
+	void LinearMove(Vector vecInput, float flSpeed, float flAccel, float flDecel); //AJH-Accelerated linear movement
+	void EXPORT LinearMoveNow();												   //LRC- think function that lets us guarantee a LinearMove gets done as a think.
 	void EXPORT LinearMoveDone();
 	void EXPORT LinearMoveDoneNow(); //LRC
 									 //	void EXPORT LinearMoveFinalDone();
@@ -877,6 +886,8 @@ push_trigger_data
 
 //LRC- much as I hate to add new globals, I can't see how to read data from the World entity.
 extern bool g_startSuit;
+
+extern bool g_allowGJump; //AJH SP Gaussjump
 
 //LRC- moved here from alias.cpp so that util functions can use these defs.
 class CBaseAlias : public CPointEntity

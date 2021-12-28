@@ -72,6 +72,8 @@ void LinkUserMessages()
 
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
+	gmsgCamData = REG_USER_MSG("CamData", -1);
+	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1); //Killar
 
 	gmsgWeapons = REG_USER_MSG("Weapons", 8);
 }

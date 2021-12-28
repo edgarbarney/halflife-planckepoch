@@ -174,8 +174,6 @@ bool CBasePlayerWeapon::DefaultDeploy(const char* szViewModel, const char* szWea
 
 	gEngfuncs.CL_LoadModel(szViewModel, &m_pPlayer->pev->viewmodel);
 
-	SendWeaponAnim(iAnim, body);
-
 	g_irunninggausspred = false;
 	m_pPlayer->m_flNextAttack = 0.5;
 	m_flTimeWeaponIdle = 1.0;
@@ -308,6 +306,8 @@ void CBasePlayer::Killed(entvars_t* pevAttacker, int iGib)
 	if (m_pActiveItem)
 		m_pActiveItem->Holster();
 
+	m_pNextItem = NULL;
+
 	g_irunninggausspred = false;
 }
 
@@ -320,8 +320,12 @@ CBasePlayer::Spawn
 void CBasePlayer::Spawn()
 {
 	if (m_pActiveItem)
+	{
+		m_pActiveItem = m_pNextItem;
 		m_pActiveItem->Deploy();
-
+		m_pActiveItem->UpdateItemInfo();
+		m_pNextItem = NULL;
+	}
 	g_irunninggausspred = false;
 }
 

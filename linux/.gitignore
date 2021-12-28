@@ -15,3 +15,5 @@
 !vgui.so
 !release/vgui.dylib
 !release/vgui.so
+!libCg.so
+!libCgGL.so

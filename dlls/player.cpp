@@ -62,11 +62,11 @@ extern edict_t* EntSelectSpawnPoint(CBaseEntity* pPlayer);
 #define FLASH_DRAIN_TIME 1.2  //100 units/3 minutes
 #define FLASH_CHARGE_TIME 0.2 // 100 units/20 seconds  (seconds per unit)
 
-#ifdef XENWARRIOR
-float g_fEnvFadeTime = 0; // flashlight can't be used until this time expires.
-						  // this is just a big hack, doesn't work with saverestore, etc...
-						  // Doing it properly would just be effort.
-#endif
+//#ifdef XENWARRIOR
+//  float g_fEnvFadeTime = 0;    // flashlight can't be used until this time expires.
+//							// this is just a big hack, doesn't work with saverestore, etc...
+//							// Doing it properly would just be effort.
+//#endif
 
 // Global Savedata for player
 TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
@@ -97,6 +97,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_ARRAY(CBasePlayer, m_rgpPlayerItems, FIELD_CLASSPTR, MAX_ITEM_TYPES),
 		DEFINE_FIELD(CBasePlayer, m_pActiveItem, FIELD_CLASSPTR),
 		DEFINE_FIELD(CBasePlayer, m_pLastItem, FIELD_CLASSPTR),
+		DEFINE_FIELD(CBasePlayer, m_pNextItem, FIELD_CLASSPTR),
 		DEFINE_FIELD(CBasePlayer, m_WeaponBits, FIELD_INT64),
 
 		DEFINE_ARRAY(CBasePlayer, m_rgAmmo, FIELD_INTEGER, MAX_AMMO_SLOTS),
@@ -119,6 +120,9 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_hViewEntity, FIELD_EHANDLE),
 		DEFINE_FIELD(CBasePlayer, m_iHideHUD, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iFOV, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, viewEntity, FIELD_STRING),
+		DEFINE_FIELD(CBasePlayer, viewFlags, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, viewNeedsUpdate, FIELD_INTEGER),
 
 		//LRC
 		//	DEFINE_FIELD( CBasePlayer, m_iFogStartDist, FIELD_INTEGER ),
@@ -914,6 +918,8 @@ void CBasePlayer::Killed(entvars_t* pevAttacker, int iGib)
 	if (m_pActiveItem)
 		m_pActiveItem->Holster();
 
+	m_pNextItem = NULL;
+
 	g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
 
 	if (m_pTank != NULL)
@@ -961,6 +967,10 @@ void CBasePlayer::Killed(entvars_t* pevAttacker, int iGib)
 
 	// reset FOV
 	m_iFOV = m_iClientFOV = 0;
+
+	viewEntity = 0;
+	viewFlags = 0;
+	viewNeedsUpdate = 1;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
 	WRITE_BYTE(0);
@@ -2670,11 +2680,6 @@ void CBasePlayer::PostThink()
 	if (!IsAlive())
 		goto pt_end;
 
-#ifdef XENWARRIOR
-	if (FlashlightIsOn())
-		UTIL_ScreenFade(this, Vector(150, 20, 150), 0, 0, 100, FFADE_STAYOUT);
-#endif
-
 	// Handle Tank controlling
 	if (m_pTank != NULL)
 	{ // if they've moved too far from the gun,  or selected a weapon, unuse the gun
@@ -2969,8 +2974,11 @@ void CBasePlayer::Spawn()
 	pev->deadflag = DEAD_NO;
 	pev->dmg_take = 0;
 	pev->dmg_save = 0;
+	pev->skin = atoi(g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "skin")); // XWider
 	pev->friction = 1.0;
 	pev->gravity = 1.0;
+	pev->renderfx = 0;
+	pev->rendercolor = g_vecZero;
 	m_bitsHUDDamage = -1;
 	m_bitsDamageType = 0;
 	m_afPhysicsFlags = 0;
@@ -3014,6 +3022,8 @@ void CBasePlayer::Spawn()
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 
 	pev->view_ofs = VEC_VIEW;
+	viewEntity = 0;
+	viewFlags = 0;
 	Precache();
 	m_HackedGunPos = Vector(0, 32, 0);
 
@@ -3066,20 +3076,12 @@ void CBasePlayer::Precache()
 
 	// Make sure any necessary user messages have been registered
 	LinkUserMessages();
+	viewNeedsUpdate = 1;
 
 	m_iUpdateTime = 5; // won't update for 1/2 a second
 
 	if (gInitHUD)
 		m_fInitHUD = true;
-
-#ifdef XENWARRIOR
-	g_fEnvFadeTime = 0;
-	if (FlashlightIsOn())
-		m_iLFlags |= LF_FLASH_RESUME;
-
-	if (CVAR_GET_FLOAT("v_dark"))
-		g_fEnvFadeTime = gpGlobals->time + 10;
-#endif
 }
 
 
@@ -3208,7 +3210,7 @@ void CBasePlayer::SelectNextItem(int iItem)
 		m_pActiveItem->Holster();
 	}
 
-	m_pActiveItem = pItem;
+	QueueItem(pItem);
 
 	if (m_pActiveItem)
 	{
@@ -3255,8 +3257,7 @@ void CBasePlayer::SelectItem(const char* pstr)
 	if (m_pActiveItem)
 		m_pActiveItem->Holster();
 
-	m_pLastItem = m_pActiveItem;
-	m_pActiveItem = pItem;
+	QueueItem(pItem);
 
 	if (m_pActiveItem)
 	{
@@ -3417,11 +3418,7 @@ void CBasePlayer::GiveNamedItem(const char* pszName)
 
 bool CBasePlayer::FlashlightIsOn()
 {
-#ifdef XENWARRIOR
-	return FBitSet(pev->effects, EF_BRIGHTLIGHT);
-#else
 	return FBitSet(pev->effects, EF_DIMLIGHT);
-#endif
 }
 
 
@@ -3432,27 +3429,15 @@ void CBasePlayer::FlashlightTurnOn()
 		return;
 	}
 
-#ifdef XENWARRIOR
-	if (g_fEnvFadeTime > gpGlobals->time)
-	{
-		return;
-	}
-#endif
-
 	if (HasSuit())
 	{
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
 
-#ifdef XENWARRIOR
-		SetBits(pev->effects, EF_BRIGHTLIGHT);
-		pev->fov = m_iFOV = 90;
-#else
 		SetBits(pev->effects, EF_DIMLIGHT);
 		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 		WRITE_BYTE(1);
 		WRITE_BYTE(m_iFlashBattery);
 		MESSAGE_END();
-#endif
 
 		m_flFlashLightTime = FLASH_DRAIN_TIME + gpGlobals->time;
 	}
@@ -3463,17 +3448,12 @@ void CBasePlayer::FlashlightTurnOff()
 {
 	if (FlashlightIsOn())
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_OFF, 1.0, ATTN_NORM, 0, PITCH_NORM);
-#ifdef XENWARRIOR
-	ClearBits(pev->effects, EF_BRIGHTLIGHT);
-	UTIL_ScreenFade(this, Vector(150, 50, 50), 0, 0, 100, FFADE_IN);
-	pev->fov = m_iFOV = 0;
-#else
+
 	ClearBits(pev->effects, EF_DIMLIGHT);
 	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 	WRITE_BYTE(0);
 	WRITE_BYTE(m_iFlashBattery);
 	MESSAGE_END();
-#endif
 
 	m_flFlashLightTime = FLASH_CHARGE_TIME + gpGlobals->time;
 }
@@ -3632,6 +3612,42 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			FireTargets(impulsetarget, this, this, USE_OFF, 0);
 		break;
 	}
+	case 93: //AJH - send USE_TOGGLE
+	{
+		pEntity = UTIL_FindEntityForward(this);
+		if (pEntity)
+			pEntity->Use(this, this, USE_TOGGLE, 0);
+		break;
+	}
+	case 94: //AJH - send USE_ON
+	{
+		pEntity = UTIL_FindEntityForward(this);
+		if (pEntity)
+			pEntity->Use(this, this, USE_ON, 0);
+		break;
+	}
+	case 95: //AJH - send USE_OFF
+	{
+		pEntity = UTIL_FindEntityForward(this);
+		if (pEntity)
+			pEntity->Use(this, this, USE_OFF, 0);
+		break;
+	}
+	/*	case 96: //AJH - send USE_KILL				//AJH this doesn't work due to directly calling
+		{											//the target entities use function instead of
+			pEntity = FindEntityForward( this );	//calling FireTargets.
+			if (pEntity)
+				pEntity->Use( this, this, USE_KILL, 0);
+			break;
+		}
+	*/
+	case 97: //AJH - send USE_SPAWN
+	{
+		pEntity = UTIL_FindEntityForward(this);
+		if (pEntity)
+			pEntity->Use(this, this, USE_SPAWN, 0);
+		break;
+	}
 
 
 	case 101:
@@ -3660,7 +3676,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		GiveNamedItem("weapon_satchel");
 		GiveNamedItem("weapon_snark");
 		GiveNamedItem("weapon_hornetgun");
-
+		GiveNamedItem("item_longjump");
 		gEvilImpulse101 = false;
 		break;
 
@@ -3720,6 +3736,9 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			if (!FStringNull(pEntity->pev->globalname))
 				ALERT(at_debug, "Globalname: %s\n", STRING(pEntity->pev->globalname));
 			ALERT(at_debug, "State: %s\n", GetStringForState(pEntity->GetState())); //LRC
+			ALERT(at_debug, "pev->model: %s, pev->rendermode: %d\n", STRING(pEntity->pev->model), pEntity->pev->rendermode);
+			ALERT(at_debug, "pev->renderfx: %d, pev->rendercolor: %3f %3f %3f\n", pEntity->pev->renderfx, pEntity->pev->rendercolor.x, pEntity->pev->rendercolor.y, pEntity->pev->rendercolor.z);
+			ALERT(at_debug, "pev->renderamt: %3f, pev->health: %3f\n", pEntity->pev->renderamt, pEntity->pev->health);
 		}
 		break;
 
@@ -3746,7 +3765,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 	break;
 	case 196: // show shortest paths for entire level to nearest node
 	{
-		Create("node_viewer_large", pev->origin, pev->angles);
+		Create("node_viewer_fly", pev->origin, pev->angles);
 	}
 	break;
 	case 197: // show shortest paths for entire level to nearest node
@@ -3943,6 +3962,17 @@ void CBasePlayer::ItemPreFrame()
 #endif
 	{
 		return;
+	}
+
+	if (!m_pActiveItem) // XWider
+	{
+		if (m_pNextItem)
+		{
+			m_pActiveItem = m_pNextItem;
+			m_pActiveItem->Deploy();
+			m_pActiveItem->UpdateItemInfo();
+			m_pNextItem = NULL;
+		}
 	}
 
 	if (!m_pActiveItem)
@@ -4805,11 +4835,12 @@ bool CBasePlayer::SwitchWeapon(CBasePlayerItem* pWeapon)
 		m_pActiveItem->Holster();
 	}
 
-	m_pActiveItem = pWeapon;
+	QueueItem(pWeapon);
 
-	if (pWeapon)
+	if (m_pActiveItem) // XWider: QueueItem sets it if we have no current weapopn
 	{
-		pWeapon->Deploy();
+		m_pActiveItem->Deploy();
+		m_pActiveItem->UpdateItemInfo();
 	}
 
 	return true;
@@ -5166,6 +5197,26 @@ void CPlayerFreeze::Think()
 }
 
 LINK_ENTITY_TO_CLASS(player_freeze, CPlayerFreeze);
+
+//==========================================================
+// player marker for right mirroring a player in env_mirror
+//==========================================================
+
+class CPlayerMarker : public CBaseEntity
+{
+public:
+	void Spawn(void);
+};
+
+LINK_ENTITY_TO_CLASS(player_marker, CPlayerMarker);
+
+void CPlayerMarker ::Spawn(void)
+{
+	//	PRECACHE_MODEL( "models/null.mdl" );
+	//	SET_MODEL( ENT(pev), "models/null.mdl" );
+	ALERT(at_debug, "Sorry, player mirroring isn't avilable yet.\n");
+	ALERT(at_debug, "DEBUG: Player_marker coordinates is %f %f %f\n", pev->origin.x, pev->origin.y, pev->origin.z);
+}
 
 
 //=========================================================

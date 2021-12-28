@@ -25,8 +25,8 @@
 
 
 #define SF_TANK_ACTIVE 0x0001
-//#define SF_TANK_PLAYER			0x0002
-//#define SF_TANK_HUMANS			0x0004
+//#define SF_TANK_PLAYER			0x0002	// for internal camera function. G-Cont
+//#define SF_TANK_HUMANS			0x0004	// for external camera (override internal camera). G-Cont
 //#define SF_TANK_ALIENS			0x0008
 #define SF_TANK_LINEOFSIGHT 0x0010
 #define SF_TANK_CANCONTROL 0x0020
@@ -69,6 +69,7 @@ public:
 	int m_iCrosshair; //LRC - show a crosshair while in use. (currently this is just yes or no,
 					  // but in future it will be the id of the weapon whose crosshair should be used.)
 	//	CFuncTank *m_pTank;
+	EHANDLE m_hPlayer;
 };
 
 
@@ -153,6 +154,8 @@ public:
 
 	void StartRotSound();
 	void StopRotSound();
+	STATE GetState() override { return m_iActive ? STATE_ON : STATE_OFF; } //Support this stuff for watcher
+	int m_iActive;
 
 	// Bmodels don't go across transitions
 	int ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
@@ -286,6 +289,7 @@ TYPEDESCRIPTION CFuncTank::m_SaveData[] =
 		DEFINE_FIELD(CFuncTank, m_iszFireMaster, FIELD_STRING), //LRC
 		DEFINE_FIELD(CFuncTank, m_iszLocusFire, FIELD_STRING),	//LRC
 		DEFINE_FIELD(CFuncTank, m_pFireProxy, FIELD_CLASSPTR),	//LRC
+		DEFINE_FIELD(CFuncTank, m_iActive, FIELD_INTEGER),		//G-Cont.
 };
 
 IMPLEMENT_SAVERESTORE(CFuncTank, CBaseEntity);
@@ -316,6 +320,15 @@ void CFuncTank::Spawn()
 		SetNextThink(1.0);
 	}
 
+	if (!m_iTankClass)
+	{
+		m_iTankClass = 0;
+	}
+
+	if ((m_maxRange == 0) || (FStringNull(m_maxRange)))
+	{
+		m_maxRange = 4096; //G-Cont. for normal working func_tank in original HL
+	}
 	m_sightOrigin = BarrelPosition(); // Point at the end of the barrel
 
 	if (m_fireRate <= 0)
@@ -522,6 +535,7 @@ bool CFuncTank::StartControl(CBasePlayer* pController, CFuncTankControls* pContr
 
 	//	ALERT( at_console, "using TANK!\n");
 
+	m_iActive = 1;
 	m_pControls = pControls;
 
 	if (m_pSpot)
@@ -545,6 +559,7 @@ void CFuncTank::StopControl(CFuncTankControls* pControls)
 	//	ALERT(at_debug,"StopControl succeeded\n");
 
 	//	ALERT( at_debug, "stopped using TANK\n");
+	m_iActive = 0;
 
 	if (m_pSpot)
 		m_pSpot->Suspend(-1);
@@ -565,6 +580,7 @@ void CFuncTank::UpdateSpot()
 {
 	if (pev->spawnflags & SF_TANK_LASERSPOT)
 	{
+
 		if (!m_pSpot)
 		{
 			m_pSpot = CLaserSpot::CreateSpot();
@@ -937,6 +953,9 @@ void CFuncTank::TrackTarget()
 			// just get the player's angles
 			angles = pController->pev->v_angle;
 			angles[0] = 0 - angles[0];
+
+			UpdateSpot();
+			SetNextThink(0.05); //G-Cont.For more smoothing motion a laser spot
 		}
 	}
 	else
@@ -1191,6 +1210,7 @@ void CFuncTank::TryFire(const Vector& barrelEnd, const Vector& forward, entvars_
 void CFuncTank::Fire(const Vector& barrelEnd, const Vector& forward, entvars_t* pevAttacker)
 {
 	//	ALERT(at_console, "FuncTank::Fire\n");
+
 	if (m_fireLast != 0)
 	{
 		if (!FStringNull(m_iszSpriteSmoke))
@@ -1523,7 +1543,6 @@ void CFuncTankMortar::Fire(const Vector& barrelEnd, const Vector& forward, entva
 }
 
 
-
 //============================================================================
 // FUNC TANK CONTROLS
 //============================================================================
@@ -1649,18 +1668,18 @@ void CFuncTankControls::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 				m_vecControllerUsePos = m_pController->pev->origin - m_pMoveWith->pev->origin;
 			else
 				m_vecControllerUsePos = m_pController->pev->origin;
-			//ALERT( at_console, "TANK controls activated\n");
+			ALERT(at_console, "TANK controls activated\n");
 		}
 	}
 	else if (m_pController && useType != USE_ON)
 	{
 		// player stepped away or died, most likely.
-		//ALERT(at_console, "TANK controls deactivated\n");
+		ALERT(at_console, "TANK controls deactivated\n");
 
 		//LRC- Now uses FindEntityByTargetname, so that aliases work.
 		while (tryTank = UTIL_FindEntityByTargetname(tryTank, STRING(pev->target)))
 		{
-			if (FClassnameIs(tryTank->pev, "func_tank"))
+			if (FClassnameIs(tryTank->pev, "func_tank") || FClassnameIs(tryTank->pev, "func_tanklaser") || FClassnameIs(tryTank->pev, "func_tankmortar") || FClassnameIs(tryTank->pev, "func_tankrocket"))
 			{
 				// this is a tank we're controlling.
 				((CFuncTank*)tryTank)->StopControl(this);
@@ -1678,6 +1697,10 @@ void CFuncTankControls::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 
 		m_pController = NULL;
 		m_active = false;
+		((CBasePlayer*)pActivator)->m_iFOV = 0; //reset FOV
+		((CBasePlayer*)pActivator)->viewEntity = 0;
+		((CBasePlayer*)pActivator)->viewFlags = 0;
+		((CBasePlayer*)pActivator)->viewNeedsUpdate = 1;
 	}
 
 
