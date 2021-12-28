@@ -27,7 +27,7 @@ Merged and given some nicer CVARs by FragBait0, tlevi@tpg.com.au
 //End tri.cpp
 
 #include "PlatformHeaders.h"
-#include <GL/GL.h>
+#include <GL/gl.h>
 #include <gl/glext.h>
 #include <Cg/cg.h>
 #include <Cg/cgGL.h>
