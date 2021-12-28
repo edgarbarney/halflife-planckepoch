@@ -635,5 +635,8 @@
     <ClInclude Include="..\..\cl_dll\rain.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\cl_dll\glInclude.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

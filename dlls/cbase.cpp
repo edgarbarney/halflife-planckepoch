@@ -547,7 +547,7 @@ void CBaseEntity::Activate()
 	//LRC - and the aliaslist too
 	if (m_iLFlags & LF_ALIASLIST)
 	{
-		UTIL_AddToAliasList((CBaseAlias*)this);
+		UTIL_AddToAliasList((CBaseMutableAlias*)this);
 	}
 
 	if (m_activated)

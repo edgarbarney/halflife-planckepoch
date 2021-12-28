@@ -25,12 +25,10 @@
 #include "particleman.h"
 #include "tri.h"
 
+#include "glInclude.h"
 
 extern IParticleMan* g_pParticleMan;
 
-extern float g_fFogColor[4];
-extern float g_fStartDist;
-extern float g_fEndDist;
 extern int g_iWaterLevel;
 extern Vector v_origin;
 
@@ -146,21 +144,30 @@ void BlackFog()
 {
 	//Not in water and we want fog.
 	static float fColorBlack[3] = {0, 0, 0};
-	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+	bool bFog = g_iWaterLevel < 2 && g_fog.startDist > 0 && g_fog.endDist > 0;
 	if (bFog)
-		gEngfuncs.pTriAPI->Fog(fColorBlack, g_fStartDist, g_fEndDist, bFog);
+		gEngfuncs.pTriAPI->Fog(fColorBlack, g_fog.startDist, g_fog.endDist, bFog);
 	else
-		gEngfuncs.pTriAPI->Fog(g_fFogColor, g_fStartDist, g_fEndDist, bFog);
+		gEngfuncs.pTriAPI->Fog(g_fog.fogColor, g_fog.startDist, g_fog.endDist, bFog);
 }
 
 void RenderFog()
 {
 	//Not in water and we want fog.
-	bool bFog = g_iWaterLevel < 2 && g_fStartDist > 0 && g_fEndDist > 0;
+	bool bFog = g_iWaterLevel < 2 && g_fog.startDist > 0 && g_fog.endDist > 0;
 	if (bFog)
-		gEngfuncs.pTriAPI->Fog(g_fFogColor, g_fStartDist, g_fEndDist, bFog);
+		gEngfuncs.pTriAPI->Fog(g_fog.fogColor, g_fog.startDist, g_fog.endDist, bFog);
 	//	else
 	//		gEngfuncs.pTriAPI->Fog ( g_fFogColor, 10000, 10001, 0 );
+}
+
+void ClearToFogColor()
+{
+	if (g_fog.startDist > 0 && g_fog.endDist > 0)
+	{
+		glClearColor(g_fog.fogColor[0], g_fog.fogColor[1], g_fog.fogColor[2], 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
 }
 
 /*

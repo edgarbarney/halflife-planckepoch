@@ -19,7 +19,7 @@
 #pragma once
 
 //LRC
-#define GAME_NAME "Spirit of Half-Life 1.5 alpha4"
+#define GAME_NAME "Spirit of Half-Life 1.8 alpha1"
 
 //#include "weapons.h"
 //#include "items.h"

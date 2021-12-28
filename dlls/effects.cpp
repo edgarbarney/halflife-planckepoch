@@ -446,6 +446,8 @@ public:
 	int m_spriteTexture;
 	int m_iszSpriteName;
 	int m_frameStart;
+	int m_iStartAttachment;
+	int m_iEndAttachment;
 
 	float m_radius;
 };
@@ -476,7 +478,9 @@ TYPEDESCRIPTION CLightning::m_SaveData[] =
 	{
 		DEFINE_FIELD(CLightning, m_active, FIELD_BOOLEAN),
 		DEFINE_FIELD(CLightning, m_iszStartEntity, FIELD_STRING),
+		DEFINE_FIELD(CLightning, m_iStartAttachment, FIELD_INTEGER),
 		DEFINE_FIELD(CLightning, m_iszEndEntity, FIELD_STRING),
+		DEFINE_FIELD(CLightning, m_iEndAttachment, FIELD_INTEGER),
 		DEFINE_FIELD(CLightning, m_life, FIELD_FLOAT),
 		DEFINE_FIELD(CLightning, m_boltWidth, FIELD_INTEGER),
 		DEFINE_FIELD(CLightning, m_noiseAmplitude, FIELD_INTEGER),
@@ -573,9 +577,19 @@ bool CLightning::KeyValue(KeyValueData* pkvd)
 		m_iszStartEntity = ALLOC_STRING(pkvd->szValue);
 		return true;
 	}
+	else if (FStrEq(pkvd->szKeyName, "LightningStartAttachment"))
+	{
+		m_iStartAttachment = atoi(pkvd->szValue);
+		return true;
+	}
 	else if (FStrEq(pkvd->szKeyName, "LightningEnd"))
 	{
 		m_iszEndEntity = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "LightningEndAttachment"))
+	{
+		m_iEndAttachment = atoi(pkvd->szValue);
 		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "life"))
@@ -1039,12 +1053,17 @@ void CLightning::BeamUpdatePoints()
 		if (beamType == BEAM_POINTS || beamType == BEAM_HOSE)
 			SetEndPos(pEnd->pev->origin);
 		else
+		{
 			SetEndEntity(ENTINDEX(ENT(pEnd->pev)));
+			SetEndAttachment(m_iEndAttachment);
+		}
 	}
 	else
 	{
 		SetStartEntity(ENTINDEX(ENT(pStart->pev)));
+		SetStartAttachment(m_iStartAttachment);
 		SetEndEntity(ENTINDEX(ENT(pEnd->pev)));
+		SetEndAttachment(m_iEndAttachment);
 	}
 
 	RelinkBeam();
@@ -1363,6 +1382,8 @@ void CLaser::FireAtPoint(Vector startpos, TraceResult& tr)
 void CLaser::StrikeThink()
 {
 	Vector startpos = pev->origin;
+	bool success = true;
+
 	if (m_iszStartPosition)
 	{
 		startpos = CalcLocus_Position(this, m_hActivator, STRING(m_iszStartPosition)); //AJH allow *locus start/end positions
@@ -1377,7 +1398,13 @@ void CLaser::StrikeThink()
 		CBaseEntity* pEnd = RandomTargetname(STRING(pev->message));
 
 		if (pEnd)
-			m_firePosition = CalcLocus_Position(this, pEnd, STRING(pev->message));
+		{
+			pEnd->CalcPosition(m_hActivator, &m_firePosition);
+		}
+		else
+		{
+			m_firePosition = CalcLocus_Position(this, m_hActivator, STRING(pev->message));
+		}
 	}
 
 	TraceResult tr;
@@ -2109,7 +2136,7 @@ void CGibShooter::ShootThink()
 		Vector vecPos;
 		float flGibVelocity;
 		if (!FStringNull(m_iszVelFactor))
-			flGibVelocity = CalcLocus_Ratio(m_hActivator, STRING(m_iszVelFactor));
+			flGibVelocity = CalcLocus_Number(m_hActivator, STRING(m_iszVelFactor));
 		else
 			flGibVelocity = 1;
 
@@ -2304,8 +2331,8 @@ void CEnvShooter::Precache()
 CBaseEntity* CEnvShooter::CreateGib(Vector vecPos, Vector vecVel)
 {
 	if (pev->noise)
-		pev->scale = CalcLocus_Ratio(this, STRING(pev->noise), 0); //AJH / MJB - allow locus_ratio for scale
-	if (m_iPhysics <= 1)										   // normal gib or sticky gib
+		pev->scale = CalcLocus_Number(this, STRING(pev->noise), 0); //AJH / MJB - allow locus_ratio for scale
+	if (m_iPhysics <= 1)											// normal gib or sticky gib
 	{
 		CGib* pGib = GetClassPtr((CGib*)NULL);
 
@@ -3896,7 +3923,7 @@ public:
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 	void Think() override;
 	void DesiredAction() override;
-	virtual void MakeLight(int iTime);
+	virtual void MakeLight(bool bActive);
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
@@ -3985,12 +4012,10 @@ void CEnvDLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 	}
 }
 
-extern int gmsgKeyedDLight;
-
-void CEnvDLight::MakeLight(int iTime)
+void CEnvDLight::MakeLight(bool bActive)
 {
-	bool bActive = iTime > 0;
-	MESSAGE_BEGIN(MSG_ALL, gmsgKeyedDLight, NULL);
+	//	MESSAGE_BEGIN( MSG_ALL, gmsgKeyedDLight, NULL );
+	MESSAGE_BEGIN(MSG_ALL, gmsgKeyedELight, NULL);
 	WRITE_BYTE(m_iKey);
 	WRITE_BYTE(bActive); // visible?
 	if (bActive)
@@ -4026,23 +4051,36 @@ void CEnvDLight::Think()
 class CEnvELight : public CEnvDLight
 {
 public:
+	void PostSpawn() override;
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
-	void MakeLight(int iTime) override;
+	void MakeLight(bool bActive) override;
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE m_hAttach;
+	int m_iKey;
+	static int ms_iNextFreeKey;
 };
 
 LINK_ENTITY_TO_CLASS(env_elight, CEnvELight);
 
+int CEnvELight::ms_iNextFreeKey = 1;
+
 TYPEDESCRIPTION CEnvELight::m_SaveData[] =
 	{
 		DEFINE_FIELD(CEnvELight, m_hAttach, FIELD_EHANDLE),
+		DEFINE_FIELD(CEnvELight, m_iKey, FIELD_INTEGER),
 };
 
 IMPLEMENT_SAVERESTORE(CEnvELight, CEnvDLight);
+
+void CEnvELight::PostSpawn()
+{
+	// each env_elight uses its own key to reference the light on the client
+	m_iKey = ms_iNextFreeKey;
+	ms_iNextFreeKey++;
+}
 
 void CEnvELight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
@@ -4063,7 +4101,7 @@ void CEnvELight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 	CEnvDLight::Use(pActivator, pCaller, useType, value);
 }
 
-void CEnvELight::MakeLight(int iTime)
+void CEnvELight::MakeLight(bool bActive)
 {
 	if (m_hAttach == NULL)
 	{
@@ -4151,7 +4189,7 @@ void CEnvDecal::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 	}
 
 	if (pev->message)
-		vecOffs = vecOffs * CalcLocus_Ratio(pActivator, STRING(pev->message));
+		vecOffs = vecOffs * CalcLocus_Number(pActivator, STRING(pev->message));
 	else
 		vecOffs = vecOffs.Normalize() * 4000;
 
@@ -4332,7 +4370,7 @@ void CItemSoda::CanTouch(CBaseEntity* pOther)
 #define SF_FOG_ACTIVE 1
 #define SF_FOG_FADING 0x8000
 
-class CEnvFog : public CBaseEntity
+class CEnvFog : public CPointEntity
 {
 public:
 	void Spawn() override;
@@ -4508,14 +4546,19 @@ void CEnvFog::TurnOff()
 void CEnvFog::ResumeThink()
 {
 	//	ALERT(at_console, "Fog resume %f\n", gpGlobals->time);
-	SetThink(&CEnvFog::FadeInDone);
+	SetThink(&CEnvFog ::Resume2Think);
 	SetNextThink(0.1);
+}
+
+void CEnvFog ::Resume2Think()
+{
+	SendData(pev->rendercolor, m_iFadeIn, m_iStartDist, m_iEndDist);
 }
 
 void CEnvFog::FadeInDone()
 {
 	pev->spawnflags &= ~SF_FOG_FADING;
-	SendData(pev->rendercolor, 0, m_iStartDist, m_iEndDist);
+	//LRC 1.8 we don't need to resend...	SendData( pev->rendercolor, 0, m_iStartDist, m_iEndDist);
 
 	if (m_fHoldTime)
 	{
@@ -4877,7 +4920,7 @@ bool CRainSettings::KeyValue(KeyValueData* pkvd)
 		return true;
 	}
 
-    return CBaseEntity::KeyValue(pkvd);
+	return CBaseEntity::KeyValue(pkvd);
 }
 
 LINK_ENTITY_TO_CLASS(rain_settings, CRainSettings);
@@ -4933,7 +4976,7 @@ bool CRainModify::KeyValue(KeyValueData* pkvd)
 		fadeTime = atof(pkvd->szValue);
 		return true;
 	}
-	
+
 	return CBaseEntity::KeyValue(pkvd);
 }
 

@@ -28,6 +28,7 @@ int grgLogoFrame[MAX_LOGO_FRAMES] =
 		16, 17, 18, 19, 20, 20, 20, 20, 20, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
 		29, 29, 29, 29, 29, 28, 27, 26, 25, 24, 30, 31};
 
+inline float UTIL_Lerp(float lerpfactor, float A, float B) { return A + lerpfactor * (B - A); }
 
 extern bool g_iVisibleMouse;
 
@@ -87,13 +88,6 @@ void CHud::Think()
 	}
 }
 
-//LRC - fog fading values
-extern float g_fFadeDuration;
-extern float g_fStartDist;
-extern float g_fEndDist;
-//extern int g_iFinalStartDist;
-extern int g_iFinalEndDist;
-
 // Redraw
 // step through the local data,  placing the appropriate graphics & text as appropriate
 // returns 1 if they've changed, 0 otherwise
@@ -105,22 +99,30 @@ bool CHud::Redraw(float flTime, bool intermission)
 	static float m_flShotTime = 0;
 
 	//LRC - handle fog fading effects. (is this the right place for it?)
-	if (g_fFadeDuration)
+	if (g_fFogFadeDuration)
 	{
 		// Nicer might be to use some kind of logarithmic fade-in?
-		double fFraction = m_flTimeDelta / g_fFadeDuration;
-		//		g_fStartDist -= (FOG_LIMIT - g_iFinalStartDist)*fFraction;
-		g_fEndDist -= (FOG_LIMIT - g_iFinalEndDist) * fFraction;
+		double fFraction = m_flTimeDelta / g_fFogFadeDuration;
+		if (fFraction > 0)
+		{
+			g_fFogFadeFraction += fFraction;
 
-		//		CONPRINT("FogFading: %f - %f, frac %f, time %f, final %d\n", g_fStartDist, g_fEndDist, fFraction, flTime, g_iFinalEndDist);
+			//		CONPRINT("FogFading: %f - %f, frac %f, time %f, final %d\n", g_fStartDist, g_fEndDist, fFraction, flTime, g_iFinalEndDist);
 
-		// cap it
-		//		if (g_fStartDist > FOG_LIMIT)				g_fStartDist = FOG_LIMIT;
-		if (g_fEndDist > FOG_LIMIT)
-			g_fEndDist = FOG_LIMIT;
-		//		if (g_fStartDist < g_iFinalStartDist)	g_fStartDist = g_iFinalStartDist;
-		if (g_fEndDist < g_iFinalEndDist)
-			g_fEndDist = g_iFinalEndDist;
+			if (g_fFogFadeFraction >= 1.0f)
+			{
+				// fading complete
+				g_fFogFadeFraction = 1.0f;
+				g_fFogFadeDuration = 0.0f;
+			}
+
+			// set the new fog values
+			g_fog.endDist = UTIL_Lerp(g_fFogFadeFraction, g_fogPreFade.endDist, g_fogPostFade.endDist);
+			g_fog.startDist = UTIL_Lerp(g_fFogFadeFraction, g_fogPreFade.startDist, g_fogPostFade.startDist);
+			g_fog.fogColor[0] = UTIL_Lerp(g_fFogFadeFraction, g_fogPreFade.fogColor[0], g_fogPostFade.fogColor[0]);
+			g_fog.fogColor[1] = UTIL_Lerp(g_fFogFadeFraction, g_fogPreFade.fogColor[1], g_fogPostFade.fogColor[1]);
+			g_fog.fogColor[2] = UTIL_Lerp(g_fFogFadeFraction, g_fogPreFade.fogColor[2], g_fogPostFade.fogColor[2]);
+		}
 	}
 
 	// Clock was reset, reset delta

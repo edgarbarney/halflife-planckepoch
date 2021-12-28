@@ -26,12 +26,11 @@
 extern IParticleMan* g_pParticleMan;
 
 //LRC - the fogging fog
-float g_fFogColor[3];
-float g_fStartDist;
-float g_fEndDist;
-//int g_iFinalStartDist; //for fading
-int g_iFinalEndDist;   //for fading
-float g_fFadeDuration; //negative = fading out
+FogSettings g_fog;
+FogSettings g_fogPreFade;
+FogSettings g_fogPostFade;
+float g_fFogFadeDuration;
+float g_fFogFadeFraction;
 
 extern BEAM* pBeam;
 extern BEAM* pBeam2;
@@ -39,6 +38,8 @@ extern TEMPENTITY* pFlare; // Vit_amiN
 
 
 extern rain_properties Rain;
+extern float g_clampMinYaw, g_clampMaxYaw, g_clampMinPitch, g_clampMaxPitch;
+extern float g_clampTurnSpeed;
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
 
@@ -84,8 +85,17 @@ void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 {
 	//	CONPRINT("MSG:InitHUD");
 	//LRC - clear the fog
-	g_fStartDist = 0;
-	g_fEndDist = 0;
+	g_fog.startDist = -1;
+	g_fog.endDist = -1;
+	g_fog.fogColor[0] = -1;
+	g_fog.fogColor[1] = -1;
+	g_fog.fogColor[2] = -1;
+	//LRC 1.8 - clear view clamps
+	g_clampMinPitch = -90;
+	g_clampMaxPitch = 90;
+	g_clampMinYaw = 0;
+	g_clampMaxYaw = 360;
+	g_clampTurnSpeed = 1E6;
 	numMirrors = 0;
 
 	m_iSkyMode = SKY_OFF; //LRC
@@ -117,30 +127,44 @@ void CHud::MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
 	BEGIN_READ(pbuf, iSize);
 
 	for (int i = 0; i < 3; i++)
-		g_fFogColor[i] = READ_BYTE();
-
-	g_fFadeDuration = READ_SHORT();
-	g_fStartDist = READ_SHORT();
-
-	if (g_fFadeDuration > 0)
 	{
-		//		// fading in
-		//		g_fStartDist = READ_SHORT();
-		g_iFinalEndDist = READ_SHORT();
-		//		g_fStartDist = FOG_LIMIT;
-		g_fEndDist = FOG_LIMIT;
+		g_fogPostFade.fogColor[i] = READ_BYTE();
+
+		if (g_fog.fogColor[i] >= 0)
+			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
+		else
+			g_fogPreFade.fogColor[i] = g_fogPostFade.fogColor[i];
 	}
-	else if (g_fFadeDuration < 0)
-	{
-		//		// fading out
-		//		g_iFinalStartDist =
-		g_iFinalEndDist = g_fEndDist = READ_SHORT();
-	}
+
+	g_fFogFadeDuration = READ_SHORT();
+
+	g_fogPostFade.startDist = READ_SHORT();
+	if (g_fog.startDist >= 0)
+		g_fogPreFade.startDist = g_fog.startDist;
 	else
+		g_fogPreFade.startDist = g_fogPostFade.startDist;
+
+	g_fogPostFade.endDist = READ_SHORT();
+	if (g_fog.endDist >= 0)
+		g_fogPreFade.endDist = g_fog.endDist;
+	else
+		g_fogPreFade.endDist = g_fogPostFade.endDist;
+
+	if (g_fFogFadeDuration < 0)
 	{
-		//		g_fStartDist = READ_SHORT();
-		g_fEndDist = READ_SHORT();
+		g_fFogFadeDuration *= -1;
+		g_fogPostFade.startDist = FOG_LIMIT;
+		g_fogPostFade.endDist = FOG_LIMIT;
 	}
+	else if (g_fFogFadeDuration == 0)
+	{
+		g_fog.endDist = g_fogPostFade.endDist;
+		for (int i = 0; i < 3; i++)
+		{
+			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
+		}
+	}
+	g_fFogFadeFraction = 0;
 }
 
 //LRC
@@ -213,6 +237,17 @@ void CHud ::MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf)
 	m_iSkyScale = READ_BYTE();
 }
 
+//LRC 1.8
+void CHud ::MsgFunc_ClampView(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+
+	g_clampMinYaw = READ_SHORT();
+	g_clampMaxYaw = READ_SHORT();
+	g_clampMinPitch = READ_BYTE() - 128;
+	g_clampMaxPitch = READ_BYTE() - 128;
+	*(long*)&g_clampTurnSpeed = READ_LONG();
+}
 
 bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 {

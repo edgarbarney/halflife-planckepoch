@@ -31,6 +31,7 @@
 #include "doors.h"
 #include "movewith.h"
 #include "player.h"
+#include "locus.h"
 
 #define ACCELTIMEINCREMENT 0.1 //AJH for acceleration/deceleration time steps
 
@@ -310,7 +311,8 @@ void FireTargets(const char* targetName, CBaseEntity* pActivator, CBaseEntity* p
 					{
 						strncpy(szBuf, targetName + i, j - i);
 						szBuf[j - i] = 0;
-						pActivator = UTIL_FindEntityByTargetname(NULL, szBuf, inputActivator);
+						pActivator = CalcLocusParameter(inputActivator, szBuf);
+						//						pActivator = UTIL_FindEntityByTargetname(NULL, szBuf, inputActivator);
 						if (!pActivator)
 						{
 							//ALERT(at_console, "Missing activator \"%s\"\n", szBuf);
