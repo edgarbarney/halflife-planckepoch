@@ -60,6 +60,8 @@ inline int gmsgStatusIcon = 0; //LRC
 inline int gmsgStatusText = 0;
 inline int gmsgStatusValue = 0;
 inline int gmsgCamData = 0; // for trigger_viewset
+inline int gmsgRainData = 0;
+inline int gmsgInventory = 0; //AJH Inventory system
 
 inline int gmsgWeapons = 0;
 

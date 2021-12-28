@@ -107,7 +107,9 @@ kbutton_t in_reload;
 kbutton_t in_alt1;
 kbutton_t in_score;
 kbutton_t in_break;
-kbutton_t in_graph; // Display the netgraph
+kbutton_t in_graph;		// Display the netgraph
+kbutton_t in_customhud; //AJH custom hud
+kbutton_t in_briefing;	//AJH show map briefing
 
 typedef struct kblist_s
 {
@@ -519,6 +521,44 @@ void IN_ScoreUp()
 	if (gViewPort)
 	{
 		gViewPort->HideScoreBoard();
+	}
+}
+
+void IN_HUDDown(void) //AJH
+{
+	KeyDown(&in_customhud);
+	if (gViewPort)
+	{
+		//gViewPort->ShowVGUIMenu(MENU_CUSTOM);
+		gViewPort->ShowCommandMenu(gViewPort->m_StandardMenu);
+	}
+}
+
+void IN_HUDUp(void) //AJH
+{
+	KeyUp(&in_customhud);
+	if (gViewPort)
+	{
+		//gViewPort->HideVGUIMenu();
+		gViewPort->HideCommandMenu();
+	}
+}
+
+void IN_BriefingDown() //AJH
+{
+	KeyDown(&in_briefing);
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_MAPBRIEFING);
+	}
+}
+
+void IN_BriefingUp() //AJH
+{
+	KeyUp(&in_briefing);
+	if (gViewPort)
+	{
+		gViewPort->HideVGUIMenu();
 	}
 }
 
@@ -964,6 +1004,10 @@ void InitInput()
 	gEngfuncs.pfnAddCommand("-score", IN_ScoreUp);
 	gEngfuncs.pfnAddCommand("+showscores", IN_ScoreDown);
 	gEngfuncs.pfnAddCommand("-showscores", IN_ScoreUp);
+	gEngfuncs.pfnAddCommand("-hud", IN_HUDUp);			   //AJH
+	gEngfuncs.pfnAddCommand("+hud", IN_HUDDown);		   //AJH
+	gEngfuncs.pfnAddCommand("-briefing", IN_BriefingUp);   //AJH
+	gEngfuncs.pfnAddCommand("+briefing", IN_BriefingDown); //AJH
 	gEngfuncs.pfnAddCommand("+graph", IN_GraphDown);
 	gEngfuncs.pfnAddCommand("-graph", IN_GraphUp);
 	gEngfuncs.pfnAddCommand("+break", IN_BreakDown);

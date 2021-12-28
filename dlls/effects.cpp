@@ -2022,10 +2022,10 @@ void CGibShooter::Spawn()
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 
-	if (m_flDelay == 0)
-	{
-		m_flDelay = 0.1;
-	}
+	//	if ( m_flDelay == 0 )
+	//	{
+	//		m_flDelay = 0.1;
+	//	}
 
 	if (m_flGibLife == 0)
 	{
@@ -2033,8 +2033,8 @@ void CGibShooter::Spawn()
 	}
 
 	SetMovedir(pev);
-	//	if (pev->body == 0)
-	pev->body = MODEL_FRAMES(m_iGibModelIndex);
+	if (pev->body == 0)
+		pev->body = MODEL_FRAMES(m_iGibModelIndex);
 }
 
 
@@ -2093,16 +2093,15 @@ CBaseEntity* CGibShooter::CreateGib(Vector vecPos, Vector vecVel)
 void CGibShooter::ShootThink()
 {
 	int i;
-	/*	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
+	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
 	{
 		i = m_iGibs;
 	}
 	else
 	{
-*/
-	i = 1;
-	SetNextThink(m_flDelay);
-	//	}
+		i = 1;
+		SetNextThink(m_flDelay);
+	}
 
 	while (i > 0)
 	{
@@ -4083,8 +4082,9 @@ void CEnvELight::MakeLight(int iTime)
 	WRITE_BYTE(pev->rendercolor.x);								// r
 	WRITE_BYTE(pev->rendercolor.y);								// g
 	WRITE_BYTE(pev->rendercolor.z);								// b
-	WRITE_BYTE(iTime);											// time * 10
-	WRITE_COORD(pev->frags);									// decay * 0.1
+	//WRITE_BYTE( iTime );				// time * 10
+	WRITE_BYTE(pev->health); // time * 10
+	WRITE_COORD(pev->frags); // decay * 0.1
 	MESSAGE_END();
 }
 
@@ -4595,6 +4595,12 @@ void CEnvSky ::DesiredAction()
 	WRITE_COORD(pev->origin.x); // view position
 	WRITE_COORD(pev->origin.y);
 	WRITE_COORD(pev->origin.z);
+
+	//AJH scale of the skybox 1/x (0=infinitly large/far away = no parallax)
+	//No parallax is the default behaviour. FGD's can set a new default.
+	WRITE_BYTE(pev->frags);
+	//WRITE_BYTE(ENTINDEX(edict()));
+
 	MESSAGE_END();
 }
 
@@ -4633,8 +4639,8 @@ void CParticle::Spawn(void)
 	pev->renderamt = 128;
 	pev->rendermode = kRenderTransTexture;
 
-	// 'body' determines whether the effect is active or not
-	pev->body = (pev->spawnflags & SF_PARTICLE_ON) != 0;
+	// 'body' determines whether the effect is active or not //AJH only if we have a targetname
+	pev->body = pev->targetname ? (pev->spawnflags & SF_PARTICLE_ON) != 0 : 1;
 
 	Precache();
 
@@ -4726,6 +4732,7 @@ public:
 private:
 	int m_iInitialRenderMode;
 	bool bSent;
+	unsigned short m_usMirror; //Moved from weapons.cpp for more struct code. G-Cont
 };
 
 TYPEDESCRIPTION CEnvMirror::m_SaveData[] =
@@ -4752,6 +4759,10 @@ LINK_ENTITY_TO_CLASS(env_mirror, CEnvMirror);
 
 void CEnvMirror ::Spawn(void)
 {
+	// G-Cont. added this for emulate shiny floor (without this flag monsters can't walk on it)
+	if (!m_pMoveWith)
+		pev->flags |= FL_WORLDBRUSH;
+
 	pev->angles = g_vecZero;
 	pev->movetype = MOVETYPE_PUSH; // so it doesn't get pushed by anything
 
@@ -4762,11 +4773,10 @@ void CEnvMirror ::Spawn(void)
 
 	Precache();
 
-	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER)
-		CBaseEntity::Create("player_marker", (float*)&Center(), (float*)&g_vecZero, NULL);
-
 	SET_MODEL(ENT(pev), STRING(pev->model));
 	SetThink(&CEnvMirror ::MirrorThink);
+	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER)
+		CBaseEntity::Create("player_marker", VecBModelOrigin(pev), pev->angles, NULL);
 	m_iInitialRenderMode = pev->rendermode;
 	if (!m_flRadius)
 		m_flRadius = 330;
@@ -4779,6 +4789,7 @@ void CEnvMirror ::Spawn(void)
 		if (pev->size.y > pev->size.z && pev->size.x > pev->size.z)
 			pev->frags = 2;
 	}
+
 	SetNextThink(0.1);
 }
 
@@ -4786,6 +4797,7 @@ void CEnvMirror ::Precache(void)
 {
 	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER)
 		UTIL_PrecacheOther("player_marker");
+	m_usMirror = PRECACHE_EVENT(1, "events/mirror.sc");
 	bSent = false;
 }
 
@@ -4840,3 +4852,137 @@ void CEnvMirror ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 		bSent = false;
 	}
 }
+
+//=========================================================
+// G-Cont - env_rain, use triAPI
+//=========================================================
+
+void CRainSettings::Spawn()
+{
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+	pev->effects |= EF_NODRAW;
+}
+
+bool CRainSettings::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "m_flDistance"))
+	{
+		Rain_Distance = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_iMode"))
+	{
+		Rain_Mode = atoi(pkvd->szValue);
+		return true;
+	}
+
+    return CBaseEntity::KeyValue(pkvd);
+}
+
+LINK_ENTITY_TO_CLASS(rain_settings, CRainSettings);
+
+TYPEDESCRIPTION CRainSettings::m_SaveData[] =
+	{
+		DEFINE_FIELD(CRainSettings, Rain_Distance, FIELD_FLOAT),
+		DEFINE_FIELD(CRainSettings, Rain_Mode, FIELD_INTEGER),
+};
+IMPLEMENT_SAVERESTORE(CRainSettings, CBaseEntity);
+
+
+
+void CRainModify::Spawn()
+{
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+	pev->effects |= EF_NODRAW;
+
+	if (FStringNull(pev->targetname))
+		pev->spawnflags |= 1;
+}
+
+bool CRainModify::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "m_iDripsPerSecond"))
+	{
+		Rain_Drips = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_flWindX"))
+	{
+		Rain_windX = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_flWindY"))
+	{
+		Rain_windY = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_flRandX"))
+	{
+		Rain_randX = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_flRandY"))
+	{
+		Rain_randY = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "m_flTime"))
+	{
+		fadeTime = atof(pkvd->szValue);
+		return true;
+	}
+	
+	return CBaseEntity::KeyValue(pkvd);
+}
+
+void CRainModify::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	if (pev->spawnflags & 1)
+		return; // constant
+
+	if (gpGlobals->deathmatch)
+	{
+		ALERT(at_console, "Rain error: only static rain in multiplayer\n");
+		return; // not in multiplayer
+	}
+
+	CBasePlayer* pPlayer;
+	pPlayer = (CBasePlayer*)CBaseEntity::Instance(g_engfuncs.pfnPEntityOfEntIndex(1));
+
+	if (fadeTime)
+	{ // write to 'ideal' settings
+		pPlayer->Rain_ideal_dripsPerSecond = Rain_Drips;
+		pPlayer->Rain_ideal_randX = Rain_randX;
+		pPlayer->Rain_ideal_randY = Rain_randY;
+		pPlayer->Rain_ideal_windX = Rain_windX;
+		pPlayer->Rain_ideal_windY = Rain_windY;
+
+		pPlayer->Rain_endFade = gpGlobals->time + fadeTime;
+		pPlayer->Rain_nextFadeUpdate = gpGlobals->time + 1;
+	}
+	else
+	{
+		pPlayer->Rain_dripsPerSecond = Rain_Drips;
+		pPlayer->Rain_randX = Rain_randX;
+		pPlayer->Rain_randY = Rain_randY;
+		pPlayer->Rain_windX = Rain_windX;
+		pPlayer->Rain_windY = Rain_windY;
+
+		pPlayer->Rain_needsUpdate = 1;
+	}
+}
+
+LINK_ENTITY_TO_CLASS(rain_modify, CRainModify);
+
+TYPEDESCRIPTION CRainModify::m_SaveData[] =
+	{
+		DEFINE_FIELD(CRainModify, fadeTime, FIELD_FLOAT),
+		DEFINE_FIELD(CRainModify, Rain_Drips, FIELD_INTEGER),
+		DEFINE_FIELD(CRainModify, Rain_randX, FIELD_FLOAT),
+		DEFINE_FIELD(CRainModify, Rain_randY, FIELD_FLOAT),
+		DEFINE_FIELD(CRainModify, Rain_windX, FIELD_FLOAT),
+		DEFINE_FIELD(CRainModify, Rain_windY, FIELD_FLOAT),
+};
+IMPLEMENT_SAVERESTORE(CRainModify, CBaseEntity);

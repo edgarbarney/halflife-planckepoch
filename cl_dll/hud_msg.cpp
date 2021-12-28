@@ -20,6 +20,7 @@
 #include "cl_util.h"
 #include "parsemsg.h"
 #include "r_efx.h"
+#include "rain.h"
 
 #include "particleman.h"
 extern IParticleMan* g_pParticleMan;
@@ -36,6 +37,8 @@ extern BEAM* pBeam;
 extern BEAM* pBeam2;
 extern TEMPENTITY* pFlare; // Vit_amiN
 
+
+extern rain_properties Rain;
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
 
@@ -62,19 +65,19 @@ bool CHud::MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf)
 	// reset concussion effect
 	m_iConcussionEffect = 0;
 
-	//LRC - reset fog
+	/*	//LRC - reset fog
 	g_fStartDist = 0;
 	g_fEndDist = 0;
 	numMirrors = 0;
-
+*/
 	return true;
 }
 
-void CAM_ToFirstPerson();
+//void CAM_ToFirstPerson(void);
 
 void CHud::MsgFunc_ViewMode(const char* pszName, int iSize, void* pbuf)
 {
-	CAM_ToFirstPerson();
+	//CAM_ToFirstPerson();
 }
 
 void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
@@ -83,6 +86,7 @@ void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 	//LRC - clear the fog
 	g_fStartDist = 0;
 	g_fEndDist = 0;
+	numMirrors = 0;
 
 	m_iSkyMode = SKY_OFF; //LRC
 
@@ -206,6 +210,7 @@ void CHud ::MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf)
 	m_vecSkyPos.x = READ_COORD();
 	m_vecSkyPos.y = READ_COORD();
 	m_vecSkyPos.z = READ_COORD();
+	m_iSkyScale = READ_BYTE();
 }
 
 
@@ -287,5 +292,39 @@ bool CHud ::MsgFunc_CamData(const char* pszName, int iSize, void* pbuf) // rain 
 	gHUD.viewEntityIndex = READ_SHORT();
 	gHUD.viewFlags = READ_SHORT();
 	//	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
+	return true;
+}
+
+bool CHud ::MsgFunc_RainData(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	Rain.dripsPerSecond = READ_SHORT();
+	Rain.distFromPlayer = READ_COORD();
+	Rain.windX = READ_COORD();
+	Rain.windY = READ_COORD();
+	Rain.randX = READ_COORD();
+	Rain.randY = READ_COORD();
+	Rain.weatherMode = READ_SHORT();
+	Rain.globalHeight = READ_COORD();
+	return true;
+}
+
+bool CHud ::MsgFunc_Inventory(const char* pszName, int iSize, void* pbuf) //AJH inventory system
+{
+	BEGIN_READ(pbuf, iSize);
+	int i = READ_SHORT();
+
+	if (i == 0)
+	{ //We've died (or got told to lose all items) so remove inventory.
+		for (i = 0; i < MAX_ITEMS; i++)
+		{
+			g_iInventory[i] = 0;
+		}
+	}
+	else
+	{
+		i -= 1; // subtract one so g_iInventory[0] can be used. (lowest ITEM_* is defined as '1')
+		g_iInventory[i] = READ_SHORT();
+	}
 	return true;
 }

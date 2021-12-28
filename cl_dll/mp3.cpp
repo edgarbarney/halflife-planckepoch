@@ -23,7 +23,7 @@ int CMP3::Initialize()
 	if (m_hFMod != NULL)
 	{
 		// fill in the function pointers
-		GET_FUNCTION(VER, m_hFMod, FSOUND_GetVersion, 0);
+		//	GET_FUNCTION(VER, m_hFMod, FSOUND_GetVersion, 0);
 		GET_FUNCTION(SCL, m_hFMod, FSOUND_Stream_Close, 4);
 		GET_FUNCTION(SOP, m_hFMod, FSOUND_SetOutput, 4);
 		GET_FUNCTION(SBS, m_hFMod, FSOUND_SetBufferSize, 4);
@@ -77,7 +77,8 @@ int CMP3::StopMP3(void)
 int CMP3::PlayMP3(const char* pszSong)
 {
 	if (m_iIsPlaying)
-	{ // sound system is already initialized
+	{
+		// sound system is already initialized
 		SCL(m_Stream);
 	}
 	else if (!fmodInit)
@@ -87,22 +88,21 @@ int CMP3::PlayMP3(const char* pszSong)
 		SBS(200);
 		SDRV(0);
 		INIT(44100, 1, 0); // we need just one channel, multiple mp3s at a time would be, erm, strange...
-	}					   //AJH not for really cool effects, say walking past cars in a street playing different tunes
+	}					   //AJH not for really cool effects, say walking past cars in a street playing different tunes, might change this later.
 
 	char song[256];
 
-	sprintf(song, "%s/sound/fmod/%s", gEngfuncs.pfnGetGameDirectory(), pszSong);
+	sprintf(song, "%s/%s", gEngfuncs.pfnGetGameDirectory(), pszSong);
 
-	// leave out the FSOUND_LOOP_NORMAL to play the mp3 only once
 	//	gEngfuncs.Con_Printf("Using fmod.dll version %f\n",VER());
-	if (SOF)
+
+	if (SO)
 	{
-		m_Stream = SOF(song, FSOUND_NORMAL | FSOUND_LOOP_NORMAL, 1); //AJH old fmod load call
+		m_Stream = SO(song, FSOUND_NORMAL | FSOUND_LOOP_NORMAL, 0, 0); //AJH new version fmod uses Open
 	}
-	else if (SO)
+	else if (SOF)
 	{
-		//	gEngfuncs.Con_Printf("USING FSOUND_Stream_Open\n");
-		m_Stream = SO(song, FSOUND_NORMAL | FSOUND_LOOP_NORMAL, 0, 0); //AJH new fmod uses more parameters
+		m_Stream = SOF(song, FSOUND_NORMAL | FSOUND_LOOP_NORMAL, 1); //AJH old version fmod OpenFile
 	}
 	if (m_Stream)
 	{
@@ -112,7 +112,6 @@ int CMP3::PlayMP3(const char* pszSong)
 	}
 	else
 	{
-
 		m_iIsPlaying = 0;
 		gEngfuncs.Con_Printf("Error: Could not load %s\n", song);
 		return 0;

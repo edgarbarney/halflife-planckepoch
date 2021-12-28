@@ -45,7 +45,7 @@ void LinkUserMessages()
 
 	gmsgSetFog = REG_USER_MSG("SetFog", 9);			   //LRC
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1); //LRC
-	gmsgSetSky = REG_USER_MSG("SetSky", 7);			   //LRC
+	gmsgSetSky = REG_USER_MSG("SetSky", 8);			   //LRC
 	gmsgHUDColor = REG_USER_MSG("HUDColor", 4);		   //LRC
 	gmsgAddShine = REG_USER_MSG("AddShine", -1);	   //LRC
 	gmsgParticle = REG_USER_MSG("Particle", -1);	   //LRC
@@ -74,6 +74,8 @@ void LinkUserMessages()
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 	gmsgCamData = REG_USER_MSG("CamData", -1);
 	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1); //Killar
+	gmsgRainData = REG_USER_MSG("RainData", 16);
+	gmsgInventory = REG_USER_MSG("Inventory", -1); //AJH Inventory system
 
 	gmsgWeapons = REG_USER_MSG("Weapons", 8);
 }

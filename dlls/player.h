@@ -84,6 +84,8 @@ enum sbar_data
 
 #define CHAT_INTERVAL 1.0f
 
+class CItemCamera; //AJH
+
 //NB: changing this structure will cause problems! --LRC
 class CBasePlayer : public CBaseMonster
 {
@@ -99,6 +101,10 @@ public:
 	int m_iObserverWeapon;	 // weapon of current tracked target
 	int m_iObserverLastMode; // last used observer mode
 	bool IsObserver() { return 0 != pev->iuser1; }
+
+	entvars_t* m_pevInflictor;	//AJH used for time based damage to remember inflictor
+								//m_hActivator remembers activator
+	CItemCamera* m_pItemCamera; //AJH Remember that we have a camera
 
 	int random_seed; // See that is shared between client & server for shared weapons code
 
@@ -381,6 +387,19 @@ public:
 	int m_iAutoWepSwitch;
 
 	bool m_bRestored;
+
+	int Rain_dripsPerSecond;
+	float Rain_windX, Rain_windY;
+	float Rain_randX, Rain_randY;
+
+	int Rain_ideal_dripsPerSecond;
+	float Rain_ideal_windX, Rain_ideal_windY;
+	float Rain_ideal_randX, Rain_ideal_randY;
+
+	float Rain_endFade; // 0 means off
+	float Rain_nextFadeUpdate;
+
+	int Rain_needsUpdate;
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)

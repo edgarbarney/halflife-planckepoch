@@ -235,3 +235,38 @@ public:
 	int m_iszStartPosition;
 	int m_iTowardsMode;
 };
+
+class CRainSettings : public CBaseEntity
+{
+public:
+	void Spawn() override;
+	bool KeyValue(KeyValueData* pkvd) override;
+
+	int ObjectCaps() override { return (CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
+
+	float Rain_Distance;
+	int Rain_Mode;
+};
+
+class CRainModify : public CBaseEntity
+{
+public:
+	void Spawn() override;
+	bool KeyValue(KeyValueData* pkvd) override;
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+	int ObjectCaps() override { return (CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
+
+	int Rain_Drips;
+	float Rain_windX, Rain_windY;
+	float Rain_randX, Rain_randY;
+	float fadeTime;
+};

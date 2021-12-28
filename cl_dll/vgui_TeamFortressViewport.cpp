@@ -61,6 +61,7 @@ extern bool g_iVisibleMouse;
 class CCommandMenu;
 int g_iPlayerClass;
 int g_iTeamNumber;
+int g_iInventory[MAX_ITEMS]; //AJH Inventory system
 int g_iUser1 = 0;
 int g_iUser2 = 0;
 int g_iUser3 = 0;
@@ -142,6 +143,33 @@ const char* sTFClassSelection[] =
 		"civilian",
 };
 
+char* sLocalisedInventory[MAX_ITEMS] = //AJH Inventory system
+	{
+		"#Item1",
+		"#Item2",
+		"#Item3",
+		"#Item4",
+		"#Item5",
+		"#Item6",
+		"#Item7",
+		"#Item8",
+		"#Item9",
+		"#Item10",
+};
+
+char* sInventorySelection[MAX_ITEMS] = //AJH Inventory system
+	{
+		"inventory 1",
+		"inventory 2",
+		"inventory 3",
+		"inventory 4",
+		"inventory 5",
+		"inventory 6",
+		"inventory 7",
+		"inventory 8",
+		"inventory 9",
+		"inventory 10",
+};
 
 // Get the name of TGA file, based on GameDir
 char* GetVGUITGAName(const char* pszName)
@@ -909,6 +937,7 @@ CommandButton* TeamFortressViewport::CreateCustomButton(char* pButtonText, char*
 	CommandButton* pButton = NULL;
 	CCommandMenu* pMenu = NULL;
 
+
 	// ChangeTeam
 	if (0 == strcmp(pButtonName, "!CHANGETEAM"))
 	{
@@ -940,6 +969,38 @@ CommandButton* TeamFortressViewport::CreateCustomButton(char* pButtonText, char*
 		m_pTeamButtons[5]->addActionSignal(new CMenuHandler_StringCommand("spectate"));
 		pMenu->AddButton(m_pTeamButtons[5]);
 	}
+
+	//AJH Show inventory
+	else if (!strcmp(pButtonName, "!SHOWINVENTORY"))
+	{
+		// Create the inventory menu
+		pButton = new InventoryButton(-1, pButtonText, 0, BUTTON_SIZE_Y, CMENU_SIZE_X, BUTTON_SIZE_Y, false);
+
+		//	if (cl_entity_t *source = gEngfuncs.GetLocalPlayer() )
+		//	{
+		//	part->origin = source->curstate.origin; //??how to get the inventory??
+		//	}
+
+		// Inventory Submenu
+		pMenu = CreateSubMenu(pButton, m_pCurrentCommandMenu, iYOffset);
+		m_pCommandMenus[m_iNumMenus] = pMenu;
+		m_iNumMenus++;
+
+		for (int i = 0; i < MAX_ITEMS; i++)
+		{
+			char sz[256];
+
+			// Inventory buttons
+
+			CHudTextMessage::LocaliseTextString(sLocalisedInventory[i], sz, 256);
+			InventoryButton* pInventoryButton = new InventoryButton(i, sz, 0, BUTTON_SIZE_Y, CMENU_SIZE_X, BUTTON_SIZE_Y, false);
+
+			sprintf(sz, "%s", sInventorySelection[i]);
+			pInventoryButton->addActionSignal(new CMenuHandler_StringCommand(sz));
+			pMenu->AddButton(pInventoryButton);
+		}
+	}
+
 	// ChangeClass
 	else if (0 == strcmp(pButtonName, "!CHANGECLASS"))
 	{
@@ -950,7 +1011,6 @@ CommandButton* TeamFortressViewport::CreateCustomButton(char* pButtonText, char*
 		pMenu = CreateSubMenu(pButton, m_pCurrentCommandMenu, iYOffset);
 		m_pCommandMenus[m_iNumMenus] = pMenu;
 		m_iNumMenus++;
-
 	}
 
 	return pButton;
@@ -1474,6 +1534,13 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 
 	switch (iMenu)
 	{
+
+	case MENU_CUSTOM: //AJH New customizable menu HUD system
+
+		CreateCustomMenu(); //AJH new customizable menu system
+		pNewMenu = ShowCustomMenu();
+		break;
+
 	case MENU_TEAM:
 		pNewMenu = ShowTeamMenu();
 		break;
@@ -1595,6 +1662,28 @@ void TeamFortressViewport::CreateTeamMenu()
 	m_pTeamMenu = new CTeamMenuPanel(100, false, 0, 0, ScreenWidth, ScreenHeight);
 	m_pTeamMenu->setParent(this);
 	m_pTeamMenu->setVisible(false);
+}
+
+//======================================================================================
+// CUSTOM MENU //AJH New customizable menu system
+//======================================================================================
+// Bring up the Custom Menu
+CMenuPanel* TeamFortressViewport::ShowCustomMenu()
+{
+	// Don't open menus in demo playback
+	if (gEngfuncs.pDemoAPI->IsPlayingback())
+		return NULL;
+
+	m_pCustomMenu->Reset();
+	return m_pCustomMenu;
+}
+
+void TeamFortressViewport::CreateCustomMenu()
+{
+	// Create the panel
+	m_pCustomMenu = new CCustomMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
+	m_pCustomMenu->setParent(this);
+	m_pCustomMenu->setVisible(false);
 }
 
 //======================================================================================

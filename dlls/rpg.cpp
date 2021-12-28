@@ -428,7 +428,7 @@ void CRpg::Holster()
 {
 	m_fInReload = false; // cancel any reload in progress.
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
 	if (m_iClip)
 		SendWeaponAnim(RPG_HOLSTER1);

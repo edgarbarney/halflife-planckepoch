@@ -1,6 +1,6 @@
 /***
 *
-* Copyright Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2004, Shambler Team. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -8,8 +8,8 @@
 *
 *   Use, distribution, and modification of this source code and/or resulting
 *   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   Shambler Team.  All other use, distribution, or modification is prohibited
+*   without written permission from Shambler Team.
 *
 ****/
 
@@ -65,7 +65,7 @@ bool CDebugger::AddToPlayer(CBasePlayer* pPlayer)
 
 void CDebugger::Holster()
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim(8);
 }
 

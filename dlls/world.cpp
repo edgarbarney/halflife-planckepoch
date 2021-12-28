@@ -37,7 +37,8 @@
 
 CGlobalState gGlobalState;
 
-extern void W_Precache();
+extern void W_Precache(); //weapon precache - weapons.cpp
+extern void I_Precache(); //item precache - items.cpp
 
 //
 // This must match the list in util.h
@@ -549,6 +550,7 @@ void CWorld::Precache()
 
 	// player precaches
 	W_Precache(); // get weapon precaches
+	I_Precache(); // get Inventory Item precaches
 
 	ClientPrecache();
 
@@ -743,6 +745,21 @@ bool CWorld::KeyValue(KeyValueData* pkvd)
 	else if (FStrEq(pkvd->szKeyName, "allow_sp_gjump"))
 	{
 		g_allowGJump = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "timed_damage"))
+	{
+		CVAR_SET_FLOAT("timed_damage", atof(pkvd->szValue));
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "max_medkit"))
+	{
+		CVAR_SET_FLOAT("max_medkit", atof(pkvd->szValue));
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "max_cameras"))
+	{
+		CVAR_SET_FLOAT("max_cameras", atof(pkvd->szValue));
 		return true;
 	}
 

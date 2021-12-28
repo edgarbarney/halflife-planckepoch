@@ -178,7 +178,26 @@ bool CHudDeathNotice::MsgFunc_DeathMsg(const char* pszName, int iSize, void* pbu
 
 	char killedwith[32];
 	strcpy(killedwith, "d_");
-	strncat(killedwith, READ_STRING(), 32);
+	strncat(killedwith, READ_STRING(), 29); //AJH supposed to be 29 not 32
+
+
+	//AJH Begin:Custom death 'techniques'
+	char technique_A[32];
+	char technique_B[32];
+	char technique[32];
+	strcpy(technique_A, " ");
+	strncpy(technique, READ_STRING(), 31);
+	for (int j = 0; j < 32; j++)
+	{
+		if (technique[j] == '%')
+		{
+			strncat(technique_A, technique, j < 31 ? j : 30);
+			strncpy(technique_B, technique + (j + 1), 31 - j);
+			break;
+		}
+	}
+	//AJH End:Custom death 'techniques'
+
 
 	if (gViewPort)
 		gViewPort->DeathMsg(killer, victim);
@@ -281,14 +300,19 @@ bool CHudDeathNotice::MsgFunc_DeathMsg(const char* pszName, int iSize, void* pbu
 		else if (rgDeathNoticeList[i].iTeamKill)
 		{
 			ConsolePrint(rgDeathNoticeList[i].szKiller);
-			ConsolePrint(" killed his teammate ");
+			//ConsolePrint( " killed his teammate " ); //AJH
+			ConsolePrint(technique_A);	   //AJH Custom death methods
+			ConsolePrint("his teammate "); //AJH
 			ConsolePrint(rgDeathNoticeList[i].szVictim);
+			ConsolePrint(technique_B);
 		}
 		else
 		{
 			ConsolePrint(rgDeathNoticeList[i].szKiller);
-			ConsolePrint(" killed ");
+			//ConsolePrint( " killed " ); //AJH
+			ConsolePrint(technique_A); //AJH Custom death methods
 			ConsolePrint(rgDeathNoticeList[i].szVictim);
+			ConsolePrint(technique_B); //AJH Custom death methods
 		}
 
 		if (killedwith && '\0' != *killedwith && (*killedwith > 13) && 0 != strcmp(killedwith, "d_world") && !rgDeathNoticeList[i].iTeamKill)

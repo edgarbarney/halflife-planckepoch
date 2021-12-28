@@ -182,4 +182,6 @@ public:
 
 	// Mirror stuff
 	int mirror_id;
+	bool b_PlayerMarkerParsed;
+	int m_nCachedFrameCount;
 };

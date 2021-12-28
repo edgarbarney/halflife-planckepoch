@@ -50,7 +50,7 @@ bool CGlock::AddToPlayer(CBasePlayer* pPlayer) //Fix old Half-life bug. G-Cont
 
 void CGlock::Holster()
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim(GLOCK_HOLSTER);
 }
 

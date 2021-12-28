@@ -261,15 +261,6 @@ void W_Precache()
 	memset(CBasePlayerItem::AmmoInfoArray, 0, sizeof(CBasePlayerItem::AmmoInfoArray));
 	giAmmoIndex = 0;
 
-	m_usMirror = PRECACHE_EVENT(1, "events/mirror.sc");
-	// custom items...
-
-	// common world objects
-	UTIL_PrecacheOther("item_suit");
-	UTIL_PrecacheOther("item_battery");
-	UTIL_PrecacheOther("item_antidote");
-	UTIL_PrecacheOther("item_security");
-	UTIL_PrecacheOther("item_longjump");
 	UTIL_PrecacheOtherWeapon("weapon_debug");
 
 	// shotgun

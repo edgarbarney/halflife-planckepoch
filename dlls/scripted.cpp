@@ -418,6 +418,20 @@ void CCineMonster::PossessEntity()
 			// fall through...
 		case 0:
 		case 4:
+			//G-Cont. this is a not a better way :(
+			//in my new project this bug will be removed
+			//in Spirit... as is. Sorry about that.
+			//If we interesting - decomment UTIL_AssignOrigin
+			//and run c1a4i with tentacle script - no comments
+			//UTIL_AssignOrigin( pTarget, pev->origin );
+			pTarget->pev->ideal_yaw = pev->angles.y;
+			pTarget->pev->avelocity = Vector(0, 0, 0);
+			pTarget->pev->velocity = Vector(0, 0, 0);
+			pTarget->pev->effects |= EF_NOINTERP;
+			pTarget->pev->angles.y = pev->angles.y;
+			pTarget->m_scriptState = SCRIPT_WAIT;
+			//m_startTime = gpGlobals->time + 1E6;
+			break;
 		case 5:
 		case 6:
 			pTarget->m_scriptState = SCRIPT_WAIT;
@@ -438,6 +452,7 @@ void CCineMonster::PossessEntity()
 		//		ALERT(at_console, "Finished PossessEntity, ms %d, ims %d\n", pTarget->m_MonsterState, pTarget->m_IdealMonsterState);
 	}
 }
+
 
 // at the beginning of the level, set up the idle animation. --LRC
 void CCineMonster::InitIdleThink()
@@ -762,11 +777,9 @@ bool CBaseMonster::CineCleanup()
 	{
 		// okay, reset me to what it thought I was before
 		m_pCine->m_hTargetEnt = NULL;
-
 		pev->movetype = m_pCine->m_saved_movetype;
-
-		// LRC - why mess around with this? Solidity isn't changed by sequences!
-		//		pev->solid = m_pCine->m_saved_solid;
+		pev->solid = m_pCine->m_saved_solid;
+		pev->effects = m_pCine->m_saved_effects;
 
 		if (m_pCine->pev->spawnflags & SF_SCRIPT_STAYDEAD)
 			pev->deadflag = DEAD_DYING;

@@ -59,11 +59,21 @@ public:
 };
 
 
+/* AJH we don't need to specify this stuff in here. It's now in items.h instead
 // constant items
 #define ITEM_HEALTHKIT 1
 #define ITEM_ANTIDOTE 2
 #define ITEM_SECURITY 3
 #define ITEM_BATTERY 4
+#define ITEM_LONGJUMP		5
+
+//AJH extended inventory
+#define ITEM_SLOT6			6
+#define ITEM_SLOT7			7
+#define ITEM_SLOT8			8
+#define ITEM_SLOT9			9
+#define ITEM_SLOT10			10
+*/
 
 #define MAX_NORMAL_BATTERY 100
 
@@ -252,10 +262,10 @@ public:
 
 	CBasePlayer* m_pPlayer;
 	CBasePlayerItem* m_pNext;
-	int m_iId; // WEAPON_???
-
+	int m_iId;	   // WEAPON_???
+#ifndef CLIENT_DLL //AJH Test Debug
 	void Spawn() override;
-
+#endif //AJH
 	virtual int iItemSlot()
 	{
 		ItemInfo II;

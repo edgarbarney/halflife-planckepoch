@@ -523,6 +523,7 @@ public:
 
 //LRC - for the moment, skymode has only two settings
 #define SKY_OFF 0
+#define SKY_ON_DRAWING 2
 #define SKY_ON 1
 
 typedef struct cl_mirror_s
@@ -561,9 +562,12 @@ public:
 	int m_iRes;
 	cvar_t* m_pCvarStealMouse;
 	cvar_t* m_pCvarDraw;
+	cvar_t* RainInfo;
 	CShinySurface* m_pShinySurface; //LRC
 	Vector m_vecSkyPos;				//LRC
 	int m_iSkyMode;					//LRC
+	int m_iSkyScale;				//AJH Allows parallax for the sky. 0 means no parallax, i.e infinitly large & far away.
+	int m_iCameraMode;				//G-Cont. clipping thirdperson camera
 
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b);
@@ -655,13 +659,15 @@ public:
 	bool MsgFunc_SetFOV(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Concuss(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf);
+	bool MsgFunc_RainData(const char* pszName, int iSize, void* pbuf);	  //G-Cont
 	bool MsgFunc_PlayMP3(const char* pszName, int iSize, void* pbuf);	  //KILLAR
 	bool MsgFunc_HUDColor(const char* pszName, int iSize, void* pbuf);	  //LRC
 	void MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf);	  //LRC
 	void MsgFunc_KeyedDLight(const char* pszName, int iSize, void* pbuf); //LRC
 	void MsgFunc_SetSky(const char* pszName, int iSize, void* pbuf);	  //LRC
-	bool MsgFunc_CamData(const char* pszName, int iSize, void* pbuf);
-	void MsgFunc_AddShine(const char* pszName, int iSize, void* pbuf); //LRC
+	bool MsgFunc_CamData(const char* pszName, int iSize, void* pbuf);	  //G-Cont
+	void MsgFunc_AddShine(const char* pszName, int iSize, void* pbuf);	  //LRC
+	bool MsgFunc_Inventory(const char* pszName, int iSize, void* pbuf);	  //AJH
 
 	// Screen information
 	SCREENINFO m_scrinfo;
@@ -683,6 +689,7 @@ extern CHud gHUD;
 
 extern int g_iPlayerClass;
 extern int g_iTeamNumber;
+extern int g_iInventory[MAX_ITEMS]; //AJH Inventory system
 extern int g_iUser1;
 extern int g_iUser2;
 extern int g_iUser3;
