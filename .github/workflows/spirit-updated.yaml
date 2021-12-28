@@ -15,9 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Update system
-        run: sudo apt update
+        run: sudo dpkg --add-architecture i386 && sudo apt update
       - name: Install G++ Multilib & OpenGL dev
-        run: sudo apt install -y g++-multilib libgl-dev
+        run: sudo apt install -y g++-multilib libgl-dev:i386
       - name: Build
         run: cd linux && CFG=release make
       - name: Deploy
