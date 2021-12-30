@@ -13,6 +13,16 @@
 *
 ****/
 
+
+//Thank you, C++
+//Compile time will be buggered but, meh.
+#include <map>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+
 #include "Platform.h"
 
 #include <assert.h>
@@ -25,9 +35,23 @@
 #include "pm_movevars.h"
 #include "pm_debug.h"
 #include <stdio.h>  // NULL
-#include <string.h> // strcpy
+//#include <string.h> // strcpy
 #include <stdlib.h> // atoi
 #include <ctype.h>  // isspace
+
+//Shared Structs
+#include "pm_structs.h"
+
+#ifdef CLIENT_DLL
+#include "cl_dll.h"
+#include "cdll_int.h"
+extern cl_enginefunc_t gEngfuncs;
+#define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
+#else
+#include "eiface.h"
+extern enginefuncs_t g_engfuncs;
+#define GetGameDir    (*g_engfuncs.pfnGetGameDir)
+#endif
 
 #ifdef CLIENT_DLL
 	// Spectator Mode
@@ -79,28 +103,6 @@ typedef struct hull_s
 #define CTEXTURESMAX		512			// max number of textures loaded
 #define CBTEXTURENAMEMAX	13			// only load first n chars of name
 
-#define CHAR_TEX_CONCRETE	'C'			// texture types
-#define CHAR_TEX_METAL		'M'
-#define CHAR_TEX_DIRT		'D'
-#define CHAR_TEX_VENT		'V'
-#define CHAR_TEX_GRATE		'G'
-#define CHAR_TEX_TILE		'T'
-#define CHAR_TEX_SLOSH		'S'
-#define CHAR_TEX_WOOD		'W'
-#define CHAR_TEX_COMPUTER	'P'
-#define CHAR_TEX_GLASS		'Y'
-#define CHAR_TEX_FLESH		'F'
-
-#define STEP_CONCRETE	0		// default step sound
-#define STEP_METAL		1		// metal floor
-#define STEP_DIRT		2		// dirt, sand, rock
-#define STEP_VENT		3		// ventillation duct
-#define STEP_GRATE		4		// metal grating
-#define STEP_TILE		5		// floor tiles
-#define STEP_SLOSH		6		// shallow liquid puddle
-#define STEP_WADE		7		// wading in liquid
-#define STEP_LADDER		8		// climbing ladder
-
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
 #define PLAYER_MAX_SAFE_FALL_SPEED	580// approx 20 feet
 #define DAMAGE_FOR_FALL_SPEED		(float) 100 / ( PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED )// damage per unit per second.
@@ -139,147 +141,582 @@ static Vector rgv3tStuckTable[54];
 static int rgStuckLast[MAX_CLIENTS][2];
 
 // Texture names
-static int gcTextures = 0;
-static char grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];	
-static char grgchTextureType[CTEXTURESMAX];
+//static char grgszTextureName[CTEXTURESMAX][CBTEXTURENAMEMAX];	
+//static char grgchTextureType[CTEXTURESMAX];
 
 int g_onladder = 0;
 
-void PM_SwapTextures( int i, int j )
+//Contains texture types
+//   TextureTypeName, Texture Type
+std::map<std::string, textureType_s> g_TextureTypeMap;
+
+//Contains Step types
+//		StepTypeName, Step Type
+std::map<std::string, stepType_s> g_StepTypeMap;
+
+//Contains texture names and corresponding types
+//		 TextureName, TextureType
+//std::map<std::string, std::string> g_TypedTextureMap;
+
+//Contains texture names and corresponding types' pointers
+//		 TextureName, *TextureType
+std::map<std::string, textureType_s*> g_TypedTextureMapPtr;
+
+//Contains special attributes and corresponding step types' pointers
+//				SpecialType, *StepType
+std::map<StepSpecialType, stepType_s*> g_SpecialStepMapPtr;
+
+//Contains Texture impact types
+std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
+
+std::string PM_GetModdir(std::string endLine = "\\") //Yes, string
 {
-	char chTemp;
-	char szTemp[ CBTEXTURENAMEMAX ];
-
-	strcpy( szTemp, grgszTextureName[ i ] );
-	chTemp = grgchTextureType[ i ];
-	
-	strcpy( grgszTextureName[ i ], grgszTextureName[ j ] );
-	grgchTextureType[ i ] = grgchTextureType[ j ];
-
-	strcpy( grgszTextureName[ j ], szTemp );
-	grgchTextureType[ j ] = chTemp;
+	std::string temp = std::filesystem::current_path().string();
+#ifdef CLIENT_DLL
+	const char* getGamedir;
+	getGamedir = GetGameDir();
+#else
+	char getGamedir[120] = "\0";
+	GetGameDir(getGamedir);
+#endif
+	temp = temp + "\\" + getGamedir + endLine;
+	return temp;
 }
 
-void PM_SortTextures()
-{
-	// Bubble sort, yuck, but this only occurs at startup and it's only 512 elements...
-	//
-	int i, j;
 
-	for ( i = 0 ; i < gcTextures; i++ )
+void PM_DefaultStepTypes()
+{
+	// Default things in case the file is not there
+	g_StepTypeMap =
 	{
-		for ( j = i + 1; j < gcTextures; j++ )
+	{ "STEP_CONCRETE",			stepType_s(0, false)},		// default step sound
+	{ "STEP_METAL",				stepType_s(1, false)},		// metal floor
+	{ "STEP_DIRT",				stepType_s(2, false)},		// dirt, sand, rock
+	{ "STEP_VENT",				stepType_s(3, false)},		// ventillation duct
+	{ "STEP_GRATE",				stepType_s(4, false)},		// metal grating
+	{ "STEP_TILE",				stepType_s(5, false)},		// floor tiles
+	{ "STEP_SLOSH",				stepType_s(6, false)},		// shallow liquid puddle
+	{ "STEP_WADE",				stepType_s(7, false)},		// wading in liquid
+	{ "STEP_LADDER",			stepType_s(8, false)},		// climbing ladder
+	};
+}
+
+void PM_DefaultTextureTypes() 
+{
+	// Default things in case the file is not there
+	g_TextureTypeMap =
+	{
+	{ "CHAR_TEX_CONCRETE",		textureType_s{0, "C"}},
+	{ "CHAR_TEX_METAL",			textureType_s{1, "M"}},
+	{ "CHAR_TEX_DIRT",			textureType_s{2, "D"}},
+	{ "CHAR_TEX_VENT",			textureType_s{3, "V"}},
+	{ "CHAR_TEX_GRATE",			textureType_s{4, "G"}},
+	{ "CHAR_TEX_TILE",			textureType_s{5, "T"}},
+	{ "CHAR_TEX_SLOSH",			textureType_s{6, "S"}},
+	{ "CHAR_TEX_WOOD",			textureType_s{7, "W"}},
+	{ "CHAR_TEX_COMPUTER",		textureType_s{8, "P"}},
+	{ "CHAR_TEX_GLASS",			textureType_s{9, "Y"}},
+	{ "CHAR_TEX_FLESH",			textureType_s{10,"F"}},
+	};
+}
+
+std::string PM_MapTextureTypeStepType(std::string textureType)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texType == textureType)
+			return tValue.texStep;
+	}
+}
+
+std::string PM_MapTextureTypeIDStepType(int textureTypeID)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texTypeID == textureTypeID)
+			return tValue.texStep;
+	}
+}
+
+stepType_s* PM_MapTextureTypeIDStepTypePtr(int textureTypeID)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texTypeID == textureTypeID)
+			return &g_StepTypeMap[tValue.texStep];
+	}
+}
+
+int PM_MapTextureTypeIDStepTypeID(int textureTypeID)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texTypeID == textureTypeID)
+			return g_StepTypeMap[tValue.texStep].stepNum;
+	}
+}
+
+stepType_s PM_StepTypeToStepNum(int stepType)
+{
+	for (const auto& [tKey, tValue] : g_StepTypeMap)
+	{
+		if (tValue.stepNum == stepType)
+			return tValue;
+	}
+}
+
+textureType_s* PM_MaterialAliasToTextureTypePtr(std::string alias)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texType == alias)
+			return &g_TextureTypeMap[tKey];
+	}
+}
+
+std::string PM_GetMaterialNameFromAlias(std::string alias)
+{
+	for (auto& [key, value] : g_TextureTypeMap)
+	{
+		if (value.texType == alias)
+			return key;
+	}
+
+	return "";
+}
+
+
+void PM_ParseTextureMaterialsFile(std::string path)
+{
+	std::ifstream fstream;
+	fstream.open(PM_GetModdir() + path);
+
+	int lineIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
+	{
+		lineIteration++;
+		//line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
+
+		if (line.empty()) // Ignore empty lines
 		{
-			if ( stricmp( grgszTextureName[ i ], grgszTextureName[ j ] ) > 0 )
+			continue;
+		}
+		else if (line[0] == '/') // Ignore comments
+		{
+			continue;
+		}
+		else if (line[0] == '#') // Process Special Atrribute
+		{
+			std::istringstream iss(line);
+			std::string command, value;
+			if (!(iss >> command >> value)) // "Syntax" check
 			{
-				// Swap
-				//
-				PM_SwapTextures( i, j );
+				// error, skip to nextline
+				pmove->Con_DPrintf("\nERR:  %s - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", path.c_str(), lineIteration, line.c_str());
+				continue;
+			}
+			// Recurse texture materials
+			if (command == "#include")
+			{
+				PM_ParseTextureMaterialsFile(value);
 			}
 		}
+		else
+		{
+			std::istringstream iss(line);
+			std::string type, texture;
+			if (!(iss >> type >> texture)) // "Syntax" check
+			{
+				pmove->Con_DPrintf("\nERR:  %s - Can't parse line %d. Are you sure the syntax is correct? \n\n %s", path.c_str(), lineIteration, line.c_str() );
+				continue;
+			}
+			g_TypedTextureMapPtr.insert({ texture, PM_MaterialAliasToTextureTypePtr (type)});
+			continue;
+		}
 	}
 }
 
-void PM_InitTextureTypes()
+void PM_ParseStepTypesFile()
 {
-	char buffer[512];
-	int i, j;
-	byte *pMemFile;
-	int fileSize, filePos;
-	static qboolean bTextureTypeInit = false;
+	std::ifstream fstream;
+	fstream.open(PM_GetModdir() + "sound\\steptypes.txt");
 
-	if ( bTextureTypeInit )
-		return;
+	std::string lastType;
 
-	memset(&(grgszTextureName[0][0]), 0, CTEXTURESMAX * CBTEXTURENAMEMAX);
-	memset(grgchTextureType, 0, CTEXTURESMAX);
+	bool inSection = false;
+	int stepIteration = 0;
+	int lineIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
+	{	
+		lineIteration++;
+		line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
 
-	gcTextures = 0;
-	memset(buffer, 0, 512);
-
-	fileSize = pmove->COM_FileSize( "sound/materials.txt" );
-	pMemFile = pmove->COM_LoadFile( "sound/materials.txt", 5, nullptr );
-	if ( !pMemFile )
-		return;
-
-	filePos = 0;
-	// for each line in the file...
-	while ( pmove->memfgets( pMemFile, fileSize, &filePos, buffer, 511 ) != nullptr && (gcTextures < CTEXTURESMAX) )
-	{
-		// skip whitespace
-		i = 0;
-		while(buffer[i] && isspace(buffer[i]))
-			i++;
-		
-		if (!buffer[i])
+		if (line.empty()) // Ignore empty lines
+		{
 			continue;
-
-		// skip comment lines
-		if (buffer[i] == '/' || !isalpha(buffer[i]))
+		}
+		else if (line[0] == '/') // Ignore comments
+		{
 			continue;
-
-		// get texture type
-		grgchTextureType[gcTextures] = toupper(buffer[i++]);
-
-		// skip whitespace
-		while(buffer[i] && isspace(buffer[i]))
-			i++;
-		
-		if (!buffer[i])
+		}
+		else if (line[0] == '{') // Opening braces will start the operation
+		{
+			inSection = true;
 			continue;
-
-		// get sentence name
-		j = i;
-		while (buffer[j] && !isspace(buffer[j]))
-			j++;
-
-		if (!buffer[j])
+		}
+		else if (line[0] == '}') // Closing braces will terminate the operation
+		{
+			inSection = false;
+			lastType = "";
 			continue;
+		}
+		else if (line == "true")
+		{
+			g_StepTypeMap.insert({ lastType, stepType_s(stepIteration, true) });
+			stepIteration++;
+			continue;
+		}
+		else if (line == "false")
+		{
+			g_StepTypeMap.insert({ lastType, stepType_s(stepIteration, false) });
+			stepIteration++;
+			continue;
+		}
+		else if (line[0] == '#') // Process Special Atrribute
+		{
+			if (line == "#ladder")
+			{
+				g_SpecialStepMapPtr[StepSpecialType::Ladder] = &g_StepTypeMap[lastType];
+			}
+			else if (line == "#liquidfeet")
+			{
+				g_SpecialStepMapPtr[StepSpecialType::LiquidFeet] = &g_StepTypeMap[lastType];
+			}
+			else if (line == "#liquidknee")
+			{
+				g_SpecialStepMapPtr[StepSpecialType::LiquidKnee] = &g_StepTypeMap[lastType];
+			}
+			else if (line == "#flesh")
+			{
+				g_SpecialStepMapPtr[StepSpecialType::Flesh] = &g_StepTypeMap[lastType];
+			}
+		}
+		else if (line[0] == '$') // Process variables
+		{
+			std::string walkKey				= "$walkingVolume=";
+			std::string normalKey			= "$normalVolume=";
+			std::string walkStepKey			= "$walkingStepTime=";
+			std::string normalStepKey		= "$normalStepTime=";
+			std::string crouchMultiplierKey	= "$crouchMultiplier=";
 
-		// null-terminate name and save in sentences array
-		j = V_min (j, CBTEXTURENAMEMAX-1+i);
-		buffer[j] = 0;
-		strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
+			// Go through individual variable keys
+
+			if (line.find(walkKey) != std::string::npos)
+			{
+				unsigned int pos = line.find(walkKey);
+				if (pos != std::string::npos)
+				{
+					line.erase(pos, walkKey.length());
+
+					g_StepTypeMap[lastType].walkingVolume = atof(line.c_str());
+				}
+			}
+			else if (line.find(normalKey) != std::string::npos)
+			{
+				unsigned int pos = line.find(normalKey);
+				if (pos != std::string::npos)
+				{
+					line.erase(pos, normalKey.length());
+
+					g_StepTypeMap[lastType].normalVolume = atof(line.c_str());
+				}
+			}
+			else if (line.find(walkStepKey) != std::string::npos)
+			{
+				unsigned int pos = line.find(walkStepKey);
+				if (pos != std::string::npos)
+				{
+					line.erase(pos, walkStepKey.length());
+
+					g_StepTypeMap[lastType].walkingStepTime = atof(line.c_str());
+				}
+			}
+			else if (line.find(normalStepKey) != std::string::npos)
+			{
+				unsigned int pos = line.find(normalStepKey);
+				if (pos != std::string::npos)
+				{
+					line.erase(pos, normalStepKey.length());
+
+					g_StepTypeMap[lastType].normalStepTime = atof(line.c_str());
+				}
+			}
+			else if (line.find(crouchMultiplierKey) != std::string::npos)
+			{
+				unsigned int pos = line.find(crouchMultiplierKey);
+				if (pos != std::string::npos)
+				{
+					line.erase(pos, crouchMultiplierKey.length());
+
+					g_StepTypeMap[lastType].crouchMultiplier = atof(line.c_str());
+				}
+			}
+		}
+		else if (line[0] == '"')
+		{
+			line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
+
+			if (!inSection)
+			{
+				lastType = line;
+				continue;
+			}
+			else
+			{
+				g_StepTypeMap[lastType].stepSounds.push_back(line); // Add the sound
+				pmove->Con_DPrintf("\nERR: steptypes.txt - Test Debug Line %d. %s \n ", lineIteration, line.c_str());
+				continue;
+			}
+		}
+		else
+		{
+			pmove->Con_DPrintf("\nERR: steptypes.txt - Can't parse line %d. Are you sure the syntax is correct?", lineIteration);
+		}
 	}
-
-	// Must use engine to free since we are in a .dll
-	pmove->COM_FreeFile ( pMemFile );
-
-	PM_SortTextures();
-
-	bTextureTypeInit = true;
 }
 
-char PM_FindTextureType( char *name )
+void PM_ParseMaterialImpactsFile()
 {
-	int left, right, pivot;
-	int val;
+	std::ifstream fstream;
+	fstream.open(PM_GetModdir() + "sound\\materialimpacts.txt");
 
-	assert( pm_shared_initialized );
+	std::string lastType;
 
-	left = 0;
-	right = gcTextures - 1;
-
-	while ( left <= right )
+	bool inSection = false;
+	int stepIteration = 0;
+	int lineIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
 	{
-		pivot = ( left + right ) / 2;
+		lineIteration++;
+		//line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
 
-		val = strnicmp( name, grgszTextureName[ pivot ], CBTEXTURENAMEMAX-1 );
-		if ( val == 0 )
+		if (line.empty()) // Ignore empty lines
 		{
-			return grgchTextureType[ pivot ];
+			continue;
 		}
-		else if ( val > 0 )
+		else if (line[0] == '/') // Ignore comments
 		{
-			left = pivot + 1;
+			continue;
 		}
-		else if ( val < 0 )
+		else if (line[0] == '{') // Opening braces will start the operation
 		{
-			right = pivot - 1;
+			inSection = true;
+			g_texTypeImpactTypeVector.push_back(impactGroupType_s(NOCHECK, NOCHECK, NOCHECK));
+			continue;
+		}
+		else if (line[0] == '}') // Closing braces will terminate the operation
+		{
+			inSection = false;
+			lastType = "";
+			stepIteration++;
+			continue;
+		}
+		else if (line[0] == '$') // Process variables
+		{
+			std::istringstream iss(line);
+			std::string key, value;
+			if (!(iss >> key >> value)) // "Syntax" check
+			{
+				// error, skip to nextline
+				pmove->Con_DPrintf("\nERR: materialimpacts.txt - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", lineIteration, line.c_str());
+				continue;
+			}
+
+			if (key == "$RenderMode")
+			{
+				if (value == "kRenderNormal")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderNormal;
+				else if (value == "kRenderTransColor")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderTransColor;
+				else if (value == "kRenderTransTexture")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderTransTexture;
+				else if (value == "kRenderGlow")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderGlow;
+				else if (value == "kRenderTransAlpha")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderTransAlpha;
+				else if (value == "kRenderTransAdd")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = kRenderTransAdd;
+				else
+					g_texTypeImpactTypeVector[stepIteration].renderMode = NOCHECK;
+					
+			}
+			else if (key == "$RenderAmt")
+			{
+				if (value != "NOCHECK")
+					g_texTypeImpactTypeVector[stepIteration].renderAmt = atoi(value.c_str());
+				else
+					g_texTypeImpactTypeVector[stepIteration].classnumber = NOCHECK;
+			}
+			else if (key == "$Classnumber")
+			{
+				if (value != "NOCHECK")
+					g_texTypeImpactTypeVector[stepIteration].classnumber = atoi(value.c_str());
+				else
+					g_texTypeImpactTypeVector[stepIteration].classnumber = NOCHECK;
+			}
+			continue;
+		}
+		else if (line[0] == '!') // Process NOT variables TODO: NO NEED OR ANOTHER ELSE IF
+		{
+			std::istringstream iss(line);
+			std::string key, value;
+			if (!(iss >> key >> value)) // "Syntax" check
+			{
+				// error, skip to nextline
+				pmove->Con_DPrintf("\nERR: materialimpacts.txt - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", lineIteration, line.c_str());
+				continue;
+			}
+
+			if (key == "!RenderMode")
+			{
+				if (value == "kRenderNormal")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderNormal;
+				else if (value == "kRenderTransColor")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderTransColor;
+				else if (value == "kRenderTransTexture")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderTransTexture;
+				else if (value == "kRenderGlow")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderGlow;
+				else if (value == "kRenderTransAlpha")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderTransAlpha;
+				else if (value == "kRenderTransAdd")
+					g_texTypeImpactTypeVector[stepIteration].renderMode = -1 * kRenderTransAdd;
+				else
+					g_texTypeImpactTypeVector[stepIteration].renderMode = NOCHECK;
+
+			}
+			else if (key == "!RenderAmt")
+			{
+				if (value != "NOCHECK")
+					g_texTypeImpactTypeVector[stepIteration].renderAmt = -1 * atoi(value.c_str());
+				else
+					g_texTypeImpactTypeVector[stepIteration].classnumber = NOCHECK;
+			}
+			else if (key == "!Classnumber")
+			{
+				if (value != "NOCHECK")
+					g_texTypeImpactTypeVector[stepIteration].classnumber = -1 * atoi(value.c_str());
+				else
+					g_texTypeImpactTypeVector[stepIteration].classnumber = NOCHECK;
+			}
+			continue;
+		}
+		else if (line[0] == '"')
+		{
+
+			if (!inSection)
+			{
+				line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
+				lastType = line;
+				continue;
+			}
+			else
+			{
+				std::istringstream iss(line);
+				std::string alias, decal, particle;
+				if (!(iss >> alias >> decal >> particle)) // "Syntax" check
+				{
+					// error, skip to nextline
+					pmove->Con_DPrintf("\nERR: materialimpacts.txt - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", lineIteration, line.c_str());
+					continue;
+				}
+
+				g_texTypeImpactTypeVector[stepIteration].impactTypes.push_back(impactType_s(alias,decal,particle));
+
+				continue;
+			}
+		}
+		else
+		{
+		pmove->Con_DPrintf("\nERR: materialimpacts.txt - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", lineIteration, line.c_str());
 		}
 	}
+}
 
-	return CHAR_TEX_CONCRETE;
+void PM_ParseMaterialTypesFile()
+{
+	std::ifstream fstream;
+	fstream.open(PM_GetModdir() + "sound\\materialtypes.txt");
+
+	int lineIteration = 0;
+	int texTypeIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
+	{
+		lineIteration++;
+
+		if (line.empty()) // Ignore empty lines
+		{
+			continue;
+		}
+		else if (line[0] == '/') // Ignore comments
+		{
+			continue;
+		}
+		else if (line[0] == '"')
+		{
+			//line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
+			std::istringstream iss(line);
+			std::string name, textype, steptype;
+			float impVol, weapVol, atnVal;
+			if (!(iss >> name >> textype >> steptype >> impVol >> weapVol >> atnVal)) // "Syntax" check
+			{ 
+				// error, skip to nextline
+				pmove->Con_DPrintf("\nERR: materialtypes.txt - Can't parse line %d. Are you sure the syntax is correct?", lineIteration);
+				continue; 
+			} 
+
+			g_TextureTypeMap.insert({ name, textureType_s(texTypeIteration, textype, steptype, impVol, weapVol, atnVal) });
+			texTypeIteration++;
+			
+		}
+		else
+		{
+			pmove->Con_DPrintf("\nERR: materialtypes.txt - Can't parse line %d. Are you sure the syntax is correct?", lineIteration);
+		}
+	}
+}
+
+/*
+std::string PM_FindTextureType(std::string name)
+{
+	if (g_TypedTextureMap.find(name) == g_TypedTextureMap.end())
+	{
+		return g_TextureTypeMap["CHAR_TEX_CONCRETE"].texType;
+	}
+	return g_TypedTextureMap[name];
+}
+*/
+
+int PM_FindTextureTypeID(std::string name)
+{
+	if (g_TypedTextureMapPtr.find(name) == g_TypedTextureMapPtr.end())
+	{
+		return g_TextureTypeMap["CHAR_TEX_CONCRETE"].texTypeID;
+	}
+	return g_TypedTextureMapPtr[name]->texTypeID;
+}
+
+int PM_FindStepTypeID(std::string name)
+{
+	if (g_StepTypeMap.find(name) == g_StepTypeMap.end())
+	{
+		return g_StepTypeMap["C"].stepNum;
+	}
+	return g_StepTypeMap[name].stepNum;
 }
 
 void PM_PlayGroupSound( const char* szValue, int irand, float fvol )
@@ -308,10 +745,10 @@ void PM_PlayGroupSound( const char* szValue, int irand, float fvol )
 	pmove->PM_PlaySound( CHAN_BODY, szValue, fvol, ATTN_NORM, 0, PITCH_NORM );
 }
 
-void PM_PlayStepSound( int step, float fvol )
+void PM_PlayStepSound(stepType_s* step, float fvol)
 {
 	static int iSkipStep = 0;
-	int irand;
+	int irand = 0;
 	Vector hvel;
 	const char* szValue;
 	int iType;
@@ -323,8 +760,6 @@ void PM_PlayStepSound( int step, float fvol )
 		return;
 	}
 	
-	irand = pmove->RandomLong(0,1) + ( pmove->iStepLeft * 2 );
-
 	// FIXME mp_footsteps needs to be a movevar
 	if ( pmove->multiplayer && !pmove->movevars->footsteps )
 		return;
@@ -335,190 +770,54 @@ void PM_PlayStepSound( int step, float fvol )
 	if ( pmove->multiplayer && ( !g_onladder && Length( hvel ) <= 220 ) )
 		return;
 
-	//LRC - custom footstep sounds
-	switch ( step )
-	{
-	case STEP_LADDER:
-		szValue = pmove->PM_Info_ValueForKey( pmove->physinfo, "lsnd" );
-		if (szValue[0] && szValue[1])
-		{
-			PM_PlayGroupSound( szValue, irand, fvol );
-			return;
-		}
-		break;
-	case STEP_SLOSH:
-		szValue = pmove->PM_Info_ValueForKey( pmove->physinfo, "psnd" );
-		if (szValue[0] && szValue[1])
-		{
-			PM_PlayGroupSound( szValue, irand, fvol );
-			return;
-		}
-		break;
-	case STEP_WADE:
-		szValue = pmove->PM_Info_ValueForKey( pmove->physinfo, "wsnd" );
-		if (szValue[0] && szValue[1])
-		{
-			if ( iSkipStep == 0 )
-			{ iSkipStep++; return; }
-
-			if ( iSkipStep++ == 3 )
-			{ iSkipStep = 0; }
-
-			PM_PlayGroupSound( szValue, irand, fvol );
-			return;
-		}
-		break;
-	default:
-		szValue = pmove->PM_Info_ValueForKey( pmove->physinfo, "ssnd" );
-		if (szValue[0] && szValue[1])
-		{
-			PM_PlayGroupSound( szValue, irand, fvol );
-			return;
-		}
-		iType = atoi(pmove->PM_Info_ValueForKey( pmove->physinfo, "stype" ));
-		if (iType == -1)
-			step = STEP_CONCRETE;
-		else if (iType)
-			step = iType;
-	}
-
 	// irand - 0,1 for right foot, 2,3 for left foot
 	// used to alternate left and right foot
 	// FIXME, move to player state
 
-	switch (step)
-	{
-	default:
-	case STEP_CONCRETE:
-		switch (irand)
+	//for (const auto& [stepKey, stepValue] : g_StepTypeMap)
+	//{
+	auto stepValue = step;
+
+		if (stepValue->stepSkip)
 		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_METAL:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_metal1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_metal3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_metal2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_metal4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_DIRT:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_VENT:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_duct1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_duct3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_duct2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_duct4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_GRATE:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_TILE:
-		if ( !pmove->RandomLong(0,4) )
-			irand = 4;
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_tile1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_tile3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_tile2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_tile4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 4: pmove->PM_PlaySound( CHAN_BODY, "player/pl_tile5.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_SLOSH:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_slosh1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_slosh3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_slosh2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_slosh4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_WADE:
-		if ( iSkipStep == 0 )
-		{
-			iSkipStep++;
-			break;
+			if (iSkipStep == 0)
+			{
+				iSkipStep++;
+				//break;
+				return;
+			}
+
+			if (iSkipStep++ == 3)
+			{
+				iSkipStep = 0;
+			}
 		}
 
-		if ( iSkipStep++ == 3 )
-		{
-			iSkipStep = 0;
-		}
+	//if (step == stepValue.stepNum)
+	//{
 
-		switch (irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	case STEP_LADDER:
-		switch(irand)
-		{
-		// right foot
-		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_ladder1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_ladder3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		// left foot
-		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_ladder2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_ladder4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		}
-		break;
-	}
+		if (pmove->iStepLeft)
+			irand = pmove->RandomLong(0, g_StepTypeMap.size() - 1) + (irand%2);
+		else
+			irand = pmove->RandomLong(0, g_StepTypeMap.size() - 1) + !(irand%2);
+
+		if(stepValue->stepSounds.size() > irand)
+			pmove->PM_PlaySound(CHAN_BODY, stepValue->stepSounds[irand].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
+		else
+			pmove->PM_PlaySound(CHAN_BODY, stepValue->stepSounds[0].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
+
+		//pmove->PM_PlaySound(CHAN_BODY, "player/pl_step1.wav", fvol, ATTN_NORM, 0, PITCH_NORM);
+	//}
+	//}
+
+	
 }	
 
-int PM_MapTextureTypeStepType(char chTextureType)
+void PM_PlayStepSound(std::string step, float fvol)
 {
-	switch (chTextureType)
-	{
-		default:
-		case CHAR_TEX_CONCRETE:	return STEP_CONCRETE;	
-		case CHAR_TEX_METAL: return STEP_METAL;	
-		case CHAR_TEX_DIRT: return STEP_DIRT;	
-		case CHAR_TEX_VENT: return STEP_VENT;	
-		case CHAR_TEX_GRATE: return STEP_GRATE;	
-		case CHAR_TEX_TILE: return STEP_TILE;
-		case CHAR_TEX_SLOSH: return STEP_SLOSH;
-	}
+	PM_PlayStepSound((&g_StepTypeMap[step]), fvol);
 }
+
 
 /*
 ====================
@@ -540,7 +839,8 @@ void PM_CatagorizeTextureType()
 
 	// Fill in default values, just in case.
 	pmove->sztexturename[0] = '\0';
-	pmove->chtexturetype = CHAR_TEX_CONCRETE;
+	//pmove->chtexturetype = CHAR_TEX_CONCRETE;
+	pmove->iuser4 = 0;
 
 	pTextureName = pmove->PM_TraceTexture( pmove->onground, start, end );
 	if ( !pTextureName )
@@ -558,13 +858,15 @@ void PM_CatagorizeTextureType()
 	pmove->sztexturename[ CBTEXTURENAMEMAX - 1 ] = 0;
 		
 	// get texture type
-	pmove->chtexturetype = PM_FindTextureType( pmove->sztexturename );	
+	//pmove->chtexturetype = PM_FindTextureType( pmove->sztexturename );
+
+	pmove->iuser4 = PM_FindTextureTypeID(pmove->sztexturename);
 }
 
 void PM_UpdateStepSound()
 {
 	int	fWalking;
-	float fvol;
+	float fvol = 1;
 	Vector knee;
 	Vector feet;
 	Vector center;
@@ -574,7 +876,7 @@ void PM_UpdateStepSound()
 	float velwalk;
 	float flduck;
 	int	fLadder;
-	int step;
+	stepType_s* step;
 
 	if ( pmove->flTimeStepSound > 0 )
 		return;
@@ -621,69 +923,28 @@ void PM_UpdateStepSound()
 		knee[2] = pmove->origin[2] - 0.3 * height;
 		feet[2] = pmove->origin[2] - 0.5 * height;
 
+
 		// find out what we're stepping in or on...
 		if (fLadder)
 		{
-			step = STEP_LADDER;
-			fvol = 0.35;
-			pmove->flTimeStepSound = 350;
+			step = g_SpecialStepMapPtr[StepSpecialType::Ladder];
 		}
 		else if ( pmove->PM_PointContents ( knee, nullptr ) == CONTENTS_WATER )
 		{
-			step = STEP_WADE;
-			fvol = 0.65;
-			pmove->flTimeStepSound = 600;
+			step = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
 		}
 		else if ( pmove->PM_PointContents ( feet, nullptr ) == CONTENTS_WATER )
 		{
-			step = STEP_SLOSH;
-			fvol = fWalking ? 0.2 : 0.5;
-			pmove->flTimeStepSound = fWalking ? 400 : 300;		
+			step = g_SpecialStepMapPtr[StepSpecialType::LiquidFeet];
 		}
 		else
 		{
 			// find texture under player, if different from current texture, 
 			// get material type
-			step = PM_MapTextureTypeStepType( pmove->chtexturetype );
+			step = PM_MapTextureTypeIDStepTypePtr(pmove->iuser4);
 
-			switch ( pmove->chtexturetype )
-			{
-			default:
-			case CHAR_TEX_CONCRETE:						
-				fvol = fWalking ? 0.2 : 0.5;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_METAL:	
-				fvol = fWalking ? 0.2 : 0.5;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_DIRT:	
-				fvol = fWalking ? 0.25 : 0.55;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_VENT:	
-				fvol = fWalking ? 0.4 : 0.7;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_GRATE:
-				fvol = fWalking ? 0.2 : 0.5;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_TILE:	
-				fvol = fWalking ? 0.2 : 0.5;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-
-			case CHAR_TEX_SLOSH:
-				fvol = fWalking ? 0.2 : 0.5;
-				pmove->flTimeStepSound = fWalking ? 400 : 300;
-				break;
-			}
+			fvol = fWalking ? step->walkingVolume : step->normalVolume;
+			pmove->flTimeStepSound = fWalking ? step->walkingStepTime : step->normalStepTime;
 		}
 		
 		pmove->flTimeStepSound += flduck; // slower step time if ducking
@@ -692,7 +953,7 @@ void PM_UpdateStepSound()
 		// 35% volume if ducking
 		if ( pmove->flags & FL_DUCKING )
 		{
-			fvol *= 0.35;
+			fvol *= step->crouchMultiplier;
 		}
 
 		PM_PlayStepSound( step, fvol );
@@ -2544,6 +2805,8 @@ void PM_Jump ()
 
 	qboolean cansuperjump = false;
 
+	auto sSounds = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
+
 	if (pmove->dead)
 	{
 		pmove->oldbuttons |= IN_JUMP ;	// don't jump again until released
@@ -2587,21 +2850,10 @@ void PM_Jump ()
 		{
 			// Don't play sound again for 1 second
 			pmove->flSwimTime = 1000;
-			switch ( pmove->RandomLong( 0, 3 ) )
-			{ 
-			case 0:
-				pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-				break;
-			case 1:
-				pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade2.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-				break;
-			case 2:
-				pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade3.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-				break;
-			case 3:
-				pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade4.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-				break;
-			}
+
+			int rnd = pmove->RandomLong(0, sSounds->stepSounds.size() - 1);
+
+			pmove->PM_PlaySound(CHAN_BODY, sSounds->stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
 		}
 
 		return;
@@ -2631,7 +2883,7 @@ void PM_Jump ()
 	}
 	else
 	{
-		PM_PlayStepSound( PM_MapTextureTypeStepType( pmove->chtexturetype ), 1.0 );
+		PM_PlayStepSound( PM_MapTextureTypeIDStepTypePtr( pmove->iuser4 ), 1.0 );
 	}
 
 	// See if user can super long jump?
@@ -2795,7 +3047,7 @@ void PM_CheckFalling()
 			PM_UpdateStepSound();
 			
 			// play step sound for current texture
-			PM_PlayStepSound( PM_MapTextureTypeStepType( pmove->chtexturetype ), fvol );
+			PM_PlayStepSound(PM_MapTextureTypeIDStepTypePtr(pmove->iuser4), fvol);
 
 			// Knock the screen around a little bit, temporary effect
 			pmove->punchangle[ 2 ] = pmove->flFallVelocity * 0.013;	// punch z axis
@@ -2825,21 +3077,12 @@ void PM_PlayWaterSounds()
 	if  ( ( pmove->oldwaterlevel == 0 && pmove->waterlevel != 0 && pmove->watertype > CONTENT_FLYFIELD) ||
 		  ( pmove->oldwaterlevel != 0 && pmove->waterlevel == 0 ))
 	{
-		switch ( pmove->RandomLong(0,3) )
-		{
-		case 0:
-			pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-			break;
-		case 1:
-			pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade2.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-			break;
-		case 2:
-			pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade3.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-			break;
-		case 3:
-			pmove->PM_PlaySound( CHAN_BODY, "player/pl_wade4.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-			break;
-		}
+		auto sSounds = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
+
+		int rnd = pmove->RandomLong(0, sSounds->stepSounds.size() - 1);
+
+		pmove->PM_PlaySound(CHAN_BODY, sSounds->stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
+
 	}
 }
 
@@ -3440,7 +3683,12 @@ void PM_Init( struct playermove_s *ppmove )
 	pmove = ppmove;
 
 	PM_CreateStuckTable();
-	PM_InitTextureTypes();
+
+	PM_ParseStepTypesFile();
+	PM_ParseMaterialTypesFile();
+	PM_ParseMaterialImpactsFile();
+
+	PM_ParseTextureMaterialsFile("sound\\materials.txt");
 
 	pm_shared_initialized = 1;
 }

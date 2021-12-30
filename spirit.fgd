@@ -2149,45 +2149,6 @@
 	]
 ]
 
-//NEW 0.6
-//* To set the player's footstep sounds, trigger this entity 'on'. To revert to normal,
-//* trigger it 'off' in the same way.
-//*   Alternatively, you can just toggle it, to alternately set and unset the sounds.
-//*   If one of the sound fields is left blank, it will have no effect... so if you
-//* actually want it to become silent, choose common/null.wav.
-//*   This entity is probably most useful as the "fire on/off" target of a trigger_inout,
-//* to specify the area over which the footsteps are to be changed.
-@PointClass base(Targetname, Master) iconsprite("sprites/env.spr") = env_footsteps : "Change Movement Sounds"
-[
-	frags(choices) : "Preset Footstep type" : 0 =
-	[
-		0 : "Custom (see below)"
-		-1 : "Concrete"
-		1 : "Metal"
-		2 : "Dirt"
-		3 : "Vent"
-		4 : "Grate"
-		5 : "Tile"
-		6 : "Paddling"
-		7 : "Wading"
-		8 : "Ladder"
-	]
-	//* Here, you can either specify a single sound file as normal, or else specify
-	//* a group of 4 sounds by inserting '?' instead of the number 1-4.
-	//* (for example, to play a random sound in the range player/pl_step1.wav to
-	//* player/pl_step4.wav, you would write 'player/pl_step?.wav'.)
-	//*   (This works on the other sound fields, too.)
-      noise(sound) : "Custom Footstep sound"
-	noise1(sound) : "Ladder sound"
-	noise2(sound) : "Wading sound"
-	noise3(sound) : "Paddling sound"
-	spawnflags(flags) =
-	[
-		1: "Set only" : 0
-		2: "Once only" : 0
-	]
-]
-
 @PointClass base(Targetname, MoveWith) size(-16 -16 -16, 16 16 16) iconsprite("sprites/env.spr") = env_funnel : "Large Portal Funnel" 
 [
 	//NEW 0.7.1
