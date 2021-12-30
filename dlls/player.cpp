@@ -1603,7 +1603,7 @@ void CBasePlayer::PlayerUse()
 	if (tr.pHit)
 	{
 		pObject = CBaseEntity::Instance(tr.pHit);
-		if (!pObject || (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE)) != 0)
+		if (!pObject || (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE)) == 0)
 		{
 			pObject = NULL;
 		}
