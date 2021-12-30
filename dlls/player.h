@@ -242,7 +242,7 @@ public:
 	void RenewItems();
 	void PackDeadPlayerItems();
 	void RemoveAllItems(bool removeSuit);
-	void RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iEgon, int iSatchel, int iSnark, int iTrip, int iGren, int iHornet);
+	void RemoveItems(uint64_t iWeaponMask, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iEgon, int iSatchel, int iSnark, int iTrip, int iGren, int iHornet);
 	void RemoveAmmo(const char* szName, int iAmount);
 	bool SwitchWeapon(CBasePlayerItem* pWeapon);
 

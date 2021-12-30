@@ -314,7 +314,7 @@ void CBasePlayer::DeathSound()
 
 	// play one of the suit death alarms
 	//LRC- if no suit, then no flatline sound. (unless it's a deathmatch.)
-	if (!(pev->weapons & (1 << WEAPON_SUIT)) && !g_pGameRules->IsDeathmatch())
+	if (!HasSuit() && !g_pGameRules->IsDeathmatch())
 		return;
 	EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
 }
@@ -835,14 +835,14 @@ void CBasePlayer::RemoveAmmo(const char* szName, int iAmount)
 }
 
 //LRC
-void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iUranium, int iSatchel, int iSnark, int iTrip, int iGren, int iHornet)
+void CBasePlayer::RemoveItems(uint64_t iWeaponMask, int i9mm, int i357, int iBuck, int iBolt, int iARGren, int iRock, int iUranium, int iSatchel, int iSnark, int iTrip, int iGren, int iHornet)
 {
 	int i;
 	CBasePlayerItem* pCurrentItem;
 
 	// hornetgun is outside the spawnflags Worldcraft can set - handle it seperately.
 	if (iHornet)
-		iWeaponMask |= 1 << WEAPON_HORNETGUN;
+		iWeaponMask |= 1ULL << WEAPON_HORNETGUN;
 
 	RemoveAmmo("9mm", i9mm);
 	RemoveAmmo("357", i357);
@@ -864,7 +864,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 		pCurrentItem = m_rgpPlayerItems[i];
 		while (pCurrentItem->m_pNext)
 		{
-			if (!(1 << pCurrentItem->m_pNext->m_iId & iWeaponMask))
+			if (!(1ULL << pCurrentItem->m_pNext->m_iId & iWeaponMask))
 			{
 				((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 				//remove pCurrentItem->m_pNext from the list
@@ -884,7 +884,7 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 			}
 		}
 		// we've gone through items 2+, now we finish off by checking item 1.
-		if (!(1 << m_rgpPlayerItems[i]->m_iId & iWeaponMask))
+		if (!(1ULL << m_rgpPlayerItems[i]->m_iId & iWeaponMask))
 		{
 			((CBasePlayerWeapon*)pCurrentItem)->DrainClip(this, false, i9mm, i357, iBuck, iBolt, iARGren, iRock, iUranium, iSatchel, iSnark, iTrip, iGren);
 			//			ALERT(at_console, "Removing %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
@@ -899,17 +899,17 @@ void CBasePlayer::RemoveItems(int iWeaponMask, int i9mm, int i357, int iBuck, in
 			//			ALERT(at_console, "Keeping %s. (id = %d)\n", m_rgpPlayerItems[i]->pszName(), m_rgpPlayerItems[i]->m_iId);
 		}
 	}
-
-	int suit = pev->weapons & 1 << WEAPON_SUIT;
-	pev->weapons &= ~(1 << WEAPON_SUIT);
+	
+	int suit = HasSuit();
+	SetHasSuit(false);
 	//	ALERT(at_console, "weapons was %d; ", pev->weapons);
-	pev->weapons &= iWeaponMask;
+	m_WeaponBits &= iWeaponMask;
 	//	ALERT(at_console, "now %d\n(Mask is %d)", pev->weapons, iWeaponMask);
 	if (suit && !(iWeaponMask & 1))
-		pev->weapons |= 1 << WEAPON_SUIT;
+		SetHasSuit(true);
 
 	// are we dropping the active item?
-	if (m_pActiveItem && !(1 << m_pActiveItem->m_iId & iWeaponMask))
+	if (m_pActiveItem && !(1ULL << m_pActiveItem->m_iId & iWeaponMask))
 	{
 		ResetAutoaim();
 		m_pActiveItem->Holster();
@@ -1646,7 +1646,7 @@ void CBasePlayer::PlayerUse()
 	if (tr.pHit)
 	{
 		pObject = CBaseEntity::Instance(tr.pHit);
-		if (!pObject || (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE)) != 0)
+		if (!pObject || (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE)) == 0)
 		{
 			pObject = NULL;
 		}
