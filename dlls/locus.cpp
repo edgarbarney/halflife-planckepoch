@@ -1071,8 +1071,8 @@ bool CCalcNumFromVec::CalcNumber(CBaseEntity* pLocus, float* OUTresult)
 	{
 		if (!gotB)
 			return false;
-		vecA.Normalize();
-		vecB.Normalize();
+		VectorNormalize(vecA);
+		VectorNormalize(vecB);
 		float dot = DotProduct(vecA, vecB);
 		*OUTresult = dot;
 		return true;
@@ -1081,8 +1081,8 @@ bool CCalcNumFromVec::CalcNumber(CBaseEntity* pLocus, float* OUTresult)
 	{
 		if (!gotB)
 			return false;
-		vecA.Normalize();
-		vecB.Normalize();
+		VectorNormalize(vecA);
+		VectorNormalize(vecB);
 		float dot = DotProduct(vecA, vecB);
 		*OUTresult = acos(dot);
 		return true;
