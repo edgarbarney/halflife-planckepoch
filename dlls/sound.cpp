@@ -1744,7 +1744,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 {
 // hit the world, try to play sound based on texture material type
 	
-	textureType_s* chTextureType;
+	textureType_s chTextureType(0, "C", "STEP_CONCRETE");
 	float fvol;
 	float fvolbar;
 	char szbuffer[64];
@@ -1762,7 +1762,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 
 	if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 		// hit body
-		chTextureType = &g_TextureTypeMap["CHAR_TEX_FLESH"];
+		chTextureType = g_TextureTypeMap["CHAR_TEX_FLESH"];
 	else
 	{
 		// hit world
@@ -1791,17 +1791,20 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 			// '}}'
 			strcpy(szbuffer, pTextureName);
 			szbuffer[CBTEXTURENAMEMAX - 1] = 0;
-				
+			strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 			// ALERT ( at_console, "texture hit: %s\n", szbuffer);
 
 			// get texture type
-			chTextureType = &g_TextureTypeMap[szbuffer];	
+			chTextureType = g_TypedTextureMap[szbuffer];
+
+			if (chTextureType.texStep.empty())
+				chTextureType = g_TextureTypeMap["CHAR_TEX_CONCRETE"];
 		}
 	}
 
-	fvol = chTextureType->impactVolume;
-	fvolbar = chTextureType->weaponVolume;
-	fattn = chTextureType->impactAttenuation;
+	fvol = chTextureType.impactVolume;
+	fvolbar = chTextureType.weaponVolume;
+	fattn = chTextureType.impactAttenuation;
 
 	/*
 	if (iBulletType == BULLET_PLAYER_CROWBAR)
@@ -1843,7 +1846,8 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 	}
 	*/
 	// play material hit sound
-	UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, g_StepTypeMap[chTextureType->texStep].stepSounds[RANDOM_LONG(0, g_StepTypeMap[chTextureType->texStep].stepSounds.size() - 1)].c_str(), fvol, fattn, 0, 96 + RANDOM_LONG(0,0xf));
+	const auto& sSounds = g_StepTypeMap[chTextureType.texStep].stepSounds;
+	UTIL_EmitAmbientSound(ENT(0), ptr->vecEndPos, sSounds[RANDOM_LONG(0, sSounds.size() - 1)].c_str(), fvol, fattn, 0, 96 + RANDOM_LONG(0,0xf));
 	//EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON, rgsz[RANDOM_LONG(0,cnt-1)], fvol, ATTN_NORM, 0, 96 + RANDOM_LONG(0,0xf));
 			
 	return fvolbar;

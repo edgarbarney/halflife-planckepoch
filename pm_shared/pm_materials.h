@@ -46,13 +46,13 @@ extern std::map<std::string, stepType_s> g_StepTypeMap;
 //		 TextureName, TextureType
 //extern std::map<std::string, std::string> g_TypedTextureMap;
 
-//Contains texture names and corresponding types' pointers
-//		 TextureName, *TextureType
-extern std::map<std::string, textureType_s*> g_TypedTextureMapPtr;
+//Contains texture names and corresponding types
+//		 TextureName, TextureType
+extern CTextureAndTypesMap g_TypedTextureMap;
 
-//Contains special attributes and corresponding step types' pointers
-//				SpecialType, *StepType
-extern std::map<StepSpecialType, stepType_s*> g_SpecialStepMapPtr;
+//Contains special attributes and corresponding step types
+//				SpecialType, StepType
+extern std::map<StepSpecialType, stepType_s*> g_SpecialStepMap;
 
 //Contains Texture impact types
 extern std::vector<impactGroupType_s> g_texTypeImpactTypeVector;

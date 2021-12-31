@@ -44,33 +44,33 @@ struct textureType_s
 	std::string texType;		// Material Type Alias. Used in "materials.txt"
 	std::string texStep;		// Sound Type that material uses. Used for bullet/melee impact and Footsteps.
 	float impactVolume;			// Volume of impact sound.
-	float impactAttenuation;	// Volume of weapon when impact happens. Used for melee.
-	float weaponVolume;			// Attenuetion of impact sound. Default is 0.8 (ATTN_NORM)
-
+	float weaponVolume;			// Volume of weapon when impact happens. Used for melee.
+	float impactAttenuation;	// Attenuetion of impact sound. Default is 0.8 (ATTN_NORM)
+	
 	/// <summary>
 	/// Material Type Constructor
 	/// </summary>
 	/// <param name="tType">Material Type Alias</param>
 	/// <param name="tStep">Material Step Type</param>
 	/// <param name="impVol">Impact Volume</param>
-	/// <param name="impAtten">Impact Attenuation</param>
 	/// <param name="weapVol">Weapon Volume</param>
+	/// <param name="impAtten">Impact Attenuation</param>
 
 	textureType_s
 	(	int tTypeNum, 
 		std::string tType = "C", 
 		std::string tStep = "STEP_CONCRETE", 
 		float impVol = 0.6f, 
-		float impAtten = 0.8f, 
-		float weapVol = 0.3f 
+		float weapVol = 0.3f,
+		float impAtten = 0.8f
 	)
 	{
 		texTypeID = tTypeNum;
 		texType = tType;
 		texStep = tStep;
 		impactVolume = impVol;
-		impactAttenuation = impAtten;
 		weaponVolume = weapVol;
+		impactAttenuation = impAtten;
 	}
 
 	textureType_s()
@@ -83,6 +83,7 @@ struct textureType_s
 		weaponVolume = 0.3f;
 	}
 };
+
 
 struct stepType_s
 {
@@ -110,9 +111,9 @@ struct stepType_s
 	/// <param name="crouchVolMulti">Volume multiplier when crouching</param>
 	stepType_s
 	(
-		int stNum = 0, 
-		bool stSkip = false, 
-		std::string stSound = "ambience/_comma.wav",
+		int stNum = 0,
+		bool stSkip = false,
+		//std::string stSound = "ambience/_comma.wav", // Unused
 		float walkingVol = 0.2f,
 		float normalVol = 0.5f,
 		float walkingStTime = 400,
@@ -122,7 +123,7 @@ struct stepType_s
 	{
 		stepNum = stNum;
 		stepSkip = stSkip;
-		stepSounds.push_back(stSound);
+		//stepSounds.push_back(stSound);
 		walkingVolume = walkingVol;
 		normalVolume = normalVol;
 		walkingStepTime = walkingStTime;
@@ -170,6 +171,44 @@ struct impactGroupType_s
 		classnumber = cNumber;
 	}
 };
+
+class CTextureAndTypesMap
+{
+private:
+	std::map<std::string, textureType_s> textureTypeMap;
+
+public:
+	FORCEINLINE textureType_s& operator[](std::string str)
+	{
+		size_t foundIndex;
+
+		for (auto& [key, value] : textureTypeMap)
+		{
+			foundIndex = key.find(str);
+			if (foundIndex != std::string::npos)
+				return value;
+		}
+
+		return textureType_s(0, "ERR");
+	}
+
+	FORCEINLINE auto insert(std::pair<std::string, textureType_s>&& val);
+
+	FORCEINLINE int findInMap(std::string name);
+
+	/*
+	_NODISCARD auto find(const std::string& key)
+	{
+		return textureTypeMap.find(key);
+	}
+
+	_NODISCARD auto end() noexcept
+	{
+		return textureTypeMap.end();
+	}
+	*/
+};
+
 
 
 #endif // PM_STRUCTSH

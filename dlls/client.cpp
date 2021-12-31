@@ -1162,16 +1162,18 @@ void ClientPrecache()
 	PRECACHE_SOUND("debris/glass3.wav");
 	*/
 
-	/*
-	for (auto [key, value] : g_StepTypeMap)
+	int i = 0;
+	
+	for (const auto& [key, value] : g_StepTypeMap)
 	{
-		for (auto sound : value.stepSounds)
+		for (const auto& sound : value.stepSounds)
 		{
 			PRECACHE_SOUND(sound.c_str());
-			g_engfuncs.pfnAlertMessage(at_console, "\n PRECACHED : %s \n", sound.c_str());
+			g_engfuncs.pfnAlertMessage(at_console, "\n PRECACHED : %s - %d", sound.c_str(), i);
+			i++;
 		}
 	}
-	*/
+	
 
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );

@@ -73,7 +73,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 		return nullptr;
 
 	// hit the world, try to play sound based on texture material type
-	int chTextureType = 0;
+	textureType_s chTextureType;
 	int entity;
 	char *pStart;
 	char *pTextureName;
@@ -117,9 +117,10 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 				// '}}'
 				strcpy( szbuffer, pTextureName );
 				szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-					
+				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 				// get texture type
-				chTextureType = PM_FindTextureTypeID( szbuffer );	
+				//chTextureType = PM_FindTextureTypeID( szbuffer );	
+				chTextureType = g_TypedTextureMap[szbuffer];
 			}
 			else
 			{
@@ -133,6 +134,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 
 	cl_entity_t *pHit = gEngfuncs.GetEntityByIndex(gEngfuncs.pEventAPI->EV_IndexFromTrace(ptr));
 
+	/*
 	for(auto particleGroup : g_texTypeImpactTypeVector)
 	{	
 		// TODO: GO FULL BRANCHLESS
@@ -140,44 +142,54 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 		bool rendAmtCheck = true;
 		bool classnoCheck = true;
 
-		if (particleGroup.renderMode < 0)
-			rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != particleGroup.renderMode));
-		else
-			rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != -1 * particleGroup.renderMode));
+		
+		//if (particleGroup.renderMode < 0)
+		//	rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != particleGroup.renderMode));
+		//else
+		//	rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != -1 * particleGroup.renderMode));
+		//
+		//if (particleGroup.renderAmt < 0)
+		//	rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != particleGroup.renderAmt));
+		//else
+		//	rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != -1 * particleGroup.renderAmt));
+		//
+		//if (particleGroup.classnumber < 0)
+		//	classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != particleGroup.classnumber));
+		//else
+		//	classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != -1 * particleGroup.classnumber));
+		
 
-		if (particleGroup.renderAmt < 0)
-			rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != particleGroup.renderAmt));
-		else
-			rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != -1 * particleGroup.renderAmt));
-
-		if (particleGroup.classnumber < 0)
-			classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != particleGroup.classnumber));
-		else
-			classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != -1 * particleGroup.classnumber));
-
-		textureType_s* tt = nullptr;
-
+		textureType_s tt;
+		
 		if (rendModCheck && rendAmtCheck && classnoCheck)
 		{
-			for (auto& it : particleGroup.impactTypes)
+			for (const auto& it : particleGroup.impactTypes)
 			{
 				for (const auto& [tKey, tValue] : g_TextureTypeMap)
 				{
 					if (tValue.texType == it.materialTypeAlias && tValue.texTypeID == chTextureType)
 					{
-						tt = &g_TextureTypeMap[tKey];
+						tt = g_TextureTypeMap[tKey];
 					}
 				}
-
-				if (tt != nullptr)
-				{
-					sprintf(decalname, it.decalGroupName.c_str());
-					gParticleEngine.CreateCluster(const_cast<char*>(it.scriptFile.c_str()), ptr->endpos, ptr->plane.normal, 0);
-				}
+				sprintf(decalname, it.decalGroupName.c_str());
+				gParticleEngine.CreateCluster(const_cast<char*>(it.scriptFile.c_str()), ptr->endpos, ptr->plane.normal, 0);
 			}
 		}
+		
+	}
+	*/
+
+	impactType_s iType = g_texTypeImpactTypeVector[0].impactTypes[0];
+
+	for (auto& it : g_texTypeImpactTypeVector[0].impactTypes)
+	{
+		if (chTextureType.texType == it.materialTypeAlias)
+			iType = it;
 	}
 
+	sprintf(decalname, iType.decalGroupName.c_str());
+	gParticleEngine.CreateCluster(const_cast<char*>(iType.scriptFile.c_str()), ptr->endpos, ptr->plane.normal, 0);
 
 	return decalname;
 }
@@ -189,7 +201,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *vecEnd, int iBulletType )
 {
 	// hit the world, try to play sound based on texture material type
-	textureType_s* chTextureType = nullptr;
+	textureType_s chTextureType;
 	float fvol = 0.5;
 	float fvolbar = 0.5;
 	float fattn = ATTN_NORM;
@@ -209,7 +221,7 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 	if ( entity >= 1 && entity <= gEngfuncs.GetMaxClients() )
 	{
 		// hit body
-		chTextureType = &g_TextureTypeMap["CHAR_TEX_FLESH"];
+		chTextureType = g_TextureTypeMap["CHAR_TEX_FLESH"];
 	}
 	else if ( entity == 0 )
 	{
@@ -235,23 +247,21 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 			// '}}'
 			strcpy( szbuffer, pTextureName );
 			szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-				
+			strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 			// get texture type
 			//chTextureType = PM_FindTextureTypeID( szbuffer );	
-			chTextureType = &g_TextureTypeMap[szbuffer];
+			chTextureType = g_TextureTypeMap[szbuffer];
 		}
 	}
 	
-	if (chTextureType != nullptr)
-	{
-		fvol = chTextureType->impactVolume;
-		fvolbar = chTextureType->weaponVolume;
-		fattn = chTextureType->impactAttenuation;
+	fvol = chTextureType.impactVolume;
+	fvolbar = chTextureType.weaponVolume;
+	fattn = chTextureType.impactAttenuation;
 	
 
-		// play material hit sound
-		gEngfuncs.pEventAPI->EV_PlaySound( 0, ptr->endpos, CHAN_STATIC, g_StepTypeMap[chTextureType->texStep].stepSounds[gEngfuncs.pfnRandomLong(0, g_StepTypeMap[chTextureType->texStep].stepSounds.size() - 1)].c_str(), fvol, fattn, 0, 96 + gEngfuncs.pfnRandomLong(0, 0xf));
-	}
+	// play material hit sound
+	gEngfuncs.pEventAPI->EV_PlaySound( 0, ptr->endpos, CHAN_STATIC, g_StepTypeMap[chTextureType.texStep].stepSounds[gEngfuncs.pfnRandomLong(0, g_StepTypeMap[chTextureType.texStep].stepSounds.size() - 1)].c_str(), fvol, fattn, 0, 96 + gEngfuncs.pfnRandomLong(0, 0xf));
+
 	return fvolbar;
 }
 

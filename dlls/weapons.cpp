@@ -149,7 +149,8 @@ void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 //RENDERERS START
 char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vector vecEnd )
 {
-	textureType_s* chTextureType;
+	//textureType_s* chTextureType;
+	textureType_s chTextureType;
 	char szbuffer[64];
 	const char *pTextureName;
 	float rgfl1[3];
@@ -161,7 +162,8 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 		if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 		{
 			// hit body
-			chTextureType = &g_TextureTypeMap["CHAR_TEX_FLESH"];
+			//chTextureType = &g_TextureTypeMap["CHAR_TEX_FLESH"];
+			chTextureType = g_TextureTypeMap["CHAR_TEX_FLESH"];
 		}
 		else
 		{
@@ -182,7 +184,9 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 					pTextureName++;
 				strcpy(szbuffer, pTextureName);
 				szbuffer[CBTEXTURENAMEMAX - 1] = 0;
-				chTextureType = g_TypedTextureMapPtr[szbuffer];
+				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+				//chTextureType = &g_TypedTextureMap[szbuffer];
+				chTextureType = g_TypedTextureMap[szbuffer];
 			}
 		}
 
@@ -191,20 +195,20 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 		{
 			return "shot_glass";
 		}
-		else if (chTextureType != nullptr)
-		{
-			for (auto particleGroup : g_texTypeImpactTypeVector)
+		//else if (chTextureType != nullptr)
+		//{
+
+			for (const auto& particleGroup : g_texTypeImpactTypeVector)
 			{
-				for (auto& it : particleGroup.impactTypes)
+				for (const auto& it : particleGroup.impactTypes)
 				{
-					if (it.materialTypeAlias == chTextureType->texType)
+					if (it.materialTypeAlias == chTextureType.texType)
 					{
 						return const_cast<char*>(it.decalGroupName.c_str());
 					}
 				}
-			
 			}
-		}
+		//}
 	}
 	if ( !pEntity )
 	{

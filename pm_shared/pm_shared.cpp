@@ -158,16 +158,48 @@ std::map<std::string, stepType_s> g_StepTypeMap;
 //		 TextureName, TextureType
 //std::map<std::string, std::string> g_TypedTextureMap;
 
-//Contains texture names and corresponding types' pointers
-//		 TextureName, *TextureType
-std::map<std::string, textureType_s*> g_TypedTextureMapPtr;
+//Contains texture names and corresponding types
+//		 TextureName, TextureType
+CTextureAndTypesMap g_TypedTextureMap;
 
-//Contains special attributes and corresponding step types' pointers
-//				SpecialType, *StepType
-std::map<StepSpecialType, stepType_s*> g_SpecialStepMapPtr;
+//Contains special attributes and corresponding step types
+//				SpecialType, StepType
+std::map<StepSpecialType, stepType_s> g_SpecialStepMap;
 
 //Contains Texture impact types
 std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
+
+/*FORCEINLINE textureType_s& CTextureAndTypesMap::operator[](std::string str)
+{
+	size_t foundIndex;
+
+	for (auto& [key, value] : textureTypeMap)
+	{
+		foundIndex = key.find(str);
+		if (foundIndex != std::string::npos)
+			return value;
+	}
+
+	return g_TextureTypeMap["CHAR_TEX_CONCRETE"];
+}
+*/
+
+/*FORCEINLINE*/ auto CTextureAndTypesMap::insert(std::pair<std::string, textureType_s>&& val)
+{
+	return textureTypeMap.insert(val);
+}
+
+/*FORCEINLINE*/ int CTextureAndTypesMap::findInMap(std::string name)
+{
+	transform(name.begin(), name.end(), name.begin(), ::toupper);
+
+	if (textureTypeMap.find(name) == textureTypeMap.end())
+	{
+		return g_TextureTypeMap["CHAR_TEX_CONCRETE"].texTypeID;
+	}
+	return textureTypeMap[name].texTypeID;
+}
+
 
 std::string PM_GetModdir(std::string endLine = "\\") //Yes, string
 {
@@ -229,12 +261,21 @@ std::string PM_MapTextureTypeStepType(std::string textureType)
 	}
 }
 
-std::string PM_MapTextureTypeIDStepType(int textureTypeID)
+std::string PM_MapTextureTypeIDStepTypeName(int textureTypeID)
 {
 	for (const auto& [tKey, tValue] : g_TextureTypeMap)
 	{
 		if (tValue.texTypeID == textureTypeID)
 			return tValue.texStep;
+	}
+}
+
+stepType_s PM_MapTextureTypeIDStepType(int textureTypeID)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texTypeID == textureTypeID)
+			return g_StepTypeMap[tValue.texStep];
 	}
 }
 
@@ -274,9 +315,22 @@ textureType_s* PM_MaterialAliasToTextureTypePtr(std::string alias)
 	}
 }
 
+textureType_s PM_MaterialAliasToTextureType(std::string alias)
+{
+	for (const auto& [tKey, tValue] : g_TextureTypeMap)
+	{
+		if (tValue.texType == alias)
+		{
+			//auto tt = g_TextureTypeMap[tKey].texType;
+			return g_TextureTypeMap[tKey];
+		}
+	}
+	return g_TextureTypeMap["CHAR_TEX_CONCRETE"];
+}
+
 std::string PM_GetMaterialNameFromAlias(std::string alias)
 {
-	for (auto& [key, value] : g_TextureTypeMap)
+	for (const auto& [key, value] : g_TextureTypeMap)
 	{
 		if (value.texType == alias)
 			return key;
@@ -286,11 +340,22 @@ std::string PM_GetMaterialNameFromAlias(std::string alias)
 }
 
 
-void PM_ParseTextureMaterialsFile(std::string path)
+void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 {
 	std::ifstream fstream;
-	fstream.open(PM_GetModdir() + path);
 
+	if (relative)
+	{
+		fstream.open(PM_GetModdir() + path);
+		pmove->Con_Printf("\n =========== ERR: Parsing file: %s =========== \n", (PM_GetModdir() + path).c_str());
+	}
+	else
+	{
+		fstream.open(std::filesystem::current_path().string() + "\\" + path);
+		pmove->Con_Printf("\n =========== ERR: Parsing file: %s =========== \n", (std::filesystem::current_path().string() + "\\" + path).c_str());
+	}
+
+	
 	int lineIteration = 0;
 	std::string line;
 	while (std::getline(fstream, line))
@@ -319,7 +384,10 @@ void PM_ParseTextureMaterialsFile(std::string path)
 			// Recurse texture materials
 			if (command == "#include")
 			{
-				PM_ParseTextureMaterialsFile(value);
+				value.pop_back(); value.erase(value.begin()); // Remove first and last character of the string, which are the quote marks
+
+				PM_ParseTextureMaterialsFile(value, false);
+				continue;
 			}
 		}
 		else
@@ -331,7 +399,13 @@ void PM_ParseTextureMaterialsFile(std::string path)
 				pmove->Con_DPrintf("\nERR:  %s - Can't parse line %d. Are you sure the syntax is correct? \n\n %s", path.c_str(), lineIteration, line.c_str() );
 				continue;
 			}
-			g_TypedTextureMapPtr.insert({ texture, PM_MaterialAliasToTextureTypePtr (type)});
+
+			//To Uppercase
+			transform(type.begin(), type.end(), type.begin(), ::toupper);
+			transform(texture.begin(), texture.end(), texture.begin(), ::toupper);
+
+			pmove->Con_DPrintf("\nERR:  %s - line %d. Insterted %s - %s \n Line is: %s\n ", path.c_str(), lineIteration, texture.c_str(), PM_MaterialAliasToTextureType(type).texType.c_str(), line.c_str());
+			g_TypedTextureMap.insert({ texture, PM_MaterialAliasToTextureType(type)});
 			continue;
 		}
 	}
@@ -343,6 +417,8 @@ void PM_ParseStepTypesFile()
 	fstream.open(PM_GetModdir() + "sound\\steptypes.txt");
 
 	std::string lastType;
+
+	StepSpecialType lastSpecialType = StepSpecialType::Default;
 
 	bool inSection = false;
 	int stepIteration = 0;
@@ -368,8 +444,25 @@ void PM_ParseStepTypesFile()
 		}
 		else if (line[0] == '}') // Closing braces will terminate the operation
 		{
+			if (lastSpecialType == StepSpecialType::Ladder)
+			{
+				g_SpecialStepMap[StepSpecialType::Ladder] = g_StepTypeMap[lastType];
+			}
+			else if (lastSpecialType == StepSpecialType::LiquidFeet)
+			{
+				g_SpecialStepMap[StepSpecialType::LiquidFeet] = g_StepTypeMap[lastType];
+			}
+			else if (lastSpecialType == StepSpecialType::LiquidKnee)
+			{
+				g_SpecialStepMap[StepSpecialType::LiquidKnee] = g_StepTypeMap[lastType];
+			}
+			else if (lastSpecialType == StepSpecialType::Flesh)
+			{
+				g_SpecialStepMap[StepSpecialType::Flesh] = g_StepTypeMap[lastType];
+			}
 			inSection = false;
 			lastType = "";
+			lastSpecialType = StepSpecialType::Default;
 			continue;
 		}
 		else if (line == "true")
@@ -388,20 +481,21 @@ void PM_ParseStepTypesFile()
 		{
 			if (line == "#ladder")
 			{
-				g_SpecialStepMapPtr[StepSpecialType::Ladder] = &g_StepTypeMap[lastType];
+				lastSpecialType = StepSpecialType::Ladder;
 			}
 			else if (line == "#liquidfeet")
 			{
-				g_SpecialStepMapPtr[StepSpecialType::LiquidFeet] = &g_StepTypeMap[lastType];
+				lastSpecialType = StepSpecialType::LiquidFeet;
 			}
 			else if (line == "#liquidknee")
 			{
-				g_SpecialStepMapPtr[StepSpecialType::LiquidKnee] = &g_StepTypeMap[lastType];
+				lastSpecialType = StepSpecialType::LiquidKnee;
 			}
 			else if (line == "#flesh")
 			{
-				g_SpecialStepMapPtr[StepSpecialType::Flesh] = &g_StepTypeMap[lastType];
+				lastSpecialType = StepSpecialType::Flesh;
 			}
+			continue;
 		}
 		else if (line[0] == '$') // Process variables
 		{
@@ -463,6 +557,7 @@ void PM_ParseStepTypesFile()
 					g_StepTypeMap[lastType].crouchMultiplier = atof(line.c_str());
 				}
 			}
+			continue;
 		}
 		else if (line[0] == '"')
 		{
@@ -471,12 +566,15 @@ void PM_ParseStepTypesFile()
 			if (!inSection)
 			{
 				lastType = line;
+
+				//To uppercase
+				transform(lastType.begin(), lastType.end(), lastType.begin(), ::toupper);
+
 				continue;
 			}
 			else
 			{
 				g_StepTypeMap[lastType].stepSounds.push_back(line); // Add the sound
-				pmove->Con_DPrintf("\nERR: steptypes.txt - Test Debug Line %d. %s \n ", lineIteration, line.c_str());
 				continue;
 			}
 		}
@@ -619,8 +717,8 @@ void PM_ParseMaterialImpactsFile()
 
 			if (!inSection)
 			{
-				line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
 				lastType = line;
+				line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
 				continue;
 			}
 			else
@@ -633,6 +731,14 @@ void PM_ParseMaterialImpactsFile()
 					pmove->Con_DPrintf("\nERR: materialimpacts.txt - Can't parse line %d. Are you sure the syntax is correct?\n\n %s", lineIteration, line.c_str());
 					continue;
 				}
+				
+				//To uppercase
+				transform(alias.begin(), alias.end(), alias.begin(), ::toupper);
+
+				// Remove first and last character of the string, which are the quote marks
+				alias.pop_back(); alias.erase(alias.begin());
+				particle.pop_back(); particle.erase(particle.begin());
+				decal.pop_back(); decal.erase(decal.begin());
 
 				g_texTypeImpactTypeVector[stepIteration].impactTypes.push_back(impactType_s(alias,decal,particle));
 
@@ -668,7 +774,6 @@ void PM_ParseMaterialTypesFile()
 		}
 		else if (line[0] == '"')
 		{
-			//line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
 			std::istringstream iss(line);
 			std::string name, textype, steptype;
 			float impVol, weapVol, atnVal;
@@ -678,6 +783,16 @@ void PM_ParseMaterialTypesFile()
 				pmove->Con_DPrintf("\nERR: materialtypes.txt - Can't parse line %d. Are you sure the syntax is correct?", lineIteration);
 				continue; 
 			} 
+
+			// Remove first and last character of the string, which are the quote marks
+			name.pop_back(); name.erase(name.begin());
+			textype.pop_back(); textype.erase(textype.begin());
+			steptype.pop_back(); steptype.erase(steptype.begin());
+
+			//To Uppercase
+			transform(name.begin(), name.end(), name.begin(), ::toupper);
+			transform(textype.begin(), textype.end(), textype.begin(), ::toupper);
+			transform(steptype.begin(), steptype.end(), steptype.begin(), ::toupper);
 
 			g_TextureTypeMap.insert({ name, textureType_s(texTypeIteration, textype, steptype, impVol, weapVol, atnVal) });
 			texTypeIteration++;
@@ -701,13 +816,21 @@ std::string PM_FindTextureType(std::string name)
 }
 */
 
+/*
 int PM_FindTextureTypeID(std::string name)
 {
-	if (g_TypedTextureMapPtr.find(name) == g_TypedTextureMapPtr.end())
+	if (g_TypedTextureMap.find(name) == g_TypedTextureMap.end())
 	{
 		return g_TextureTypeMap["CHAR_TEX_CONCRETE"].texTypeID;
 	}
-	return g_TypedTextureMapPtr[name]->texTypeID;
+	return g_TypedTextureMap[name].texTypeID;
+}
+*/
+
+
+int PM_FindTextureTypeID(std::string name)
+{
+	return g_TypedTextureMap.findInMap(name);
 }
 
 int PM_FindStepTypeID(std::string name)
@@ -745,7 +868,7 @@ void PM_PlayGroupSound( const char* szValue, int irand, float fvol )
 	pmove->PM_PlaySound( CHAN_BODY, szValue, fvol, ATTN_NORM, 0, PITCH_NORM );
 }
 
-void PM_PlayStepSound(stepType_s* step, float fvol)
+void PM_PlayStepSound(stepType_s step, float fvol)
 {
 	static int iSkipStep = 0;
 	int irand = 0;
@@ -778,7 +901,7 @@ void PM_PlayStepSound(stepType_s* step, float fvol)
 	//{
 	auto stepValue = step;
 
-		if (stepValue->stepSkip)
+		if (stepValue.stepSkip)
 		{
 			if (iSkipStep == 0)
 			{
@@ -795,17 +918,17 @@ void PM_PlayStepSound(stepType_s* step, float fvol)
 
 	//if (step == stepValue.stepNum)
 	//{
+			irand = pmove->RandomLong(0, stepValue.stepSounds.size() - 1);
+			if (pmove->iStepLeft)
+				irand += (irand%2);
+			else
+				irand += !(irand%2);
+		
+			if (irand > stepValue.stepSounds.size() - 1) irand -= 2;
 
-		if (pmove->iStepLeft)
-			irand = pmove->RandomLong(0, g_StepTypeMap.size() - 1) + (irand%2);
-		else
-			irand = pmove->RandomLong(0, g_StepTypeMap.size() - 1) + !(irand%2);
 
-		if(stepValue->stepSounds.size() > irand)
-			pmove->PM_PlaySound(CHAN_BODY, stepValue->stepSounds[irand].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
-		else
-			pmove->PM_PlaySound(CHAN_BODY, stepValue->stepSounds[0].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
-
+		pmove->PM_PlaySound(CHAN_BODY, stepValue.stepSounds[irand].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
+		 
 		//pmove->PM_PlaySound(CHAN_BODY, "player/pl_step1.wav", fvol, ATTN_NORM, 0, PITCH_NORM);
 	//}
 	//}
@@ -815,7 +938,7 @@ void PM_PlayStepSound(stepType_s* step, float fvol)
 
 void PM_PlayStepSound(std::string step, float fvol)
 {
-	PM_PlayStepSound((&g_StepTypeMap[step]), fvol);
+	PM_PlayStepSound(g_StepTypeMap[step], fvol);
 }
 
 
@@ -876,7 +999,7 @@ void PM_UpdateStepSound()
 	float velwalk;
 	float flduck;
 	int	fLadder;
-	stepType_s* step;
+	stepType_s step;
 
 	if ( pmove->flTimeStepSound > 0 )
 		return;
@@ -927,25 +1050,25 @@ void PM_UpdateStepSound()
 		// find out what we're stepping in or on...
 		if (fLadder)
 		{
-			step = g_SpecialStepMapPtr[StepSpecialType::Ladder];
+			step = g_SpecialStepMap[StepSpecialType::Ladder];
 		}
 		else if ( pmove->PM_PointContents ( knee, nullptr ) == CONTENTS_WATER )
 		{
-			step = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
+			step = g_SpecialStepMap[StepSpecialType::LiquidKnee];
 		}
 		else if ( pmove->PM_PointContents ( feet, nullptr ) == CONTENTS_WATER )
 		{
-			step = g_SpecialStepMapPtr[StepSpecialType::LiquidFeet];
+			step = g_SpecialStepMap[StepSpecialType::LiquidFeet];
 		}
 		else
 		{
 			// find texture under player, if different from current texture, 
 			// get material type
-			step = PM_MapTextureTypeIDStepTypePtr(pmove->iuser4);
-
-			fvol = fWalking ? step->walkingVolume : step->normalVolume;
-			pmove->flTimeStepSound = fWalking ? step->walkingStepTime : step->normalStepTime;
+			step = PM_MapTextureTypeIDStepType(pmove->iuser4);
 		}
+
+		fvol = fWalking ? step.walkingVolume : step.normalVolume;
+		pmove->flTimeStepSound = fWalking ? step.walkingStepTime : step.normalStepTime;
 		
 		pmove->flTimeStepSound += flduck; // slower step time if ducking
 
@@ -953,7 +1076,7 @@ void PM_UpdateStepSound()
 		// 35% volume if ducking
 		if ( pmove->flags & FL_DUCKING )
 		{
-			fvol *= step->crouchMultiplier;
+			fvol *= step.crouchMultiplier;
 		}
 
 		PM_PlayStepSound( step, fvol );
@@ -2805,7 +2928,7 @@ void PM_Jump ()
 
 	qboolean cansuperjump = false;
 
-	auto sSounds = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
+	auto sSounds = g_SpecialStepMap[StepSpecialType::LiquidKnee];
 
 	if (pmove->dead)
 	{
@@ -2851,9 +2974,9 @@ void PM_Jump ()
 			// Don't play sound again for 1 second
 			pmove->flSwimTime = 1000;
 
-			int rnd = pmove->RandomLong(0, sSounds->stepSounds.size() - 1);
+			int rnd = pmove->RandomLong(0, sSounds.stepSounds.size() - 1);
 
-			pmove->PM_PlaySound(CHAN_BODY, sSounds->stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
+			pmove->PM_PlaySound(CHAN_BODY, sSounds.stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
 		}
 
 		return;
@@ -2883,7 +3006,7 @@ void PM_Jump ()
 	}
 	else
 	{
-		PM_PlayStepSound( PM_MapTextureTypeIDStepTypePtr( pmove->iuser4 ), 1.0 );
+		PM_PlayStepSound( PM_MapTextureTypeIDStepType( pmove->iuser4 ), 1.0 );
 	}
 
 	// See if user can super long jump?
@@ -3047,7 +3170,7 @@ void PM_CheckFalling()
 			PM_UpdateStepSound();
 			
 			// play step sound for current texture
-			PM_PlayStepSound(PM_MapTextureTypeIDStepTypePtr(pmove->iuser4), fvol);
+			PM_PlayStepSound(PM_MapTextureTypeIDStepType(pmove->iuser4), fvol);
 
 			// Knock the screen around a little bit, temporary effect
 			pmove->punchangle[ 2 ] = pmove->flFallVelocity * 0.013;	// punch z axis
@@ -3077,11 +3200,11 @@ void PM_PlayWaterSounds()
 	if  ( ( pmove->oldwaterlevel == 0 && pmove->waterlevel != 0 && pmove->watertype > CONTENT_FLYFIELD) ||
 		  ( pmove->oldwaterlevel != 0 && pmove->waterlevel == 0 ))
 	{
-		auto sSounds = g_SpecialStepMapPtr[StepSpecialType::LiquidKnee];
+		auto sSounds = g_SpecialStepMap[StepSpecialType::LiquidKnee];
 
-		int rnd = pmove->RandomLong(0, sSounds->stepSounds.size() - 1);
+		int rnd = pmove->RandomLong(0, sSounds.stepSounds.size() - 1);
 
-		pmove->PM_PlaySound(CHAN_BODY, sSounds->stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
+		pmove->PM_PlaySound(CHAN_BODY, sSounds.stepSounds[rnd].c_str(), 1, ATTN_NORM, 0, PITCH_NORM);
 
 	}
 }
