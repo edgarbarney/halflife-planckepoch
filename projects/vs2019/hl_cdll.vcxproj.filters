@@ -740,6 +740,9 @@
     <ClInclude Include="..\..\common\FranUtils.hpp">
       <Filter>Header Files\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\pm_shared\pm_structs.h">
+      <Filter>Header Files\pm_shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\public\game_controls.lib" />
