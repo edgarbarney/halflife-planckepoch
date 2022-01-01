@@ -1,0 +1,57 @@
+// MATERIAL IMPACTS
+
+// Material Alias - Decal Group - Particle Script
+
+//  $Rendermode Options (Unused for now.)
+// 
+//	NOCHECK (Skips Check)
+// 	kRenderNormal
+//	kRenderTransColor
+//	kRenderTransTexture
+//	kRenderGlow
+//	kRenderTransAlpha
+//	kRenderTransAdd
+//
+
+// Groups and Rendermodes are a bit buggy.
+// So they are disabled for now. Please just use default group
+
+"DefaultGroup"
+{
+$RenderMode		kRenderTransColor
+$RenderAmt		0
+$Classnumber	NOCHECK
+
+"DEFAULT"  	"shot"				"concrete_impact_cluster.txt"
+
+"C"			"shot"				"concrete_impact_cluster.txt"
+"M"			"shot_metal"		NULL
+"D"			"shot"				"dirt_impact_cluster.txt"
+"V"			"shot_metal"		NULL
+"G"			"shot_metal"		NULL
+"T"			"shot"				"concrete_impact_cluster.txt"				
+"W"			"shot_wood"			"wood_impact_cluster.txt"		
+"P"			"shot_glass"		"glass_impact_cluster.txt"		
+"Y"			"shot_glass"		"glass_impact_cluster.txt"
+"F"			"shot_glass"		"glass_impact_cluster.txt"
+"SNOW"		"shot_metal"		"snow_impact_cluster.txt"
+"HOUNDEYE"	"yellowblood"		"alien_blood_impact_cluster.txt"
+}
+
+//"TransparentGlass"
+//{
+//$RenderMode		NOCHECK
+//$RenderAmt		1
+//$Classnumber	1
+//
+//"DEFAULT"			"shot_glass"		"glass_impact_cluster.txt"	
+//}
+//
+//"AnotherTransparentGlass"
+//{
+//!RenderMode		kRenderNormal
+//$RenderAmt		1
+//!Classnumber	1
+//
+//"DEFAULT"			"shot_glass"		"glass_impact_cluster.txt"	
+//}

@@ -1,0 +1,34 @@
+// MATERIAL TYPES
+// Try not to remove the default types.
+
+// You can use a STRING without spaces as delimiters instead of single characters.
+
+
+// {TEXNAME}		=	Material Name					
+// {TEXTYPE}		=	Material Type Alias. Used in "materials.txt"
+// {STEPTYPE}		=	Sound Type that material uses. Used for bullet/melee impact and Footsteps.
+// {IMPACTVOLUME}	=	Volume of impact sound.
+// {WEAPONVOLUME}	=	Volume of weapon when impact happens. Used for melee.
+// {ATTN}			=	Attenuetion of impact sound. Default is 0.8 (ATTN_NORM)
+
+//{TEXNAME}						{TEXTYPE}		{STEPTYPE}				{IMPACTVOLUME}		{WEAPONVOLUME}		{ATTN}
+
+
+// START OF DEFAULT TYPES	
+
+"CHAR_TEX_CONCRETE"				"C"				"STEP_CONCRETE"			0.9					0.6					0.8
+"CHAR_TEX_METAL"				"M"				"STEP_METAL"			0.9					0.3					0.8
+"CHAR_TEX_DIRT"					"D"				"STEP_DIRT"				0.9					0.1					0.8
+"CHAR_TEX_VENT"					"V"				"STEP_VENT"				0.5					0.3					0.8
+"CHAR_TEX_GRATE"				"G"				"STEP_GRATE"			0.9					0.5					0.8
+"CHAR_TEX_TILE"					"T"				"STEP_TILE"				0.8					0.2					0.8
+"CHAR_TEX_SLOSH"				"S"				"STEP_SLOSH"			0.9					0.0					0.8
+"CHAR_TEX_WOOD"					"W"				"STEP_CONCRETE"			0.9					0.2					0.8
+"CHAR_TEX_COMPUTER"				"P"				"STEP_GLASS"			0.8					0.2					0.8
+"CHAR_TEX_GLASS"				"Y"				"STEP_TILE"				0.8					0.2					0.8
+"CHAR_TEX_FLESH"				"F"				"STEP_FLESH"			1.0					0.2					1.0
+
+// END OF DEFAULT TYPES		
+
+"CHAR_TEX_SNOW"					"SNOW"			"STEP_SNOW"				0.9					0.0					0.8
+"CHAR_TEX_HOUNDEYE"				"HOUNDEYE"		"STEP_HOUNDEYE"			0.9					0.1					0.8
