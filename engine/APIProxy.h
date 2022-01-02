@@ -32,7 +32,7 @@ typedef int (*HUD_UPDATECLIENTDATA_FUNC) ( struct client_data_s*, float );
 typedef void (*HUD_RESET_FUNC)    ( );
 typedef void (*HUD_CLIENTMOVE_FUNC)( struct playermove_s *ppmove, qboolean server );
 typedef void (*HUD_CLIENTMOVEINIT_FUNC)( struct playermove_s *ppmove );
-typedef char (*HUD_TEXTURETYPE_FUNC)( char *name );
+typedef int (*HUD_TEXTURETYPE_FUNC)( char *name );
 typedef void (*HUD_IN_ACTIVATEMOUSE_FUNC) ( );
 typedef void (*HUD_IN_DEACTIVATEMOUSE_FUNC)		( );
 typedef void (*HUD_IN_MOUSEEVENT_FUNC)		( int mstate );

@@ -1158,6 +1158,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/pl_fallpain2.wav");
 	PRECACHE_SOUND("player/pl_fallpain3.wav");
 
+	/*
 	PRECACHE_SOUND("player/pl_step1.wav");		// walk on concrete
 	PRECACHE_SOUND("player/pl_step2.wav");
 	PRECACHE_SOUND("player/pl_step3.wav");
@@ -1213,7 +1214,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/pl_wade2.wav");
 	PRECACHE_SOUND("player/pl_wade3.wav");
 	PRECACHE_SOUND("player/pl_wade4.wav");
-
+	
 	PRECACHE_SOUND("debris/wood1.wav");			// hit wood texture
 	PRECACHE_SOUND("debris/wood2.wav");
 	PRECACHE_SOUND("debris/wood3.wav");
@@ -1225,6 +1226,20 @@ void ClientPrecache()
 	PRECACHE_SOUND("debris/glass1.wav");
 	PRECACHE_SOUND("debris/glass2.wav");
 	PRECACHE_SOUND("debris/glass3.wav");
+	*/
+
+	int i = 0;
+	
+	for (const auto& [key, value] : g_StepTypeMap)
+	{
+		for (const auto& sound : value.stepSounds)
+		{
+			PRECACHE_SOUND(sound.c_str());
+			g_engfuncs.pfnAlertMessage(at_console, "\n PRECACHED : %s - %d", sound.c_str(), i);
+			i++;
+		}
+	}
+	
 
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );
