@@ -1,2 +1,0 @@
-engine_alien_blood_drops.txt
-engine_alien_blood_core.txt

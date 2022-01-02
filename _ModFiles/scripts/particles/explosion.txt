@@ -1,4 +1,0 @@
-engine_explosion_clouds.txt
-engine_explosion_flecks.txt
-engine_explosion_flames.txt
-engine_explosion_wave.txt
