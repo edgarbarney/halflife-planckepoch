@@ -259,6 +259,7 @@ std::string PM_MapTextureTypeStepType(std::string textureType)
 		if (tValue.texType == textureType)
 			return tValue.texStep;
 	}
+	return "STEP_CONCRETE";
 }
 
 std::string PM_MapTextureTypeIDStepTypeName(int textureTypeID)
@@ -268,6 +269,7 @@ std::string PM_MapTextureTypeIDStepTypeName(int textureTypeID)
 		if (tValue.texTypeID == textureTypeID)
 			return tValue.texStep;
 	}
+	return g_TextureTypeMap["STEP_CONCRETE"].texStep;
 }
 
 stepType_s PM_MapTextureTypeIDStepType(int textureTypeID)
@@ -277,6 +279,7 @@ stepType_s PM_MapTextureTypeIDStepType(int textureTypeID)
 		if (tValue.texTypeID == textureTypeID)
 			return g_StepTypeMap[tValue.texStep];
 	}
+	return g_StepTypeMap[g_TextureTypeMap["CHAR_TEX_CONCRETE"].texStep];
 }
 
 stepType_s* PM_MapTextureTypeIDStepTypePtr(int textureTypeID)
@@ -286,6 +289,7 @@ stepType_s* PM_MapTextureTypeIDStepTypePtr(int textureTypeID)
 		if (tValue.texTypeID == textureTypeID)
 			return &g_StepTypeMap[tValue.texStep];
 	}
+	return &g_StepTypeMap[g_TextureTypeMap["CHAR_TEX_CONCRETE"].texStep];
 }
 
 int PM_MapTextureTypeIDStepTypeID(int textureTypeID)
@@ -295,15 +299,7 @@ int PM_MapTextureTypeIDStepTypeID(int textureTypeID)
 		if (tValue.texTypeID == textureTypeID)
 			return g_StepTypeMap[tValue.texStep].stepNum;
 	}
-}
-
-stepType_s PM_StepTypeToStepNum(int stepType)
-{
-	for (const auto& [tKey, tValue] : g_StepTypeMap)
-	{
-		if (tValue.stepNum == stepType)
-			return tValue;
-	}
+	return g_TextureTypeMap["CHAR_TEX_CONCRETE"].texTypeID;
 }
 
 textureType_s* PM_MaterialAliasToTextureTypePtr(std::string alias)
@@ -313,6 +309,7 @@ textureType_s* PM_MaterialAliasToTextureTypePtr(std::string alias)
 		if (tValue.texType == alias)
 			return &g_TextureTypeMap[tKey];
 	}
+	return &g_TextureTypeMap["CHAR_TEX_CONCRETE"];
 }
 
 textureType_s PM_MaterialAliasToTextureType(std::string alias)
@@ -336,7 +333,7 @@ std::string PM_GetMaterialNameFromAlias(std::string alias)
 			return key;
 	}
 
-	return "";
+	return "CHAR_TEX_CONCRETE";
 }
 
 
@@ -873,8 +870,6 @@ void PM_PlayStepSound(stepType_s step, float fvol)
 	static int iSkipStep = 0;
 	int irand = 0;
 	Vector hvel;
-	const char* szValue;
-	int iType;
 
 	pmove->iStepLeft = !pmove->iStepLeft;
 
@@ -924,7 +919,7 @@ void PM_PlayStepSound(stepType_s step, float fvol)
 			else
 				irand += !(irand%2);
 		
-			if (irand > stepValue.stepSounds.size() - 1) irand -= 2;
+			if (irand > (int)stepValue.stepSounds.size() - 1) irand -= 2;
 
 
 		pmove->PM_PlaySound(CHAN_BODY, stepValue.stepSounds[irand].c_str(), fvol, ATTN_NORM, 0, PITCH_NORM);
