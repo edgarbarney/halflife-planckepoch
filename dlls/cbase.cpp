@@ -27,7 +27,7 @@ void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd );
 
 void PM_Move ( struct playermove_s *ppmove, int server );
 void PM_Init ( struct playermove_s *ppmove  );
-char PM_FindTextureType( char *name );
+int PM_FindTextureTypeID( std::string name );
 
 void OnFreeEntPrivateData(edict_s* pEdict);
 
@@ -82,7 +82,7 @@ static DLL_FUNCTIONS gFunctionTable =
 
 	PM_Move,					//pfnPM_Move
 	PM_Init,					//pfnPM_Init				Server version of player movement initialization
-	PM_FindTextureType,			//pfnPM_FindTextureType
+	PM_FindTextureTypeID,		//pfnPM_FindTextureTypeID
 	
 	SetupVisibility,			//pfnSetupVisibility        Set up PVS and PAS for networking for this client
 	UpdateClientData,			//pfnUpdateClientData       Set up data sent only to specific client

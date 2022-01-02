@@ -7,3 +7,5 @@
 *.bak
 
 *.clang-tidy
+
+_ModFiles/

@@ -398,6 +398,9 @@
     <ClInclude Include="..\..\pm_shared\pm_shared.h">
       <Filter>Header Files\pm_shared</Filter>
     </ClInclude>
+	<ClInclude Include="..\..\pm_shared\pm_structs.h">
+      <Filter>Header Files\pm_shared</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\pm_shared\pm_debug.h">
       <Filter>Header Files\pm_shared</Filter>
     </ClInclude>

@@ -119,7 +119,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 		return nullptr;
 
 	// hit the world, try to play sound based on texture material type
-	char chTextureType = 0;
+	textureType_s chTextureType;
 	int entity;
 	char *pStart;
 	char *pTextureName;
@@ -163,9 +163,10 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 				// '}}'
 				strcpy( szbuffer, pTextureName );
 				szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-					
+				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 				// get texture type
-				chTextureType = PM_FindTextureType( szbuffer );	
+				//chTextureType = PM_FindTextureTypeID( szbuffer );	
+				chTextureType = g_TypedTextureMap[szbuffer];
 			}
 			else
 			{
@@ -179,118 +180,63 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 
 	cl_entity_t *pHit = gEngfuncs.GetEntityByIndex(gEngfuncs.pEventAPI->EV_IndexFromTrace(ptr));
 
-	if(pHit->curstate.rendermode == kRenderTransColor && pHit->curstate.renderamt == 0)
-	{
-		if ( chTextureType == CHAR_TEX_CONCRETE )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_METAL )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_GRATE )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_DIRT )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("dirt_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_VENT )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_TILE )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_WOOD )
-		{
-			sprintf( decalname, "shot_wood" );
-			gParticleEngine.CreateCluster("wood_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_COMPUTER )
-		{
-			sprintf( decalname, "shot" );
-		}
-		else if ( chTextureType == CHAR_TEX_GLASS )
-		{
-			sprintf( decalname, "shot_glass" );
-			gParticleEngine.CreateCluster("glass_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
+	/*
+	for(auto particleGroup : g_texTypeImpactTypeVector)
+	{	
+		// TODO: GO FULL BRANCHLESS
+		bool rendModCheck = true;
+		bool rendAmtCheck = true;
+		bool classnoCheck = true;
 
-		g_StudioRenderer.StudioDecalExternal(ptr->endpos, ptr->plane.normal, decalname);
-		return FALSE;
+		
+		//if (particleGroup.renderMode < 0)
+		//	rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != particleGroup.renderMode));
+		//else
+		//	rendModCheck = ((particleGroup.renderMode == NOCHECK) || (pHit->curstate.rendermode != -1 * particleGroup.renderMode));
+		//
+		//if (particleGroup.renderAmt < 0)
+		//	rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != particleGroup.renderAmt));
+		//else
+		//	rendAmtCheck = ((particleGroup.renderAmt == NOCHECK) || (pHit->curstate.renderamt != -1 * particleGroup.renderAmt));
+		//
+		//if (particleGroup.classnumber < 0)
+		//	classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != particleGroup.classnumber));
+		//else
+		//	classnoCheck = ((particleGroup.classnumber == NOCHECK) || (pe->classnumber != -1 * particleGroup.classnumber));
+		
+
+		textureType_s tt;
+		
+		if (rendModCheck && rendAmtCheck && classnoCheck)
+		{
+			for (const auto& it : particleGroup.impactTypes)
+			{
+				for (const auto& [tKey, tValue] : g_TextureTypeMap)
+				{
+					if (tValue.texType == it.materialTypeAlias && tValue.texTypeID == chTextureType)
+					{
+						tt = g_TextureTypeMap[tKey];
+					}
+				}
+				sprintf(decalname, it.decalGroupName.c_str());
+				gParticleEngine.CreateCluster(const_cast<char*>(it.scriptFile.c_str()), ptr->endpos, ptr->plane.normal, 0);
+			}
+		}
+		
+	}
+	*/
+
+	impactType_s iType = g_texTypeImpactTypeVector[0].impactTypes[0];
+
+	for (auto& it : g_texTypeImpactTypeVector[0].impactTypes)
+	{
+		if (chTextureType.texType == it.materialTypeAlias)
+			iType = it;
 	}
 
-	if ( pe->classnumber == 1 && pHit->curstate.renderamt )
-	{
-		sprintf( decalname, "shot_glass" );
-		gParticleEngine.CreateCluster("glass_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-	}
-	else if ( pe->rendermode != kRenderNormal && pHit->curstate.renderamt )
-	{
-		sprintf( decalname, "shot_glass" );
-		gParticleEngine.CreateCluster("glass_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-	}
-	else
-	{
-		if ( chTextureType == CHAR_TEX_CONCRETE )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_METAL )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_GRATE )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_DIRT )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("dirt_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_VENT )
-		{
-			sprintf( decalname, "shot_metal" );
-		}
-		else if ( chTextureType == CHAR_TEX_TILE )
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_WOOD )
-		{
-			sprintf( decalname, "shot_wood" );
-			gParticleEngine.CreateCluster("wood_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else if ( chTextureType == CHAR_TEX_COMPUTER )
-		{
-			sprintf( decalname, "shot" );
-		}
-		else if ( chTextureType == CHAR_TEX_GLASS )
-		{
-			sprintf( decalname, "shot_glass" );
-			gParticleEngine.CreateCluster("glass_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-		else
-		{
-			sprintf( decalname, "shot" );
-			gParticleEngine.CreateCluster("concrete_impact_cluster.txt", ptr->endpos, ptr->plane.normal, 0);
-		}
-	}
+	sprintf(decalname, iType.decalGroupName.c_str());
+	gParticleEngine.CreateCluster(const_cast<char*>(iType.scriptFile.c_str()), ptr->endpos, ptr->plane.normal, 0);
+
 	return decalname;
 }
 //RENDERERS END
@@ -301,11 +247,9 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *vecEnd, int iBulletType )
 {
 	// hit the world, try to play sound based on texture material type
-	char chTextureType = CHAR_TEX_CONCRETE;
-	float fvol;
-	float fvolbar;
-	const char *rgsz[4];
-	int cnt;
+	textureType_s chTextureType;
+	float fvol = 0.5;
+	float fvolbar = 0.5;
 	float fattn = ATTN_NORM;
 	int entity;
 	char *pTextureName;
@@ -317,13 +261,13 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 	// FIXME check if playtexture sounds movevar is set
 	//
 
-	chTextureType = 0;
+	//chStepType = 0;
 
 	// Player
 	if ( entity >= 1 && entity <= gEngfuncs.GetMaxClients() )
 	{
 		// hit body
-		chTextureType = CHAR_TEX_FLESH;
+		chTextureType = g_TextureTypeMap["CHAR_TEX_FLESH"];
 	}
 	else if ( entity == 0 )
 	{
@@ -349,82 +293,21 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 			// '}}'
 			strcpy( szbuffer, pTextureName );
 			szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-				
+			strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 			// get texture type
-			chTextureType = PM_FindTextureType( szbuffer );	
+			//chTextureType = PM_FindTextureTypeID( szbuffer );	
+			chTextureType = g_TextureTypeMap[szbuffer];
 		}
 	}
 	
-	switch (chTextureType)
-	{
-	default:
-	case CHAR_TEX_CONCRETE: fvol = 0.9;	fvolbar = 0.6;
-		rgsz[0] = "player/pl_step1.wav";
-		rgsz[1] = "player/pl_step2.wav";
-		cnt = 2;
-		break;
-	case CHAR_TEX_METAL: fvol = 0.9; fvolbar = 0.3;
-		rgsz[0] = "player/pl_metal1.wav";
-		rgsz[1] = "player/pl_metal2.wav";
-		cnt = 2;
-		break;
-	case CHAR_TEX_DIRT:	fvol = 0.9; fvolbar = 0.1;
-		rgsz[0] = "player/pl_dirt1.wav";
-		rgsz[1] = "player/pl_dirt2.wav";
-		rgsz[2] = "player/pl_dirt3.wav";
-		cnt = 3;
-		break;
-	case CHAR_TEX_VENT:	fvol = 0.5; fvolbar = 0.3;
-		rgsz[0] = "player/pl_duct1.wav";
-		rgsz[1] = "player/pl_duct1.wav";
-		cnt = 2;
-		break;
-	case CHAR_TEX_GRATE: fvol = 0.9; fvolbar = 0.5;
-		rgsz[0] = "player/pl_grate1.wav";
-		rgsz[1] = "player/pl_grate4.wav";
-		cnt = 2;
-		break;
-	case CHAR_TEX_TILE:	fvol = 0.8; fvolbar = 0.2;
-		rgsz[0] = "player/pl_tile1.wav";
-		rgsz[1] = "player/pl_tile3.wav";
-		rgsz[2] = "player/pl_tile2.wav";
-		rgsz[3] = "player/pl_tile4.wav";
-		cnt = 4;
-		break;
-	case CHAR_TEX_SLOSH: fvol = 0.9; fvolbar = 0.0;
-		rgsz[0] = "player/pl_slosh1.wav";
-		rgsz[1] = "player/pl_slosh3.wav";
-		rgsz[2] = "player/pl_slosh2.wav";
-		rgsz[3] = "player/pl_slosh4.wav";
-		cnt = 4;
-		break;
-	case CHAR_TEX_WOOD: fvol = 0.9; fvolbar = 0.2;
-		rgsz[0] = "debris/wood1.wav";
-		rgsz[1] = "debris/wood2.wav";
-		rgsz[2] = "debris/wood3.wav";
-		cnt = 3;
-		break;
-	case CHAR_TEX_GLASS:
-	case CHAR_TEX_COMPUTER:
-		fvol = 0.8; fvolbar = 0.2;
-		rgsz[0] = "debris/glass1.wav";
-		rgsz[1] = "debris/glass2.wav";
-		rgsz[2] = "debris/glass3.wav";
-		cnt = 3;
-		break;
-	case CHAR_TEX_FLESH:
-		if (iBulletType == BULLET_PLAYER_CROWBAR)
-			return 0.0; // crowbar already makes this sound
-		fvol = 1.0;	fvolbar = 0.2;
-		rgsz[0] = "weapons/bullet_hit1.wav";
-		rgsz[1] = "weapons/bullet_hit2.wav";
-		fattn = 1.0;
-		cnt = 2;
-		break;
-	}
+	fvol = chTextureType.impactVolume;
+	fvolbar = chTextureType.weaponVolume;
+	fattn = chTextureType.impactAttenuation;
+	
 
 	// play material hit sound
-	gEngfuncs.pEventAPI->EV_PlaySound( 0, ptr->endpos, CHAN_STATIC, rgsz[gEngfuncs.pfnRandomLong(0,cnt-1)], fvol, fattn, 0, 96 + gEngfuncs.pfnRandomLong(0,0xf) );
+	gEngfuncs.pEventAPI->EV_PlaySound( 0, ptr->endpos, CHAN_STATIC, g_StepTypeMap[chTextureType.texStep].stepSounds[gEngfuncs.pfnRandomLong(0, g_StepTypeMap[chTextureType.texStep].stepSounds.size() - 1)].c_str(), fvol, fattn, 0, 96 + gEngfuncs.pfnRandomLong(0, 0xf));
+
 	return fvolbar;
 }
 

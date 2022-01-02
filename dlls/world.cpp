@@ -560,7 +560,7 @@ void CWorld :: Precache()
 
 // init texture type array from materials.txt
 
-	TEXTURETYPE_Init();
+	//TEXTURETYPE_Init();
 
 
 // the area based ambient sounds MUST be the first precache_sounds

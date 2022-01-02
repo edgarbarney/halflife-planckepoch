@@ -144,11 +144,11 @@ void DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove )
 	PM_Init( ppmove );
 }
 
-char DLLEXPORT HUD_PlayerMoveTexture( char *name )
+int DLLEXPORT HUD_PlayerMoveTexture( char *name )
 {
 //	RecClClientTextureType(name);
 
-	return PM_FindTextureType( name );
+	return PM_FindTextureTypeID( name );
 }
 
 void DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server )

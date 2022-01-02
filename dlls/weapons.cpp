@@ -152,7 +152,8 @@ void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 //RENDERERS START
 char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vector vecEnd )
 {
-	char chTextureType;
+	//textureType_s* chTextureType;
+	textureType_s chTextureType;
 	char szbuffer[64];
 	const char *pTextureName;
 	float rgfl1[3];
@@ -164,7 +165,8 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 		if (pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 		{
 			// hit body
-			chTextureType = CHAR_TEX_FLESH;
+			//chTextureType = &g_TextureTypeMap["CHAR_TEX_FLESH"];
+			chTextureType = g_TextureTypeMap["CHAR_TEX_FLESH"];
 		}
 		else
 		{
@@ -185,48 +187,31 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 					pTextureName++;
 				strcpy(szbuffer, pTextureName);
 				szbuffer[CBTEXTURENAMEMAX - 1] = 0;
-				chTextureType = TEXTURETYPE_Find(szbuffer);	
+				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+				//chTextureType = &g_TypedTextureMap[szbuffer];
+				chTextureType = g_TypedTextureMap[szbuffer];
 			}
 		}
+
+
 		if ( pEntity && pEntity->pev->rendermode != kRenderNormal && pEntity->pev->rendermode != kRenderTransAlpha )
 		{
 			return "shot_glass";
 		}
-		else if ( chTextureType )
-		{
-			if ( chTextureType == CHAR_TEX_CONCRETE )
+		//else if (chTextureType != nullptr)
+		//{
+
+			for (const auto& particleGroup : g_texTypeImpactTypeVector)
 			{
-				return "shot";
+				for (const auto& it : particleGroup.impactTypes)
+				{
+					if (it.materialTypeAlias == chTextureType.texType)
+					{
+						return const_cast<char*>(it.decalGroupName.c_str());
+					}
+				}
 			}
-			else if ( chTextureType == CHAR_TEX_METAL )
-			{
-				return "shot_metal";
-			}
-			else if ( chTextureType == CHAR_TEX_DIRT )
-			{
-				return "shot";
-			}
-			else if ( chTextureType == CHAR_TEX_VENT )
-			{
-				return "shot_metal";
-			}
-			else if ( chTextureType == CHAR_TEX_TILE )
-			{
-				return "shot";
-			}
-			else if ( chTextureType == CHAR_TEX_WOOD )
-			{
-				return "shot_wood";
-			}
-			else if ( chTextureType == CHAR_TEX_COMPUTER )
-			{
-				return "shot";
-			}
-			else if ( chTextureType == CHAR_TEX_GLASS )
-			{
-				return "shot_glass";
-			}
-		}
+		//}
 	}
 	if ( !pEntity )
 	{
