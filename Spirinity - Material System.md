@@ -22,15 +22,15 @@ Nothing very fancy. This file has the footstep and impact sounds' data. The synt
 //
 //	#liquid								| Optional Special Flags for Some hardcoded things.	
 //
-//	$walkingVolume = 0-1				| Walking Sound volume 
-//	$normalVolume = 0-1					| Sound volume 
-//	$walkingStepTime = MS				| Next Walking Footstep time in MS
-//	$normalStepTime = 0-1				| Next Normal Footstep time in MS
-//	$crouchMultiplier = FLOAT 			| Crouch Volume Multiplier (finalVolume * $crouchMultiplier)
+//	$walkingVolume = 0-1						| Walking Sound volume 
+//	$normalVolume = 0-1						| Sound volume 
+//	$walkingStepTime = MS						| Next Walking Footstep time in MS
+//	$normalStepTime = 0-1						| Next Normal Footstep time in MS
+//	$crouchMultiplier = FLOAT 					| Crouch Volume Multiplier (finalVolume * $crouchMultiplier)
 //
-//	"soundfolder/soundfile.wav"		    | A sound file
-//  "soundfolder/anothasound.wav"		| Another sound file
-//  "ambience/gaybar.wav"				| You can add much sounds. But I suggest using reasonable amount since precache limit is a bit short 4- ugh
+//	"soundfolder/soundfile.wav"		    			| A sound file
+//  	"soundfolder/anothasound.wav"					| Another sound file
+//  	"ambience/gaybar.wav"						| You can add much sounds. But I suggest using reasonable amount since precache limit is a bit short 4- ugh
 //}
 ```
 
@@ -86,17 +86,17 @@ The syntax is like this:
 
 And here's what they mean:
 ```cpp
-// {TEXNAME}		=	Material Name					
-// {TEXTYPE}		=	Material Type Alias. Used in "materials.txt"
-// {STEPTYPE}		=	Sound Type that material uses. Used for bullet/melee impact and Footsteps.
-// {IMPACTVOLUME}	=	Volume of impact sound.
-// {WEAPONVOLUME}	=	Volume of weapon when impact happens. Used for melee.
+// {TEXNAME}			=	Material Name					
+// {TEXTYPE}			=	Material Type Alias. Used in "materials.txt"
+// {STEPTYPE}			=	Sound Type that material uses. Used for bullet/melee impact and Footsteps.
+// {IMPACTVOLUME}		=	Volume of impact sound.
+// {WEAPONVOLUME}		=	Volume of weapon when impact happens. Used for melee.
 // {ATTN}			=	Attenuetion of impact sound. Default is 0.8 (ATTN_NORM)
 ```
 
 Example:
 ```cpp
-"CHAR_TEX_SNOW"					"SNOW"			"STEP_SNOW"				0.9					0.0					0.8
+"CHAR_TEX_SNOW"					"SNOW"			"STEP_SNOW"			0.9					0.0					0.8
 "CHAR_TEX_HOUNDEYE"				"HOUNDEYE"		"STEP_HOUNDEYE"			0.9					0.1					0.8
 ```
 
@@ -114,7 +114,7 @@ And heres what they mean:
 ```cpp
 // {TEXTYPE}		=	Material Type Alias. Used in "materials.txt"
 // {TEXDECAL}		=	Decal group name that will be used for that material type. 
-// {TEXPARTICLE}    =   Particle script that will be used for that material type. You can use NULL for no particle.
+// {TEXPARTICLE}    	=	Particle script that will be used for that material type. You can use NULL for no particle.
 ```
 
 Example:
