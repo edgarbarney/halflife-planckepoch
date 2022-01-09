@@ -10,6 +10,9 @@ Removed Features:
 - Particle System. 
   - Ditto.
 
+- Footstep Sound Entity. 
+  - Instead, it uses the new [Material System](https://github.com/edgarbarney/halflife-planckepoch/blob/spirit/spirit-1.8-trinity/Trinity%20-%20Material%20System.md)
+
 Half Life 1 SDK LICENSE
 ======================
 
