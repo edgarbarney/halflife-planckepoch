@@ -189,7 +189,7 @@ public:
 				return value;
 		}
 
-		return textureType_s(0, "ERR");
+		return textureTypeMap.begin()->second;
 	}
 
 	FORCEINLINE auto insert(std::pair<std::string, textureType_s>&& val);
