@@ -49,6 +49,7 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 #include "studio.h"
 #include "StudioModelRenderer.h"
 #include "GameStudioModelRenderer.h"
+#include "physics.h"
 
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
@@ -500,6 +501,9 @@ void CHud :: Init()
 	gPostProcess.Init();
 	//RENDERERS END
 	
+	InitPhysicsInterface(NULL);
+
+
 	//start glow effect --FragBait0
 	CVAR_CREATE("r_glow", "0", FCVAR_ARCHIVE );
 	//CVAR_CREATE("r_glowmode", "0", FCVAR_ARCHIVE ); //AJH this is now redundant
