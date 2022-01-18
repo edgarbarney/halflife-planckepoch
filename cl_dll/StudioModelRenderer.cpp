@@ -1918,7 +1918,7 @@ CStudioModelRenderer
 */
 CStudioModelRenderer::CStudioModelRenderer()
 {
-	m_fDoInterp			= 1;
+	m_fDoInterp			= FALSE;
 	m_fGaitEstimation	= 1;
 	m_pCurrentEntity	= nullptr;
 	m_pCvarHiModels		= nullptr;
