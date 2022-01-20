@@ -194,6 +194,7 @@ void CLeech::Spawn()
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_FLY;
 	SetBits(pev->flags, FL_SWIM);
+	SetBits(pev->flags, FL_FLY);
 	if (pev->health == 0)
 		pev->health			= gSkillData.leechHealth;
 

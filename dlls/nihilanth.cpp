@@ -291,7 +291,7 @@ void CNihilanth :: Spawn()
 	UTIL_SetSize(pev, Vector( -32, -32, 0), Vector(32, 32, 64));
 	UTIL_SetOrigin( this, pev->origin );
 
-	pev->flags			|= FL_MONSTER;
+	pev->flags			|= FL_MONSTER | FL_FLY;
 	pev->takedamage		= DAMAGE_AIM;
 	if (pev->health == 0)
 		pev->health			= gSkillData.nihilanthHealth;

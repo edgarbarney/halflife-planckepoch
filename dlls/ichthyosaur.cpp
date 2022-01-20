@@ -495,6 +495,7 @@ void CIchthyosaur :: Spawn()
 	m_flFieldOfView		= VIEW_FIELD_WIDE;
 	m_MonsterState		= MONSTERSTATE_NONE;
 	SetBits(pev->flags, FL_SWIM);
+	SetBits(pev->flags, FL_FLY);
 	SetFlyingSpeed( ICHTHYOSAUR_SPEED );
 	SetFlyingMomentum( 2.5 );	// Set momentum constant
 
