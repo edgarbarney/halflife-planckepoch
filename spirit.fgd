@@ -2134,21 +2134,6 @@
 	rendercolor(color255) : "Fade Color (R G B)" : "0 0 0"
 ]
 
-//NEW 0.6
-@PointClass base(Targetname) iconsprite("sprites/env.spr") = env_fog : "Fog effect, DMC stylee"
-[
-	fadein(integer) : "Fade in time" : 0
-	holdtime(string) : "Hold time (0 = permanent)" : "0"
-	fadeout(integer) : "Fade out time" : 0
-	startdist(integer) : "Fog start position" : 0
-      enddist(integer) : "Fog end position" : 1000
-	rendercolor(color255) : "Fog Color (R G B)" : "255 255 255"
-	spawnflags(flags) =
-	[
-		1 : "Start active"   : 0
-	]
-]
-
 @PointClass base(Targetname, MoveWith) size(-16 -16 -16, 16 16 16) iconsprite("sprites/env.spr") = env_funnel : "Large Portal Funnel" 
 [
 	//NEW 0.7.1

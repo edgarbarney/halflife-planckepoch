@@ -121,13 +121,6 @@ int __MsgFunc_HUDColor(const char *pszName, int iSize, void *pbuf)
 	return gHUD.MsgFunc_HUDColor(pszName, iSize, pbuf );
 }
 
-// Trinity
-int __MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
-{
-	gHUD.MsgFunc_SetFog(pszName, iSize, pbuf);
-	return 1;
-}
-
 //LRC
 int __MsgFunc_KeyedDLight(const char *pszName, int iSize, void *pbuf)
 {
@@ -366,7 +359,7 @@ int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 //RENDERERS START
-int MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf )
+int __MsgFunc_SetFog(const char *pszName, int iSize, void *pbuf )
 {
 	return gHUD.MsgFunc_SetFog( pszName, iSize, pbuf );
 }

@@ -162,10 +162,6 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, Rain_endFade, FIELD_TIME ),
 	DEFINE_FIELD( CBasePlayer, Rain_nextFadeUpdate, FIELD_TIME ),
 
-	//LRC
-	//DEFINE_FIELD( CBasePlayer, m_iFogStartDist, FIELD_INTEGER ),
-	//DEFINE_FIELD( CBasePlayer, m_iFogEndDist, FIELD_INTEGER ),
-	//DEFINE_FIELD( CBasePlayer, m_vecFogColor, FIELD_VECTOR ),
 
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
 	DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games //AJH Not true anymore, used in g-conts modified camera code as it can draw the hud.
@@ -1026,7 +1022,6 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	//I don't _think_ we need to anything about fog here. - LRC
 
 	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
 	// UTIL_ScreenFade( edict(), Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE );
@@ -4240,16 +4235,6 @@ void CBasePlayer :: UpdateClientData()
 		if(gInitHUD) //AJH This is the first initialisation this level.
 		{
 		    gInitHUD = FALSE;
- 
-			//AJH Reset the FOG
-			MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, nullptr, pev );
-				WRITE_BYTE ( 0.0 );
-				WRITE_BYTE ( 0.0 );
-				WRITE_BYTE ( 0.0 );
-				WRITE_SHORT ( 0 );
-				WRITE_SHORT ( 0 );
-				WRITE_SHORT ( 0 );
-			MESSAGE_END();
 		}
 		
 		MESSAGE_BEGIN( MSG_ONE, gmsgResetHUD, nullptr, pev );

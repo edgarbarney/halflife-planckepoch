@@ -20,7 +20,6 @@
 // CHud handles the message, calculation, and drawing the HUD
 //
 
-#define FOG_LIMIT 30000
 #define RGB_YELLOWISH 0x00FFA000 //255,160,0
 #define RGB_REDISH 0x00FF1010 //255,160,0
 #define RGB_GREENISH 0x0000A000 //0,160,0
@@ -752,15 +751,3 @@ extern int g_iInventory[MAX_ITEMS];	//AJH Inventory system
 extern int g_iUser1;
 extern int g_iUser2;
 extern int g_iUser3;
-
-struct FogSettings
-{
-	float fogColor[3];
-	float startDist;
-	float endDist;
-};
-extern FogSettings g_fog;
-extern FogSettings g_fogPreFade;
-extern FogSettings g_fogPostFade;
-extern float g_fFogFadeDuration;
-extern float g_fFogFadeFraction;

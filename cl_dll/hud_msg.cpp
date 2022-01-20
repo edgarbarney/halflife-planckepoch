@@ -35,13 +35,6 @@
 extern CGameStudioModelRenderer g_StudioRenderer;
 //RENDERERS END
 
-//LRC - the fogging fog
-FogSettings g_fog;
-FogSettings g_fogPreFade;
-FogSettings g_fogPostFade;
-float g_fFogFadeDuration;
-float g_fFogFadeFraction;
-
 #define MAX_CLIENTS 32
 
 #if !defined( _TFC )
@@ -87,11 +80,6 @@ int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
 	// reset concussion effect
 	m_iConcussionEffect = 0;
 
-/*	//LRC - reset fog
-	g_fStartDist = 0;
-	g_fEndDist = 0;
-	numMirrors = 0;
-*/
 	return 1;
 }
 
@@ -104,13 +92,6 @@ void CHud :: MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf )
 
 void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 {
-//	CONPRINT("MSG:InitHUD");
-	//LRC - clear the fog
-	g_fog.startDist = -1;
-	g_fog.endDist = -1;
-	g_fog.fogColor[0] = -1;
-	g_fog.fogColor[1] = -1;
-	g_fog.fogColor[2] = -1;
 	//LRC 1.8 - clear view clamps
 	g_clampMinPitch = -90;
 	g_clampMaxPitch = 90;

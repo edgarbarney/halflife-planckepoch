@@ -109,33 +109,6 @@ int CHud :: Redraw( float flTime, int intermission )
 	m_flTimeDelta = (double)m_flTime - m_fOldTime;
 	static float m_flShotTime = 0;
 	
-	//LRC - handle fog fading effects. (is this the right place for it?)
-	if (g_fFogFadeDuration)
-	{
-		// Nicer might be to use some kind of logarithmic fade-in?
-		double fFraction = m_flTimeDelta/g_fFogFadeDuration;
-		if ( fFraction > 0 )
-		{
-			g_fFogFadeFraction += fFraction;
-
-	//		CONPRINT("FogFading: %f - %f, frac %f, time %f, final %d\n", g_fStartDist, g_fEndDist, fFraction, flTime, g_iFinalEndDist);
-
-			if (g_fFogFadeFraction >= 1.0f)
-			{
-				// fading complete
-				g_fFogFadeFraction = 1.0f;
-				g_fFogFadeDuration = 0.0f;
-			}
-
-			// set the new fog values
-			g_fog.endDist = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.endDist, g_fogPostFade.endDist );
-			g_fog.startDist = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.startDist, g_fogPostFade.startDist );
-			g_fog.fogColor[0] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[0], g_fogPostFade.fogColor[0] );
-			g_fog.fogColor[1] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[1], g_fogPostFade.fogColor[1] );
-			g_fog.fogColor[2] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[2], g_fogPostFade.fogColor[2] );
-		}
-	}
-	
 	// Clock was reset, reset delta
 	if ( m_flTimeDelta < 0 )
 		m_flTimeDelta = 0;
