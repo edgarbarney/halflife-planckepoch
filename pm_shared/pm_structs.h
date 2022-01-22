@@ -175,7 +175,9 @@ struct impactGroupType_s
 class CTextureAndTypesMap
 {
 private:
+	//		 TextureName, TextureType
 	std::map<std::string, textureType_s> textureTypeMap;
+	textureType_s firstmap = textureType_s(INT32_MAX);
 
 public:
 	FORCEINLINE textureType_s& operator[](std::string str)
@@ -189,7 +191,7 @@ public:
 				return value;
 		}
 
-		return textureTypeMap.begin()->second;
+		return firstmap;
 	}
 
 	FORCEINLINE auto insert(std::pair<std::string, textureType_s>&& val);

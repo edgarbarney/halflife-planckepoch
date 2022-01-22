@@ -186,7 +186,10 @@ std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
 
 /*FORCEINLINE*/ auto CTextureAndTypesMap::insert(std::pair<std::string, textureType_s>&& val)
 {
-	return textureTypeMap.insert(val);
+	auto& temp = textureTypeMap.insert(val);
+	if (firstmap.texTypeID == INT32_MAX)
+		firstmap = temp.second;
+	return temp;
 }
 
 /*FORCEINLINE*/ int CTextureAndTypesMap::findInMap(std::string name)
