@@ -344,12 +344,12 @@ void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 	if (relative)
 	{
 		fstream.open(PM_GetModdir() + path);
-		pmove->Con_Printf("\n =========== ERR: Parsing file: %s =========== \n", (PM_GetModdir() + path).c_str());
+		pmove->Con_Printf("\n =========== Parsing file: %s =========== \n", (PM_GetModdir() + path).c_str());
 	}
 	else
 	{
 		fstream.open(std::filesystem::current_path().string() + "\\" + path);
-		pmove->Con_Printf("\n =========== ERR: Parsing file: %s =========== \n", (std::filesystem::current_path().string() + "\\" + path).c_str());
+		pmove->Con_Printf("\n =========== Parsing file: %s =========== \n", (std::filesystem::current_path().string() + "\\" + path).c_str());
 	}
 
 	
