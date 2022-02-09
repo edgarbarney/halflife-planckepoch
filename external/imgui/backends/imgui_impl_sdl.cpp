@@ -62,8 +62,10 @@
 #include "imgui_impl_sdl.h"
 
 // SDL
-#include <SDL.h>
-#include <SDL_syswm.h>
+#include <SDL2\SDL.h>
+//Fix Packing Errors
+#include <windows.h>
+#include <SDL2\SDL_syswm.h>
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 #endif
@@ -433,6 +435,7 @@ static void ImGui_ImplSDL2_UpdateMouseData()
         if (io.WantSetMousePos)
             SDL_WarpMouseInWindow(bd->Window, (int)io.MousePos.x, (int)io.MousePos.y);
 
+        /* Disabled Because HL's SDL2 doesn't support it
         // (Optional) Fallback to provide mouse position when focused (SDL_MOUSEMOTION already provides this when hovered or captured)
         if (bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0)
         {
@@ -441,6 +444,7 @@ static void ImGui_ImplSDL2_UpdateMouseData()
             SDL_GetWindowPosition(bd->Window, &window_x, &window_y);
             io.AddMousePosEvent((float)(mouse_x_global - window_x), (float)(mouse_y_global - window_y));
         }
+        */
     }
 }
 
@@ -524,10 +528,24 @@ void ImGui_ImplSDL2_NewFrame()
     if (SDL_GetWindowFlags(bd->Window) & SDL_WINDOW_MINIMIZED)
         w = h = 0;
     if (bd->Renderer != NULL)
-        SDL_GetRendererOutputSize(bd->Renderer, &display_w, &display_h);
+    {
+        //SDL_GetRendererOutputSize is replaced because HL's SDL2 doesn't support it
+
+        //SDL_GetRendererOutputSize(bd->Renderer, &display_w, &display_h);
+
+        SDL_GetWindowSize(bd->Window, &display_w, &display_h);
+    }
     else
-        SDL_GL_GetDrawableSize(bd->Window, &display_w, &display_h);
-    io.DisplaySize = ImVec2((float)w, (float)h);
+    {
+        //SDL_GL_GetDrawableSize is replaced because HL's SDL2 doesn't support it
+
+        //SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+
+         display_w = w;
+         display_h = h;
+
+        io.DisplaySize = ImVec2((float)w, (float)h);
+    }
     if (w > 0 && h > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / w, (float)display_h / h);
 

@@ -113,6 +113,9 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 
 	BlackFog();
 
+	//imgui draw
+	gHUD.m_clImgui.DrawImgui();
+
 	// LRC: find out the time elapsed since the last redraw
 	static float fOldTime, fTime;
 	fOldTime = fTime;

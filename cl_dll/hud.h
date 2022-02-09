@@ -550,9 +550,33 @@ private:
 	int 	m_nCompositeScore;
 };
 
-//
 //-----------------------------------------------------
 //
+//Thanks to admer for base implementation of imgui
+
+// Just used for imgui for now. Mainly a placeholder for future ADM "inspirations" :gabe:
+class CBaseClientExtension : public CHudBase
+{
+public:
+	int Init();
+	virtual void InitExtension() {};
+	virtual int VidInit() { return 1; };
+
+	virtual int Draw(float flTime) { return 1; };
+	virtual void Think() {};
+	virtual void Reset() {};
+};
+
+class CClientImgui : public CBaseClientExtension
+{
+public:
+	void InitExtension();
+	void DrawImgui();
+};
+
+// End of imgui
+//
+//-----------------------------------------------------
 
 //LRC
 //methods actually defined in tri.cpp
@@ -679,6 +703,8 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
+
+	CClientImgui	m_clImgui;
 
 	void Init();
 	void VidInit();

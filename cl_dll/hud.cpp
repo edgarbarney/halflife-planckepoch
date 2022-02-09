@@ -557,6 +557,8 @@ void CHud :: Init()
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
+	m_clImgui.Init();
+
 	m_Menu.Init();
 
 	MsgFunc_ResetHUD(nullptr, 0, nullptr );
@@ -973,4 +975,16 @@ float CHud::GetSensitivity()
 	return m_flMouseSensitivity;
 }
 
+//-------------------------------------------------
+// Admer's imgui base.
+
+int CBaseClientExtension::Init(void)
+{
+	gHUD.AddHudElem(this);
+	m_iFlags |= HUD_ACTIVE; // always active
+
+	InitExtension();
+
+	return 1;
+}
 
