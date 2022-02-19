@@ -46,6 +46,7 @@ Transparency code by Neil "Jed" Jedrzejewski
 #include "propmanager.h"
 #include "bsprenderer.h"
 #include "StudioModelRenderer.h"
+#include <FranUtils.hpp>
 
 int g_iViewmodelSkin;
 
@@ -3529,7 +3530,7 @@ void CStudioModelRenderer::StudioSwapEngineCache()
 		if(!m_pTextureHeader)
 			continue;
 
-		StudioSetTextureFlags();
+		//StudioSetTextureFlags();
 		FilenameFromPath(pModel->name, szModelName); 
 		strLower(szModelName);
 
@@ -4113,143 +4114,7 @@ StudioSetTextureFlags
 */
 void CStudioModelRenderer::StudioSetTextureFlags()
 {
-	char szModel[32];
-	char szTexture[32];
-	bool bWriteFile = false;
-
-	char szFolder[16];
-	char szPath[64];
-
-	mstudiobone_t *pbones = (mstudiobone_t *)((byte *)m_pStudioHeader + m_pStudioHeader->boneindex);
-	mstudiobodyparts_t *pbodypart = (mstudiobodyparts_t *)((byte *)m_pStudioHeader + m_pStudioHeader->bodypartindex);
-	mstudiotexture_t *ptexture = (mstudiotexture_t *)((byte *)m_pTextureHeader + m_pTextureHeader->textureindex);
-	short *pskinref = (short *)((byte *)m_pTextureHeader + m_pTextureHeader->skinindex);
-
-	for (int i = 0 ; i < m_pStudioHeader->numbodyparts; i++)
-	{
-		m_pSubModel = (mstudiomodel_t *)((byte *)m_pStudioHeader + pbodypart[i].modelindex);
-
-		for(int j = 0; j < pbodypart[i].nummodels; j++)
-		{
-			byte *pnormbone = ((byte *)m_pStudioHeader + m_pSubModel[j].norminfoindex);
-			mstudiomesh_t *pmeshes = (mstudiomesh_t *)((byte *)m_pStudioHeader + m_pSubModel[j].meshindex);
-			
-			for (int m = 0; m < m_pSubModel[j].nummesh; m++) 
-			{
-				for(int n = 0; n < pmeshes[m].numnorms; n++, pnormbone++)
-				{
-					if((ptexture[pskinref[pmeshes[m].skinref]].flags & STUDIO_NF_CHROME)
-						&& !(pbones[*pnormbone].flags & STUDIO_HAS_CHROME))
-					{
-						pbones[*pnormbone].flags |= STUDIO_HAS_CHROME;
-						bWriteFile = true;
-					}
-				}
-			}
-		}
-	}
-
-	// Strip folder/extension
-	FilenameFromPath(m_pRenderModel->name, szModel);
-
-	// Only has to be done for non-T model textures
-	if(m_pStudioHeader->numtextures != NULL)
-	{
-		for(int i = 0; i < m_pTextureHeader->numtextures; i++)
-		{
-			FilenameFromPath(ptexture[i].name, szTexture);
-			if(gTextureLoader.TextureHasFlag(szModel, szTexture, TEXFLAG_FULLBRIGHT) && !(ptexture[i].flags & STUDIO_NF_FULLBRIGHT))
-			{
-				ptexture[i].flags |= STUDIO_NF_FULLBRIGHT;
-				bWriteFile = true;
-			}
-		}
-	}
-
-	if(!bWriteFile)
-		return;
-
-	int iSize = 0;
-	byte *pHeader = gEngfuncs.COM_LoadFile(m_pRenderModel->name, 5, &iSize);
-
-	if(!pHeader)
-		return;
-
-	// Copy data over and release the file
-	studiohdr_t *pOpenHdr = (studiohdr_t *)malloc(iSize*sizeof(byte));
-	memcpy(pOpenHdr, pHeader, sizeof(byte)*iSize);
-	gEngfuncs.COM_FreeFile(pHeader);
-
-	// Set this up the same way
-	pbones = (mstudiobone_t *)((byte *)pOpenHdr + pOpenHdr->boneindex);
-	for (int i = 0 ; i < m_pStudioHeader->numbodyparts; i++)
-	{
-		m_pSubModel = (mstudiomodel_t *)((byte *)m_pStudioHeader + pbodypart[i].modelindex);
-
-		for(int j = 0; j < pbodypart[i].nummodels; j++)
-		{
-			byte *pnormbone = ((byte *)m_pStudioHeader + m_pSubModel[j].norminfoindex);
-			mstudiomesh_t *pmeshes = (mstudiomesh_t *)((byte *)m_pStudioHeader + m_pSubModel[j].meshindex);
-			
-			for (int m = 0; m < m_pSubModel[j].nummesh; m++) 
-			{
-				for(int n = 0; n < pmeshes[m].numnorms; n++, pnormbone++)
-				{
-					if((ptexture[pskinref[pmeshes[m].skinref]].flags & STUDIO_NF_CHROME) && !(pbones[pnormbone[0]].flags & STUDIO_HAS_CHROME))
-						pbones[*pnormbone].flags |= STUDIO_HAS_CHROME;
-				}
-			}
-		}
-	}
-
-	if(m_pStudioHeader->numtextures != NULL)
-	{
-		mstudiotexture_t *ptexturehdr = (mstudiotexture_t *)((byte *)pOpenHdr + pOpenHdr->textureindex);
-		for(int i = 0; i < pOpenHdr->numtextures; i++)
-		{
-			FilenameFromPath(ptexture[i].name, szTexture); strLower(szTexture);
-			if(gTextureLoader.TextureHasFlag(szModel, szTexture, TEXFLAG_FULLBRIGHT) && !(ptexturehdr[i].flags & STUDIO_NF_FULLBRIGHT))
-				ptexturehdr[i].flags |= STUDIO_NF_FULLBRIGHT;
-		}
-	}
-
-	int j = 0;
-	int k = 0;
-	strcpy(szPath, gEngfuncs.pfnGetGameDirectory());
-	int iLength = strlen(m_pRenderModel->name)-strlen(szModel)-4; 
-	while(1)
-	{
-		if(j >= iLength || m_pRenderModel->name[j] == '/'  
-			|| m_pRenderModel->name[j] == '\\')
-		{
-			k = 0; j++;
-			strcat(szPath, "/");
-			strcat(szPath, szFolder);
-			CreateDirectory(szPath, nullptr); 
-
-			if(j >= iLength)
-				break;
-		}
-
-		szFolder[k] = m_pRenderModel->name[j];
-		j++; k++; szFolder[k] = '\0';
-	}
-
-	char szFile[64];
-	strcpy(szFile, gEngfuncs.pfnGetGameDirectory());
-	strcat(szFile, "/");
-	strcat(szFile, m_pRenderModel->name);
-
-	FILE *pFile = fopen(szFile, "wb");
-	
-	if(!pFile)
-		return;
-
-	fwrite((void *)pOpenHdr, 1, pOpenHdr->length, pFile);
-	fclose(pFile);
-	free(pOpenHdr);
-
-	gEngfuncs.Con_Printf("Had to correct flags on %s\n", szFile);
+	return;
 }
 
 /*
@@ -4268,11 +4133,14 @@ void CStudioModelRenderer::StudioSetChromeVectors()
 	if(m_bChromeShell)
 		flSin = sin(gEngfuncs.GetClientTime())*m_pCvarGlowShellFreq->value;
 
-	mstudiobone_t *pbones = (mstudiobone_t *)((byte *)m_pStudioHeader + m_pStudioHeader->boneindex);
+	//mstudiobone_t *pbones = (mstudiobone_t *)((byte *)m_pStudioHeader + m_pStudioHeader->boneindex);
+
 	for(int i = 0; i < m_pStudioHeader->numbones; i++)
 	{
-		if(!(pbones[i].flags & STUDIO_HAS_CHROME) && !m_bChromeShell)
-			continue;
+		// TODO: OPTIMIZE THIS 
+		// 
+		//if(!(pbones[i].flags & STUDIO_HAS_CHROME) && !m_bChromeShell)
+		//	continue;
 
 		VectorScale(gBSPRenderer.m_vRenderOrigin, -1, tmp);
 		tmp[0] += (*m_pbonetransform)[i][0][3];
@@ -4368,8 +4236,12 @@ void CStudioModelRenderer::StudioDrawPoints ()
 	//
 	for(int i = 0, j = 0; i < m_pSubModel->nummesh; i++)
 	{
-		if(ptexture[pskinref[pmeshes[i].skinref]].flags & STUDIO_NF_CHROME || m_bChromeShell)
+		if (ptexture[pskinref[pmeshes[i].skinref]].flags & STUDIO_NF_CHROME || m_bChromeShell)
+		//if ((stristr(ptexture[pskinref[pmeshes[i].skinref]].name, "chrome") != NULL) || m_bChromeShell)
+		{
 			StudioChromeForMesh(j, &pmeshes[i]);
+		}
+			
 		
 		// Increment anyway
 		j += pmeshes[i].numnorms;
@@ -4473,7 +4345,9 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 	short *ptricmds = (short *)((byte *)m_pStudioHeader + pmesh->triindex);
 
 	if(ptex->flags & STUDIO_NF_CHROME || m_bChromeShell)
+	//if((stristr(ptex->name, "chrome") != NULL) || m_bChromeShell)
 	{
+		
 		while ((i = *(ptricmds++)))
 		{
 			if (i < 0)
@@ -4518,7 +4392,7 @@ void CStudioModelRenderer::StudioDrawMesh ( mstudiomesh_t *pmesh, mstudiotexture
 			glEnd( );
 		}
 	}
-
+	
 	if(!gBSPRenderer.m_bShaderSupport || m_pCvarModelShaders->value < 1 || ptex->flags & STUDIO_NF_FULLBRIGHT || m_bChromeShell)
 	{
 		glMatrixMode(GL_TEXTURE);
@@ -6053,6 +5927,13 @@ void CStudioModelRenderer::Mod_LoadTexture( mstudiotexture_t *ptexture, byte *pb
 
 	if(gTextureLoader.TextureHasFlag(szModelName, szTexture, TEXFLAG_FULLBRIGHT))
 		ptexture->flags |= STUDIO_NF_FULLBRIGHT;
+
+	if (stristr(szTexture, "chrome") != NULL)
+	{
+		ptexture->flags |= STUDIO_NF_CHROME;
+		//ptexture->flags |= STUDIO_NF_FLATSHADE; // Chrome Textures has Flatshade
+		CONPRINT("DONE FOR: %s \n", szTexture);
+	}
 
 	if(gTextureLoader.TextureHasFlag(szModelName, szTexture, TEXFLAG_NOMIPMAP))
 		ptexture->flags |= STUDIO_NF_NOMIPMAP;
