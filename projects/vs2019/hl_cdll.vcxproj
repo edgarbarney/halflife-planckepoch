@@ -144,7 +144,9 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\hud_redraw.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_spectator.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_update.cpp" />
-    <ClCompile Include="..\..\cl_dll\hud_imgui.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_console.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
     <ClCompile Include="..\..\cl_dll\inputw32.cpp" />
     <ClCompile Include="..\..\cl_dll\interpolation.cpp" />
@@ -235,6 +237,10 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\health.h" />
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\fontawesome_brands.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.h" />
     <ClInclude Include="..\..\cl_dll\interpolation.h" />
     <ClInclude Include="..\..\cl_dll\in_defs.h" />
     <ClInclude Include="..\..\cl_dll\kbutton.h" />

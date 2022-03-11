@@ -64,6 +64,12 @@
     <Filter Include="Source Files\external\imgui">
       <UniqueIdentifier>{cb92e99f-31b8-4577-9dbb-0b8f68df953a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cl_dll\imgui">
+      <UniqueIdentifier>{34149a8b-a647-4e19-b10c-231f201c3ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cl_dll\imgui">
+      <UniqueIdentifier>{666b71c4-fe16-4ef7-b3eb-681b51b3ea79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -345,9 +351,6 @@
     <ClCompile Include="..\..\cl_dll\postprocess.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\hud_imgui.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\external\imgui\imgui.cpp">
       <Filter>Source Files\external\imgui</Filter>
     </ClCompile>
@@ -368,6 +371,15 @@
     </ClCompile>
     <ClCompile Include="..\..\external\imgui\imgui_draw.cpp">
       <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_console.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -676,6 +688,18 @@
     </ClInclude>
     <ClInclude Include="..\..\pm_shared\pm_structs.h">
       <Filter>Header Files\pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\fontawesome_brands.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

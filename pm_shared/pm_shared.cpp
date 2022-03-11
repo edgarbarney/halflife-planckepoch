@@ -404,7 +404,7 @@ void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 			transform(type.begin(), type.end(), type.begin(), ::toupper);
 			transform(texture.begin(), texture.end(), texture.begin(), ::toupper);
 
-			pmove->Con_DPrintf("\nERR:  %s - line %d. Insterted %s - %s \n Line is: %s\n ", path.c_str(), lineIteration, texture.c_str(), PM_MaterialAliasToTextureType(type).texType.c_str(), line.c_str());
+			//pmove->Con_DPrintf("\nERR:  %s - line %d. Insterted %s - %s \n Line is: %s\n ", path.c_str(), lineIteration, texture.c_str(), PM_MaterialAliasToTextureType(type).texType.c_str(), line.c_str());
 			g_TypedTextureMap.insert({ texture, PM_MaterialAliasToTextureType(type)});
 			continue;
 		}

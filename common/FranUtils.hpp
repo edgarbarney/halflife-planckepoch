@@ -6,14 +6,83 @@
 #include "UserMessages.h"
 #include <string>
 
-/*
-#if defined (CLIENT_DLL) && !defined (CDLL_DLL_H)
-#include <cl_dll.h>
-#endif
-*/
+// ==========================================================
+// START OF THE HORRIBLE HORRIBLE PREPROCESSOR HACKS SHIT THAT I HATE
+// ==========================================================
+
+#ifdef FRANUTILS_MODDIR
+
+#ifdef _FILESYSTEM_
+
+	#ifdef CLIENT_DLL
+	//#include "cl_dll.h"
+	//#include "cdll_int.h"
+	extern cl_enginefunc_t gEngfuncs;
+	#define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
+	#else
+	//#include "eiface.h"
+	extern enginefuncs_t g_engfuncs;
+	#define GetGameDir    (*g_engfuncs.pfnGetGameDir)
+	#endif
+
+
+	namespace FranUtils
+	{
+		inline std::string GetModDirectory(std::string endLine = "\\") //Yes, string
+		{
+			std::string temp = std::filesystem::current_path().string();
+			#ifdef CLIENT_DLL
+				const char* getGamedir;
+				getGamedir = GetGameDir();
+			#else
+				char getGamedir[120] = "\0";
+				GetGameDir(getGamedir);
+			#endif
+			temp = temp + "\\" + getGamedir + endLine;
+			return temp;
+		}
+	}
+
+#else
+
+#error "You defined FRANUTILS_MODDIR but you didn't include standard library filesystem header. Please include it in an appropriate place."
+
+#endif // _FILESYSTEM_
+
+#endif // FRANUTILS_ADVANCED
+
+// ==========================================================
+// END OF THE HORRIBLE HORRIBLE PREPROCESSOR SHIT THAT I HATE
+// ==========================================================
 
 namespace FranUtils
 {
+
+#pragma region Constants
+
+	const int Kilobyte = 1024;
+	const int Megabyte = 1048576;				//1024 * 1024
+	const int Gigabyte = 1073741824;			//1024 * 1024 * 1024
+	const long long Terabyte = 1099511627776;	//1024 * 1024 * 1024 * 1024
+
+#pragma endregion
+
+	class Globals
+	{
+		public:
+			inline static int isPaused; // Is client paused the game?
+			inline static float isPausedLastUpdate;
+			inline static bool inMainMenu; // Is client in main menu? (Not pause menu)
+			inline static bool lastInMainMenu;
+
+			inline static void InitGlobals()
+			{
+				isPaused = true;
+				isPausedLastUpdate = 0.0f;
+				inMainMenu = true;
+				lastInMainMenu = false;
+			}
+	};
 
 #pragma region Debug Functions
 #ifndef CLIENT_WEAPONS
@@ -213,7 +282,7 @@ namespace FranUtils
 
 #pragma region General Utilities
 
-		/**
+	/**
 	* ASSEMBLY | For HL Messages - Returns a long that contains float information
 	*
 	* @see FranUtils::ftol

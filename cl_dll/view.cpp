@@ -51,6 +51,7 @@ void VectorAngles( const float *forward, float *angles );
 #include "r_studioint.h"
 #include "com_model.h"
 #include "kbutton.h"
+#include "FranUtils.hpp"
 
 extern engine_studio_api_t IEngineStudio;
 
@@ -1789,7 +1790,6 @@ void V_CalcThirdPersonRefdef( struct ref_params_s * pparams )
 
 }
 
-
 void DLLEXPORT V_CalcRefdef( struct ref_params_s *pparams )
 {
 //	RecClCalcRefdef(pparams);
@@ -1811,6 +1811,10 @@ void DLLEXPORT V_CalcRefdef( struct ref_params_s *pparams )
 	{
 		V_CalcNormalRefdef ( pparams );
 	}
+
+	//Thanks to the Half-Payne's developer
+	FranUtils::Globals::isPaused = pparams->paused;
+	FranUtils::Globals::isPausedLastUpdate = gEngfuncs.GetAbsoluteTime();
 
 /*
 // Example of how to overlay the whole screen with red at 50 % alpha

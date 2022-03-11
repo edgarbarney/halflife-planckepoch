@@ -46,6 +46,8 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 #include "postprocess.h"
 #include "r_efx.h"
 
+#include "FranUtils.hpp"
+
 #include "studio.h"
 #include "StudioModelRenderer.h"
 #include "GameStudioModelRenderer.h"
@@ -417,6 +419,10 @@ void CHud :: Init()
 #ifdef ENGINE_DEBUG
 	CONPRINT("## CHud::Init\n");
 #endif
+
+	//Init FranUtils Globals
+	FranUtils::Globals::InitGlobals();
+
 	HOOK_MESSAGE( Logo );
 	HOOK_MESSAGE( ResetHUD );
 	HOOK_MESSAGE( GameMode );
