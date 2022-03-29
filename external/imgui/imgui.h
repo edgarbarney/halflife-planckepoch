@@ -1438,6 +1438,18 @@ enum ImGuiKey_
     ImGuiKey_ModAlt,
     ImGuiKey_ModSuper,
 
+    // HL Mouse Thingies
+
+    ImGuiKey_MouseWheelDown,
+    ImGuiKey_MouseWheelUp,
+    ImGuiKey_Mouse1,
+    ImGuiKey_Mouse2,
+    ImGuiKey_Mouse3, //Scroll Wheel
+    ImGuiKey_Mouse4,
+    ImGuiKey_Mouse5,
+
+    // HL Mouse Thingies End
+
     ImGuiKey_COUNT,                 // No valid ImGuiKey is ever greater than this value
 
     // [Internal] Prior to 1.87 we required user to fill io.KeysDown[512] using their own native index + a io.KeyMap[] array.

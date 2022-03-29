@@ -259,7 +259,9 @@ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
         {
             float wheel_x = (event->wheel.x > 0) ? 1.0f : (event->wheel.x < 0) ? -1.0f : 0.0f;
             float wheel_y = (event->wheel.y > 0) ? 1.0f : (event->wheel.y < 0) ? -1.0f : 0.0f;
+
             io.AddMouseWheelEvent(wheel_x, wheel_y);
+
             return true;
         }
         case SDL_MOUSEBUTTONDOWN:
@@ -269,10 +271,19 @@ bool ImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
             if (event->button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
             if (event->button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
             if (event->button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+            if (event->button.button == SDL_BUTTON_X1) { mouse_button = 3; }
+            if (event->button.button == SDL_BUTTON_X2) { mouse_button = 4; }
             if (mouse_button == -1)
                 break;
             io.AddMouseButtonEvent(mouse_button, (event->type == SDL_MOUSEBUTTONDOWN));
             bd->MouseButtonsDown = (event->type == SDL_MOUSEBUTTONDOWN) ? (bd->MouseButtonsDown | (1 << mouse_button)) : (bd->MouseButtonsDown & ~(1 << mouse_button));
+
+            // Half-Life Mouse Event for "Key" imitation
+            io.AddKeyEvent(ImGuiKey_Mouse1 + mouse_button, (event->type == SDL_MOUSEBUTTONDOWN));
+
+            // To support legacy indexing (<1.87 user code). We're not using leagacy system in HL so its disabled.
+            //io.SetKeyEventNativeData(ImGuiKey_Mouse1, event->key.keysym.sym, event->key.keysym.scancode, event->key.keysym.scancode);
+
             return true;
         }
         case SDL_TEXTINPUT:
