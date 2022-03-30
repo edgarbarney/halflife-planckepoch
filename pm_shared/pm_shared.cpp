@@ -384,7 +384,7 @@ void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 			// Recurse texture materials
 			if (command == "#include")
 			{
-				value.pop_back(); value.erase(value.begin()); // Remove first and last character of the string, which are the quote marks
+				value.pop_back(); value.erase(value.begin()); // Remove first and last characters of the string, which are the quote marks
 
 				PM_ParseTextureMaterialsFile(value, false);
 				continue;
@@ -561,7 +561,7 @@ void PM_ParseStepTypesFile()
 		}
 		else if (line[0] == '"')
 		{
-			line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
+			line.pop_back(); line.erase(line.begin()); // Remove first and last characters of the string, which are the quote marks
 
 			if (!inSection)
 			{
@@ -718,7 +718,7 @@ void PM_ParseMaterialImpactsFile()
 			if (!inSection)
 			{
 				lastType = line;
-				line.pop_back(); line.erase(line.begin()); // Remove first and last character of the string, which are the quote marks
+				line.pop_back(); line.erase(line.begin()); // Remove first and last characters of the string, which are the quote marks
 				continue;
 			}
 			else
@@ -735,7 +735,7 @@ void PM_ParseMaterialImpactsFile()
 				//To uppercase
 				transform(alias.begin(), alias.end(), alias.begin(), ::toupper);
 
-				// Remove first and last character of the string, which are the quote marks
+				// Remove first and last characters of the string, which are the quote marks
 				alias.pop_back(); alias.erase(alias.begin());
 				particle.pop_back(); particle.erase(particle.begin());
 				decal.pop_back(); decal.erase(decal.begin());
@@ -784,7 +784,7 @@ void PM_ParseMaterialTypesFile()
 				continue; 
 			} 
 
-			// Remove first and last character of the string, which are the quote marks
+			// Remove first and last characters of the string, which are the quote marks
 			name.pop_back(); name.erase(name.begin());
 			textype.pop_back(); textype.erase(textype.begin());
 			steptype.pop_back(); steptype.erase(steptype.begin());

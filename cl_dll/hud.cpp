@@ -21,6 +21,8 @@
 //LRC - define to help track what calls are made on changelevel, save/restore, etc
 #define ENGINE_DEBUG
 
+#include <filesystem>
+
 #include "hud.h"
 #include "cl_util.h"
 #include <string.h>
@@ -46,6 +48,7 @@ extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player in
 #include "postprocess.h"
 #include "r_efx.h"
 
+#define FRANUTILS_MODDIR 1 // For usage of mod directory utilites
 #include "FranUtils.hpp"
 
 #include "studio.h"

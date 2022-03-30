@@ -1,5 +1,6 @@
 // FranticDreamer 2022
 
+#include <algorithm>
 #include <filesystem>
 #include <string>
 #include <sstream>
@@ -33,6 +34,169 @@
 #include "FranUtils.hpp"
 
 const int id_frame_bindingcolumns = 32;
+
+const int frameX = 510;
+const int frameY = 270;
+
+const int buttonX = 100;
+const int buttonY = 30;
+
+const int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
+
+void CClientImguiKeyboardSettings::Init()
+{
+	ParseKeybindFormatData();
+	ParseKeybindData();
+
+	if (std::filesystem::exists(FranUtils::GetModDirectory() + "bindingconfig.cfg"))
+		ParseBindingConfigFile(); // Custom Config.cfg
+	else if (std::filesystem::exists(FranUtils::GetModDirectory() + "config.cfg"))
+		ParseDefaultConfigFile(FranUtils::GetModDirectory() + "config.cfg"); // Mod Config.cfg
+	else
+		ParseDefaultConfigFile(std::filesystem::current_path().string() + "//" + FranUtils::Globals::GetFallbackDir() + "//" + "config.cfg"); // Fallback dir config.cfg
+
+	// Copy data from vecKeybindsData into the backup vector
+	vecKeybindsOriginalData = vecKeybindsData;
+}
+
+void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
+{
+	unsigned int butid = 4096;	//Button id. For preventing ID clash when buttons have the same name
+								//Start from 4096 cus why not mate
+
+	if (ImGui::BeginTabItem("Keyboard"))
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		// Half-Life Mouse Wheel Event for "Key" imitation
+		switch ((int)io.MouseWheel)
+		{
+		case -1:
+			io.AddKeyEvent(ImGuiKey_MouseWheelDown, true);
+			io.AddKeyEvent(ImGuiKey_MouseWheelUp, false);
+			break;
+		case 1:
+			io.AddKeyEvent(ImGuiKey_MouseWheelDown, false);
+			io.AddKeyEvent(ImGuiKey_MouseWheelUp, true);
+			break;
+		case 0:
+		default:
+			io.AddKeyEvent(ImGuiKey_MouseWheelDown, false);
+			io.AddKeyEvent(ImGuiKey_MouseWheelUp, false);
+			break;
+		}
+
+		if (keyCaptureMode == KeyCaptureMode::NoCapture)
+			ImGui::BeginChildFrame(id_frame_bindingcolumns, ImVec2(frameX, frameY));
+		else
+			ImGui::BeginChildFrame(id_frame_bindingcolumns, ImVec2(frameX, frameY), ImGuiWindowFlags_NoScrollWithMouse);
+
+		ImGui::Columns(3, "bindingcolumns");
+		for (/*const*/ auto& elem : vecKeybindsData)
+		{
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+			ImGui::Separator();
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.57f, 0.20f, 1.00f));
+			ImGui::Text(elem.categoryName.c_str()); ImGui::NextColumn();
+			ImGui::Text("Key/Button"); ImGui::NextColumn();
+			ImGui::Text("Alternate"); ImGui::NextColumn();
+			ImGui::PopStyleColor();
+			ImGui::Separator();
+			for (/*const*/ auto& elem2 : elem.categoryCommands)
+			{
+				ImGui::Text(std::string(elem2.displayName).c_str()); ImGui::NextColumn();
+				if (keyCaptureMode == KeyCaptureMode::Primary && currentKeyCapturingBind == elem2.displayName)
+				{
+					// Primary Button
+					ImGui::PushID(butid);
+					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
+					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
+					{
+						if (ImGui::IsKeyPressed(key))
+						{
+							currentKeyCapturingBind.clear();
+							keyCaptureMode = KeyCaptureMode::NoCapture;
+							AddToKeybindQueue(SmallKeybind_s(elem2.command, key, false));
+						}
+					}
+					ImGui::NextColumn();
+					ImGui::PopID();
+					butid++;
+
+					// Alternate Button
+					// No need for ID management for unresponsive buttons
+					ImGui::Button(GetMappedKeyName(elem2.alternate).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)); ImGui::NextColumn();
+				}
+				else if (keyCaptureMode == KeyCaptureMode::Alternate && currentKeyCapturingBind == elem2.displayName)
+				{
+					// Primary Button
+					// No need for ID management for unresponsive buttons
+					ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)); ImGui::NextColumn();
+
+					// Alternate Button
+					ImGui::PushID(butid);
+					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
+					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
+					{
+						if (ImGui::IsKeyPressed(key))
+						{
+							currentKeyCapturingBind.clear();
+							keyCaptureMode = KeyCaptureMode::NoCapture;
+							AddToKeybindQueue(SmallKeybind_s(elem2.command, key, true));
+						}
+					}
+					ImGui::PopID();
+					butid++;
+					ImGui::NextColumn();
+				}
+				else
+				{
+					// Primary Button
+					ImGui::PushID(butid);
+					if (ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
+					{
+						keyCaptureMode = KeyCaptureMode::Primary;
+						currentKeyCapturingBind = elem2.displayName;
+					}
+					ImGui::PopID();
+					butid++;
+					ImGui::NextColumn();
+
+					// Alternate Button
+					ImGui::PushID(butid);
+					if (ImGui::Button(GetMappedKeyName(elem2.alternate).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
+					{
+						keyCaptureMode = KeyCaptureMode::Alternate;
+						currentKeyCapturingBind = elem2.displayName;
+					}
+					ImGui::PopID();
+					butid++;
+					ImGui::NextColumn();
+				}
+			}
+		}
+		ImGui::EndChildFrame();
+
+		if (ImGui::Button("OK", ImVec2(buttonX, buttonY)))
+		{
+			ApplyKeybinds();
+		}
+
+		ImGui::SameLine(((frameX / 1.33) + sweetSpot) - (buttonX / 1.33));
+		if (ImGui::Button("Cancel", ImVec2(buttonX, buttonY)))
+		{
+			CancelKeybinds();
+		}
+
+		ImGui::SameLine((frameX + sweetSpot) - (buttonX));
+		if (ImGui::Button("Apply", ImVec2(buttonX, buttonY)))
+		{
+			ApplyKeybinds();
+		}
+
+		ImGui::EndTabItem();
+	}
+}
 
 void CClientImguiKeyboardSettings::ParseKeybindFormatData()
 {
@@ -76,7 +240,7 @@ void CClientImguiKeyboardSettings::ParseKeybindFormatData()
 			if (!inSection)
 			{
 				lastType = line;
-				lastType.pop_back(); lastType.erase(lastType.begin()); // Remove first and last character of the string, which are the quote marks
+				lastType.pop_back(); lastType.erase(lastType.begin()); // Remove first and last characters of the string, which are the quote marks
 				vecKeybindsData.push_back(KeybindCategory_s(lastType));
 				continue;
 			}
@@ -119,7 +283,7 @@ void CClientImguiKeyboardSettings::ParseKeybindFormatData()
 					}
 				}
 
-				// Remove first and last character of the string, which are the quote marks
+				// Remove first and last characters of the string, which are the quote marks
 				command.pop_back(); command.erase(command.begin());
 				uidesc.pop_back(); uidesc.erase(uidesc.begin());
 
@@ -220,12 +384,12 @@ void CClientImguiKeyboardSettings::ParseKeybindData()
 		{ImGuiKey_Minus,         		ClientImguiKey_s(ImGuiKey_Minus,         	"-")},
 		{ImGuiKey_Period,        		ClientImguiKey_s(ImGuiKey_Period,        	".")},
 		{ImGuiKey_Slash,         		ClientImguiKey_s(ImGuiKey_Slash,         	"/")},
-		{ImGuiKey_Semicolon,     		ClientImguiKey_s(ImGuiKey_Semicolon,     	"semicolon")},
+		{ImGuiKey_Semicolon,     		ClientImguiKey_s(ImGuiKey_Semicolon,     	"semicolon", ";")},
 		{ImGuiKey_Equal,         		ClientImguiKey_s(ImGuiKey_Equal,         	"=")},
 		{ImGuiKey_LeftBracket,   		ClientImguiKey_s(ImGuiKey_LeftBracket,   	"[")},
 		{ImGuiKey_Backslash,     		ClientImguiKey_s(ImGuiKey_Backslash,     	"\\")},
 		{ImGuiKey_RightBracket,  		ClientImguiKey_s(ImGuiKey_RightBracket,  	"]")},
-		{ImGuiKey_GraveAccent,   		ClientImguiKey_s(ImGuiKey_GraveAccent,   	"`")},
+		{ImGuiKey_GraveAccent,   		ClientImguiKey_s(ImGuiKey_GraveAccent,   	"~", "`")},
 		{ImGuiKey_CapsLock,				ClientImguiKey_s(ImGuiKey_CapsLock,			"capslock")},
 		{ImGuiKey_ScrollLock,			ClientImguiKey_s(ImGuiKey_ScrollLock,		"")}, //Unsupported
 		{ImGuiKey_NumLock,				ClientImguiKey_s(ImGuiKey_NumLock,			"")}, //Unsupported
@@ -249,52 +413,278 @@ void CClientImguiKeyboardSettings::ParseKeybindData()
 		{ImGuiKey_KeypadEnter,			ClientImguiKey_s(ImGuiKey_KeypadEnter,		"kp_enter")},
 		{ImGuiKey_KeypadEqual,			ClientImguiKey_s(ImGuiKey_KeypadEqual,		"")}, //Unsupported
 
-		// TODO: KEYPAD SUPPORT
+		// TODO: GAMEPAD SUPPORT
+
+		{ ImGuiKey_MouseWheelDown,		ClientImguiKey_s(ImGuiKey_MouseWheelDown,	"mwheeldown") },
+		{ ImGuiKey_MouseWheelUp,		ClientImguiKey_s(ImGuiKey_MouseWheelUp,		"mwheelup") },
+		{ ImGuiKey_Mouse1,				ClientImguiKey_s(ImGuiKey_Mouse1,			"mouse1") },
+		{ ImGuiKey_Mouse2,				ClientImguiKey_s(ImGuiKey_Mouse2,			"mouse2") },
+		{ ImGuiKey_Mouse3,				ClientImguiKey_s(ImGuiKey_Mouse3,			"mouse3") },
+		{ ImGuiKey_Mouse4,				ClientImguiKey_s(ImGuiKey_Mouse4,			"mouse4") },
+		{ ImGuiKey_Mouse5,				ClientImguiKey_s(ImGuiKey_Mouse5,			"mouse5") },
 	};
 
 #pragma warning( default : 26812 )
 }
 
-void CClientImguiKeyboardSettings::ParseDefaultConfigFile()
+void CClientImguiKeyboardSettings::ParseDefaultConfigFile(std::string filedir)
 {
+	std::ifstream fstream;
+	fstream.open(filedir);
+
+	int lineIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
+	{
+		lineIteration++;
+		//line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
+		gEngfuncs.Con_DPrintf("\n config.cfg - parsing %d", lineIteration);
+		if (line.empty()) // Ignore empty lines
+		{
+			continue;
+		}
+		else if (line[0] == '/') // Ignore comments
+		{
+			continue;
+		}
+		else if (line.substr(0, 5) == "bind ") // Find a binding line
+		{
+			line = line.erase(0, 5);
+
+			// Hardcoded order :/
+			auto words = FranUtils::SplitQuotedWords(line);
+			std::string& cmd = words[1];
+			std::string& keyname = words[0];
+
+			if (!cmd.empty() && !keyname.empty())
+			{
+				FranUtils::LowerCase_Ref(cmd);
+				FranUtils::LowerCase_Ref(keyname);
+
+				for (auto& keybindCategory : vecKeybindsData)
+				{
+					for (auto& categoryCommand : keybindCategory.categoryCommands)
+					{
+						// Bind the key
+						if (categoryCommand.command == cmd)
+						{
+							int keycode = 0;
+
+							// Find the keycode of the key
+							for (const auto& [kmapKey, kmapVal] : imguiKeyToGameKeyMap)
+							{
+								if (FranUtils::LowerCase(kmapVal.gameKeyCode) == keyname || FranUtils::LowerCase(kmapVal.otherGameKeyCode) == keyname)
+									keycode = kmapKey;
+							}
+							
+							if (keycode == 0)
+							{
+								gEngfuncs.Con_DPrintf("\nERR: config.cfg - Can't parse the keycode '%s' in line %d. Are you sure the syntax is correct?\n", keyname.c_str(), lineIteration);
+							}
+							else if (categoryCommand.primary == 0) // If primary is not bound to the key, bind to primary
+							{
+								categoryCommand.primary = keycode;
+							}
+							else
+							{
+								categoryCommand.alternate = keycode; // Otherwise, bind to alternative key
+							}
+							//const std::string cmdbuffer = "bind " + GetGameKeyCode(keyCode) + " \"" + command + '"';
+							//gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+						}
+					}
+				}
+			}
+			else
+			{
+				gEngfuncs.Con_DPrintf("\nERR: config.cfg - Can't parse the bind line %d. Are you sure the syntax is correct?\n", lineIteration);
+			}
+
+			continue;
+		}
+	}
 }
 
 void CClientImguiKeyboardSettings::ParseBindingConfigFile()
 {
+	std::ifstream fstream;
+	fstream.open(FranUtils::GetModDirectory() + "bindingconfig.cfg");
+
+	int lineIteration = 0;
+	std::string line;
+	while (std::getline(fstream, line))
+	{
+		lineIteration++;
+		//line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
+		gEngfuncs.Con_DPrintf("\n config.cfg - parsing %d", lineIteration);
+		if (line.empty()) // Ignore empty lines
+		{
+			continue;
+		}
+		else if (line[0] == '/') // Ignore comments
+		{
+			continue;
+		}
+		else if (line.substr(0, 5) == "bind ") // Find a binding line
+		{
+			line = line.erase(0, 5);
+
+			// Hardcoded order :/
+			auto words = FranUtils::SplitQuotedWords(line);
+			std::string& cmd = words[1];
+			std::string& keyname = words[0];
+
+			if (!cmd.empty() && !keyname.empty())
+			{
+				FranUtils::LowerCase_Ref(cmd);
+				FranUtils::LowerCase_Ref(keyname);
+
+				for (auto& keybindCategory : vecKeybindsData)
+				{
+					for (auto& categoryCommand : keybindCategory.categoryCommands)
+					{
+						// Bind the key
+						if (categoryCommand.command == cmd)
+						{
+							int keycode = 0;
+
+							// Find the keycode of the key
+							for (const auto& [kmapKey, kmapVal] : imguiKeyToGameKeyMap)
+							{
+								if (FranUtils::LowerCase(kmapVal.gameKeyCode) == keyname || FranUtils::LowerCase(kmapVal.otherGameKeyCode) == keyname)
+									keycode = kmapKey;
+							}
+
+							if (keycode == 0)
+							{
+								gEngfuncs.Con_DPrintf("\nERR: config.cfg - Can't parse the keycode '%s' in line %d. Are you sure the syntax is correct?\n", keyname.c_str(), lineIteration);
+							}
+							else if (categoryCommand.primary == 0) // If primary is not bound to the key, bind to primary
+							{
+								categoryCommand.primary = keycode;
+							}
+							else
+							{
+								categoryCommand.alternate = keycode; // Otherwise, bind to alternative key
+							}
+							//const std::string cmdbuffer = "bind " + GetGameKeyCode(keyCode) + " \"" + command + '"';
+							//gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+						}
+					}
+				}
+			}
+			else
+			{
+				gEngfuncs.Con_DPrintf("\nERR: config.cfg - Can't parse the bind line %d. Are you sure the syntax is correct?\n", lineIteration);
+			}
+
+			continue;
+		}
+	}
 }
 
-void CClientImguiKeyboardSettings::SetKeybind(const std::string& command, ImGuiKey keyCode, const bool alternate)
+void CClientImguiKeyboardSettings::ApplyKeybinds()
 {
+	for (const auto& val : vecKeybindApplyQueue)
+	{
+		SetKeybind(val);
+	}
+
+	vecKeybindsData = vecKeybindsOriginalData;
+	vecKeybindApplyQueue.clear();
+}
+
+void CClientImguiKeyboardSettings::CancelKeybinds()
+{
+	vecKeybindsData = vecKeybindsOriginalData;
+	vecKeybindApplyQueue.clear();
+}
+
+void CClientImguiKeyboardSettings::AddToKeybindQueue(const SmallKeybind_s kbnd)
+{
+	vecKeybindApplyQueue.push_back(kbnd);
+
+	// Bind and unbind visibly for temporary reasons
 	for (auto& keybindCategory : vecKeybindsData)
 	{
+		// TODO: FIX THIS!! COULDN'T FIND A BETTER WAY TO PREVENT UNBINDING RIGHT AFTER THE BIND
 		for (auto& categoryCommand : keybindCategory.categoryCommands)
 		{
 			// We hafta unbind the key if we already bound it
-			if (categoryCommand.primary == keyCode)
+			if (categoryCommand.primary == kbnd.keyCode)
 			{
 				categoryCommand.primary = 0;
-				const std::string cmdbuffer = "unbind " + GetGameKeyCode(keyCode);
-				gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
 			}
-			else if (categoryCommand.alternate == keyCode)
+			else if (categoryCommand.alternate == kbnd.keyCode)
 			{
 				categoryCommand.alternate = 0;
-				const std::string cmdbuffer = "unbind " + GetGameKeyCode(keyCode);
-				gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
 			}
+		}
 
+		for (auto& categoryCommand : keybindCategory.categoryCommands)
+		{
 			// Now we can bind the key
-			if (categoryCommand.command == command)
+			if (categoryCommand.command == kbnd.command)
 			{
-				if (alternate)
+				// Unbind the old key first
+				if (kbnd.alternate)
 				{
-					categoryCommand.alternate = keyCode;
+					categoryCommand.alternate = kbnd.keyCode;
 				}
 				else
 				{
-					categoryCommand.primary = keyCode;
+					categoryCommand.primary = kbnd.keyCode;
 				}
-				const std::string cmdbuffer = "bind " + GetGameKeyCode(keyCode) + " \"" + command + '"';
+			}
+		}
+	}
+}
+
+void CClientImguiKeyboardSettings::SetKeybind(const SmallKeybind_s kbnd)
+{
+	// We can overwrite the old config now
+
+	for (auto& keybindCategory : vecKeybindsOriginalData)
+	{
+		// TODO: FIX THIS!! COULDN'T FIND A BETTER WAY TO PREVENT UNBINDING RIGHT AFTER THE BIND
+		for (auto& categoryCommand : keybindCategory.categoryCommands)
+		{
+			// We hafta unbind the key if we already bound it
+			if (categoryCommand.primary == kbnd.keyCode)
+			{
+				categoryCommand.primary = 0;
+				const std::string cmdbuffer = "unbind " + GetGameKeyCode(kbnd.keyCode);
+				gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+			}
+			else if (categoryCommand.alternate == kbnd.keyCode)
+			{
+				categoryCommand.alternate = 0;
+				const std::string cmdbuffer = "unbind " + GetGameKeyCode(kbnd.keyCode);
+				gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+			}
+		}
+
+		for (auto& categoryCommand : keybindCategory.categoryCommands)
+		{
+			// Now we can bind the key
+			if (categoryCommand.command == kbnd.command)
+			{
+
+				if (kbnd.alternate)
+				{
+					// Unbind the old key first
+					const std::string cmdbuffer = "unbind " + GetGameKeyCode(categoryCommand.alternate);
+					gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+					categoryCommand.alternate = kbnd.keyCode;
+				}
+				else
+				{
+					// Unbind the old key first
+					const std::string cmdbuffer = "unbind " + GetGameKeyCode(categoryCommand.primary);
+					gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
+					categoryCommand.primary = kbnd.keyCode;
+				}
+				const std::string cmdbuffer = "bind " + GetGameKeyCode(kbnd.keyCode) + " \"" + kbnd.command + '"';
 				gEngfuncs.pfnClientCmd(cmdbuffer.c_str());
 			}
 		}
@@ -309,116 +699,4 @@ std::string CClientImguiKeyboardSettings::GetMappedKeyName(ImGuiKey_ keyCode)
 std::string CClientImguiKeyboardSettings::GetGameKeyCode(ImGuiKey_ keyCode)
 {
 	return imguiKeyToGameKeyMap[keyCode].gameKeyCode;
-}
-
-void CClientImguiKeyboardSettings::Init()
-{
-	ParseKeybindFormatData();
-	ParseKeybindData();
-
-	if (std::filesystem::exists(FranUtils::GetModDirectory() + "bindingconfig.cfg"))
-		ParseBindingConfigFile();
-	else
-		ParseDefaultConfigFile();
-}
-
-void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
-{
-	unsigned int butid = 4096;	//Button id. For preventing ID clash when buttons have the same name
-								//Start from 4096 cus why not mate
-
-	if (ImGui::BeginTabItem("Keyboard"))
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		ImGui::BeginChildFrame(id_frame_bindingcolumns, ImVec2(510, 270));
-		ImGui::Columns(3, "bindingcolumns");
-		for (/*const*/ auto& elem : vecKeybindsData)
-		{
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-			ImGui::Separator();
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.57f, 0.20f, 1.00f));
-			ImGui::Text(elem.categoryName.c_str()); ImGui::NextColumn();
-			ImGui::Text("Key/Button"); ImGui::NextColumn();
-			ImGui::Text("Alternate"); ImGui::NextColumn();
-			ImGui::PopStyleColor();
-			ImGui::Separator();
-			for (/*const*/ auto& elem2 : elem.categoryCommands)
-			{
-				ImGui::Text(std::string(elem2.displayName).c_str()); ImGui::NextColumn();
-				if (keyCaptureMode == KeyCaptureMode::Primary && currentKeyCapturingBind == elem2.displayName)
-				{
-					// Primary Button
-					ImGui::PushID(butid);
-					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
-					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
-					{
-						if (ImGui::IsKeyPressed(key))
-						{
-							currentKeyCapturingBind.clear();
-							keyCaptureMode = KeyCaptureMode::NoCapture;
-							SetKeybind(elem2.command, key, false);
-						}
-					}
-					ImGui::NextColumn();
-					ImGui::PopID();
-					butid++;
-
-					// Alternate Button
-					// No need for ID management for unresponsive buttons
-					ImGui::Button(GetMappedKeyName(elem2.alternate).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)); ImGui::NextColumn();
-				}
-				else if (keyCaptureMode == KeyCaptureMode::Alternate && currentKeyCapturingBind == elem2.displayName)
-				{
-					// Primary Button
-					// No need for ID management for unresponsive buttons
-					ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)); ImGui::NextColumn();
-					
-					// Alternate Button
-					ImGui::PushID(butid);
-					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
-					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
-					{
-						if (ImGui::IsKeyPressed(key))
-						{
-							currentKeyCapturingBind.clear();
-							keyCaptureMode = KeyCaptureMode::NoCapture;
-							SetKeybind(elem2.command, key, true);
-						}
-					}
-					ImGui::PopID();
-					butid++;
-					ImGui::NextColumn();
-				}
-				else
-				{
-					// Primary Button
-					ImGui::PushID(butid);
-					if (ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
-					{
-						keyCaptureMode = KeyCaptureMode::Primary;
-						currentKeyCapturingBind = elem2.displayName;
-
-						gEngfuncs.Con_DPrintf("\n Cmd: %s Prim: %d PtrPrim: ", "Fokk", elem2.primary);
-					}
-					ImGui::PopID();
-					butid++;
-					ImGui::NextColumn();
-
-					// Alternate Button
-					ImGui::PushID(butid);
-					if (ImGui::Button(GetMappedKeyName(elem2.alternate).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
-					{
-						keyCaptureMode = KeyCaptureMode::Alternate;
-						currentKeyCapturingBind = elem2.displayName;
-					}
-					ImGui::PopID();
-					butid++;
-					ImGui::NextColumn();
-				}
-			}
-		}
-		ImGui::EndChildFrame();
-		ImGui::EndTabItem();
-	}
 }
