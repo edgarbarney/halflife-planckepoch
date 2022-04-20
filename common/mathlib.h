@@ -43,6 +43,15 @@ constexpr Vector vec3_origin(0, 0, 0);
 constexpr Vector g_vecZero(0, 0, 0);
 extern	int nanmask;
 
+// NJS: Inlined to prevent floats from being autopromoted to doubles, as with the old system.
+#ifndef RAD2DEG
+#define RAD2DEG(x) ((float)(x) * (float)(180.f / M_PI))
+#endif
+
+#ifndef DEG2RAD
+#define DEG2RAD(x) ((float)(x) * (float)(M_PI / 180.f))
+#endif
+
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
 
 #define VectorSubtract(a,b,c) {(c)[0]=(a)[0]-(b)[0];(c)[1]=(a)[1]-(b)[1];(c)[2]=(a)[2]-(b)[2];}
@@ -117,6 +126,9 @@ void AngleVectors (const Vector& angles, Vector* forward, Vector* right, Vector*
 void AngleVectorsTranspose (const Vector& angles, Vector* forward, Vector* right, Vector* up);
 #define AngleIVectors	AngleVectorsTranspose
 
+void MatrixAngles(const float matrix[3][4], float* angles); // !!!!
+void MatrixAngles(const float matrix[3][4], Vector& angles, Vector& position);
+
 void AngleMatrix (const float* angles, float (*matrix)[4] );
 void AngleIMatrix (const Vector& angles, float (*matrix)[4] );
 void VectorTransform (const float* in1, float in2[3][4], float* out);
@@ -128,6 +140,11 @@ float AngleBetweenVectors( const float* v1, const float* v2 );
 
 void VectorMatrix( const Vector& forward, Vector& right, Vector& up);
 void VectorAngles( const float* forward, float* angles );
+
+float lerp(float start, float end, float frac);
+
+void MatrixGetColumn(const float in[3][4], int column, Vector& out);
+void MatrixSetColumn(const Vector& in, int column, float out[3][4]);
 
 int InvertMatrix( const float * m, float *out );
 

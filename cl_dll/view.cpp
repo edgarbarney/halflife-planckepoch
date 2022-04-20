@@ -429,6 +429,88 @@ void V_CalcViewRoll ( struct ref_params_s *pparams )
 	}
 }
 
+/*
+==================
+V_CamAnims - credit BlueNightHawk
+apply anims from viewmodel to camera
+======
+*/
+void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
+{
+	float cl_animbone = CVAR_GET_FLOAT("cl_animbone");
+
+	if (view->model == nullptr || view->model->name == nullptr || g_viewinfo.phdr == NULL)
+		return;
+
+	mstudiobone_t* pbone = nullptr;
+	int index = -1;
+
+	for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
+	{
+		pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
+
+		if (pbone == nullptr || pbone[i].name == nullptr)
+			break;
+		if (!stricmp(pbone[i].name, "camera"))
+		{
+			index = i;
+			break;
+		}
+		// try using common gun bone names to get bone index
+		else
+		{
+			// add checks for more names if needed
+			if (!stricmp(pbone[i].name, "gun"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "weapon"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "glock"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
+			{
+				index = i;
+				break;
+			}
+		}
+	}
+
+	if ((int)cl_animbone > 0)
+		index = (int)cl_animbone - 1;
+
+	if (index != -1 && index < g_viewinfo.phdr->numbones)
+	{
+		Vector result, result2;
+		if (fabs(pparams->viewangles[0]) > 86)
+			result = Vector(0, 0, 0);
+		else
+		{
+			VectorSubtract(g_viewinfo.boneangles[index], g_viewinfo.prevboneangles[index], result);
+		}
+		VectorSubtract(g_viewinfo.bonepos[index], g_viewinfo.prevbonepos[index], result2);
+
+		NormalizeAngles((float*)&result);
+		static Vector l_camangles, l_campos;
+
+		for (int i = 0; i < 3; i++)
+		{
+			l_camangles[i] = lerp(l_camangles[i], result[i] * 1.2, pparams->frametime * 17.0f);
+			l_campos[i] = lerp(l_campos[i], result2[i] * 1.2, pparams->frametime * 17.0f);
+
+			pparams->viewangles[i] += l_camangles[i] / 25;
+			pparams->vieworg[i] += l_campos[i] / 10;
+		}
+		
+	}
+}
 
 /*
 ==================
@@ -671,7 +753,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	pparams->vieworg[2] += waterOffset;
 	
 	V_CalcViewRoll ( pparams );
-	
+	V_CamAnims(pparams, view);
 	V_AddIdle ( pparams );
 
 	// offsets
