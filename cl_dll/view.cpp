@@ -429,6 +429,34 @@ void V_CalcViewRoll ( struct ref_params_s *pparams )
 	}
 }
 
+int GetAnimBoneFromFile(char* name)
+{
+	char* pfile, * pfile2;
+	pfile = pfile2 = (char*)gEngfuncs.COM_LoadFile("models/animbonelist.txt", 5, NULL);
+	char token[500];
+	int index = -1;
+
+	if (pfile == nullptr)
+	{
+		return -1;
+	}
+
+	while (pfile = gEngfuncs.COM_ParseFile(pfile, token))
+	{
+		if (!stricmp(token, name))
+		{
+			pfile = gEngfuncs.COM_ParseFile(pfile, token);
+			index = atoi(token);
+			break;
+		}
+	}
+
+	gEngfuncs.COM_FreeFile(pfile2);
+	pfile = pfile2 = nullptr;
+
+	return index;
+}
+
 /*
 ==================
 V_CamAnims - credit BlueNightHawk
@@ -443,39 +471,26 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 		return;
 
 	mstudiobone_t* pbone = nullptr;
-	int index = -1;
+	int index = GetAnimBoneFromFile(view->model->name + 7);
 
-	for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
+	// find special bone names
+	if (index == -1)
 	{
-		pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
+		for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
+		{
+			pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
 
-		if (pbone == nullptr || pbone[i].name == nullptr)
-			break;
-		if (!stricmp(pbone[i].name, "camera"))
-		{
-			index = i;
-			break;
-		}
-		// try using common gun bone names to get bone index
-		else
-		{
-			// add checks for more names if needed
-			if (!stricmp(pbone[i].name, "gun"))
+			if (pbone == nullptr || pbone[i].name == nullptr)
+				break;
+
+			// usual names used in viewmodels
+			if (!stricmp(pbone[i].name, "camera"))
 			{
 				index = i;
 				break;
 			}
-			else if (!stricmp(pbone[i].name, "weapon"))
-			{
-				index = i;
-				break;
-			}
-			else if (!stricmp(pbone[i].name, "glock"))
-			{
-				index = i;
-				break;
-			}
-			else if (!stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
+			else if (!stricmp(pbone[i].name, "gun") || !stricmp(pbone[i].name, "weapon")
+				|| !stricmp(pbone[i].name, "glock") || !stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
 			{
 				index = i;
 				break;
@@ -483,7 +498,8 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 		}
 	}
 
-	if ((int)cl_animbone > 0)
+	// follow value in cl_animbone
+	if ((int)cl_animbone > 0 && (index) == -1)
 		index = (int)cl_animbone - 1;
 
 	if (index != -1 && index < g_viewinfo.phdr->numbones)
