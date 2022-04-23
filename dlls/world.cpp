@@ -483,6 +483,11 @@ void CWorld :: Spawn()
 
 void CWorld :: Precache()
 {
+	// water splashes
+	PRECACHE_SOUND("items/water_splash/water_splash1.wav");
+	PRECACHE_SOUND("items/water_splash/water_splash2.wav");
+	PRECACHE_SOUND("items/water_splash/water_splash3.wav");
+
 	//LRC - set up the world lists
 	g_pWorld = this;
 	m_pAssistLink = nullptr;
