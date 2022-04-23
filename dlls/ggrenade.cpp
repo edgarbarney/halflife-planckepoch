@@ -111,7 +111,7 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 		}
 		else
 		{
-			WRITE_SHORT( g_sModelIndexWExplosion );
+			WRITE_SHORT( 0 );
 		}
 		WRITE_BYTE( (pev->dmg - 50) * .60  ); // scale * 10
 		WRITE_BYTE( 15  ); // framerate
@@ -121,6 +121,26 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 //RENDERERS START
 	if(iContents != CONTENTS_WATER)
 		UTIL_Particle("explosion_cluster.txt", pev->origin, g_vecZero, 1);
+	else
+	{
+		TraceResult tr;
+		Vector vecSrc = pev->origin;
+		Vector vecEnd = vecSrc + Vector(0, 0, 1);
+		int traceContent;
+
+		UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, ENT(pev), &tr);
+		traceContent = UTIL_PointContents(tr.vecEndPos);
+
+		while (traceContent == CONTENTS_WATER)
+		{
+			vecEnd = vecEnd + Vector(0, 0, 1);
+			UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, ENT(pev), &tr);
+			traceContent = UTIL_PointContents(tr.vecEndPos);
+		}
+
+		if(traceContent != CONTENTS_WATER)
+		UTIL_Particle("water_shoot_cluster.txt", tr.vecEndPos + Vector(0, 0, 5), Vector(0, 0, 2), 1);
+	}
 //RENDERERS END
 
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );

@@ -1629,6 +1629,42 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 }
 
 
+void CBaseEntity::FireBulletsWater(Vector vecSrc, Vector vecEnd)
+{
+
+	if (!(POINT_CONTENTS(vecEnd) == CONTENTS_WATER && POINT_CONTENTS(vecSrc) != CONTENTS_WATER))
+		return;
+
+
+	float x = vecEnd.x - vecSrc.x;
+	float y = vecEnd.y - vecSrc.y;
+	float z = vecEnd.z - vecSrc.z;
+
+	float len = sqrt(x * x + y * y + z * z);
+
+	Vector vecTemp = Vector((vecEnd.x + vecSrc.x) / 2, (vecEnd.y + vecSrc.y) / 2, (vecEnd.z + vecSrc.z) / 2);
+	if (len <= 1)
+	{
+		UTIL_Particle("water_shoot_cluster.txt", Vector(vecTemp.x, vecTemp.y, vecTemp.z + 5), Vector(0, 0, 2), 1);
+
+		/*
+		MESSAGE_BEGIN(MSG_ALL, gmsgWaterSplash);
+		WRITE_COORD(vecTemp.x);
+		WRITE_COORD(vecTemp.y);
+		WRITE_COORD(vecTemp.z);
+		MESSAGE_END();
+		*/
+	}
+
+	else
+	{
+		if (POINT_CONTENTS(vecTemp) == CONTENTS_WATER)
+			FireBulletsWater(vecSrc, vecTemp);
+		else
+			FireBulletsWater(vecTemp, vecEnd);
+	}
+}
+
 /*
 ================
 FireBullets
@@ -1718,6 +1754,8 @@ Vector CBaseEntity::FireBulletsPlayer ( ULONG cShots, Vector vecSrc, Vector vecD
 		}
 		// make bullet trails
 		UTIL_BubbleTrail( vecSrc, tr.vecEndPos, (flDistance * tr.flFraction) / 64.0 );
+		FireBulletsWater(vecSrc, tr.vecEndPos);
+
 	}
 	ApplyMultiDamage(pev, pevAttacker);
 
