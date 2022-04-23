@@ -138,8 +138,25 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 			traceContent = UTIL_PointContents(tr.vecEndPos);
 		}
 
-		if(traceContent != CONTENTS_WATER)
-		UTIL_Particle("water_shoot_cluster.txt", tr.vecEndPos + Vector(0, 0, 5), Vector(0, 0, 2), 1);
+		if (traceContent != CONTENTS_WATER)
+		{
+			// particle
+			UTIL_Particle("water_shoot_cluster.txt", tr.vecEndPos + Vector(0, 0, 5), Vector(0, 0, 2), 1);
+
+			// play sound
+			switch (RANDOM_LONG(1, 3))
+			{
+			case 1:
+				UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 5), "items/water_splash/water_splash1.wav", 1, ATTN_NORM, 0, 100);
+				break;
+			case 2:
+				UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 5), "items/water_splash/water_splash2.wav", 1, ATTN_NORM, 0, 100);
+				break;
+			case 3:
+				UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 5), "items/water_splash/water_splash3.wav", 1, ATTN_NORM, 0, 100);
+				break;
+			}
+		}
 	}
 //RENDERERS END
 

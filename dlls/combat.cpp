@@ -1645,15 +1645,23 @@ void CBaseEntity::FireBulletsWater(Vector vecSrc, Vector vecEnd)
 	Vector vecTemp = Vector((vecEnd.x + vecSrc.x) / 2, (vecEnd.y + vecSrc.y) / 2, (vecEnd.z + vecSrc.z) / 2);
 	if (len <= 1)
 	{
+		// water particle
 		UTIL_Particle("water_shoot_cluster.txt", Vector(vecTemp.x, vecTemp.y, vecTemp.z + 5), Vector(0, 0, 2), 1);
 
-		/*
-		MESSAGE_BEGIN(MSG_ALL, gmsgWaterSplash);
-		WRITE_COORD(vecTemp.x);
-		WRITE_COORD(vecTemp.y);
-		WRITE_COORD(vecTemp.z);
-		MESSAGE_END();
-		*/
+		// play sound
+		switch (RANDOM_LONG(1, 3))
+		{
+		case 1:
+				UTIL_EmitAmbientSound(ENT(0), vecTemp + Vector(0, 0, 5), "items/water_splash/water_splash1.wav", 1, ATTN_NORM, 0, 100);
+				break;
+		case 2:
+				UTIL_EmitAmbientSound(ENT(0), vecTemp + Vector(0, 0, 5), "items/water_splash/water_splash2.wav", 1, ATTN_NORM, 0, 100);
+				break;
+		case 3:
+				UTIL_EmitAmbientSound(ENT(0), vecTemp + Vector(0, 0, 5), "items/water_splash/water_splash3.wav", 1, ATTN_NORM, 0, 100);
+				break;
+		}
+
 	}
 
 	else

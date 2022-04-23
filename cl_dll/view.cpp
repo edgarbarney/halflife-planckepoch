@@ -429,6 +429,106 @@ void V_CalcViewRoll ( struct ref_params_s *pparams )
 	}
 }
 
+int GetAnimBoneFromFile(char* name)
+{
+	char* pfile, * pfile2;
+	pfile = pfile2 = (char*)gEngfuncs.COM_LoadFile("models/animbonelist.txt", 5, NULL);
+	char token[500];
+	int index = -1;
+
+	if (pfile == nullptr)
+	{
+		return -1;
+	}
+
+	while (pfile = gEngfuncs.COM_ParseFile(pfile, token))
+	{
+		if (!stricmp(token, name))
+		{
+			pfile = gEngfuncs.COM_ParseFile(pfile, token);
+			index = atoi(token);
+			break;
+		}
+	}
+
+	gEngfuncs.COM_FreeFile(pfile2);
+	pfile = pfile2 = nullptr;
+
+	return index;
+}
+
+/*
+==================
+V_CamAnims - credit BlueNightHawk
+apply anims from viewmodel to camera
+======
+*/
+void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
+{
+	float cl_animbone = CVAR_GET_FLOAT("cl_animbone");
+
+	if (view->model == nullptr || view->model->name == nullptr || g_viewinfo.phdr == NULL)
+		return;
+
+	mstudiobone_t* pbone = nullptr;
+	int index = GetAnimBoneFromFile(view->model->name + 7);
+
+	// find special bone names
+	if (index == -1)
+	{
+		for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
+		{
+			pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
+
+			if (pbone == nullptr || pbone[i].name == nullptr)
+				break;
+
+			// usual names used in viewmodels
+			if (!stricmp(pbone[i].name, "camera"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "gun") || !stricmp(pbone[i].name, "weapon")
+				|| !stricmp(pbone[i].name, "glock") || !stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
+			{
+				index = i;
+				break;
+			}
+		}
+	}
+
+	// follow value in cl_animbone
+	if ((int)cl_animbone > 0 && (index) == -1)
+		index = (int)cl_animbone - 1;
+
+	if (index != -1 && index < g_viewinfo.phdr->numbones)
+	{
+		Vector result, result2;
+		if (fabs(pparams->viewangles[0]) > 86)
+			result = Vector(0, 0, 0);
+		else
+		{
+			VectorSubtract(g_viewinfo.boneangles[index], g_viewinfo.prevboneangles[index], result);
+		}
+		VectorSubtract(g_viewinfo.bonepos[index], g_viewinfo.prevbonepos[index], result2);
+
+		NormalizeAngles((float*)&result);
+		static Vector l_camangles, l_campos;
+
+		for (int i = 0; i < 3; i++)
+		{
+			l_camangles[i] = lerp(l_camangles[i], result[i] * 1.2, pparams->frametime * 17.0f);
+			l_campos[i] = lerp(l_campos[i], result2[i] * 1.2, pparams->frametime * 17.0f);
+
+			pparams->viewangles[i] += l_camangles[i] / 25;
+
+			// uncomment this line under if you want the cam bone to alter camera origin
+			//pparams->vieworg[i] += l_campos[i] / 10; 
+		}
+		
+	}
+}
 
 /*
 ==================
@@ -671,7 +771,7 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	pparams->vieworg[2] += waterOffset;
 	
 	V_CalcViewRoll ( pparams );
-	
+	V_CamAnims(pparams, view);
 	V_AddIdle ( pparams );
 
 	// offsets

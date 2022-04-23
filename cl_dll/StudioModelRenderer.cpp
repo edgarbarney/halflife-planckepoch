@@ -46,9 +46,13 @@ Transparency code by Neil "Jed" Jedrzejewski
 #include "propmanager.h"
 #include "bsprenderer.h"
 #include "StudioModelRenderer.h"
+
 #include <FranUtils.hpp>
+#include "mathlib.h"
 
 int g_iViewmodelSkin;
+
+viewinfo_s g_viewinfo;
 
 // Global engine <-> studio model rendering code interface
 engine_studio_api_t IEngineStudio;
@@ -2952,6 +2956,46 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 	if ( flags & STUDIO_RENDER && !(m_pCurrentEntity->curstate.effects & FL_NOMODEL) && m_pCvarDrawModels->value >= 1 )
 	{
 		StudioRenderModel();
+	}
+
+	if (m_pStudioHeader)
+		g_viewinfo.phdr = m_pStudioHeader;
+
+	// get bone angles and calculate base angles using fake entity
+	if (m_pCurrentEntity == gEngfuncs.GetViewModel())
+	{
+		gHUD.m_prevstate.sequence = m_pCurrentEntity->curstate.sequence;
+		cl_entity_s temp = *gEngfuncs.GetViewModel();
+		temp.angles = temp.curstate.angles = temp.origin = temp.curstate.origin = Vector(0, 0, 0);
+		m_pCurrentEntity = &temp;
+		m_pRenderModel = m_pCurrentEntity->model;
+		m_pStudioHeader = (studiohdr_t*)IEngineStudio.Mod_Extradata(m_pRenderModel);
+		IEngineStudio.StudioSetHeader(m_pStudioHeader);
+		IEngineStudio.SetRenderModel(m_pRenderModel);
+
+		StudioSetUpTransform(false);
+		StudioSetupBones();
+		for (int i = 0; i < m_pStudioHeader->numbones; i++)
+		{
+			MatrixAngles((*m_pbonetransform)[i], g_viewinfo.boneangles[i], g_viewinfo.bonepos[i]);
+			NormalizeAngles((float*)&g_viewinfo.boneangles[i]);
+		}
+		temp = *gEngfuncs.GetViewModel();
+		temp.angles = temp.curstate.angles = temp.origin = temp.curstate.origin = Vector(0, 0, 0);
+		temp.curstate.sequence = 0;
+		temp.curstate.frame = 0;
+		temp.curstate.animtime = 0;
+		temp.latched.prevframe = 0;
+		m_pCurrentEntity = &temp;
+
+		StudioSetUpTransform(false);
+		StudioSetupBones();
+		for (int i = 0; i < m_pStudioHeader->numbones; i++)
+		{
+			MatrixAngles((*m_pbonetransform)[i], g_viewinfo.prevboneangles[i], g_viewinfo.prevbonepos[i]);
+			NormalizeAngles((float*)&g_viewinfo.prevboneangles[i]);
+		}
+
 	}
 
 	return 1;

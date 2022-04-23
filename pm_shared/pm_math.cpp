@@ -433,3 +433,91 @@ void ConcatTransforms( float in1[ 3 ][ 4 ], float in2[ 3 ][ 4 ], float out[ 3 ][
 	out[ 2 ][ 3 ] = in1[ 2 ][ 0 ] * in2[ 0 ][ 3 ] + in1[ 2 ][ 1 ] * in2[ 1 ][ 3 ] +
 		in1[ 2 ][ 2 ] * in2[ 2 ][ 3 ] + in1[ 2 ][ 3 ];
 }
+
+float lerp(float start, float end, float frac)
+{
+	// Exact, monotonic, bounded, determinate, and (for a=b=0) consistent:
+	if (start <= 0 && end >= 0 || start >= 0 && end <= 0)
+		return frac * end + (1 - frac) * start;
+
+	if (frac == 1)
+		return end; // exact
+	// Exact at t=0, monotonic except near t=1,
+	// bounded, determinate, and consistent:
+	const float x = start + frac * (end - start);
+	return frac > 1 == end > start ? V_max(end, x) : V_min(end, x); // monotonic near t=1
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Generates Euler angles given a left-handed orientation matrix. The
+//			columns of the matrix contain the forward, left, and up vectors.
+// Input  : matrix - Left-handed orientation matrix.
+//			angles[PITCH, YAW, ROLL]. Receives right-handed counterclockwise
+//				rotations in degrees around Y, Z, and X respectively.
+//-----------------------------------------------------------------------------
+
+void MatrixAngles(const float matrix[3][4], Vector& angles, Vector& position)
+{
+	MatrixGetColumn(matrix, 3, position);
+	MatrixAngles(matrix, angles);
+}
+
+
+void MatrixAngles(const float matrix[3][4], float* angles)
+{
+	float forward[3];
+	float left[3];
+	float up[3];
+
+	//
+	// Extract the basis vectors from the matrix. Since we only need the Z
+	// component of the up vector, we don't get X and Y.
+	//
+	forward[0] = matrix[0][0];
+	forward[1] = matrix[1][0];
+	forward[2] = matrix[2][0];
+	left[0] = matrix[0][1];
+	left[1] = matrix[1][1];
+	left[2] = matrix[2][1];
+	up[2] = matrix[2][2];
+
+	float xyDist = sqrtf(forward[0] * forward[0] + forward[1] * forward[1]);
+
+	// enough here to get angles?
+	if (xyDist > 0.001f)
+	{
+		// (yaw)	y = ATAN( forward.y, forward.x );		-- in our space, forward is the X axis
+		angles[1] = RAD2DEG(atan2f(forward[1], forward[0]));
+
+		// (pitch)	x = ATAN( -forward.z, sqrt(forward.x*forward.x+forward.y*forward.y) );
+		angles[0] = RAD2DEG(atan2f(-forward[2], xyDist));
+
+		// (roll)	z = ATAN( left.z, up.z );
+		angles[2] = RAD2DEG(atan2f(left[2], up[2]));
+	}
+	else // forward is mostly Z, gimbal lock-
+	{
+		// (yaw)	y = ATAN( -left.x, left.y );			-- forward is mostly z, so use right for yaw
+		angles[1] = RAD2DEG(atan2f(-left[0], left[1]));
+
+		// (pitch)	x = ATAN( -forward.z, sqrt(forward.x*forward.x+forward.y*forward.y) );
+		angles[0] = RAD2DEG(atan2f(-forward[2], xyDist));
+
+		// Assume no roll in this case as one degree of freedom has been lost (i.e. yaw == roll)
+		angles[2] = 0;
+	}
+}
+
+void MatrixGetColumn(const float in[3][4], int column, Vector& out)
+{
+	out.x = in[0][column];
+	out.y = in[1][column];
+	out.z = in[2][column];
+}
+
+void MatrixSetColumn(const Vector& in, int column, float out[3][4])
+{
+	out[0][column] = in.x;
+	out[1][column] = in.y;
+	out[2][column] = in.z;
+}
