@@ -3986,6 +3986,13 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity* pActivator)
 	// This object will get removed in the call to CHANGE_LEVEL, copy the params into "safe" memory
 	strcpy(st_szNextMap, m_szMapName);
 
+	// some hacky fixes
+	if (pPlayer && pPlayer->IsPlayer())
+	{
+		CBasePlayer* pActualPlayer = static_cast<CBasePlayer*>(pPlayer);
+		pActualPlayer->nextSplashTime = 0;
+	}
+
 	m_hActivator = pActivator;
 	SUB_UseTargets(pActivator, USE_TOGGLE, 0);
 	st_szNextSpot[0] = 0; // Init landmark to NULL

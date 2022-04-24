@@ -196,6 +196,9 @@ public:
 	//Not saved, used to update client.
 	std::uint64_t m_ClientWeaponBits;
 
+	// water
+	float nextSplashTime;
+
 	// shared ammo slots
 	int m_rgAmmo[MAX_AMMO_SLOTS];
 	int m_rgAmmoLast[MAX_AMMO_SLOTS];
