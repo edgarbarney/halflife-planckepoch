@@ -1569,10 +1569,10 @@ void CHudSpectator::DrawOverviewEntities()
 	// draw all players
 	for (i=0 ; i < MAX_OVERVIEW_ENTITIES ; i++)
 	{
-		if ( !m_OverviewEntities[i].HL_HSPRITE )
+		if ( !m_OverviewEntities[i].HSPRITE )
 			continue;
 
-		hSpriteModel = (struct model_s *)gEngfuncs.GetSpritePointer( m_OverviewEntities[i].HL_HSPRITE );
+		hSpriteModel = (struct model_s *)gEngfuncs.GetSpritePointer( m_OverviewEntities[i].HSPRITE );
 		ent = m_OverviewEntities[i].entity;
 		
 		gEngfuncs.pTriAPI->SpriteTexture( hSpriteModel, 0 );
@@ -1778,7 +1778,7 @@ void CHudSpectator::CheckOverviewEntities()
 
 bool CHudSpectator::AddOverviewEntity( int type, struct cl_entity_s *ent, const char *modelname)
 {
-	HL_HSPRITE	HL_HSPRITE = 0;
+	HSPRITE	HSPRITE = 0;
 	double  duration = -1.0f;	// duration -1 means show it only this frame;
 
 	if ( !ent )
@@ -1791,9 +1791,9 @@ bool CHudSpectator::AddOverviewEntity( int type, struct cl_entity_s *ent, const 
 			switch ( g_PlayerExtraInfo[ent->index].teamnumber )
 			{
 				// blue and red teams are swapped in CS and TFC
-				case 1 : HL_HSPRITE = m_hsprPlayerBlue; break;
-				case 2 : HL_HSPRITE = m_hsprPlayerRed; break;
-				default : HL_HSPRITE = m_hsprPlayer; break;
+				case 1 : HSPRITE = m_hsprPlayerBlue; break;
+				case 2 : HSPRITE = m_hsprPlayerRed; break;
+				default : HSPRITE = m_hsprPlayer; break;
 			}
 		}
 		else
@@ -1806,7 +1806,7 @@ bool CHudSpectator::AddOverviewEntity( int type, struct cl_entity_s *ent, const 
 	else
 		return false;	
 
-	return AddOverviewEntityToList(HL_HSPRITE, ent, gEngfuncs.GetClientTime() + duration );
+	return AddOverviewEntityToList(HSPRITE, ent, gEngfuncs.GetClientTime() + duration );
 }
 
 void CHudSpectator::DeathMessage(int victim)
@@ -1818,7 +1818,7 @@ void CHudSpectator::DeathMessage(int victim)
 		AddOverviewEntityToList(m_hsprPlayerDead, pl, gEngfuncs.GetClientTime() + 2.0f );
 }
 
-bool CHudSpectator::AddOverviewEntityToList(HL_HSPRITE sprite, cl_entity_t *ent, double killTime)
+bool CHudSpectator::AddOverviewEntityToList(HSPRITE sprite, cl_entity_t *ent, double killTime)
 {
 	for ( int i = 0; i< MAX_OVERVIEW_ENTITIES; i++ )
 	{
@@ -1826,7 +1826,7 @@ bool CHudSpectator::AddOverviewEntityToList(HL_HSPRITE sprite, cl_entity_t *ent,
 		if ( m_OverviewEntities[i].entity == nullptr)
 		{
 			m_OverviewEntities[i].entity = ent;
-			m_OverviewEntities[i].HL_HSPRITE = sprite;
+			m_OverviewEntities[i].HSPRITE = sprite;
 			m_OverviewEntities[i].killTime = killTime;
 			return true;
 		}

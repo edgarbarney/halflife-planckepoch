@@ -40,7 +40,7 @@ extern CGameStudioModelRenderer g_StudioRenderer;
 extern int g_iWaterLevel;
 extern Vector v_origin;
 
-int UseTexture(HL_HSPRITE &hsprSpr, char * str)
+int UseTexture(HSPRITE &hsprSpr, char * str)
 {
 	if (hsprSpr == 0)
 	{

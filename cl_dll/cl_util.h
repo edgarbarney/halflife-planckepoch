@@ -81,8 +81,8 @@ inline struct cvar_s *CVAR_CREATE( const char *cv, const char *val, const int fl
 
 
 // Gets the height & width of a sprite,  at the specified frame
-inline int SPR_Height( HL_HSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Height(x, f); }
-inline int SPR_Width( HL_HSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Width(x, f); }
+inline int SPR_Height( HSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Height(x, f); }
+inline int SPR_Width( HSPRITE x, int f )	{ return gEngfuncs.pfnSPR_Width(x, f); }
 
 inline 	client_textmessage_t	*TextMessageGet( const char *pName ) { return gEngfuncs.pfnTextMessageGet( pName ); }
 inline 	int						TextMessageDrawChar( int x, int y, int number, int r, int g, int b ) 
@@ -175,4 +175,4 @@ inline void UnpackRGB(int &r, int &g, int &b, unsigned long ulRGB)\
 	b = ulRGB & 0xFF;\
 }
 
-HL_HSPRITE LoadSprite(const char *pszName);
+HSPRITE LoadSprite(const char *pszName);

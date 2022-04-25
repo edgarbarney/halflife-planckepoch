@@ -155,7 +155,7 @@ int CHud :: Redraw( float flTime, int intermission )
 	
 		int r, g, b, x, y, a;
 		//wrect_t rc;
-		HL_HSPRITE m_hCam1;
+		HSPRITE m_hCam1;
 		int HUD_camera_active;
 		int HUD_camera_rect;
 
