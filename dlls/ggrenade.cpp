@@ -110,7 +110,7 @@ void CGrenade::Explode(TraceResult* pTrace, int bitsDamageType)
 	}
 	else
 	{
-		WRITE_SHORT(g_sModelIndexWExplosion);
+		WRITE_SHORT(0);
 	}
 	WRITE_BYTE((pev->dmg - 50) * .60); // scale * 10
 	WRITE_BYTE(15);					   // framerate
