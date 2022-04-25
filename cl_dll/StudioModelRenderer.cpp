@@ -2997,6 +2997,7 @@ int CStudioModelRenderer::StudioDrawModel(int flags)
 			MatrixAngles((*m_pbonetransform)[i], g_viewinfo.prevboneangles[i], g_viewinfo.prevbonepos[i]);
 			NormalizeAngles((float*)&g_viewinfo.prevboneangles[i]);
 		}
+
 	}
 
 	return 1;

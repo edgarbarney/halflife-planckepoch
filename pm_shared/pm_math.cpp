@@ -448,6 +448,13 @@ float lerp(float start, float end, float frac)
 //				rotations in degrees around Y, Z, and X respectively.
 //-----------------------------------------------------------------------------
 
+void MatrixAngles(const float matrix[3][4], Vector& angles, Vector& position)
+{
+	MatrixGetColumn(matrix, 3, position);
+	MatrixAngles(matrix, angles);
+}
+
+
 void MatrixAngles(const float matrix[3][4], float* angles)
 {
 	float forward[3];
@@ -472,21 +479,21 @@ void MatrixAngles(const float matrix[3][4], float* angles)
 	if (xyDist > 0.001f)
 	{
 		// (yaw)	y = ATAN( forward.y, forward.x );		-- in our space, forward is the X axis
-		angles[1] = radtodeg(atan2f(forward[1], forward[0]));
+		angles[1] = RAD2DEG(atan2f(forward[1], forward[0]));
 
 		// (pitch)	x = ATAN( -forward.z, sqrt(forward.x*forward.x+forward.y*forward.y) );
-		angles[0] = radtodeg(atan2f(-forward[2], xyDist));
+		angles[0] = RAD2DEG(atan2f(-forward[2], xyDist));
 
 		// (roll)	z = ATAN( left.z, up.z );
-		angles[2] = radtodeg(atan2f(left[2], up[2]));
+		angles[2] = RAD2DEG(atan2f(left[2], up[2]));
 	}
 	else // forward is mostly Z, gimbal lock-
 	{
 		// (yaw)	y = ATAN( -left.x, left.y );			-- forward is mostly z, so use right for yaw
-		angles[1] = radtodeg(atan2f(-left[0], left[1]));
+		angles[1] = RAD2DEG(atan2f(-left[0], left[1]));
 
 		// (pitch)	x = ATAN( -forward.z, sqrt(forward.x*forward.x+forward.y*forward.y) );
-		angles[0] = radtodeg(atan2f(-forward[2], xyDist));
+		angles[0] = RAD2DEG(atan2f(-forward[2], xyDist));
 
 		// Assume no roll in this case as one degree of freedom has been lost (i.e. yaw == roll)
 		angles[2] = 0;
@@ -505,10 +512,4 @@ void MatrixSetColumn(const Vector& in, int column, float out[3][4])
 	out[0][column] = in.x;
 	out[1][column] = in.y;
 	out[2][column] = in.z;
-}
-
-void MatrixAngles(const float matrix[3][4], Vector& angles, Vector& position)
-{
-	MatrixGetColumn(matrix, 3, position);
-	MatrixAngles(matrix, angles);
 }

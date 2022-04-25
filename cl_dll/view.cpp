@@ -470,26 +470,39 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 		return;
 
 	mstudiobone_t* pbone = nullptr;
-	int index = GetAnimBoneFromFile(view->model->name + 7);
+	int index = -1;
 
-	// find special bone names
-	if (index == -1)
+	for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
 	{
-		for (int i = 0; i < g_viewinfo.phdr->numbones; i++)
+		pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
+
+		if (pbone == nullptr || pbone[i].name == nullptr)
+			break;
+		if (!stricmp(pbone[i].name, "camera"))
 		{
-			pbone = (mstudiobone_t*)((byte*)g_viewinfo.phdr + g_viewinfo.phdr->boneindex);
-
-			if (pbone == nullptr || pbone[i].name == nullptr)
-				break;
-
-			// usual names used in viewmodels
-			if (!stricmp(pbone[i].name, "camera"))
+			index = i;
+			break;
+		}
+		// try using common gun bone names to get bone index
+		else
+		{
+			// add checks for more names if needed
+			if (!stricmp(pbone[i].name, "gun"))
 			{
 				index = i;
 				break;
 			}
-			else if (!stricmp(pbone[i].name, "gun") || !stricmp(pbone[i].name, "weapon")
-				|| !stricmp(pbone[i].name, "glock") || !stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
+			else if (!stricmp(pbone[i].name, "weapon"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "glock"))
+			{
+				index = i;
+				break;
+			}
+			else if (!stricmp(pbone[i].name, "Bip01 R Wrist") || !stricmp(pbone[i].name, "Bip01 R Hand"))
 			{
 				index = i;
 				break;
@@ -497,8 +510,7 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 		}
 	}
 
-	// follow value in cl_animbone
-	if ((int)cl_animbone > 0 && (index) == -1)
+	if ((int)cl_animbone > 0)
 		index = (int)cl_animbone - 1;
 
 	if (index != -1 && index < g_viewinfo.phdr->numbones)
@@ -517,17 +529,17 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 
 		for (int i = 0; i < 3; i++)
 		{
-			l_camangles[i] = FranUtils::Lerp(l_camangles[i], result[i] * 1.2, pparams->frametime * 17.0f);
-			l_campos[i] = FranUtils::Lerp(l_campos[i], result2[i] * 1.2, pparams->frametime * 17.0f);
+			l_camangles[i] = lerp(l_camangles[i], result[i] * 1.2, pparams->frametime * 17.0f);
+			l_campos[i] = lerp(l_campos[i], result2[i] * 1.2, pparams->frametime * 17.0f);
 
 			pparams->viewangles[i] += l_camangles[i] / 25;
-
-			// uncomment this line under if you want the cam bone to alter camera origin
-			//pparams->vieworg[i] += l_campos[i] / 10; 
+			pparams->vieworg[i] += l_campos[i] / 10;
 		}
 		
 	}
 }
+
+
 
 /*
 ==================
