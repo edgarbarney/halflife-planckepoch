@@ -521,7 +521,9 @@ void V_CamAnims(struct ref_params_s* pparams, cl_entity_s* view)
 			l_campos[i] = lerp(l_campos[i], result2[i] * 1.2, pparams->frametime * 17.0f);
 
 			pparams->viewangles[i] += l_camangles[i] / 25;
-			pparams->vieworg[i] += l_campos[i] / 10;
+
+			// uncomment this line under if you want the cam bone to alter camera origin
+			//pparams->vieworg[i] += l_campos[i] / 10; 
 		}
 		
 	}
