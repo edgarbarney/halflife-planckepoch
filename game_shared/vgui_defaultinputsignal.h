@@ -5,15 +5,9 @@
 // $NoKeywords: $
 //=============================================================================
 
-#ifndef VGUI_DEFAULTINPUTSIGNAL_H
-#define VGUI_DEFAULTINPUTSIGNAL_H
-#ifdef _WIN32
 #pragma once
-#endif
-
 
 #include "VGUI_InputSignal.h"
-
 
 namespace vgui
 {
@@ -34,6 +28,3 @@ namespace vgui
 		void keyFocusTicked(Panel* panel) override						{}
 	};
 }
-
-
-#endif // VGUI_DEFAULTINPUTSIGNAL_H

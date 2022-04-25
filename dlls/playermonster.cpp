@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose: New version of the slider bar
 //
@@ -37,7 +37,7 @@ LINK_ENTITY_TO_CLASS( monster_player, CPlayerMonster );
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-int	CPlayerMonster :: Classify ( void )
+int	CPlayerMonster::Classify ( void )
 {
 	return	CLASS_PLAYER_ALLY;
 }
@@ -46,7 +46,7 @@ int	CPlayerMonster :: Classify ( void )
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CPlayerMonster :: SetYawSpeed ( void )
+void CPlayerMonster::SetYawSpeed ( void )
 {
 	int ys;
 
@@ -64,7 +64,7 @@ void CPlayerMonster :: SetYawSpeed ( void )
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CPlayerMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
+void CPlayerMonster::HandleAnimEvent( MonsterEvent_t *pEvent )
 {
 	switch( pEvent->event )
 	{
@@ -78,7 +78,7 @@ void CPlayerMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 //=========================================================
 // ISoundMask - player monster can't hear.
 //=========================================================
-int CPlayerMonster :: ISoundMask ( void )
+int CPlayerMonster::ISoundMask ( void )
 {
 	return	NULL;
 }
@@ -86,7 +86,7 @@ int CPlayerMonster :: ISoundMask ( void )
 //=========================================================
 // Spawn
 //=========================================================
-void CPlayerMonster :: Spawn()
+void CPlayerMonster::Spawn()
 {
 	Precache( );
 
@@ -112,7 +112,7 @@ void CPlayerMonster :: Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CPlayerMonster :: Precache()
+void CPlayerMonster::Precache()
 {
 	PRECACHE_MODEL("models/player.mdl");
 }	

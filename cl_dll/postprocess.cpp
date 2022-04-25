@@ -102,9 +102,9 @@ int CPostProcess::UseRectangleTextures()
 	if (gBSPRenderer.m_bTexRectangeSupport &&
 		gBSPRenderer.m_iTexRectangleSize >= ScreenWidth &&
 		gBSPRenderer.m_iTexRectangleSize >= ScreenHeight)
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
 void CPostProcess::Init()

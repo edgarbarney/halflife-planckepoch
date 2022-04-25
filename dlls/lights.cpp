@@ -28,94 +28,114 @@
 #include "player.h"
 
 //LRC
-int GetStdLightStyle (int iStyle)
+int GetStdLightStyle(int iStyle)
 {
 	switch (iStyle)
 	{
 	// 0 normal
-	case 0: return MAKE_STRING("m");
+	case 0:
+		return MAKE_STRING("m");
 
 	// 1 FLICKER (first variety)
-	case 1: return MAKE_STRING("mmnmmommommnonmmonqnmmo");
+	case 1:
+		return MAKE_STRING("mmnmmommommnonmmonqnmmo");
 
 	// 2 SLOW STRONG PULSE
-	case 2: return MAKE_STRING("abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+	case 2:
+		return MAKE_STRING("abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
 
 	// 3 CANDLE (first variety)
-	case 3: return MAKE_STRING("mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+	case 3:
+		return MAKE_STRING("mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
 
 	// 4 FAST STROBE
-	case 4: return MAKE_STRING("mamamamamama");
-	
+	case 4:
+		return MAKE_STRING("mamamamamama");
+
 	// 5 GENTLE PULSE 1
-	case 5: return MAKE_STRING("jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	
+	case 5:
+		return MAKE_STRING("jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+
 	// 6 FLICKER (second variety)
-	case 6: return MAKE_STRING("nmonqnmomnmomomno");
-	
+	case 6:
+		return MAKE_STRING("nmonqnmomnmomomno");
+
 	// 7 CANDLE (second variety)
-	case 7: return MAKE_STRING("mmmaaaabcdefgmmmmaaaammmaamm");
-	
+	case 7:
+		return MAKE_STRING("mmmaaaabcdefgmmmmaaaammmaamm");
+
 	// 8 CANDLE (third variety)
-	case 8: return MAKE_STRING("mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	
+	case 8:
+		return MAKE_STRING("mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+
 	// 9 SLOW STROBE (fourth variety)
-	case 9: return MAKE_STRING("aaaaaaaazzzzzzzz");
-	
+	case 9:
+		return MAKE_STRING("aaaaaaaazzzzzzzz");
+
 	// 10 FLUORESCENT FLICKER
-	case 10: return MAKE_STRING("mmamammmmammamamaaamammma");
+	case 10:
+		return MAKE_STRING("mmamammmmammamamaaamammma");
 
 	// 11 SLOW PULSE NOT FADE TO BLACK
-	case 11: return MAKE_STRING("abcdefghijklmnopqrrqponmlkjihgfedcba");
-	
+	case 11:
+		return MAKE_STRING("abcdefghijklmnopqrrqponmlkjihgfedcba");
+
 	// 12 UNDERWATER LIGHT MUTATION
 	// this light only distorts the lightmap - no contribution
 	// is made to the brightness of affected surfaces
-	case 12: return MAKE_STRING("mmnnmmnnnmmnn");
+	case 12:
+		return MAKE_STRING("mmnnmmnnnmmnn");
 
 	// 13 OFF (LRC)
-	case 13: return MAKE_STRING("a");
+	case 13:
+		return MAKE_STRING("a");
 
 	// 14 SLOW FADE IN (LRC)
-	case 14: return MAKE_STRING("aabbccddeeffgghhiijjkkllmmmmmmmmmmmmmm");
+	case 14:
+		return MAKE_STRING("aabbccddeeffgghhiijjkkllmmmmmmmmmmmmmm");
 
 	// 15 MED FADE IN (LRC)
-	case 15: return MAKE_STRING("abcdefghijklmmmmmmmmmmmmmmmmmmmmmmmmmm");
+	case 15:
+		return MAKE_STRING("abcdefghijklmmmmmmmmmmmmmmmmmmmmmmmmmm");
 
 	// 16 FAST FADE IN (LRC)
-	case 16: return MAKE_STRING("acegikmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+	case 16:
+		return MAKE_STRING("acegikmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
 
 	// 17 SLOW FADE OUT (LRC)
-	case 17: return MAKE_STRING("llkkjjiihhggffeeddccbbaaaaaaaaaaaaaaaa");
+	case 17:
+		return MAKE_STRING("llkkjjiihhggffeeddccbbaaaaaaaaaaaaaaaa");
 
 	// 18 MED FADE OUT (LRC)
-	case 18: return MAKE_STRING("lkjihgfedcbaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	case 18:
+		return MAKE_STRING("lkjihgfedcbaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
 	// 19 FAST FADE OUT (LRC)
-	case 19: return MAKE_STRING("kigecaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	case 19:
+		return MAKE_STRING("kigecaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-	default: return MAKE_STRING("m");
+	default:
+		return MAKE_STRING("m");
 	}
 }
 
 class CLight : public CPointEntity
 {
 public:
-	// TODO - Modernize
-	void	KeyValue(KeyValueData* pkvd) override;
+	bool KeyValue(KeyValueData* pkvd) override;
 	void	SendInitMessage(CBasePlayer* player) override;
 	void EXPORT	LightStyleThink();
 	void	Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
 
-	int		Save(CSave& save) override;
-	int		Restore(CRestore& restore) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
 private:
 	int		m_iStyle;
 	int		m_iszPattern;
-	BOOL	m_bAlreadySent;
+	bool m_bAlreadySent;
 };
 LINK_ENTITY_TO_CLASS(light, CLight);
 
@@ -155,28 +175,28 @@ void CLight::SendInitMessage(CBasePlayer* player)
 		MESSAGE_END();
 	}
 
-	m_bAlreadySent = TRUE;
+	m_bAlreadySent = true;
 }
-void CLight::KeyValue(KeyValueData* pkvd)
+bool CLight::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "style"))
 	{
 		m_iStyle = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pitch"))
 	{
 		pev->angles.x = atof(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pattern"))
 	{
 		m_iszPattern = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
 	{
-		CPointEntity::KeyValue(pkvd);
+		return CPointEntity::KeyValue(pkvd);
 	}
 }
 void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
@@ -214,25 +234,25 @@ void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType
 //
 // shut up spawn functions for new spotlights
 //
-LINK_ENTITY_TO_CLASS( light_spot, CLight );
+LINK_ENTITY_TO_CLASS(light_spot, CLight);
 
 
 class CEnvLight : public CLight
 {
 public:
-	void	KeyValue( KeyValueData* pkvd ) override; 
-	void	Spawn() override;
+	bool KeyValue(KeyValueData* pkvd) override;
+	void Spawn() override;
 };
 
-LINK_ENTITY_TO_CLASS( light_environment, CEnvLight );
+LINK_ENTITY_TO_CLASS(light_environment, CEnvLight);
 
-void CEnvLight::KeyValue( KeyValueData* pkvd )
+bool CEnvLight::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "_light"))
 	{
-		int r, g, b, v, j;
+		int r = 0, g = 0, b = 0, v = 0;
 		char szColor[64];
-		j = sscanf( pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v );
+		const int j = sscanf(pkvd->szValue, "%d %d %d %d\n", &r, &g, &b, &v);
 		if (j == 1)
 		{
 			g = b = r;
@@ -245,36 +265,35 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 		}
 
 		// simulate qrad direct, ambient,and gamma adjustments, as well as engine scaling
-		r = pow( r / 114.0, 0.6 ) * 264;
-		g = pow( g / 114.0, 0.6 ) * 264;
-		b = pow( b / 114.0, 0.6 ) * 264;
+		r = pow(r / 114.0, 0.6) * 264;
+		g = pow(g / 114.0, 0.6) * 264;
+		b = pow(b / 114.0, 0.6) * 264;
 
-		pkvd->fHandled = TRUE;
-		sprintf( szColor, "%d", r );
-		CVAR_SET_STRING( "sv_skycolor_r", szColor );
-		sprintf( szColor, "%d", g );
-		CVAR_SET_STRING( "sv_skycolor_g", szColor );
-		sprintf( szColor, "%d", b );
-		CVAR_SET_STRING( "sv_skycolor_b", szColor );
+		sprintf(szColor, "%d", r);
+		CVAR_SET_STRING("sv_skycolor_r", szColor);
+		sprintf(szColor, "%d", g);
+		CVAR_SET_STRING("sv_skycolor_g", szColor);
+		sprintf(szColor, "%d", b);
+		CVAR_SET_STRING("sv_skycolor_b", szColor);
+
+		return true;
 	}
-	else
-	{
-		CLight::KeyValue( pkvd );
-	}
+
+	return CLight::KeyValue(pkvd);
 }
 
 
-void CEnvLight :: Spawn()
+void CEnvLight::Spawn()
 {
 	char szVector[64];
-	UTIL_MakeAimVectors( pev->angles );
+	UTIL_MakeAimVectors(pev->angles);
 
-	sprintf( szVector, "%f", gpGlobals->v_forward.x );
-	CVAR_SET_STRING( "sv_skyvec_x", szVector );
-	sprintf( szVector, "%f", gpGlobals->v_forward.y );
-	CVAR_SET_STRING( "sv_skyvec_y", szVector );
-	sprintf( szVector, "%f", gpGlobals->v_forward.z );
-	CVAR_SET_STRING( "sv_skyvec_z", szVector );
+	sprintf(szVector, "%f", gpGlobals->v_forward.x);
+	CVAR_SET_STRING("sv_skyvec_x", szVector);
+	sprintf(szVector, "%f", gpGlobals->v_forward.y);
+	CVAR_SET_STRING("sv_skyvec_y", szVector);
+	sprintf(szVector, "%f", gpGlobals->v_forward.z);
+	CVAR_SET_STRING("sv_skyvec_z", szVector);
 
-	CLight::Spawn( );
+	CLight::Spawn();
 }

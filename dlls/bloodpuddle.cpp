@@ -27,25 +27,25 @@ TYPEDESCRIPTION CBloodPuddle::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CBloodPuddle, CBaseAnimating);
 LINK_ENTITY_TO_CLASS(env_bloodpuddle, CBloodPuddle);
 
-void CBloodPuddle::KeyValue(KeyValueData* pkvd)
+bool CBloodPuddle::KeyValue(KeyValueData* pkvd)
 {
 	/*
 	if (FStrEq(pkvd->szKeyName, "m_iszSequence_On"))
 	{
 		m_iszSequence_On = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszSequence_Off"))
 	{
 		m_iszSequence_Off = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		pkvd->fHandled = true;
 	}
 	else
 	{
 		CBaseAnimating::KeyValue(pkvd);
 	}
 	*/
-	CBaseAnimating::KeyValue(pkvd);
+	return CBaseAnimating::KeyValue(pkvd);
 }
 
 CBloodPuddle* CBloodPuddle::CreatePuddle(Vector vecOrigin, Vector vecAngles, CBaseEntity* pOwner, int bloodColor, float bloodScale)
@@ -140,7 +140,7 @@ void CBloodPuddle::Think()
 	SetNextThink(0.1);
 }
 
-void CBloodPuddle::SetSequence(const char* sequenceName, BOOL isLoopin)
+void CBloodPuddle::SetSequence(const char* sequenceName, bool isLoopin)
 {
 	if (pev->sequence != LookupSequence(sequenceName))
 	{

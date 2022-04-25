@@ -16,7 +16,7 @@ Additional code taken from Id Software
 #include <cstdlib>
 #include <cmath>
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
 #include <gl/glu.h>

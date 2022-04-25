@@ -14,7 +14,7 @@ struct particle
 
 	particle* m_pOverlay; // for making multi-layered particles
 
-	ParticleType *pType;
+	ParticleType* pType;
 
 	Vector origin;
 	Vector velocity;
@@ -53,23 +53,42 @@ struct particle
 class RandomRange
 {
 public:
-	RandomRange() { m_fMin = m_fMax = 0; m_bDefined = false; }
-	RandomRange(float fValue) { m_fMin = m_fMax = fValue; m_bDefined = true; }
-	RandomRange(float fMin, float fMax) { m_fMin = fMin; m_fMax = fMax; m_bDefined = true; }
-	RandomRange( char *szToken );
+	RandomRange()
+	{
+		m_fMin = m_fMax = 0;
+		m_bDefined = false;
+	}
+	RandomRange(float fValue)
+	{
+		m_fMin = m_fMax = fValue;
+		m_bDefined = true;
+	}
+	RandomRange(float fMin, float fMax)
+	{
+		m_fMin = fMin;
+		m_fMax = fMax;
+		m_bDefined = true;
+	}
+	RandomRange(char* szToken);
 
 	float m_fMax;
 	float m_fMin;
 	bool m_bDefined;
 
 	float GetInstance()
-	{	return gEngfuncs.pfnRandomFloat(m_fMin, m_fMax);	}
+	{
+		return gEngfuncs.pfnRandomFloat(m_fMin, m_fMax);
+	}
 
 	float GetOffset(float fBasis)
-	{	return GetInstance()-fBasis;	}
+	{
+		return GetInstance() - fBasis;
+	}
 
 	bool IsDefined()
-	{ return m_bDefined; } //(m_fMin == 0 && m_fMax == 0); }
+	{
+		return m_bDefined;
+	} //(m_fMin == 0 && m_fMax == 0); }
 };
 
 #define MAX_TYPENAME 30
@@ -77,14 +96,14 @@ public:
 class ParticleType
 {
 public:
-	ParticleType( ParticleType *pNext = nullptr );
-	ParticleType(char *szFilename);
+	ParticleType(ParticleType* pNext = nullptr);
+	ParticleType(char* szFilename);
 
 	bool m_bIsDefined; // is this ParticleType just a placeholder?
 
 	int m_iRenderMode;
 	int m_iDrawCond;
-//	int m_iCollision;
+	//	int m_iCollision;
 	RandomRange m_Bounce;
 	RandomRange m_BounceFriction;
 	bool m_bBouncing;
@@ -117,80 +136,80 @@ public:
 	RandomRange m_SprayPitch;
 	RandomRange m_SprayYaw;
 	RandomRange m_SprayRoll;
-	ParticleType *m_pSprayType;
+	ParticleType* m_pSprayType;
 
 	RandomRange m_Gravity;
 	RandomRange m_WindStrength;
 	RandomRange m_WindYaw;
 
 	HSPRITE m_hSprite;
-	ParticleType *m_pOverlayType;
+	ParticleType* m_pOverlayType;
 
 	RandomRange m_Drag;
 
-	ParticleType *m_pNext;
+	ParticleType* m_pNext;
 
 	char m_szName[MAX_TYPENAME];
 
 	// here is a particle system. Add a (set of) particles according to this type, and initialise their values.
-	particle* CreateParticle(ParticleSystem *pSys);//particle *pPart);
+	particle* CreateParticle(ParticleSystem* pSys); //particle *pPart);
 
 	// initialise this particle. Does not define velocity or age.
-	void InitParticle(particle *pPart, ParticleSystem *pSys);
+	void InitParticle(particle* pPart, ParticleSystem* pSys);
 };
 
 class ParticleSystem
 {
 public:
-	ParticleSystem( int entindex, char *szFilename );//int iParticles );
-//	ParticleSystem( int iParticles );
+	ParticleSystem(int entindex, char* szFilename); //int iParticles );
+													//	ParticleSystem( int iParticles );
 	~ParticleSystem( );
 	void AllocateParticles( int iParticles );
 	void CalculateDistance();
 
-//	ParticleType *GetMainType() { return GetType(m_szMainType); }
-	ParticleType *GetType( const char *szName );
-	ParticleType *AddPlaceholderType( const char *szName );
-	ParticleType *ParseType( char *&szFile );
+	//	ParticleType *GetMainType() { return GetType(m_szMainType); }
+	ParticleType* GetType(const char* szName);
+	ParticleType* AddPlaceholderType(const char* szName);
+	ParticleType* ParseType(char*& szFile);
 
-	cl_entity_t *GetEntity() { return gEngfuncs.GetEntityByIndex(m_iEntIndex); }
+	cl_entity_t* GetEntity() { return gEngfuncs.GetEntityByIndex(m_iEntIndex); }
 
 	static float c_fCosTable[360 + 90];
 	static bool c_bCosTableInit;
 
 	// General functions
-	bool	UpdateSystem( float frametime, /*vec3_t &right, vec3_t &up,*/ int messagenum ); // If this function returns false, the manager deletes the system
-	void	DrawSystem();//vec3_t &right, vec3_t &up);
-	particle *ActivateParticle(); // adds one of the free particles to the active list, and returns it for initialisation.
-								//MUST CHECK WHETHER THIS RESULT IS NULL!
+	bool UpdateSystem(float frametime, /*vec3_t &right, vec3_t &up,*/ int messagenum); // If this function returns false, the manager deletes the system
+	void DrawSystem();																   //vec3_t &right, vec3_t &up);
+	particle* ActivateParticle();													   // adds one of the free particles to the active list, and returns it for initialisation.
+																					   //MUST CHECK WHETHER THIS RESULT IS NULL!
 
-	static float CosLookup(int angle) { return angle < 0? c_fCosTable[angle+360]: c_fCosTable[angle]; }
-	static float SinLookup(int angle) { return angle < -90? c_fCosTable[angle+450]: c_fCosTable[angle+90]; }
+	static float CosLookup(int angle) { return angle < 0 ? c_fCosTable[angle + 360] : c_fCosTable[angle]; }
+	static float SinLookup(int angle) { return angle < -90 ? c_fCosTable[angle + 450] : c_fCosTable[angle + 90]; }
 
 	// returns false if the particle has died
-	bool UpdateParticle( particle *part, float frametime );
-	void DrawParticle( particle* part, Vector &right, Vector &up );
+	bool UpdateParticle(particle* part, float frametime);
+	void DrawParticle(particle* part, Vector& right, Vector& up);
 
 	// Utility functions that have to be public
-//	bool ParticleIsVisible( particle* part );
+	//	bool ParticleIsVisible( particle* part );
 
-	// Pointer to next system for linked list structure	
+	// Pointer to next system for linked list structure
 	ParticleSystem* m_pNextSystem;
 
-	particle*		m_pActiveParticle;
-	float			m_fViewerDist;
-	int				m_iEntIndex;
+	particle* m_pActiveParticle;
+	float m_fViewerDist;
+	int m_iEntIndex;
 
 private:
 	// the block of allocated particles
-	particle*		m_pAllParticles;
+	particle* m_pAllParticles;
 	// First particles in the linked list for the active particles and the dead particles
-//	particle*		m_pActiveParticle;
-	particle*		m_pFreeParticle;
-	particle*		m_pMainParticle; // the "source" particle.
+	//	particle*		m_pActiveParticle;
+	particle* m_pFreeParticle;
+	particle* m_pMainParticle; // the "source" particle.
 
-	ParticleType *m_pFirstType;
+	ParticleType* m_pFirstType;
 
-	ParticleType *m_pMainType;
+	ParticleType* m_pMainType;
 	//char m_szMainType[MAX_TYPENAME]; // name of the main particle type
 };

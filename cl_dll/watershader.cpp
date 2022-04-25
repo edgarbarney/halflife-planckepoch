@@ -15,7 +15,7 @@ Written by Andrew Lucas
 #include <cstdlib>
 #include <cmath>
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
 #include <gl/glu.h>
@@ -452,7 +452,7 @@ void CWaterShader::VidInit( )
 	if(!m_pNormalTexture)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: Could not load 'gfx/textures/watershader.tga'!\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: Could not load 'gfx/textures/watershader.tga'!\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");
 	}
 

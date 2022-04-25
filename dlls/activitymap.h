@@ -13,7 +13,12 @@
 *
 ****/
 
-#define _A( a ) { a, #a }
+#pragma once
+
+#define _A(a) \
+	{         \
+		a, #a \
+	}
 
 activity_map_t activity_map[] =
 {

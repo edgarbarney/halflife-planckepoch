@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-#include "archtypes.h"     // DAL
+#include "steam/steamtypes.h"     // DAL
 #include "interface.h"
 
 //-----------------------------------------------------------------------------
@@ -94,7 +94,7 @@ public:
 
 	// opens a file
 	// if pathID is NULL, all paths will be searched for the file
-	virtual FileHandle_t	Open( const char *pFileName, const char *pOptions, const char *pathID = 0L ) = 0;
+	virtual FileHandle_t	Open( const char *pFileName, const char *pOptions, const char *pathID = nullptr ) = 0;
 
 	virtual void			Close( FileHandle_t file ) = 0;
 
@@ -115,7 +115,7 @@ public:
 	virtual int				Read( void* pOutput, int size, FileHandle_t file ) = 0;
 	virtual int				Write( void const* pInput, int size, FileHandle_t file ) = 0;
 	virtual char			*ReadLine( char *pOutput, int maxChars, FileHandle_t file ) = 0;
-	virtual int				FPrintf( FileHandle_t file, char *pFormat, ... ) = 0;
+	virtual int				FPrintf( FileHandle_t file, const char *pFormat, ... ) = 0;
 
 	// direct filesystem buffer access
 	// returns a handle to a buffer containing the file data
@@ -125,7 +125,7 @@ public:
 	virtual void            ReleaseReadBuffer( FileHandle_t file, void *readBuffer ) = 0;
 
 	// FindFirst/FindNext
-	virtual const char		*FindFirst( const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID = 0L ) = 0;
+	virtual const char		*FindFirst( const char *pWildCard, FileFindHandle_t *pHandle, const char *pathID = nullptr ) = 0;
 	virtual const char		*FindNext( FileFindHandle_t handle ) = 0;
 	virtual bool			FindIsDirectory( FileFindHandle_t handle ) = 0;
 	virtual void			FindClose( FileFindHandle_t handle ) = 0;
@@ -175,7 +175,7 @@ public:
 	virtual bool			AddPackFile( const char *fullpath, const char *pathID ) = 0;
 	
 	// open a file but force the data to come from the steam cache, NOT from disk
-	virtual FileHandle_t	OpenFromCacheForRead( const char *pFileName, const char *pOptions, const char *pathID = 0L ) = 0;
+	virtual FileHandle_t	OpenFromCacheForRead( const char *pFileName, const char *pOptions, const char *pathID = nullptr ) = 0;
 
 	virtual void			AddSearchPathNoWrite( const char *pPath, const char *pathID ) = 0;
 };

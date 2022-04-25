@@ -15,9 +15,9 @@ public:
 	void		SortSystems( );
 //	void		DeleteSystem( ParticleSystem* );
 
-//private:
+	//private:
 	ParticleSystem* m_pFirstSystem;
 	//ParticleSystem* systemio;
 };
 
-extern ParticleSystemManager* g_pParticleSystems; 
+extern ParticleSystemManager* g_pParticleSystems;

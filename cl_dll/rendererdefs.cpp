@@ -16,7 +16,7 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #include <cstdlib>
 #include <cmath>
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include <gl/gl.h>
 #include "gl/glext.h"
 
@@ -362,9 +362,9 @@ int IsEntityMoved(cl_entity_t *e)
 		e->origin[0] || e->origin[1] || e->origin[2] ||
 		e->curstate.renderfx == 70 ||
 		e->curstate.effects & FL_CONVEYOR) // skybox models reques separate pass
-		return TRUE;
+		return true;
 	else
-		return FALSE;
+		return false;
 }
 
 //==========================
@@ -374,13 +374,13 @@ int IsEntityMoved(cl_entity_t *e)
 int IsEntityTransparent(cl_entity_t *e)
 {
 	if(!e)
-		return FALSE;
+		return false;
 
 	if (e->curstate.rendermode == kRenderNormal ||
 		e->curstate.rendermode == kRenderTransAlpha)
-		return FALSE;
+		return false;
 	else
-		return TRUE;
+		return true;
 }
 
 //==========================

@@ -36,25 +36,20 @@ extern CGameStudioModelRenderer g_StudioRenderer;
 //RENDERERS END
 
 #define MAX_CLIENTS 32
+extern BEAM* pBeam;
+extern BEAM* pBeam2;
+extern TEMPENTITY* pFlare; // Vit_amiN
 
-#if !defined( _TFC )
-extern BEAM *pBeam;
-extern BEAM *pBeam2;
-extern TEMPENTITY* pFlare;	// Vit_amiN
-#endif 
 
-#if defined( _TFC )
-void ClearEventList();
-#endif
 
 extern float g_clampMinYaw, g_clampMaxYaw, g_clampMinPitch, g_clampMaxPitch;
 extern float g_clampTurnSpeed;
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
 
-int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
+bool CHud::MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf)
 {
-	ASSERT( iSize == 0 );
+	ASSERT(iSize == 0);
 
 //RENDERERS START
 	gHUD.m_pFogSettings.end = 0.0; 
@@ -65,32 +60,35 @@ int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
 	gHUD.m_pSkyFogSettings.active = false;
 //RENDERERS END
 	// clear all hud data
-	HUDLIST *pList = m_pHudList;
+	HUDLIST* pList = m_pHudList;
 
-	while ( pList )
+	while (pList)
 	{
-		if ( pList->p )
+		if (pList->p)
 			pList->p->Reset();
 		pList = pList->pNext;
 	}
-		
+
+	//Reset weapon bits.
+	m_iWeaponBits = 0ULL;
+
 	// reset sensitivity
 	m_flMouseSensitivity = 0;
 
 	// reset concussion effect
 	m_iConcussionEffect = 0;
 
-	return 1;
+	return true;
 }
 
 //void CAM_ToFirstPerson(void);
 
-void CHud :: MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf )
+void CHud::MsgFunc_ViewMode(const char* pszName, int iSize, void* pbuf)
 {
 	//CAM_ToFirstPerson();
 }
 
-void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
+void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 {
 	//LRC 1.8 - clear view clamps
 	g_clampMinPitch = -90;
@@ -112,42 +110,33 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 	//RENDERERS END
 
 	// prepare all hud data
-	HUDLIST *pList = m_pHudList;
+	HUDLIST* pList = m_pHudList;
 
 	while (pList)
 	{
-		if ( pList->p )
+		if (pList->p)
 			pList->p->InitHUDData();
 		pList = pList->pNext;
 	}
 
-#if defined( _TFC )
-	ClearEventList();
-
-	// catch up on any building events that are going on
-	gEngfuncs.pfnServerCmd("sendevents");
-#endif
-
-#if !defined( _TFC )
 	//Probably not a good place to put this.
 	pBeam = pBeam2 = nullptr;
-	pFlare = nullptr;	// Vit_amiN: clear egon's beam flare
-#endif
+	pFlare = nullptr; // Vit_amiN: clear egon's beam flare
 }
 
 //LRC
 void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 {
-//	CONPRINT("MSG:KeyedDLight");
-	BEGIN_READ( pbuf, iSize );
+	//	CONPRINT("MSG:KeyedDLight");
+	BEGIN_READ(pbuf, iSize);
 
-// as-yet unused:
-//	float	decay;				// drop this each second
-//	float	minlight;			// don't add when contributing less
-//	qboolean	dark;			// subtracts light instead of adding (doesn't seem to do anything?)
+	// as-yet unused:
+	//	float	decay;				// drop this each second
+	//	float	minlight;			// don't add when contributing less
+	//	qboolean	dark;			// subtracts light instead of adding (doesn't seem to do anything?)
 
 	int iKey = READ_BYTE();
-	dlight_t *dl = gEngfuncs.pEfxAPI->CL_AllocDlight( iKey );
+	dlight_t* dl = gEngfuncs.pEfxAPI->CL_AllocDlight(iKey);
 
 	int bActive = READ_BYTE();
 	if (!bActive)
@@ -173,8 +162,8 @@ void CHud :: MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf )
 //LRC
 void CHud :: MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf )
 {
-//	CONPRINT("MSG:SetSky");
-	BEGIN_READ( pbuf, iSize );
+	//	CONPRINT("MSG:SetSky");
+	BEGIN_READ(pbuf, iSize);
 
 	m_iSkyMode = READ_BYTE();
 	m_vecSkyPos.x = READ_COORD();
@@ -184,9 +173,9 @@ void CHud :: MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf )
 }
 
 //LRC 1.8
-void CHud :: MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf )
+void CHud ::MsgFunc_ClampView(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
+	BEGIN_READ(pbuf, iSize);
 
 	g_clampMinYaw = READ_SHORT();
 	g_clampMaxYaw = READ_SHORT();
@@ -195,26 +184,30 @@ void CHud :: MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf )
 	*(long*)&g_clampTurnSpeed = READ_LONG();
 }
 
-int CHud :: MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
+bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
-	m_Teamplay = READ_BYTE();
+	BEGIN_READ(pbuf, iSize);
+	//Note: this user message could be updated to include multiple gamemodes, so make sure this checks for game mode 1
+	//See CHalfLifeTeamplay::UpdateGameMode
+	//TODO: define game mode constants
+	m_Teamplay = READ_BYTE() == 1;
 
-	return 1;
+	return true;
 }
 
-int CHud :: MsgFunc_Damage(const char *pszName, int iSize, void *pbuf )
+
+bool CHud::MsgFunc_Damage(const char* pszName, int iSize, void* pbuf)
 {
-	int		armor, blood;
-	Vector	from;
-	int		i;
-	float	count;
-	
-	BEGIN_READ( pbuf, iSize );
+	int armor, blood;
+	Vector from;
+	int i;
+	float count;
+
+	BEGIN_READ(pbuf, iSize);
 	armor = READ_BYTE();
 	blood = READ_BYTE();
 
-	for (i=0 ; i<3 ; i++)
+	for (i = 0; i < 3; i++)
 		from[i] = READ_COORD();
 
 	count = (blood * 0.5) + (armor * 0.5);
@@ -224,14 +217,14 @@ int CHud :: MsgFunc_Damage(const char *pszName, int iSize, void *pbuf )
 
 	// TODO: kick viewangles,  show damage visually
 
-	return 1;
+	return true;
 }
 
-int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
+bool CHud::MsgFunc_Concuss(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
+	BEGIN_READ(pbuf, iSize);
 	m_iConcussionEffect = READ_BYTE();
-	if (m_iConcussionEffect)
+	if (0 != m_iConcussionEffect)
 	{
 		int r, g, b;
 		UnpackRGB(r, g, b, gHUD.m_iHUDColor);
@@ -239,47 +232,62 @@ int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
 	}
 	else
 		this->m_StatusIcons.DisableIcon("dmg_concuss");
-	return 1;
+	return true;
 }
 
-int CHud :: MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf ) //AJH -Killar MP3
+bool CHud::MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
+	BEGIN_READ(pbuf, iSize);
 
-	gMP3.PlayMP3( READ_STRING() );
+	const std::uint64_t lowerBits = READ_LONG();
+	const std::uint64_t upperBits = READ_LONG();
 
-	return 1;
-}
-	// trigger_viewset message
-int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rain stuff
-{
-	BEGIN_READ( pbuf, iSize );
-		gHUD.viewEntityIndex = READ_SHORT();
-		gHUD.viewFlags = READ_SHORT();
-//	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
-	return 1;
+	m_iWeaponBits = lowerBits | (upperBits << 32ULL);
+
+	return true;
 }
 
-int CHud :: MsgFunc_RainData( const char *pszName, int iSize, void *pbuf )
+bool CHud ::MsgFunc_PlayMP3(const char* pszName, int iSize, void* pbuf) //AJH -Killar MP3
 {
-	return 1;
+	BEGIN_READ(pbuf, iSize);
+
+	gMP3.PlayMP3(READ_STRING());
+
+	return true;
+}
+// trigger_viewset message
+bool CHud ::MsgFunc_CamData(const char* pszName, int iSize, void* pbuf) // rain stuff
+{
+	BEGIN_READ(pbuf, iSize);
+	gHUD.viewEntityIndex = READ_SHORT();
+	gHUD.viewFlags = READ_SHORT();
+	//	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
+	return true;
 }
 
-int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJH inventory system
+bool CHud ::MsgFunc_RainData(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
-		int i = READ_SHORT();
+	return true;
+}
 
-		if (i==0){ //We've died (or got told to lose all items) so remove inventory.
-			for (i=0;i<MAX_ITEMS;i++){
-				g_iInventory[i]=0;
-			}
-		}else
+bool CHud ::MsgFunc_Inventory(const char* pszName, int iSize, void* pbuf) //AJH inventory system
+{
+	BEGIN_READ(pbuf, iSize);
+	int i = READ_SHORT();
+
+	if (i == 0)
+	{ //We've died (or got told to lose all items) so remove inventory.
+		for (i = 0; i < MAX_ITEMS; i++)
 		{
-			i-=1;	// subtract one so g_iInventory[0] can be used. (lowest ITEM_* is defined as '1')
-			g_iInventory[i] = READ_SHORT();
+			g_iInventory[i] = 0;
 		}
-	return 1;
+	}
+	else
+	{
+		i -= 1; // subtract one so g_iInventory[0] can be used. (lowest ITEM_* is defined as '1')
+		g_iInventory[i] = READ_SHORT();
+	}
+	return true;
 }
 
 //RENDERERS START

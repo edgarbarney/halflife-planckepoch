@@ -9,36 +9,36 @@
 #include "particlemgr.h"
 #include "particlesys.h"
 
-ParticleSystemManager*	g_pParticleSystems = NULL;
+ParticleSystemManager* g_pParticleSystems = nullptr;
 
-ParticleSystemManager::ParticleSystemManager( void )
+ParticleSystemManager::ParticleSystemManager(void)
 {
-	m_pFirstSystem = NULL;
+	m_pFirstSystem = nullptr;
 	//systemio = NULL;
 }
 
-ParticleSystemManager::~ParticleSystemManager( void )
+ParticleSystemManager::~ParticleSystemManager(void)
 {
 	ClearSystems();
 }
 
-void ParticleSystemManager::AddSystem( ParticleSystem* pNewSystem )
+void ParticleSystemManager::AddSystem(ParticleSystem* pNewSystem)
 {
 	pNewSystem->m_pNextSystem = m_pFirstSystem;
 	m_pFirstSystem = pNewSystem;
 }
 
-ParticleSystem *ParticleSystemManager::FindSystem( cl_entity_t* pEntity )
+ParticleSystem* ParticleSystemManager::FindSystem(cl_entity_t* pEntity)
 {
-	for (ParticleSystem *pSys = m_pFirstSystem; pSys; pSys = pSys->m_pNextSystem)
+	for (ParticleSystem* pSys = m_pFirstSystem; pSys; pSys = pSys->m_pNextSystem)
 	{
 		if (pEntity->index == pSys->m_iEntIndex)
-//		if (pEntity == pSys->GetEntity())
+		//		if (pEntity == pSys->GetEntity())
 		{
 			return pSys;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 // blended particles don't use the z-buffer, so we need to sort them before drawing.
@@ -48,12 +48,13 @@ void ParticleSystemManager::SortSystems()
 {
 	ParticleSystem* pSystem;
 	ParticleSystem* pLast;
-	ParticleSystem* pBeforeCompare, *pCompare;
-	
-	if (!m_pFirstSystem) return;
+	ParticleSystem *pBeforeCompare, *pCompare;
+
+	if (!m_pFirstSystem)
+		return;
 
 	// calculate how far away each system is from the viewer
-	for( pSystem = m_pFirstSystem; pSystem; pSystem = pSystem->m_pNextSystem )
+	for (pSystem = m_pFirstSystem; pSystem; pSystem = pSystem->m_pNextSystem)
 		pSystem->CalculateDistance();
 
 	// do an insertion sort on the systems
@@ -104,25 +105,25 @@ void ParticleSystemManager::SortSystems()
 	}
 }
 
-void ParticleSystemManager::UpdateSystems( float frametime ) //LRC - now with added time!
+void ParticleSystemManager::UpdateSystems(float frametime) //LRC - now with added time!
 {
-//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAdd);
-//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAlpha);
+	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAdd);
+	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAlpha);
 	ParticleSystem* pSystem;
-	ParticleSystem* pLast = NULL;
-	ParticleSystem*pLastSorted = NULL;
-	cl_entity_t *localPlayer = gEngfuncs.GetLocalPlayer();
-//	vec3_t normal, forward, right, up;
+	ParticleSystem* pLast = nullptr;
+	ParticleSystem* pLastSorted = nullptr;
+	cl_entity_t* localPlayer = gEngfuncs.GetLocalPlayer();
+	//	vec3_t normal, forward, right, up;
 
-//	gEngfuncs.GetViewAngles((float*)normal);
-//	AngleVectors(normal,forward,right,up);
+	//	gEngfuncs.GetViewAngles((float*)normal);
+	//	AngleVectors(normal,forward,right,up);
 
 	//SortSystems();
 
 	pSystem = m_pFirstSystem;
-	while( pSystem )
+	while (pSystem)
 	{
-		if(	pSystem->UpdateSystem(frametime, /*right, up,*/ localPlayer->curstate.messagenum) )
+		if (pSystem->UpdateSystem(frametime, /*right, up,*/ localPlayer->curstate.messagenum))
 		{
 			pSystem->DrawSystem();
 			pLast = pSystem;
@@ -147,17 +148,17 @@ void ParticleSystemManager::UpdateSystems( float frametime ) //LRC - now with ad
 	gEngfuncs.pTriAPI->RenderMode(kRenderNormal);
 }
 
-void ParticleSystemManager::ClearSystems( void )
+void ParticleSystemManager::ClearSystems(void)
 {
 	ParticleSystem* pSystem = m_pFirstSystem;
 	ParticleSystem* pTemp;
 
-	while( pSystem )
+	while (pSystem)
 	{
 		pTemp = pSystem->m_pNextSystem;
 		delete pSystem;
 		pSystem = pTemp;
 	}
 
-	m_pFirstSystem = NULL;
+	m_pFirstSystem = nullptr;
 }

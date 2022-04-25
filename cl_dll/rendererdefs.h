@@ -15,7 +15,7 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #ifndef RENDERERDEFS_H
 #define RENDERERDEFS_H
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "gl/gl.h"
 #include "gl/glext.h"
 #include "dlight.h"

@@ -17,7 +17,7 @@ Extended and/or recoded by Andrew Lucas
 #include <cstdlib>
 #include <cmath>
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
 #include <gl/glu.h>
@@ -185,14 +185,14 @@ void CBSPRenderer::Init( )
 	if (!ExtensionSupported("GL_ARB_multitexture"))
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support multitexturing!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support multitexturing!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");	
 	}
 
 	if (!ExtensionSupported("ARB_vertex_buffer_object"))
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support vertex buffer objects!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support vertex buffer objects!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");	
 	}
 
@@ -200,7 +200,7 @@ void CBSPRenderer::Init( )
 	if (m_iTUSupport < 3)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support enough multitexture units!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: Your hardware does not support enough multitexture units!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		gEngfuncs.pfnClientCmd("quit\n");
 	}
 
@@ -425,13 +425,13 @@ void CBSPRenderer::VidInit( )
 	if (!IEngineStudio.IsHardware())
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: This game does not support Software mode!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: This game does not support Software mode!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 	if (IEngineStudio.IsHardware() == 2)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "VIDEO ERROR: This game does not support DirectX!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "VIDEO ERROR: This game does not support DirectX!\nTry using the -gl parameter in the command line.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -846,18 +846,18 @@ FilterEntities
 int CBSPRenderer::FilterEntities( int type, struct cl_entity_s *pEntity, const char *modelname )
 {
 	if ( pEntity->model->type == mod_brush )
-		return FALSE;
+		return false;
 
 	if ( pEntity->curstate.effects & FL_DLIGHT )
-		return FALSE;
+		return false;
 
 	if ( pEntity->curstate.effects & FL_ELIGHT )
-		return FALSE;
+		return false;
 
 	if ( pEntity->curstate.effects & FL_SPOTLIGHT )
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 /*
@@ -980,7 +980,7 @@ void CBSPRenderer::SetupRenderer ( )
 	if(!m_pWorld)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -1291,13 +1291,13 @@ void CBSPRenderer::CreateTextures( )
 	//
 	// Load flashlight texture
 	//
-	m_pFlashlightTextures[0] = gTextureLoader.LoadTexture("gfx/textures/flashlight.tga", FALSE, true, false, true);
+	m_pFlashlightTextures[0] = gTextureLoader.LoadTexture("gfx/textures/flashlight.tga", false, true, false, true);
 	m_iNumFlashlightTextures++;
 
 	if(!m_pFlashlightTextures[0])
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "ERROR: Failed to load gfx/textures/flashlight.tga.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "ERROR: Failed to load gfx/textures/flashlight.tga.\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -1315,7 +1315,7 @@ void CBSPRenderer::CreateTextures( )
 		{
 			char szPath[64];
 			sprintf(szPath, "gfx/textures/%s.tga", pEntry->szTexture);
-			cl_texture_t *pTexture = gTextureLoader.LoadTexture(szPath, FALSE, true, false, true);
+			cl_texture_t *pTexture = gTextureLoader.LoadTexture(szPath, false, true, false, true);
 			if(pTexture)
 			{
 				m_pFlashlightTextures[m_iNumFlashlightTextures] = pTexture;
@@ -1980,16 +1980,16 @@ void CBSPRenderer::SaveMultiTexture( )
 	glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &m_iCLActiveTU);
 
 	if (glIsEnabled(GL_BLEND)) 
-		m_iBlendActive = TRUE;
+		m_iBlendActive = true;
 	else 
-		m_iBlendActive = FALSE;
+		m_iBlendActive = false;
 
 	glActiveTextureARB( GL_TEXTURE0_ARB );
 
 	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU1tex2dEnable = TRUE;
+		m_iTU1tex2dEnable = true;
 	else 
-		m_iTU1tex2dEnable = FALSE;
+		m_iTU1tex2dEnable = false;
 
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU1bind);
 	glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, &m_iTU1BlendMode);
@@ -1997,9 +1997,9 @@ void CBSPRenderer::SaveMultiTexture( )
 	glActiveTextureARB( GL_TEXTURE1_ARB );
 
 	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU2tex2dEnable = TRUE;
+		m_iTU2tex2dEnable = true;
 	else 
-		m_iTU2tex2dEnable = FALSE;
+		m_iTU2tex2dEnable = false;
 
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU2bind);
 	glDisable(GL_TEXTURE_2D); // disable texturing at 2nd TU
@@ -2007,9 +2007,9 @@ void CBSPRenderer::SaveMultiTexture( )
 	glActiveTextureARB( GL_TEXTURE2_ARB );
 
 	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU3tex2dEnable = TRUE;
+		m_iTU3tex2dEnable = true;
 	else 
-		m_iTU3tex2dEnable = FALSE;
+		m_iTU3tex2dEnable = false;
 
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU3bind);
 	glDisable(GL_TEXTURE_2D);
@@ -2022,9 +2022,9 @@ void CBSPRenderer::SaveMultiTexture( )
 	glActiveTextureARB( GL_TEXTURE3_ARB );
 
 	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU4tex2dEnable = TRUE;
+		m_iTU4tex2dEnable = true;
 	else 
-		m_iTU4tex2dEnable = FALSE;
+		m_iTU4tex2dEnable = false;
 
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU4bind);
 	glDisable(GL_TEXTURE_2D);
@@ -2035,9 +2035,9 @@ void CBSPRenderer::SaveMultiTexture( )
 	glGetFloatv(GL_ALPHA_TEST_REF, &m_AlphaVal);
 
 	if (glIsEnabled(GL_ALPHA_TEST)) 
-		m_iAlphaTestEnabled = TRUE;
+		m_iAlphaTestEnabled = true;
 	else 
-		m_iAlphaTestEnabled = FALSE;
+		m_iAlphaTestEnabled = false;
 };
 
 /*
@@ -4911,24 +4911,24 @@ CullDynLightBBox
 int CBSPRenderer::CullDynLightBBox (Vector mins, Vector maxs)
 {
 	if (mins[0] > m_vDLightMaxs[0]) 
-		return TRUE;
+		return true;
 
 	if (mins[1] > m_vDLightMaxs[1]) 
-		return TRUE;
+		return true;
 
 	if (mins[2] > m_vDLightMaxs[2]) 
-		return TRUE;
+		return true;
 
 	if (maxs[0] < m_vDLightMins[0]) 
-		return TRUE;
+		return true;
 
 	if (maxs[1] < m_vDLightMins[1]) 
-		return TRUE;
+		return true;
 
 	if (maxs[2] < m_vDLightMins[2]) 
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
 /*
@@ -5665,7 +5665,7 @@ void CBSPRenderer::InitSky( )
 		sprintf(szPathL, "gfx/env/%s%s_large.dds", m_szSkyName, szSkySuffixes[i]);
 		sprintf(szPathS, "gfx/env/%s%s.tga", m_szSkyName, szSkySuffixes[i]);
 
-		cl_texture_t *pTexture = gTextureLoader.LoadTexture(szPathL, FALSE, false, true);
+		cl_texture_t *pTexture = gTextureLoader.LoadTexture(szPathL, false, false, true);
 
 		if(pTexture)
 		{
@@ -5673,7 +5673,7 @@ void CBSPRenderer::InitSky( )
 		}
 		else
 		{
-			pTexture = gTextureLoader.LoadTexture(szPathS, FALSE, true, true);
+			pTexture = gTextureLoader.LoadTexture(szPathS, false, true, true);
 
 			if(!pTexture)
 			{
