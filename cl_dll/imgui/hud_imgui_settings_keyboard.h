@@ -73,7 +73,7 @@ public:
 	void ParseKeybindData();
 
 	// config.cfg (Engine default)
-	void ParseDefaultConfigFile(std::string filedir);
+	void ParseConfigFile(std::string filedir);
 
 	// bindingconfig.cfg (Custom Fiie)
 	void ParseBindingConfigFile(); 

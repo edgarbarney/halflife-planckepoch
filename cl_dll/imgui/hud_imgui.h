@@ -10,6 +10,16 @@
 //Ugh.
 #include "imgui.h"
 
+constexpr int id_frame_bindingcolumns = 32;
+
+constexpr int frameX = 510;
+constexpr int frameY = 270;
+
+constexpr int buttonX = 100;
+constexpr int buttonY = 30;
+
+constexpr int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
+
 //Thanks to admer for base implementation of imgui
 // Just used for imgui for now. Mainly a placeholder for future ADM "inspirations" :gabe:
 class CBaseClientExtension : public CHudBase

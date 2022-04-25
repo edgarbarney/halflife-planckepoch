@@ -35,16 +35,6 @@
 #include "FranUtils.hpp"
 #include "FranUtils.Filesystem.hpp"
 
-constexpr int id_frame_bindingcolumns = 32;
-
-constexpr int frameX = 510;
-constexpr int frameY = 270;
-
-constexpr int buttonX = 100;
-constexpr int buttonY = 30;
-
-constexpr int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
-
 constexpr int sensitivityMin = 0.2f;
 constexpr int sensitivityMax = 20.0f;
 

@@ -35,16 +35,6 @@
 #include "FranUtils.hpp"
 #include "FranUtils.Filesystem.hpp"
 
-constexpr int id_frame_bindingcolumns = 32;
-
-constexpr int frameX = 510;
-constexpr int frameY = 270;
-
-constexpr int buttonX = 100;
-constexpr int buttonY = 30;
-
-constexpr int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
-
 void CClientImguiKeyboardSettings::Init()
 {
 	ParseKeybindFormatData();
@@ -54,12 +44,12 @@ void CClientImguiKeyboardSettings::Init()
 	if (std::filesystem::exists(FranUtils::GetModDirectory() + "bindingconfig.cfg"))
 		ParseBindingConfigFile(); // Custom Config.cfg
 	else if (std::filesystem::exists(FranUtils::GetModDirectory() + "config.cfg"))
-		ParseDefaultConfigFile(FranUtils::GetModDirectory() + "config.cfg"); // Mod Config.cfg
+		ParseConfigFile(FranUtils::GetModDirectory() + "config.cfg"); // Mod Config.cfg
 	else
-		ParseDefaultConfigFile(std::filesystem::current_path().string() + "//" + FranUtils::Globals::GetFallbackDir() + "//" + "config.cfg"); // Fallback dir config.cfg
+		ParseConfigFile(std::filesystem::current_path().string() + "//" + FranUtils::Globals::GetFallbackDir() + "//" + "config.cfg"); // Fallback dir config.cfg
 	*/
 
-	ParseDefaultConfigFile("config.cfg");
+	ParseConfigFile("config.cfg");
 
 	// Copy data from vecKeybindsData into the backup vector
 	vecKeybindsOriginalData = vecKeybindsData;
@@ -181,6 +171,11 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 			gHUD.m_clImgui.isOpen_optionsDialog = false;
 			ApplyKeybinds();
 		}
+		//ImGui::SameLine();
+		//if (ImGui::Button("Use Defaults", ImVec2(buttonX+20, buttonY)))
+		//{
+		//	ParseConfigFile("defaultbindings.cfg");
+		//}
 
 		ImGui::SameLine(((frameX / 1.33) + sweetSpot) - (buttonX / 1.33));
 		if (ImGui::Button("Cancel", ImVec2(buttonX, buttonY)))
@@ -429,7 +424,7 @@ void CClientImguiKeyboardSettings::ParseKeybindData()
 #pragma warning( default : 26812 )
 }
 
-void CClientImguiKeyboardSettings::ParseDefaultConfigFile(std::string filedir)
+void CClientImguiKeyboardSettings::ParseConfigFile(std::string filedir)
 {
 	std::ifstream fstream;
 	//fstream.open(filedir);
