@@ -511,8 +511,7 @@ void CHud :: Init()
 	//end glow effect
 
 	//Borderless Things
-	CVAR_CREATE("r_borderless", "1", FCVAR_ARCHIVE);
-	CVAR_CREATE("r_ignoreborderless", "0", FCVAR_ARCHIVE);
+	CVAR_CREATE("r_fullscreen_type", "1", FCVAR_ARCHIVE);
 
 	viewEntityIndex = 0; // trigger_viewset stuff
 	viewFlags = 0;
@@ -630,8 +629,7 @@ void CHud::BRD_SetBorderless(SDL_Window* brd_windowArg)
 	}
 	weg = dm.w;
 	heg = dm.h;
-	//gEngfuncs.pfnClientCmd("r_borderless 1\n");
-	//gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+	//gEngfuncs.pfnClientCmd("r_fullscreen_type 1\n");
 	SDL_SetWindowFullscreen(brd_windowArg, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_SetWindowSize(brd_windowArg, weg, heg);
 	SDL_SetWindowBordered(brd_windowArg, SDL_FALSE);
@@ -672,31 +670,7 @@ void CHud :: VidInit()
 	else
 		m_iRes = 640;
 
-	if (CVAR_GET_FLOAT("r_ignoreborderless") == 0)
-	{
-		auto brd_window = BRD_GetWindow();
-		if (brd_window)
-		{
-			if (SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN)
-			{
-				gEngfuncs.pfnClientCmd("escape\n");
-				if (MessageBox(nullptr, "Renderer works best at borderless windowed mode.\nIf you want to enable it, go to windowed mode at your native resolution.\n\nYou can disable this message by pressing no or from the advanced tab.", "Warning", MB_YESNO) == IDNO)
-				{
-					gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
-				}
-			}
-		}
-	}
-
-	if (CVAR_GET_FLOAT("r_borderless") == 1)
-	{
-		auto brd_window = BRD_GetWindow();
-		if (brd_window)
-		{
-			if (!(SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN))
-				BRD_SetBorderless(BRD_GetWindow());
-		}		
-	}
+	m_clImgui.videoManager.CheckForBorderless();
 
 	// Only load this once
 	if ( !m_pSpriteList )

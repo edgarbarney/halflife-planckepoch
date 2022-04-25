@@ -42,6 +42,16 @@ extern int g_iVisibleMouse;
 
 void ClientImGui_HookedDraw()
 {
+	if (FranUtils::Globals::inMainMenu && !FranUtils::Globals::called3DMainMenu)
+	{
+		//gEngfuncs.pfnClientCmd("map test_3dbackground");
+		FranUtils::Globals::called3DMainMenu = true;
+	}
+	else if (!FranUtils::Globals::inMainMenu)
+	{
+		FranUtils::Globals::called3DMainMenu = false;
+	}
+
 	mainImgui->DrawImgui();
 	SDL_GL_SwapWindow(mainWindow);
 }
@@ -120,8 +130,20 @@ void ClientImGui_HWHook()
 	#pragma warning( default : 6387 )
 }
 
+DECLARE_COMMAND(m_clImgui, ImguiQuit);
+DECLARE_COMMAND(m_clImgui, ImguiOptions);
+
 void CClientImgui::InitExtension()
 {
+	isOpen_quitDialog = false;
+	isOpen_optionsDialog = false;
+
+	uniqueButtonIDBase = 4096;
+	uniqueSliderNameBase = " ";
+
+	HOOK_COMMAND("imgui_quit", ImguiQuit);
+	HOOK_COMMAND("imgui_options", ImguiOptions);
+
 	mainWindow = SDL_GetWindowFromID(1);
 	//mainContext = SDL_GL_CreateContext(mainWindow);
 
@@ -133,7 +155,11 @@ void CClientImgui::InitExtension()
 	// Set
 	mainImgui = this;
 
+	// Extensions
 	keyboardManager.Init();
+	mouseManager.Init();
+	videoManager.Init();
+	audioManager.Init();
 
 	// For Overdraw
 	ClientImGui_HWHook();
@@ -153,6 +179,9 @@ void CClientImgui::InitExtension()
 
 void CClientImgui::DrawImgui()
 {
+	uniqueButtonIDBase = 4096; // Reset the button IDs
+	uniqueSliderNameBase = "  "; // Reset the slider names
+
 	//g_iVisibleMouse = 1;
 	//App::getInstance()->setCursorOveride(App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow));
 	//g_iVisibleMouse = 1;
@@ -161,7 +190,7 @@ void CClientImgui::DrawImgui()
 	ImGui_ImplSDL2_NewFrame(mainWindow);
 	ImGui::NewFrame();
 
-	if (FranUtils::Globals::inMainMenu || FranUtils::Globals::isPaused)
+	if (FranUtils::Globals::isPaused || FranUtils::Globals::in3DMainMenu)
 	{
 		DrawMainMenu();
 	}
@@ -176,54 +205,51 @@ void CClientImgui::DrawMainMenu()
 {
 	ImGui::PushFont(brandsFont);
 
-	ImGui::SetNextWindowSize(ImVec2(525, 400));
-
-	if (ImGui::Begin((std::string(ICON_FA_STEAM_SYMBOL) + "Options").c_str(), &isOptionsClosed, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+	if (isOpen_quitDialog)
 	{
-		if (ImGui::BeginTabBar("OptionsTabBar"))
+		auto qDialog = CClientImguiDialogBox::DrawDialogBox("Quit", "Do you wish to stop playing now?", DialogButtons::Quit | DialogButtons::Cancel);
+		if (qDialog == DialogButtons::Quit)
 		{
-			keyboardManager.DrawKeyboardSettingsTab();
-			if (ImGui::BeginTabItem("Mouse"))
-			{
-				ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Audio"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Video"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Cideo"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Vimeo"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Cicero"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Dicks"))
-			{
-				ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
-				ImGui::EndTabItem();
-			}
-			ImGui::EndTabBar();
+			FranUtils::QutiGame();
+		}
+		else if (qDialog == DialogButtons::Cancel) // We need another if cus result can be "None"
+		{
+			isOpen_quitDialog = false;
 		}
 	}
 
+	if (videoManager.isOpen_restartDialog)
+	{
+		auto qDialog = CClientImguiDialogBox::DrawDialogBox("Warning", "Applying thsese settings will restart the game.\nAre you sure", DialogButtons::Restart | DialogButtons::Cancel);
+		if (qDialog == DialogButtons::Restart)
+		{
+			videoManager.ApplyVideoSettings();
+			FranUtils::RestartGame();
+		}
+		else if (qDialog == DialogButtons::Cancel) // We need another if cus result can be "None"
+		{
+			videoManager.isOpen_restartDialog = false;
+		}
+	}
+	
+	if (isOpen_optionsDialog)
+	{
+		ImGui::SetNextWindowSize(ImVec2(525, 400));
+
+		if (ImGui::Begin((std::string(ICON_FA_STEAM_SYMBOL) + " " + "Options").c_str(), &isOpen_optionsDialog, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+		{
+			if (ImGui::BeginTabBar("OptionsTabBar"))
+			{
+				keyboardManager.DrawKeyboardSettingsTab();
+				mouseManager.DrawMouseSettingsTab();
+				audioManager.DrawAudioSettingsTab();
+				videoManager.DrawVideoSettingsTab();
+				ImGui::EndTabBar();
+			}
+		}
+		ImGui::End();
+	}
 	ImGui::PopFont();
-	ImGui::End();
 }
 
 void CClientImgui::SetTheme()
@@ -300,7 +326,30 @@ void CClientImgui::SetTheme()
 
 void CClientImgui::FinishExtension()
 {
+	videoManager.ShutDown();
 	SDL_DelEventWatch(ClientImGui_EventWatch, nullptr);
+}
+
+unsigned int CClientImgui::GetUniqueButtonID()
+{
+	return uniqueButtonIDBase++;
+}
+
+std::string CClientImgui::GetUniqueSliderName()
+{
+	return uniqueSliderNameBase += " ";
+}
+
+void CClientImgui::UserCmd_ImguiQuit()
+{
+	FranUtils::PauseMenu();
+	isOpen_quitDialog = true;
+}
+
+void _cdecl CClientImgui::UserCmd_ImguiOptions()
+{
+	FranUtils::PauseMenu();
+	isOpen_optionsDialog = true;
 }
 
 

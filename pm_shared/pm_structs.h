@@ -15,8 +15,8 @@
 
 //Shared Structs
 
-#ifndef PM_STRUCTSH
-#define PM_STRUCTSH
+#ifndef PM_STRUCTS_H
+#define PM_STRUCTS_H
 #pragma once
 
 #ifndef _STRING_
@@ -213,4 +213,4 @@ public:
 
 
 
-#endif // PM_STRUCTSH
+#endif // PM_STRUCTS_H

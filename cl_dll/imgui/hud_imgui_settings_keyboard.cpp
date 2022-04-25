@@ -29,31 +29,37 @@
 #include "fontawesome_brands.h"
 
 #include "hud_imgui.h"
+#include "hud_imgui_settings_keyboard.h"
 
 #define FRANUTILS_MODDIR 1 // For usage of mod directory utilites
 #include "FranUtils.hpp"
+#include "FranUtils.Filesystem.hpp"
 
-const int id_frame_bindingcolumns = 32;
+constexpr int id_frame_bindingcolumns = 32;
 
-const int frameX = 510;
-const int frameY = 270;
+constexpr int frameX = 510;
+constexpr int frameY = 270;
 
-const int buttonX = 100;
-const int buttonY = 30;
+constexpr int buttonX = 100;
+constexpr int buttonY = 30;
 
-const int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
+constexpr int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side padding
 
 void CClientImguiKeyboardSettings::Init()
 {
 	ParseKeybindFormatData();
 	ParseKeybindData();
-
+	
+	/*
 	if (std::filesystem::exists(FranUtils::GetModDirectory() + "bindingconfig.cfg"))
 		ParseBindingConfigFile(); // Custom Config.cfg
 	else if (std::filesystem::exists(FranUtils::GetModDirectory() + "config.cfg"))
 		ParseDefaultConfigFile(FranUtils::GetModDirectory() + "config.cfg"); // Mod Config.cfg
 	else
 		ParseDefaultConfigFile(std::filesystem::current_path().string() + "//" + FranUtils::Globals::GetFallbackDir() + "//" + "config.cfg"); // Fallback dir config.cfg
+	*/
+
+	ParseDefaultConfigFile("config.cfg");
 
 	// Copy data from vecKeybindsData into the backup vector
 	vecKeybindsOriginalData = vecKeybindsData;
@@ -61,9 +67,6 @@ void CClientImguiKeyboardSettings::Init()
 
 void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 {
-	unsigned int butid = 4096;	//Button id. For preventing ID clash when buttons have the same name
-								//Start from 4096 cus why not mate
-
 	if (ImGui::BeginTabItem("Keyboard"))
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -108,7 +111,7 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 				if (keyCaptureMode == KeyCaptureMode::Primary && currentKeyCapturingBind == elem2.displayName)
 				{
 					// Primary Button
-					ImGui::PushID(butid);
+					ImGui::PushID(gHUD.m_clImgui.GetUniqueButtonID());
 					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
 					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
 					{
@@ -121,7 +124,6 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 					}
 					ImGui::NextColumn();
 					ImGui::PopID();
-					butid++;
 
 					// Alternate Button
 					// No need for ID management for unresponsive buttons
@@ -134,7 +136,7 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 					ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)); ImGui::NextColumn();
 
 					// Alternate Button
-					ImGui::PushID(butid);
+					ImGui::PushID(gHUD.m_clImgui.GetUniqueButtonID());
 					ImGui::Button("*INPUT WAITING*", ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f));
 					for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_COUNT; key++)
 					{
@@ -146,31 +148,28 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 						}
 					}
 					ImGui::PopID();
-					butid++;
 					ImGui::NextColumn();
 				}
 				else
 				{
 					// Primary Button
-					ImGui::PushID(butid);
+					ImGui::PushID(gHUD.m_clImgui.GetUniqueButtonID());
 					if (ImGui::Button(GetMappedKeyName(elem2.primary).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
 					{
 						keyCaptureMode = KeyCaptureMode::Primary;
 						currentKeyCapturingBind = elem2.displayName;
 					}
 					ImGui::PopID();
-					butid++;
 					ImGui::NextColumn();
 
 					// Alternate Button
-					ImGui::PushID(butid);
+					ImGui::PushID(gHUD.m_clImgui.GetUniqueButtonID());
 					if (ImGui::Button(GetMappedKeyName(elem2.alternate).c_str(), ImVec2(ImGui::GetColumnWidth(-1) - 15, 0.0f)))
 					{
 						keyCaptureMode = KeyCaptureMode::Alternate;
 						currentKeyCapturingBind = elem2.displayName;
 					}
 					ImGui::PopID();
-					butid++;
 					ImGui::NextColumn();
 				}
 			}
@@ -179,12 +178,14 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 
 		if (ImGui::Button("OK", ImVec2(buttonX, buttonY)))
 		{
+			gHUD.m_clImgui.isOpen_optionsDialog = false;
 			ApplyKeybinds();
 		}
 
 		ImGui::SameLine(((frameX / 1.33) + sweetSpot) - (buttonX / 1.33));
 		if (ImGui::Button("Cancel", ImVec2(buttonX, buttonY)))
 		{
+			gHUD.m_clImgui.isOpen_optionsDialog = false;
 			CancelKeybinds();
 		}
 
@@ -201,7 +202,8 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 void CClientImguiKeyboardSettings::ParseKeybindFormatData()
 {
 	std::ifstream fstream;
-	fstream.open(FranUtils::GetModDirectory() + "resource\\ControlsList.txt");
+	//fstream.open(FranUtils::GetModDirectory() + "resource\\ControlsList.txt");
+	FranUtils::Filesystem::OpenInputFile("resource\\ControlsList.txt", fstream);
 
 	std::string lastType;
 
@@ -430,7 +432,8 @@ void CClientImguiKeyboardSettings::ParseKeybindData()
 void CClientImguiKeyboardSettings::ParseDefaultConfigFile(std::string filedir)
 {
 	std::ifstream fstream;
-	fstream.open(filedir);
+	//fstream.open(filedir);
+	FranUtils::Filesystem::OpenInputFile(filedir, fstream);
 
 	int lineIteration = 0;
 	std::string line;
@@ -508,7 +511,8 @@ void CClientImguiKeyboardSettings::ParseDefaultConfigFile(std::string filedir)
 void CClientImguiKeyboardSettings::ParseBindingConfigFile()
 {
 	std::ifstream fstream;
-	fstream.open(FranUtils::GetModDirectory() + "bindingconfig.cfg");
+	//fstream.open(FranUtils::GetModDirectory() + "bindingconfig.cfg");
+	FranUtils::Filesystem::OpenInputFile("bindingconfig.cfg", fstream);
 
 	int lineIteration = 0;
 	std::string line;

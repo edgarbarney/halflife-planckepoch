@@ -1,9 +1,10 @@
 //#pragma once
 
+// TODO: ORGANISE THIS FILE!!!
+
 #ifndef FRANUTILS_H
 #define FRANUTILS_H
 
-#include "UserMessages.h"
 #include <string>
 
 // ==========================================================
@@ -394,18 +395,35 @@ namespace FranUtils
 	}
 #endif
 
+#if defined(CLIENT_DLL) && defined(CL_ENGFUNCS_DEF)
+	inline void PauseMenu()
+	{
+		gEngfuncs.pfnClientCmd("toggleconsole");
+	}
+	inline void QutiGame()
+	{
+		gHUD.m_clImgui.FinishExtension();
+		gEngfuncs.pfnClientCmd("quit");
+	}
+	inline void RestartGame()
+	{
+		gHUD.m_clImgui.FinishExtension();
+		gEngfuncs.pfnClientCmd("_restart");
+	}
+#endif
+
 #pragma endregion
 
 	class Globals
 	{
-	protected:
+	private:
 
 		// Liblist Vars
 
 		inline static std::string fallbackDir;	// Fallback dir from
 		inline static std::string startMap;		// Starting Map
 		inline static std::string trainMap;		// Training Room Start Map
-		inline static std::string gameName;		// Game Visible Name Displayed in the
+		inline static std::string gameName;		// Game Visible Name Displayed in the Steam and Modlist
 
 		inline static void ParseLiblist()
 		{
@@ -413,7 +431,7 @@ namespace FranUtils
 			if (std::filesystem::exists(FranUtils::GetModDirectory() + "liblist.gam"))
 			{
 				std::ifstream fstream;
-				fstream.open(FranUtils::GetModDirectory() + "bindingconfig.cfg");
+				fstream.open(FranUtils::GetModDirectory() + "liblist.gam");
 
 				int lineIteration = 0;
 				std::string line;
@@ -421,7 +439,7 @@ namespace FranUtils
 				{
 					lineIteration++;
 					//line.erase(remove_if(line.begin(), line.end(), isspace), line.end()); // Remove whitespace
-					gEngfuncs.Con_DPrintf("\n config.cfg - parsing %d", lineIteration);
+					gEngfuncs.Con_DPrintf("\n liblist.gam - parsing %d", lineIteration);
 					if (line.empty()) // Ignore empty lines
 					{
 						continue;
@@ -486,13 +504,17 @@ namespace FranUtils
 		inline static int isPaused; // Is client paused the game?
 		inline static float isPausedLastUpdate;
 		inline static bool inMainMenu; // Is client in main menu? (Not pause menu)
+		inline static bool in3DMainMenu; // Is client in 3D main menu?
+		inline static bool called3DMainMenu; // Is client called 3D menu already?
 		inline static bool lastInMainMenu;
 
 		inline static void InitGlobals()
 		{
 			isPaused = true;
 			isPausedLastUpdate = 0.0f;
+			in3DMainMenu = false;
 			inMainMenu = true;
+			called3DMainMenu = false;
 			lastInMainMenu = false;
 
 			ParseLiblist();

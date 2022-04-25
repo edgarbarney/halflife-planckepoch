@@ -381,6 +381,18 @@
     <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_video.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -699,6 +711,21 @@
       <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\FranUtils.Filesystem.hpp">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_video.h">
       <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
   </ItemGroup>

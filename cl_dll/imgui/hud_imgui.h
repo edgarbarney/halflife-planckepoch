@@ -27,10 +27,19 @@ public:
 };
 
 #include "hud_imgui_console.h"
+#include "hud_imgui_dialogbox.h"
 #include "hud_imgui_settings_keyboard.h"
+#include "hud_imgui_settings_mouse.h"
+#include "hud_imgui_settings_video.h"
+#include "hud_imgui_settings_audio.h"
 
 class CClientImgui : public CBaseClientExtension
 {
+private:
+	unsigned int uniqueButtonIDBase;		//Button id. For preventing ID clash when buttons have the same name
+											//Start from 4096 cus why not mate
+	std::string uniqueSliderNameBase;
+
 public:
 	void InitExtension() override;
 
@@ -41,12 +50,25 @@ public:
 
 	void FinishExtension() override;
 
+	// Returns the uniqueButtonIDBase then increments it
+	unsigned int GetUniqueButtonID();
+
+	// Returns a set of spaces.
+	std::string GetUniqueSliderName();
+
+	void _cdecl UserCmd_ImguiQuit();
+	void _cdecl UserCmd_ImguiOptions();
+
 	CClientImguiConsole consoleManager;
 	CClientImguiKeyboardSettings keyboardManager;
+	CClientImguiMouseSettings mouseManager;
+	CClientImguiVideoSettings videoManager;
+	CClientImguiAudioSettings audioManager;
 
 	ImFont* brandsFont;
 
-	bool isOptionsClosed;
+	bool isOpen_quitDialog;
+	bool isOpen_optionsDialog;
 };
 
 

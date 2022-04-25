@@ -146,7 +146,11 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\hud_update.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\hud_imgui.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_console.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_video.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
     <ClCompile Include="..\..\cl_dll\inputw32.cpp" />
     <ClCompile Include="..\..\cl_dll\interpolation.cpp" />
@@ -240,7 +244,11 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\imgui\fontawesome_brands.h" />
     <ClInclude Include="..\..\cl_dll\imgui\hud_imgui.h" />
     <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.h" />
     <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_video.h" />
     <ClInclude Include="..\..\cl_dll\interpolation.h" />
     <ClInclude Include="..\..\cl_dll\in_defs.h" />
     <ClInclude Include="..\..\cl_dll\kbutton.h" />
@@ -277,6 +285,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\common\event_api.h" />
     <ClInclude Include="..\..\common\event_args.h" />
     <ClInclude Include="..\..\common\event_flags.h" />
+    <ClInclude Include="..\..\common\FranUtils.Filesystem.hpp" />
     <ClInclude Include="..\..\common\FranUtils.hpp" />
     <ClInclude Include="..\..\common\hltv.h" />
     <ClInclude Include="..\..\common\interface.h" />
