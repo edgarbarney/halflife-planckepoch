@@ -7,5 +7,3 @@
 *.bak
 
 _ModFiles/
-projects/vs2019/hldll.vcxproj
-projects/vs2019/hl_cdll.vcxproj
