@@ -40,7 +40,7 @@
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 CMP3 gMP3; //AJH - Killars MP3player
-TeamFortressViewport* gViewPort = NULL;
+TeamFortressViewport* gViewPort = nullptr;
 
 
 #include "particleman.h"

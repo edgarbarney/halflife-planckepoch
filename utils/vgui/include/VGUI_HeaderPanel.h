@@ -39,7 +39,7 @@ public:
 
 protected:
 
-	virtual void performLayout();
+	void performLayout() override;
 
 public:
 

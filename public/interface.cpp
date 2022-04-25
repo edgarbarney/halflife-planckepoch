@@ -46,7 +46,7 @@ void* GetModuleHandle(const char* name)
 // ------------------------------------------------------------------------------------ //
 // InterfaceReg.
 // ------------------------------------------------------------------------------------ //
-InterfaceReg* InterfaceReg::s_pInterfaceRegs = NULL;
+InterfaceReg* InterfaceReg::s_pInterfaceRegs = nullptr;
 
 
 InterfaceReg::InterfaceReg(InstantiateInterfaceFn fn, const char* pName) : m_pName(pName)
@@ -81,7 +81,7 @@ DLLEXPORT IBaseInterface* CreateInterface(const char* pName, int* pReturnCode)
 	{
 		*pReturnCode = IFACE_FAILED;
 	}
-	return NULL;
+	return nullptr;
 }
 
 //Local version of CreateInterface, marked hidden so that it is never merged with the version in other libraries
@@ -105,7 +105,7 @@ static DLLHIDDEN IBaseInterface* CreateInterfaceLocal(const char* pName, int* pR
 	{
 		*pReturnCode = IFACE_FAILED;
 	}
-	return NULL;
+	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -204,7 +204,7 @@ void Sys_UnloadModule(CSysModule* pModule)
 CreateInterfaceFn Sys_GetFactory(CSysModule* pModule)
 {
 	if (!pModule)
-		return NULL;
+		return nullptr;
 
 	HMODULE hDLL = reinterpret_cast<HMODULE>(pModule);
 

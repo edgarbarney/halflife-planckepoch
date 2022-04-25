@@ -20,7 +20,7 @@ class VGUIAPI LoweredBorder : public Border
 public:
 	LoweredBorder();
 protected:
-	virtual void paint(Panel* panel);
+	void paint(Panel* panel) override;
 };
 
 }

@@ -27,7 +27,7 @@ public:
 public:
 	virtual void setImage(Image* image);
 protected:
-	virtual void paintBackground();
+	void paintBackground() override;
 protected:
 	Image* _image;
 };

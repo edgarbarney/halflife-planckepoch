@@ -96,7 +96,7 @@ public:
 class ParticleType
 {
 public:
-	ParticleType(ParticleType* pNext = NULL);
+	ParticleType(ParticleType* pNext = nullptr);
 	ParticleType(char* szFilename);
 
 	bool m_bIsDefined; // is this ParticleType just a placeholder?

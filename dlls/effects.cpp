@@ -148,7 +148,7 @@ void CBubbling::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 	}
 	else
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		DontThink();
 	}
 }
@@ -256,7 +256,7 @@ const Vector& CBeam::GetEndPos()
 CBeam* CBeam::BeamCreate(const char* pSpriteName, int width)
 {
 	// Create a new entity with CBeam private data
-	CBeam* pBeam = GetClassPtr((CBeam*)NULL);
+	CBeam* pBeam = GetClassPtr((CBeam*)nullptr);
 	pBeam->pev->classname = MAKE_STRING("beam");
 
 	pBeam->BeamInit(pSpriteName, width);
@@ -375,9 +375,9 @@ CBaseEntity* CBeam::RandomTargetname(const char* szName)
 {
 	int total = 0;
 
-	CBaseEntity* pEntity = NULL;
-	CBaseEntity* pNewEntity = NULL;
-	while ((pNewEntity = UTIL_FindEntityByTargetname(pNewEntity, szName)) != NULL)
+	CBaseEntity* pEntity = nullptr;
+	CBaseEntity* pNewEntity = nullptr;
+	while ((pNewEntity = UTIL_FindEntityByTargetname(pNewEntity, szName)) != nullptr)
 	{
 		total++;
 		if (RANDOM_LONG(0, total - 1) < 1)
@@ -519,7 +519,7 @@ void CLightning::Spawn()
 
 	if (ServerSide())
 	{
-		SetThink(NULL);
+		SetThink(nullptr);
 		if (pev->dmg != 0 || !FStringNull(pev->target))
 		{
 			SetThink(&CLightning::TripThink);
@@ -677,7 +677,7 @@ void CLightning::StrikeUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TY
 	if (m_active)
 	{
 		m_active = false;
-		SetThink(NULL);
+		SetThink(nullptr);
 	}
 	else
 	{
@@ -686,7 +686,7 @@ void CLightning::StrikeUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TY
 	}
 
 	if (!FBitSet(pev->spawnflags, SF_BEAM_TOGGLE))
-		SetUse(NULL);
+		SetUse(nullptr);
 }
 
 
@@ -720,7 +720,7 @@ void CLightning::StrikeThink()
 		else
 		{
 			CBaseEntity* pStart = RandomTargetname(STRING(m_iszStartEntity));
-			if (pStart != NULL)
+			if (pStart != nullptr)
 				RandomPoint(pStart->pev->origin);
 			else
 				ALERT(at_debug, "env_beam: unknown entity \"%s\"\n", STRING(m_iszStartEntity));
@@ -731,7 +731,7 @@ void CLightning::StrikeThink()
 	CBaseEntity* pStart = RandomTargetname(STRING(m_iszStartEntity));
 	CBaseEntity* pEnd = RandomTargetname(STRING(m_iszEndEntity));
 
-	if (pStart != NULL && pEnd != NULL)
+	if (pStart != nullptr && pEnd != nullptr)
 	{
 		if (IsPointEntity(pStart) || IsPointEntity(pEnd))
 		{
@@ -799,13 +799,13 @@ void CLightning::StrikeThink()
 		if (pev->dmg || !FStringNull(pev->target))
 		{
 			TraceResult tr;
-			UTIL_TraceLine(pStart->pev->origin, pEnd->pev->origin, dont_ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(pStart->pev->origin, pEnd->pev->origin, dont_ignore_monsters, nullptr, &tr);
 			if (pev->dmg)
 				BeamDamageInstant(&tr, pev->dmg);
 
 			//LRC - tripbeams
 			CBaseEntity* pTrip;
-			if (!FStringNull(pev->target) && (pTrip = GetTripEntity(&tr)) != NULL)
+			if (!FStringNull(pev->target) && (pTrip = GetTripEntity(&tr)) != nullptr)
 				FireTargets(STRING(pev->target), pTrip, this, USE_TOGGLE, 0);
 		}
 	}
@@ -816,32 +816,32 @@ CBaseEntity* CBeam::GetTripEntity(TraceResult* ptr)
 {
 	CBaseEntity* pTrip;
 
-	if (ptr->flFraction == 1.0 || ptr->pHit == NULL)
-		return NULL;
+	if (ptr->flFraction == 1.0 || ptr->pHit == nullptr)
+		return nullptr;
 
 	pTrip = CBaseEntity::Instance(ptr->pHit);
-	if (pTrip == NULL)
-		return NULL;
+	if (pTrip == nullptr)
+		return nullptr;
 
 	if (FStringNull(pev->netname))
 	{
 		if (pTrip->pev->flags & (FL_CLIENT | FL_MONSTER))
 			return pTrip;
 		else
-			return NULL;
+			return nullptr;
 	}
 	else if (FClassnameIs(pTrip->pev, STRING(pev->netname)))
 		return pTrip;
 	else if (FStrEq(STRING(pTrip->pev->targetname), STRING(pev->netname)))
 		return pTrip;
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CBeam::BeamDamage(TraceResult* ptr)
 {
 	RelinkBeam();
-	if (ptr->flFraction != 1.0 && ptr->pHit != NULL)
+	if (ptr->flFraction != 1.0 && ptr->pHit != nullptr)
 	{
 		CBaseEntity* pHit = CBaseEntity::Instance(ptr->pHit);
 		if (pHit)
@@ -877,7 +877,7 @@ void CLightning::TripThink()
 
 	if (pev->dmg != 0)
 	{
-		UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, nullptr, &tr);
 		BeamDamage(&tr);
 	}
 
@@ -887,7 +887,7 @@ void CLightning::TripThink()
 		// nicked from monster_tripmine:
 		//HACKHACK Set simple box using this really nice global!
 		gpGlobals->trace_flags = FTRACE_SIMPLEBOX;
-		UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(GetStartPos(), GetEndPos(), dont_ignore_monsters, nullptr, &tr);
 		CBaseEntity* pTrip = GetTripEntity(&tr);
 		if (pTrip)
 		{
@@ -1019,8 +1019,8 @@ void CLightning::BeamUpdatePoints()
 	int beamType;
 	bool pointStart, pointEnd;
 
-	CBaseEntity* pStart = UTIL_FindEntityByTargetname(NULL, STRING(m_iszStartEntity));
-	CBaseEntity* pEnd = UTIL_FindEntityByTargetname(NULL, STRING(m_iszEndEntity));
+	CBaseEntity* pStart = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszStartEntity));
+	CBaseEntity* pEnd = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszEndEntity));
 	if (!pStart || !pEnd)
 		return;
 	pointStart = IsPointEntity(pStart);
@@ -1128,8 +1128,8 @@ void CLaser::PostSpawn()
 	if (m_iszStartSpriteName)
 	{
 		//LRC: allow the spritename to be the name of an env_sprite
-		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(NULL, STRING(m_iszStartSpriteName));
-		if (pTemp == NULL)
+		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszStartSpriteName));
+		if (pTemp == nullptr)
 		{
 			m_pStartSprite = CSprite::SpriteCreate(STRING(m_iszStartSpriteName), pev->origin, true);
 			if (m_pStartSprite)
@@ -1138,7 +1138,7 @@ void CLaser::PostSpawn()
 		else if (!FClassnameIs(pTemp->pev, "env_sprite"))
 		{
 			ALERT(at_error, "env_laser \"%s\" found startsprite %s, but can't use: not an env_sprite\n", STRING(pev->targetname), STRING(m_iszStartSpriteName));
-			m_pStartSprite = NULL;
+			m_pStartSprite = nullptr;
 		}
 		else
 		{
@@ -1152,13 +1152,13 @@ void CLaser::PostSpawn()
 		m_pStartSprite = CSprite::SpriteCreate("sprites/null.spr", pev->origin, true);
 	}
 	else
-		m_pStartSprite = NULL;
+		m_pStartSprite = nullptr;
 
 
 	if (m_iszEndSpriteName)
 	{
-		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(NULL, STRING(m_iszEndSpriteName));
-		if (pTemp == NULL)
+		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(nullptr, STRING(m_iszEndSpriteName));
+		if (pTemp == nullptr)
 		{
 			m_pEndSprite = CSprite::SpriteCreate(STRING(m_iszEndSpriteName), pev->origin, true);
 			if (m_pEndSprite)
@@ -1167,7 +1167,7 @@ void CLaser::PostSpawn()
 		else if (!FClassnameIs(pTemp->pev, "env_sprite"))
 		{
 			ALERT(at_error, "env_laser \"%s\" found endsprite %s, but can't use: not an env_sprite\n", STRING(pev->targetname), STRING(m_iszEndSpriteName));
-			m_pEndSprite = NULL;
+			m_pEndSprite = nullptr;
 		}
 		else
 		{
@@ -1181,7 +1181,7 @@ void CLaser::PostSpawn()
 		m_pEndSprite = CSprite::SpriteCreate("sprites/null.spr", pev->origin, true);
 	}
 	else
-		m_pEndSprite = NULL;
+		m_pEndSprite = nullptr;
 
 	//LRC
 	if (m_pStartSprite && m_pEndSprite && pev->spawnflags & SF_LASER_INTERPOLATE)
@@ -1428,11 +1428,11 @@ void CLaser::StrikeThink()
 	if (m_iProjection)
 	{
 		Vector vecProject = startpos + 4096 * ((m_firePosition - startpos).Normalize());
-		UTIL_TraceLine(startpos, vecProject, iIgnoreMonsters, iIgnoreGlass, NULL, &tr);
+		UTIL_TraceLine(startpos, vecProject, iIgnoreMonsters, iIgnoreGlass, nullptr, &tr);
 	}
 	else
 	{
-		UTIL_TraceLine(startpos, m_firePosition, iIgnoreMonsters, iIgnoreGlass, NULL, &tr);
+		UTIL_TraceLine(startpos, m_firePosition, iIgnoreMonsters, iIgnoreGlass, nullptr, &tr);
 	}
 
 	FireAtPoint(startpos, tr);
@@ -1443,7 +1443,7 @@ void CLaser::StrikeThink()
 		// nicked from monster_tripmine:
 		//HACKHACK Set simple box using this really nice global!
 		gpGlobals->trace_flags = FTRACE_SIMPLEBOX;
-		UTIL_TraceLine(startpos, m_firePosition, dont_ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(startpos, m_firePosition, dont_ignore_monsters, nullptr, &tr);
 		CBaseEntity* pTrip = GetTripEntity(&tr);
 		if (pTrip)
 		{
@@ -1581,7 +1581,7 @@ void CSprite::SpriteInit(const char* pSpriteName, const Vector& origin)
 
 CSprite* CSprite::SpriteCreate(const char* pSpriteName, const Vector& origin, bool animate)
 {
-	CSprite* pSprite = GetClassPtr((CSprite*)NULL);
+	CSprite* pSprite = GetClassPtr((CSprite*)nullptr);
 	pSprite->SpriteInit(pSpriteName, origin);
 	pSprite->pev->classname = MAKE_STRING("env_sprite");
 	pSprite->pev->solid = SOLID_NOT;
@@ -1670,7 +1670,7 @@ void CSprite::TurnOn()
 {
 	if (pev->message)
 	{
-		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(NULL, STRING(pev->message));
+		CBaseEntity* pTemp = UTIL_FindEntityByTargetname(nullptr, STRING(pev->message));
 		if (pTemp)
 			SetAttachment(pTemp->edict(), pev->frags);
 		else
@@ -2068,9 +2068,9 @@ void CGibShooter::Spawn()
 CBaseEntity* CGibShooter::CreateGib(Vector vecPos, Vector vecVel)
 {
 	if (CVAR_GET_FLOAT("violence_hgibs") == 0)
-		return NULL;
+		return nullptr;
 
-	CGib* pGib = GetClassPtr((CGib*)NULL);
+	CGib* pGib = GetClassPtr((CGib*)nullptr);
 
 	//	if (pGib)
 	//		ALERT(at_console, "Gib created ok\n");
@@ -2182,7 +2182,7 @@ void CGibShooter::ShootThink()
 		if ((pev->spawnflags & SF_GIBSHOOTER_REPEATABLE) != 0)
 		{
 			m_iGibs = m_iGibCapacity;
-			SetThink(NULL);
+			SetThink(nullptr);
 			DontThink();
 		}
 		else
@@ -2331,10 +2331,10 @@ void CEnvShooter::Precache()
 CBaseEntity* CEnvShooter::CreateGib(Vector vecPos, Vector vecVel)
 {
 	if (pev->noise)
-		pev->scale = CalcLocus_Number(this, STRING(pev->noise), 0); //AJH / MJB - allow locus_ratio for scale
+		pev->scale = CalcLocus_Number(this, STRING(pev->noise), nullptr); //AJH / MJB - allow locus_ratio for scale
 	if (m_iPhysics <= 1)											// normal gib or sticky gib
 	{
-		CGib* pGib = GetClassPtr((CGib*)NULL);
+		CGib* pGib = GetClassPtr((CGib*)nullptr);
 
 		pGib->pev->origin = vecPos;
 		pGib->pev->velocity = vecVel;
@@ -2380,7 +2380,7 @@ CBaseEntity* CEnvShooter::CreateGib(Vector vecPos, Vector vecVel)
 	}
 
 	// special shot
-	CShot* pShot = GetClassPtr((CShot*)NULL);
+	CShot* pShot = GetClassPtr((CShot*)nullptr);
 	if (FStringNull(m_iPhysics))
 		pShot->pev->movetype = MOVETYPE_BOUNCE; //G-Cont. fix for blank field m_iPhysics, e. g. - original HL
 	pShot->pev->classname = MAKE_STRING("shot");
@@ -2544,7 +2544,7 @@ void CTestEffect::TestThink()
 		}
 		m_flStartTime = gpGlobals->time;
 		m_iBeam = 0;
-		SetThink(NULL);
+		SetThink(nullptr);
 	}
 }
 
@@ -2675,7 +2675,7 @@ void CBlood::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType
 		Vector start = BloodPosition(pActivator);
 		TraceResult tr;
 
-		UTIL_TraceLine(start, start + forward * BloodAmount() * 2, ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(start, start + forward * BloodAmount() * 2, ignore_monsters, nullptr, &tr);
 		if (tr.flFraction != 1.0)
 			UTIL_BloodDecalTrace(&tr, Color());
 	}
@@ -2965,7 +2965,7 @@ bool CMessage::KeyValue(KeyValueData* pkvd)
 
 void CMessage::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
-	CBaseEntity* pPlayer = NULL;
+	CBaseEntity* pPlayer = nullptr;
 
 	if (pev->spawnflags & SF_MESSAGE_ALL)
 		UTIL_ShowMessageAll(STRING(pev->message));
@@ -3146,7 +3146,7 @@ void CEnvBeamTrail::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 {
 	if (pev->target)
 	{
-		CBaseEntity* pTarget = UTIL_FindEntityByTargetname(NULL, STRING(pev->target), pActivator);
+		CBaseEntity* pTarget = UTIL_FindEntityByTargetname(nullptr, STRING(pev->target), pActivator);
 		while (pTarget)
 		{
 			Affect(pTarget, useType);
@@ -3623,26 +3623,26 @@ void CEnvRain::Think()
 		switch (m_iExtent)
 		{
 		case EXTENT_OBSTRUCTED:
-			UTIL_TraceLine(vecSrc, vecDest, ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(vecSrc, vecDest, ignore_monsters, nullptr, &tr);
 			vecDest = tr.vecEndPos;
 			break;
 		case EXTENT_OBSTRUCTED_REVERSE:
-			UTIL_TraceLine(vecDest, vecSrc, ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(vecDest, vecSrc, ignore_monsters, nullptr, &tr);
 			vecSrc = tr.vecEndPos;
 			break;
 		case EXTENT_ARCING:
-			UTIL_TraceLine(vecSrc, vecDest, ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(vecSrc, vecDest, ignore_monsters, nullptr, &tr);
 			if (tr.flFraction == 1.0)
 				bDraw = false;
 			vecDest = tr.vecEndPos;
 			break;
 		case EXTENT_ARCING_THROUGH: //AJH - Arcs full length of brush only when blocked
-			UTIL_TraceLine(vecDest, vecSrc, dont_ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(vecDest, vecSrc, dont_ignore_monsters, nullptr, &tr);
 			if (tr.flFraction == 1.0)
 				bDraw = false;
 			break;
 		case EXTENT_ARCING_REVERSE:
-			UTIL_TraceLine(vecDest, vecSrc, ignore_monsters, NULL, &tr);
+			UTIL_TraceLine(vecDest, vecSrc, ignore_monsters, nullptr, &tr);
 			if (tr.flFraction == 1.0)
 				bDraw = false;
 			vecSrc = tr.vecEndPos;
@@ -3725,7 +3725,7 @@ void CEnvWarpBall::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE u
 	while (iDrawn < pev->frags && iTimes < (pev->frags * 3)) // try to draw <frags> beams, but give up after 3x<frags> tries.
 	{
 		vecDest = pev->health * (Vector(RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1), RANDOM_FLOAT(-1, 1)).Normalize());
-		UTIL_TraceLine(pev->origin, pev->origin + vecDest, ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(pev->origin, pev->origin + vecDest, ignore_monsters, nullptr, &tr);
 		if (tr.flFraction != 1.0)
 		{
 			// we hit something.
@@ -4015,7 +4015,7 @@ void CEnvDLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 void CEnvDLight::MakeLight(bool bActive)
 {
 	//	MESSAGE_BEGIN( MSG_ALL, gmsgKeyedDLight, NULL );
-	MESSAGE_BEGIN(MSG_ALL, gmsgKeyedELight, NULL);
+	MESSAGE_BEGIN(MSG_ALL, gmsgKeyedELight, nullptr);
 	WRITE_BYTE(m_iKey);
 	WRITE_BYTE(bActive); // visible?
 	if (bActive)
@@ -4086,8 +4086,8 @@ void CEnvELight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 {
 	if (pev->target)
 	{
-		m_hAttach = UTIL_FindEntityByTargetname(NULL, STRING(pev->target), pActivator);
-		if (m_hAttach == NULL)
+		m_hAttach = UTIL_FindEntityByTargetname(nullptr, STRING(pev->target), pActivator);
+		if (m_hAttach == nullptr)
 		{
 			ALERT(at_console, "env_elight \"%s\" can't find target %s\n", STRING(pev->targetname), STRING(pev->target));
 			return; // error?
@@ -4103,7 +4103,7 @@ void CEnvELight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 
 void CEnvELight::MakeLight(bool bActive)
 {
-	if (m_hAttach == NULL)
+	if (m_hAttach == nullptr)
 	{
 		DontThink();
 		pev->takedamage = 0;
@@ -4197,7 +4197,7 @@ void CEnvDecal::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 	TraceResult trace;
 	int entityIndex;
 
-	UTIL_TraceLine(vecPos, vecPos + vecOffs, ignore_monsters, NULL, &trace);
+	UTIL_TraceLine(vecPos, vecPos + vecOffs, ignore_monsters, nullptr, &trace);
 
 	if (trace.flFraction == 1.0)
 		return; // didn't hit anything, oh well
@@ -4335,7 +4335,7 @@ void CItemSoda::CanThink()
 
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-8, -8, 0), Vector(8, 8, 8));
-	SetThink(NULL);
+	SetThink(nullptr);
 	SetTouch(&CItemSoda::CanTouch);
 }
 
@@ -4359,7 +4359,7 @@ void CItemSoda::CanTouch(CBaseEntity* pOther)
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
 	pev->effects = EF_NODRAW;
-	SetTouch(NULL);
+	SetTouch(nullptr);
 	SetThink(&CItemSoda::SUB_Remove);
 	SetNextThink(0);
 }
@@ -4593,7 +4593,7 @@ void CEnvFog::SendData(Vector col, int iFadeTime, int iStartDist, int iEndDist)
 		CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
 		if (pPlayer)
 		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->pev);
+			MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, nullptr, pPlayer->pev);
 			WRITE_BYTE(col.x);
 			WRITE_BYTE(col.y);
 			WRITE_BYTE(col.z);
@@ -4633,7 +4633,7 @@ extern int gmsgSetSky;
 
 void CEnvSky ::DesiredAction()
 {
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSetSky, NULL);
+	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSetSky, nullptr);
 	WRITE_BYTE(1);				// mode
 	WRITE_COORD(pev->origin.x); // view position
 	WRITE_COORD(pev->origin.y);
@@ -4722,7 +4722,7 @@ void CParticle::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 	{ //AJH Spawnable env_particles!!
 
 		// Create a new entity with Cparticle private data
-		CParticle* pParticle = GetClassPtr((CParticle*)NULL);
+		CParticle* pParticle = GetClassPtr((CParticle*)nullptr);
 		pParticle->pev->classname = MAKE_STRING("particle");
 
 		if (pev->netname != NULL)
@@ -4819,7 +4819,7 @@ void CEnvMirror ::Spawn(void)
 	SET_MODEL(ENT(pev), STRING(pev->model));
 	SetThink(&CEnvMirror ::MirrorThink);
 	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER)
-		CBaseEntity::Create("player_marker", VecBModelOrigin(pev), pev->angles, NULL);
+		CBaseEntity::Create("player_marker", VecBModelOrigin(pev), pev->angles, nullptr);
 	m_iInitialRenderMode = pev->rendermode;
 	if (!m_flRadius)
 		m_flRadius = 330;

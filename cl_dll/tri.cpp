@@ -72,7 +72,7 @@ CShinySurface::CShinySurface(float fScale, float fAlpha, float fMinX, float fMax
 	m_fZ = fZ;
 	m_hsprSprite = 0;
 	sprintf(m_szSprite, szSprite);
-	m_pNext = NULL;
+	m_pNext = nullptr;
 }
 
 CShinySurface::~CShinySurface()
@@ -182,7 +182,7 @@ extern rain_properties Rain;
 
 void DrawRain(void)
 {
-	if (FirstChainDrip.p_Next == NULL)
+	if (FirstChainDrip.p_Next == nullptr)
 		return; // no drips to draw
 
 	HSPRITE hsprTexture;
@@ -206,7 +206,7 @@ void DrawRain(void)
 
 	if (Rain.weatherMode == 0) // draw rain
 	{
-		while (Drip != NULL)
+		while (Drip != nullptr)
 		{
 			cl_drip* nextdDrip = Drip->p_Next;
 
@@ -249,7 +249,7 @@ void DrawRain(void)
 		float matrix[3][4];
 		AngleMatrix(normal, matrix); // calc view matrix
 
-		while (Drip != NULL)
+		while (Drip != nullptr)
 		{
 			cl_drip* nextdDrip = Drip->p_Next;
 
@@ -293,7 +293,7 @@ extern cl_rainfx FirstChainFX;
 
 void DrawFXObjects(void)
 {
-	if (FirstChainFX.p_Next == NULL)
+	if (FirstChainFX.p_Next == nullptr)
 		return; // no objects to draw
 
 	float curtime = gEngfuncs.GetClientTime();
@@ -309,7 +309,7 @@ void DrawFXObjects(void)
 
 	// go through objects list
 	cl_rainfx* curFX = FirstChainFX.p_Next;
-	while (curFX != NULL)
+	while (curFX != nullptr)
 	{
 		cl_rainfx* nextFX = curFX->p_Next;
 

@@ -47,7 +47,7 @@ void VGui_Startup()
 
 	//root->getSurfaceBase()->setEmulatedCursorVisible(true);
 
-	if (gViewPort != NULL)
+	if (gViewPort != nullptr)
 	{
 		//		root->removeChild(gViewPort);
 
@@ -67,5 +67,5 @@ void VGui_Startup()
 void VGui_Shutdown()
 {
 	delete gViewPort;
-	gViewPort = NULL;
+	gViewPort = nullptr;
 }

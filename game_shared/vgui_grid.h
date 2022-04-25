@@ -66,8 +66,8 @@ public:
 // Panel overrides.
 public:
 	
-	virtual void		paint();
-	virtual void		paintBackground();
+	void		paint() override;
+	void		paintBackground() override;
 
 protected:
 

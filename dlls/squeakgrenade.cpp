@@ -440,7 +440,7 @@ bool CSqueak::GetItemInfo(ItemInfo* p)
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "Snarks";
 	p->iMaxAmmo1 = SNARK_MAX_CARRY;
-	p->pszAmmo2 = NULL;
+	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 4;
@@ -510,7 +510,7 @@ void CSqueak::PrimaryAttack()
 		}
 
 		// find place to toss monster
-		UTIL_TraceLine(trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, NULL, &tr);
+		UTIL_TraceLine(trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, nullptr, &tr);
 
 		int flags;
 #ifdef CLIENT_WEAPONS

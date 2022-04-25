@@ -35,7 +35,7 @@
 // be spawned, and still remain fairly flexible
 const char* CBreakable::pSpawnObjects[] =
 	{
-		NULL,				  // 0
+		nullptr,				  // 0
 		"item_battery",		  // 1
 		"item_healthkit",	  // 2
 		"weapon_9mmhandgun",  // 3
@@ -189,7 +189,7 @@ void CBreakable::Spawn()
 
 	if (m_iszWhenHit) //LRC - locus trigger
 	{
-		m_pHitProxy = GetClassPtr((CPointEntity*)NULL);
+		m_pHitProxy = GetClassPtr((CPointEntity*)nullptr);
 	}
 
 	pev->solid = SOLID_BSP;
@@ -212,7 +212,7 @@ void CBreakable::Spawn()
 	SetTouch(&CBreakable::BreakTouch);
 	SetUse(&CBreakable::BreakUse);
 	if (FBitSet(pev->spawnflags, SF_BREAK_TRIGGER_ONLY)) // Only break on trigger
-		SetTouch(NULL);
+		SetTouch(nullptr);
 
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
 	if (!IsBreakable() && pev->rendermode != kRenderNormal)
@@ -278,7 +278,7 @@ const char* CBreakable::pSoundsGlass[] =
 
 const char** CBreakable::MaterialSoundList(Materials precacheMaterial, int& soundCount)
 {
-	const char** pSoundList = NULL;
+	const char** pSoundList = nullptr;
 
 	switch (precacheMaterial)
 	{
@@ -517,7 +517,7 @@ void CBreakable::BreakTouch(CBaseEntity* pOther)
 
 		if (flDamage >= pev->health)
 		{
-			SetTouch(NULL);
+			SetTouch(nullptr);
 			TakeDamage(pevToucher, pevToucher, flDamage, DMG_CRUSH);
 
 			// do a little damage to player if we broke glass or computer
@@ -532,7 +532,7 @@ void CBreakable::BreakTouch(CBaseEntity* pOther)
 		DamageSound();
 
 		SetThink(&CBreakable::Die);
-		SetTouch(NULL);
+		SetTouch(nullptr);
 
 		if (m_flDelay == 0)
 		{ // !!!BUGBUG - why doesn't zero delay work?
@@ -685,9 +685,9 @@ void CBreakable::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	//LRC
 	if (m_iszWhenHit)
 	{
-		if (m_pHitProxy == NULL)
+		if (m_pHitProxy == nullptr)
 		{ //AJH may need to reset this as it's null after save/load
-			m_pHitProxy = GetClassPtr((CPointEntity*)NULL);
+			m_pHitProxy = GetClassPtr((CPointEntity*)nullptr);
 		}
 
 		m_pHitProxy->pev->origin = ptr->vecEndPos;
@@ -774,7 +774,7 @@ void CBreakable::Die()
 {
 	Vector vecSpot;		// shard origin
 	Vector vecVelocity; // shard velocity
-	CBaseEntity* pEntity = NULL;
+	CBaseEntity* pEntity = nullptr;
 	char cFlag = 0;
 	int pitch;
 	float fvol;
@@ -933,7 +933,7 @@ void CBreakable::Die()
 		for (int i = 0; i < count; i++)
 		{
 			ClearBits(pList[i]->pev->flags, FL_ONGROUND);
-			pList[i]->pev->groundentity = NULL;
+			pList[i]->pev->groundentity = nullptr;
 		}
 	}
 
@@ -951,7 +951,7 @@ void CBreakable::Die()
 		LIGHT_STYLE(-m_iStyle, "z");
 
 	// Fire targets on break
-	SUB_UseTargets(NULL, USE_TOGGLE, 0);
+	SUB_UseTargets(nullptr, USE_TOGGLE, 0);
 
 	if (m_iRespawnTime == -1)
 	{
@@ -973,7 +973,7 @@ void CBreakable::Die()
 		{
 			m_pHitProxy->SetThink(&CPointEntity::SUB_Remove);
 			m_pHitProxy->SetNextThink(0.1);
-			m_pHitProxy = NULL;
+			m_pHitProxy = nullptr;
 		}
 
 		SetThink(&CBreakable::SUB_Remove);

@@ -21,7 +21,7 @@ private:
 public:
 	StackLayout(int vgap,bool fitWide);
 public:
-	virtual void performLayout(Panel* panel);
+	void performLayout(Panel* panel) override;
 };
 
 }

@@ -30,7 +30,7 @@ public:
 private:
 	virtual void init(int thickness,Color color);
 protected:
-	virtual void paint(Panel* panel);
+	void paint(Panel* panel) override;
 };
 
 }

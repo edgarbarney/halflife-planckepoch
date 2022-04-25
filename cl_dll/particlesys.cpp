@@ -18,7 +18,7 @@ bool ParticleSystem::c_bCosTableInit = false;
 
 ParticleType::ParticleType(ParticleType* pNext)
 {
-	m_pSprayType = m_pOverlayType = NULL;
+	m_pSprayType = m_pOverlayType = nullptr;
 	m_StartAngle = RandomRange(45);
 	m_hSprite = 0;
 	m_pNext = pNext;
@@ -36,11 +36,11 @@ ParticleType::ParticleType(ParticleType* pNext)
 particle* ParticleType::CreateParticle(ParticleSystem* pSys) //particle *pPart)
 {
 	if (!pSys)
-		return NULL;
+		return nullptr;
 
 	particle* pPart = pSys->ActivateParticle();
 	if (!pPart)
-		return NULL;
+		return nullptr;
 
 	pPart->age = 0.0;
 	pPart->age_death = m_Life.GetInstance();
@@ -61,7 +61,7 @@ void ParticleType::InitParticle(particle* pPart, ParticleSystem* pSys)
 	pPart->accel[2] = m_Gravity.GetInstance();
 	pPart->m_iEntIndex = 0;
 
-	particle* pOverlay = NULL;
+	particle* pOverlay = nullptr;
 	if (m_pOverlayType)
 	{
 		// create an overlay for this particle
@@ -123,14 +123,14 @@ void ParticleType::InitParticle(particle* pPart, ParticleSystem* pSys)
 
 RandomRange::RandomRange(char* szToken)
 {
-	char* cOneDot = NULL;
+	char* cOneDot = nullptr;
 	m_bDefined = true;
 
 	for (char* c = szToken; *c; c++)
 	{
 		if (*c == '.')
 		{
-			if (cOneDot != NULL)
+			if (cOneDot != nullptr)
 			{
 				// found two dots in a row - it's a range
 
@@ -148,7 +148,7 @@ RandomRange::RandomRange(char* szToken)
 		}
 		else
 		{
-			cOneDot = NULL;
+			cOneDot = nullptr;
 		}
 	}
 
@@ -163,8 +163,8 @@ ParticleSystem::ParticleSystem(int iEntIndex, char* szFilename)
 	int iParticles = 100; // default
 
 	m_iEntIndex = iEntIndex;
-	m_pNextSystem = NULL;
-	m_pFirstType = NULL;
+	m_pNextSystem = nullptr;
+	m_pFirstType = nullptr;
 	if (!c_bCosTableInit)
 	{
 		for (int i = 0; i < 360 + 90; i++)
@@ -174,7 +174,7 @@ ParticleSystem::ParticleSystem(int iEntIndex, char* szFilename)
 		c_bCosTableInit = true;
 	}
 
-	char* szFile = (char*)gEngfuncs.COM_LoadFile(szFilename, 5, NULL);
+	char* szFile = (char*)gEngfuncs.COM_LoadFile(szFilename, 5, nullptr);
 	char szToken[1024];
 
 	if (!szFile)
@@ -218,8 +218,8 @@ void ParticleSystem::AllocateParticles(int iParticles)
 {
 	m_pAllParticles = new particle[iParticles];
 	m_pFreeParticle = m_pAllParticles;
-	m_pActiveParticle = NULL;
-	m_pMainParticle = NULL;
+	m_pActiveParticle = nullptr;
+	m_pMainParticle = nullptr;
 
 	// initialise the linked list
 	particle* pLast = m_pAllParticles;
@@ -232,7 +232,7 @@ void ParticleSystem::AllocateParticles(int iParticles)
 		pLast = pParticle;
 		pParticle++;
 	}
-	pLast->nextpart = NULL;
+	pLast->nextpart = nullptr;
 }
 
 ParticleSystem::~ParticleSystem(void)
@@ -259,7 +259,7 @@ ParticleType* ParticleSystem::GetType(const char* szName)
 		if (!stricmp(pType->m_szName, szName))
 			return pType;
 	}
-	return NULL;
+	return nullptr;
 }
 
 ParticleType* ParticleSystem::AddPlaceholderType(const char* szName)
@@ -580,7 +580,7 @@ bool ParticleSystem::UpdateSystem(float frametime, /*vec3_t &right, vec3_t &up,*
 	if (!source || source->curstate.messagenum < messagenum)
 		return true;
 
-	if (m_pMainParticle == NULL)
+	if (m_pMainParticle == nullptr)
 	{
 		//	gEngfuncs.Con_Printf("body %d\n", source->curstate.body);
 		if (source->curstate.body)
@@ -603,11 +603,11 @@ bool ParticleSystem::UpdateSystem(float frametime, /*vec3_t &right, vec3_t &up,*
 	else if (source && source->curstate.body == 0)
 	{
 		m_pMainParticle->age_death = 0; // die now
-		m_pMainParticle = NULL;
+		m_pMainParticle = nullptr;
 	}
 
 	particle* pParticle = m_pActiveParticle;
-	particle* pLast = NULL;
+	particle* pLast = nullptr;
 
 	//	gEngfuncs.GetViewAngles((float*)normal);
 	//	AngleVectors(normal,forward,right,up);
@@ -833,7 +833,7 @@ void ParticleSystem::DrawParticle(particle* part, Vector& right, Vector& up)
 		if (pDraw->pType->m_iDrawCond)
 		{
 			if (iContents == 0)
-				iContents = gEngfuncs.PM_PointContents(origin, NULL);
+				iContents = gEngfuncs.PM_PointContents(origin, nullptr);
 
 			if (iContents != pDraw->pType->m_iDrawCond)
 				continue;

@@ -59,7 +59,7 @@ void ProcessRain(void)
 		return;
 	}
 
-	if (Rain.dripsPerSecond == 0 && FirstChainDrip.p_Next == NULL)
+	if (Rain.dripsPerSecond == 0 && FirstChainDrip.p_Next == nullptr)
 	{
 		// keep nextspawntime correct
 		rain_nextspawntime = rain_curtime;
@@ -72,7 +72,7 @@ void ProcessRain(void)
 	double timeBetweenDrips = 1 / (double)Rain.dripsPerSecond;
 
 	cl_drip* curDrip = FirstChainDrip.p_Next;
-	cl_drip* nextDrip = NULL;
+	cl_drip* nextDrip = nullptr;
 
 	cl_entity_t* player = gEngfuncs.GetLocalPlayer();
 
@@ -82,7 +82,7 @@ void ProcessRain(void)
 	int debug_attempted = 0;
 	int debug_dropped = 0;
 
-	while (curDrip != NULL) // go through list
+	while (curDrip != nullptr) // go through list
 	{
 		nextDrip = curDrip->p_Next; // save pointer to next drip
 
@@ -107,7 +107,7 @@ void ProcessRain(void)
 			}
 
 			curDrip->p_Prev->p_Next = curDrip->p_Next; // link chain
-			if (nextDrip != NULL)
+			if (nextDrip != nullptr)
 				nextDrip->p_Prev = curDrip->p_Prev;
 			delete curDrip;
 
@@ -166,14 +166,14 @@ void ProcessRain(void)
 			}
 
 			// falling to water?
-			int contents = gEngfuncs.PM_PointContents(pmtrace.endpos, NULL);
+			int contents = gEngfuncs.PM_PointContents(pmtrace.endpos, nullptr);
 			if (contents == CONTENTS_WATER)
 			{
 				int waterEntity = gEngfuncs.PM_WaterEntity(pmtrace.endpos);
 				if (waterEntity > 0)
 				{
 					cl_entity_t* pwater = gEngfuncs.GetEntityByIndex(waterEntity);
-					if (pwater && (pwater->model != NULL))
+					if (pwater && (pwater->model != nullptr))
 					{
 						deathHeight = pwater->curstate.maxs[2];
 					}
@@ -229,7 +229,7 @@ void ProcessRain(void)
 			// add to first place in chain
 			newClDrip->p_Next = FirstChainDrip.p_Next;
 			newClDrip->p_Prev = &FirstChainDrip;
-			if (newClDrip->p_Next != NULL)
+			if (newClDrip->p_Next != nullptr)
 				newClDrip->p_Next->p_Prev = newClDrip;
 			FirstChainDrip.p_Next = newClDrip;
 
@@ -288,7 +288,7 @@ void WaterLandingEffect(cl_drip* drip)
 	// add to first place in chain
 	newFX->p_Next = FirstChainFX.p_Next;
 	newFX->p_Prev = &FirstChainFX;
-	if (newFX->p_Next != NULL)
+	if (newFX->p_Next != nullptr)
 		newFX->p_Next->p_Prev = newFX;
 	FirstChainFX.p_Next = newFX;
 
@@ -308,9 +308,9 @@ void ProcessFXObjects(void)
 	float curtime = gEngfuncs.GetClientTime();
 
 	cl_rainfx* curFX = FirstChainFX.p_Next;
-	cl_rainfx* nextFX = NULL;
+	cl_rainfx* nextFX = nullptr;
 
-	while (curFX != NULL) // go through FX objects list
+	while (curFX != nullptr) // go through FX objects list
 	{
 		nextFX = curFX->p_Next; // save pointer to next
 
@@ -318,7 +318,7 @@ void ProcessFXObjects(void)
 		if ((curFX->birthTime + curFX->life) < curtime)
 		{
 			curFX->p_Prev->p_Next = curFX->p_Next; // link chain
-			if (nextFX != NULL)
+			if (nextFX != nullptr)
 				nextFX->p_Prev = curFX->p_Prev;
 			delete curFX;
 			fxcounter--;
@@ -337,9 +337,9 @@ void ResetRain(void)
 {
 	// delete all drips
 	cl_drip* delDrip = FirstChainDrip.p_Next;
-	FirstChainDrip.p_Next = NULL;
+	FirstChainDrip.p_Next = nullptr;
 
-	while (delDrip != NULL)
+	while (delDrip != nullptr)
 	{
 		cl_drip* nextDrip = delDrip->p_Next; // save pointer to next drip in chain
 		delete delDrip;
@@ -349,9 +349,9 @@ void ResetRain(void)
 
 	// delete all FX objects
 	cl_rainfx* delFX = FirstChainFX.p_Next;
-	FirstChainFX.p_Next = NULL;
+	FirstChainFX.p_Next = nullptr;
 
-	while (delFX != NULL)
+	while (delFX != nullptr)
 	{
 		cl_rainfx* nextFX = delFX->p_Next;
 		delete delFX;
@@ -389,8 +389,8 @@ void InitRain(void)
 	FirstChainDrip.xDelta = 0;
 	FirstChainDrip.yDelta = 0;
 	FirstChainDrip.landInWater = 0;
-	FirstChainDrip.p_Next = NULL;
-	FirstChainDrip.p_Prev = NULL;
+	FirstChainDrip.p_Next = nullptr;
+	FirstChainDrip.p_Prev = nullptr;
 
 	FirstChainFX.alpha = 0;
 	FirstChainFX.birthTime = 0;
@@ -398,8 +398,8 @@ void InitRain(void)
 	FirstChainFX.origin[0] = 0;
 	FirstChainFX.origin[1] = 0;
 	FirstChainFX.origin[2] = 0;
-	FirstChainFX.p_Next = NULL;
-	FirstChainFX.p_Prev = NULL;
+	FirstChainFX.p_Next = nullptr;
+	FirstChainFX.p_Prev = nullptr;
 
 	rain_oldtime = 0;
 	rain_curtime = 0;
@@ -442,7 +442,7 @@ void ParseRainFile(void)
 	mapname[strlen(mapname) - 4] = 0;
 	sprintf(mapname, "%s.pcs", mapname);
 
-	pfile = (char*)gEngfuncs.COM_LoadFile(mapname, 5, NULL);
+	pfile = (char*)gEngfuncs.COM_LoadFile(mapname, 5, nullptr);
 	if (!pfile)
 	{
 		if (gHUD.RainInfo->value)

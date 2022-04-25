@@ -85,7 +85,7 @@ static CHLVoiceStatusHelper g_VoiceStatusHelper;
 extern client_sprite_t* GetSpriteList(client_sprite_t* pList, const char* psz, int iRes, int iCount);
 
 extern cvar_t* sensitivity;
-cvar_t* cl_lw = NULL;
+cvar_t* cl_lw = nullptr;
 cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
@@ -452,8 +452,8 @@ void CHud::Init()
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
 
 	RainInfo = gEngfuncs.pfnRegisterVariable("cl_raininfo", "0", 0);
-	m_pSpriteList = NULL;
-	m_pShinySurface = NULL; //LRC
+	m_pSpriteList = nullptr;
+	m_pShinySurface = nullptr; //LRC
 
 	// Clear any old HUD list
 	if (m_pHudList)
@@ -465,7 +465,7 @@ void CHud::Init()
 			m_pHudList = m_pHudList->pNext;
 			free(pList);
 		}
-		m_pHudList = NULL;
+		m_pHudList = nullptr;
 	}
 
 	// In case we get messages before the first update -- time will be valid
@@ -491,7 +491,7 @@ void CHud::Init()
 	m_Menu.Init();
 	InitRain();
 
-	MsgFunc_ResetHUD(0, 0, NULL);
+	MsgFunc_ResetHUD(nullptr, 0, nullptr);
 }
 
 // CHud destructor
@@ -510,7 +510,7 @@ CHud::~CHud()
 	if (m_pShinySurface)
 	{
 		delete m_pShinySurface;
-		m_pShinySurface = NULL;
+		m_pShinySurface = nullptr;
 	}
 
 	if (m_pHudList)
@@ -522,7 +522,7 @@ CHud::~CHud()
 			m_pHudList = m_pHudList->pNext;
 			free(pList);
 		}
-		m_pHudList = NULL;
+		m_pHudList = nullptr;
 	}
 }
 
@@ -564,7 +564,7 @@ void CHud::VidInit()
 	if (m_pShinySurface)
 	{
 		delete m_pShinySurface;
-		m_pShinySurface = NULL;
+		m_pShinySurface = nullptr;
 	}
 
 	if (ScreenWidth < 640)

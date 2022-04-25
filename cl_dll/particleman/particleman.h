@@ -9,7 +9,7 @@ class IParticleMan : public IBaseInterface
 {
 
 protected:
-	virtual ~IParticleMan() {}
+	~IParticleMan() override {}
 
 public:
 	virtual void SetUp(cl_enginefunc_t* pEnginefuncs) = 0;

@@ -192,7 +192,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 		int i = (int)(flTime) % 2;
 		i = grgLogoFrame[i] - 1;
 
-		SPR_DrawAdditive(i, x, y, NULL);
+		SPR_DrawAdditive(i, x, y, nullptr);
 
 		//Draw the camera reticle (top left)
 		HUD_camera_rect = gHUD.GetSpriteIndex("camera_rect_tl");
@@ -279,7 +279,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 		int iFrame = (int)(flTime * 20) % MAX_LOGO_FRAMES;
 		i = grgLogoFrame[iFrame] - 1;
 
-		SPR_DrawAdditive(i, x, y, NULL);
+		SPR_DrawAdditive(i, x, y, nullptr);
 	}
 
 	/*

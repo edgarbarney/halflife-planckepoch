@@ -411,7 +411,7 @@ public:
 	bool Init() override;
 	static char* LocaliseTextString(const char* msg, char* dst_buffer, int buffer_size);
 	static char* BufferedLocaliseTextString(const char* msg);
-	const char* LookupString(const char* msg_name, int* msg_dest = NULL);
+	const char* LookupString(const char* msg_name, int* msg_dest = nullptr);
 	bool MsgFunc_TextMsg(const char* pszName, int iSize, void* pbuf);
 };
 
@@ -646,7 +646,7 @@ public:
 	bool Redraw(float flTime, bool intermission);
 	bool UpdateClientData(client_data_t* cdata, float time);
 
-	CHud() : m_iSpriteCount(0), m_pHudList(NULL), m_pShinySurface(NULL) {}
+	CHud() : m_pHudList(nullptr), m_iSpriteCount(0), m_pShinySurface(nullptr) {}
 	~CHud(); // destructor, frees allocated memory
 
 	// user messages

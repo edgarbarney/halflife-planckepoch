@@ -57,13 +57,13 @@ public:
 	virtual void getContentSize(int& wide,int& tall);
 	virtual void setTextAlignment(Alignment alignment);
 	virtual void setContentAlignment(Alignment alignment);
-	virtual Panel* createPropertyPanel();
-	virtual void setFgColor(int r,int g,int b,int a);
-	virtual void setFgColor(vgui::Scheme::SchemeColor sc);
+	Panel* createPropertyPanel() override;
+	void setFgColor(int r,int g,int b,int a) override;
+	void setFgColor(vgui::Scheme::SchemeColor sc) override;
 	virtual void setContentFitted(bool state);
 protected:
 	virtual void computeAlignment(int& tx0,int& ty0,int& tx1,int& ty1,int& ix0,int& iy0,int& ix1,int& iy1,int& minX,int& minY,int& maxX,int& maxY);
-	virtual void paint();
+	void paint() override;
 	virtual void recomputeMinimumSize();
 protected:
 	bool       _textEnabled;

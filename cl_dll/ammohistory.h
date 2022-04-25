@@ -62,7 +62,7 @@ public:
 
 	void DropWeapon(WEAPON* wp)
 	{
-		rgSlots[wp->iSlot][wp->iSlotPos] = NULL;
+		rgSlots[wp->iSlot][wp->iSlotPos] = nullptr;
 	}
 
 	void DropAllWeapons()

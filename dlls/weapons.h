@@ -253,7 +253,7 @@ public:
 
 	virtual bool UpdateClientData(CBasePlayer* pPlayer) { return false; }
 
-	virtual CBasePlayerItem* GetWeaponPtr() { return NULL; }
+	virtual CBasePlayerItem* GetWeaponPtr() { return nullptr; }
 
 	static inline ItemInfo ItemInfoArray[MAX_WEAPONS];
 	static inline AmmoInfo AmmoInfoArray[MAX_AMMO_SLOTS];
@@ -459,7 +459,7 @@ class CWeaponBox : public CBaseEntity
 	void Touch(CBaseEntity* pOther) override;
 	bool KeyValue(KeyValueData* pkvd) override;
 	bool IsEmpty();
-	int GiveAmmo(int iCount, const char* szName, int iMax, int* pIndex = NULL);
+	int GiveAmmo(int iCount, const char* szName, int iMax, int* pIndex = nullptr);
 	void SetObjectCollisionBox() override;
 
 public:

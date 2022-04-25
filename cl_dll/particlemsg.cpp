@@ -25,7 +25,7 @@ bool CHudParticle::Init(void)
 	if (g_pParticleSystems)
 	{
 		delete g_pParticleSystems;
-		g_pParticleSystems = NULL;
+		g_pParticleSystems = nullptr;
 	}
 
 	g_pParticleSystems = new ParticleSystemManager();

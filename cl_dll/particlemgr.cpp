@@ -9,11 +9,11 @@
 #include "particlemgr.h"
 #include "particlesys.h"
 
-ParticleSystemManager* g_pParticleSystems = NULL;
+ParticleSystemManager* g_pParticleSystems = nullptr;
 
 ParticleSystemManager::ParticleSystemManager(void)
 {
-	m_pFirstSystem = NULL;
+	m_pFirstSystem = nullptr;
 	//systemio = NULL;
 }
 
@@ -38,7 +38,7 @@ ParticleSystem* ParticleSystemManager::FindSystem(cl_entity_t* pEntity)
 			return pSys;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 // blended particles don't use the z-buffer, so we need to sort them before drawing.
@@ -110,8 +110,8 @@ void ParticleSystemManager::UpdateSystems(float frametime) //LRC - now with adde
 	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAdd);
 	//	gEngfuncs.pTriAPI->RenderMode(kRenderTransAlpha);
 	ParticleSystem* pSystem;
-	ParticleSystem* pLast = NULL;
-	ParticleSystem* pLastSorted = NULL;
+	ParticleSystem* pLast = nullptr;
+	ParticleSystem* pLastSorted = nullptr;
 	cl_entity_t* localPlayer = gEngfuncs.GetLocalPlayer();
 	//	vec3_t normal, forward, right, up;
 
@@ -160,5 +160,5 @@ void ParticleSystemManager::ClearSystems(void)
 		pSystem = pTemp;
 	}
 
-	m_pFirstSystem = NULL;
+	m_pFirstSystem = nullptr;
 }
