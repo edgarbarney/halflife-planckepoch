@@ -23,6 +23,7 @@
 #include "customentity.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+#include "FranUtils.hpp"	
 
 #define EGON_SWITCH_NARROW_TIME 0.75 // Time it takes to switch fire modes
 #define EGON_SWITCH_WIDE_TIME 1.5
@@ -178,6 +179,10 @@ void CEgon::Attack()
 			return;
 		}
 
+#ifndef CLIENT_DLL
+		FranUtils::EmitDlight(pev->origin, 16, {50, 50, 100}, 0.01f, 0.1f);
+#endif
+
 		m_flAmmoUseTime = gpGlobals->time; // start using ammo ASAP.
 
 		PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usEgonFire, 0.0, g_vecZero, g_vecZero, 0.0, 0.0, 0, m_fireMode, 1, 0);
@@ -209,6 +214,10 @@ void CEgon::Attack()
 			EndAttack();
 			m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 		}
+
+#ifndef CLIENT_DLL
+		FranUtils::EmitDlight(pev->origin, 16, {50, 50, 100}, 0.01f, 0.1f);
+#endif
 	}
 	break;
 	}

@@ -474,8 +474,8 @@ void EV_HLDM_FireBullets(int idx, float* forward, float* right, float* up, int c
 				//RENDERERS START
 				EV_HLDM_DecalGunshot( &tr, iBulletType, vecSrc, vecEnd );
 				//RENDERERS END
-			
-					break;
+				break;
+
 			case BULLET_PLAYER_MP5:		
 				
 				if ( !tracer )
@@ -550,6 +550,8 @@ void EV_FireGlock1(event_args_t* args)
 	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
 
 	EV_GetGunPosition(args, vecSrc, origin);
+
+	VectorCopy(forward, vecAiming);
 
 	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_9MM, 0, nullptr, args->fparam1, args->fparam2 );
 }
@@ -863,6 +865,8 @@ void EV_FirePython(event_args_t* args)
 	}
 
 	EV_GetGunPosition(args, vecSrc, origin);
+
+	VectorCopy(forward, vecAiming);
 
 	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, nullptr, args->fparam1, args->fparam2 );
 }
