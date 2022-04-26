@@ -169,6 +169,9 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		//DEFINE_FIELD( CBasePlayer, m_fOnTarget, FIELD_BOOLEAN ), // Don't need to restore
 		//DEFINE_FIELD( CBasePlayer, m_nCustomSprayFrames, FIELD_INTEGER ), // Don't need to restore
 
+		// water
+		DEFINE_FIELD(CBasePlayer, nextSplashTime, FIELD_FLOAT),
+
 };
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer);
@@ -2037,6 +2040,67 @@ void CBasePlayer::PreThink()
 		pev->flags |= FL_ONTRAIN;
 	else
 		pev->flags &= ~FL_ONTRAIN;
+
+	//===========================================================================================
+	// WATER STEP START
+	//===========================================================================================
+	if (pev->waterlevel == 1 && pev->velocity.Length() > 0)
+	{
+
+		if (nextSplashTime < gpGlobals->time)
+		{
+			TraceResult tr;
+			Vector vecSrc = pev->origin;
+			Vector vecEnd = vecSrc - Vector(0, 0, 8192);
+			int traceContent;
+
+			UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, ENT(pev), &tr);
+			traceContent = UTIL_PointContents(tr.vecEndPos);
+
+			if (traceContent == CONTENTS_WATER)
+			{
+				vecSrc = tr.vecEndPos;
+				vecEnd = vecSrc + Vector(0, 0, 1);
+
+				UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, ENT(pev), &tr);
+				traceContent = UTIL_PointContents(tr.vecEndPos);
+
+				while (traceContent == CONTENTS_WATER)
+				{
+					vecEnd = vecEnd + Vector(0, 0, 1);
+					UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, ENT(pev), &tr);
+					traceContent = UTIL_PointContents(tr.vecEndPos);
+				}
+
+				if (traceContent != CONTENTS_WATER)
+				{
+					// particle
+					UTIL_Particle("water_shoot_cluster.txt", tr.vecEndPos + Vector(0, 0, 1), Vector(0, 0, 2), 1);
+
+					// play sound
+					switch (RANDOM_LONG(1, 3))
+					{
+					case 1:
+						UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 1), "items/water_splash/water_splash1.wav", 1, ATTN_NORM, 0, 100);
+						break;
+					case 2:
+						UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 1), "items/water_splash/water_splash2.wav", 1, ATTN_NORM, 0, 100);
+						break;
+					case 3:
+						UTIL_EmitAmbientSound(ENT(0), tr.vecEndPos + Vector(0, 0, 1), "items/water_splash/water_splash3.wav", 1, ATTN_NORM, 0, 100);
+						break;
+					}
+				}
+
+				nextSplashTime = gpGlobals->time + 1.0f;
+			}
+		}
+	}
+
+	//===========================================================================================
+	// WATER STEP END
+	//===========================================================================================
+
 
 	// Train speed control
 	if ((m_afPhysicsFlags & PFLAG_ONTRAIN) != 0)
