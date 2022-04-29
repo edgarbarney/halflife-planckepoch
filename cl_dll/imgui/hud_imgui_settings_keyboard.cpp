@@ -6,7 +6,7 @@
 #include <sstream>
 #include <fstream>
 
-#include <Windows.h>
+#include "PlatformHeaders.h"
 #include <Psapi.h>
 
 #include "hud.h"

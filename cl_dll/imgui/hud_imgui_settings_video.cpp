@@ -6,7 +6,7 @@
 #include <sstream>
 #include <fstream>
 
-#include <Windows.h>
+#include "PlatformHeaders.h"
 #include <Psapi.h>
 
 #include "hud.h"
@@ -60,7 +60,8 @@ void CClientImguiVideoSettings::Init()
 
 	if (HalfLifeRegKey.GetStringValue(L"EngineDLL") != L"hw.dll")
 	{
-		MessageBox(nullptr, "Software renderer is not supported in Spirinty.\nOpenGL Mode is initiated.", "Warning", MB_OK);
+		// TODO: Fix Messageboxes
+		//MessageBox(nullptr, "Software renderer is not supported in Spirinty.\nOpenGL Mode is initiated.", "Warning", MB_OK);
 		HalfLifeRegKey.SetStringValue(L"EngineDLL", L"hw.dll");
 	}
 

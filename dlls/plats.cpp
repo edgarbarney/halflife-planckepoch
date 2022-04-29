@@ -29,11 +29,6 @@
 
 static void PlatSpawnInsideTrigger(entvars_t* pevPlatform);
 
-// from mathlib.h
-extern int nanmask;
-
-#define IS_NAN(x) (((*(int*)&x) & nanmask) == nanmask)
-
 static float Fix(float angle)
 {
 	if (IS_NAN(angle))

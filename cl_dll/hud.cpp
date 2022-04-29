@@ -971,13 +971,13 @@ float CHud::GetSensitivity()
 //-------------------------------------------------
 // Admer's imgui base.
 
-int CBaseClientExtension::Init(void)
+bool CBaseClientExtension::Init()
 {
 	gHUD.AddHudElem(this);
 	m_iFlags |= HUD_ACTIVE; // always active
 
 	InitExtension();
 
-	return 1;
+	return true;
 }
 

@@ -25,11 +25,11 @@ constexpr int sweetSpot = 8; // 8 Pixel is the sweet spot for the right side pad
 class CBaseClientExtension : public CHudBase
 {
 public:
-	int Init();
+	bool Init();
 	virtual void InitExtension() {};
-	virtual int VidInit() { return 1; };
+	virtual bool VidInit() { return 1; };
 
-	virtual int Draw(float flTime) { return 1; };
+	virtual bool Draw(float flTime) { return 1; };
 	virtual void Think() {};
 	virtual void Reset() {};
 
