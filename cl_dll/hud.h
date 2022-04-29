@@ -492,9 +492,7 @@ private:
 	icon_sprite_t m_IconList[MAX_ICONSPRITES];
 };
 
-//
-//-----------------------------------------------------
-//
+#include "imgui/hud_imgui.h"
 
 //LRC
 //methods actually defined in tri.cpp
@@ -635,6 +633,8 @@ public:
 	CHudAmmoSecondary m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
+
+	CClientImgui	m_clImgui;
 
 	void Init();
 	void VidInit();

@@ -6081,7 +6081,8 @@ public:
 	bool m_state;
 	int m_iszViewEntity;
 };
-LINK_ENTITY_TO_CLASS(trigger_camera, CTriggerCamera);
+LINK_ENTITY_TO_CLASS( trigger_camera, CTriggerCamera );
+LINK_ENTITY_TO_CLASS( trigger_3dmenu_camera, CTriggerCamera );
 
 // Global Savedata for changelevel friction modifier
 TYPEDESCRIPTION CTriggerCamera::m_SaveData[] =

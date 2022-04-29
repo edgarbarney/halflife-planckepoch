@@ -6002,8 +6002,7 @@ void CStudioModelRenderer::Mod_LoadTexture(mstudiotexture_t* ptexture, byte* pbu
 	if (stristr(szTexture, "chrome") != NULL)
 	{
 		ptexture->flags |= STUDIO_NF_CHROME;
-		// ptexture->flags |= STUDIO_NF_FLATSHADE; // Chrome Textures has Flatshade
-		CONPRINT("DONE FOR: %s \n", szTexture);
+		//ptexture->flags |= STUDIO_NF_FLATSHADE; // Chrome Textures has Flatshade
 	}
 
 	if (gTextureLoader.TextureHasFlag(szModelName, szTexture, TEXFLAG_NOMIPMAP))

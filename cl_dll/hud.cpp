@@ -21,6 +21,8 @@
 //LRC - define to help track what calls are made on changelevel, save/restore, etc
 #define ENGINE_DEBUG
 
+#include <filesystem>
+
 #include "hud.h"
 #include "cl_util.h"
 #include <string.h>
@@ -45,6 +47,9 @@ extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player
 #include "mirrormanager.h"
 #include "postprocess.h"
 #include "r_efx.h"
+
+#define FRANUTILS_MODDIR 1 // For usage of mod directory utilites
+#include "FranUtils.hpp"
 
 #include "studio.h"
 #include "StudioModelRenderer.h"
@@ -424,6 +429,10 @@ void CHud::Init()
 #ifdef ENGINE_DEBUG
 	CONPRINT("## CHud::Init\n");
 #endif
+
+	//Init FranUtils Globals
+	FranUtils::Globals::InitGlobals();
+
 	HOOK_MESSAGE(Logo);
 	HOOK_MESSAGE(ResetHUD);
 	HOOK_MESSAGE(GameMode);
@@ -512,8 +521,7 @@ void CHud::Init()
 	//end glow effect
 
 	//Borderless Things
-	CVAR_CREATE("r_borderless", "1", FCVAR_ARCHIVE);
-	CVAR_CREATE("r_ignoreborderless", "0", FCVAR_ARCHIVE);
+	CVAR_CREATE("r_fullscreen_type", "1", FCVAR_ARCHIVE);
 
 	viewEntityIndex = 0; // trigger_viewset stuff
 	viewFlags = 0;
@@ -566,6 +574,8 @@ void CHud::Init()
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+
+	m_clImgui.Init();
 
 	m_Menu.Init();
 
@@ -629,8 +639,7 @@ void CHud::BRD_SetBorderless(SDL_Window* brd_windowArg)
 	}
 	weg = dm.w;
 	heg = dm.h;
-	//gEngfuncs.pfnClientCmd("r_borderless 1\n");
-	//gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
+	//gEngfuncs.pfnClientCmd("r_fullscreen_type 1\n");
 	SDL_SetWindowFullscreen(brd_windowArg, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_SetWindowSize(brd_windowArg, weg, heg);
 	SDL_SetWindowBordered(brd_windowArg, SDL_FALSE);
@@ -671,31 +680,7 @@ void CHud::VidInit()
 	else
 		m_iRes = 640;
 
-	if (CVAR_GET_FLOAT("r_ignoreborderless") == 0)
-	{
-		auto brd_window = BRD_GetWindow();
-		if (brd_window)
-		{
-			if (SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN)
-			{
-				gEngfuncs.pfnClientCmd("escape\n");
-				//if (MessageBox(nullptr, "Renderer works best at borderless windowed mode.\nIf you want to enable it, go to windowed mode at your native resolution.\n\nYou can disable this message by pressing no or from the advanced tab.", "Warning", MB_YESNO) == IDNO)
-				//{
-				//	gEngfuncs.pfnClientCmd("r_ignoreborderless 1\n");
-				//}
-			}
-		}
-	}
-
-	if (CVAR_GET_FLOAT("r_borderless") == 1)
-	{
-		auto brd_window = BRD_GetWindow();
-		if (brd_window)
-		{
-			if (!(SDL_GetWindowFlags(brd_window) & SDL_WINDOW_FULLSCREEN))
-				BRD_SetBorderless(BRD_GetWindow());
-		}		
-	}
+	m_clImgui.videoManager.CheckForBorderless();
 
 	// Only load this once
 	if (!m_pSpriteList)
@@ -982,3 +967,17 @@ float CHud::GetSensitivity()
 {
 	return m_flMouseSensitivity;
 }
+
+//-------------------------------------------------
+// Admer's imgui base.
+
+int CBaseClientExtension::Init(void)
+{
+	gHUD.AddHudElem(this);
+	m_iFlags |= HUD_ACTIVE; // always active
+
+	InitExtension();
+
+	return 1;
+}
+

@@ -45,6 +45,7 @@
 #include "studio.h"
 #include "StudioModelRenderer.h"
 #include "GameStudioModelRenderer.h"
+#include "FranUtils.hpp"
 
 extern CGameStudioModelRenderer g_StudioRenderer;
 extern engine_studio_api_t IEngineStudio;
@@ -53,6 +54,7 @@ extern engine_studio_api_t IEngineStudio;
 #include "tri.h"
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
+
 
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
@@ -288,6 +290,9 @@ Called by engine every frame that client .dll is loaded
 void DLLEXPORT HUD_Frame(double time)
 {
 	//	RecClHudFrame(time);
+
+	//Thanks to the Half-Payne's developer
+	FranUtils::Globals::inMainMenu = ((unsigned int)gEngfuncs.GetLocalPlayer()) <= 4098 && gEngfuncs.GetAbsoluteTime() - FranUtils::Globals::isPausedLastUpdate > 2.0f;
 
 	GetClientVoiceMgr()->Frame(time);
 }

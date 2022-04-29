@@ -1154,16 +1154,12 @@ void ClientPrecache()
 	PRECACHE_SOUND("common/npc_step2.wav");
 	PRECACHE_SOUND("common/npc_step3.wav");
 	PRECACHE_SOUND("common/npc_step4.wav");
-
-	int i = 0;
 	
 	for (const auto& [key, value] : g_StepTypeMap)
 	{
 		for (const auto& sound : value.stepSounds)
 		{
 			PRECACHE_SOUND(sound.c_str());
-			g_engfuncs.pfnAlertMessage(at_console, "\n PRECACHED : %s - %d", sound.c_str(), i);
-			i++;
 		}
 	}
 	

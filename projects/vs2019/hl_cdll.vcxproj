@@ -60,13 +60,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;IMGUI_DISABLE_OBSOLETE_KEYIO;_DEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\dlls;..\..\cl_dll;..\..\cl_dll\particleman;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\dlls;..\..\cl_dll;..\..\external\imgui;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <StructMemberAlignment>Default</StructMemberAlignment>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,9 +92,9 @@ EXIT /B 0</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;IMGUI_DISABLE_OBSOLETE_KEYIO;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\dlls;..\..\cl_dll;..\..\cl_dll\particleman;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\dlls;..\..\cl_dll;..\..\external\imgui;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -143,6 +144,13 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\cl_dll\hud_redraw.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_spectator.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_update.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_console.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_video.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
     <ClCompile Include="..\..\cl_dll\inputw32.cpp" />
     <ClCompile Include="..\..\cl_dll\interpolation.cpp" />
@@ -194,6 +202,13 @@ EXIT /B 0</Command>
     <ClCompile Include="..\..\dlls\tripmine.cpp" />
     <ClCompile Include="..\..\dlls\weapons_shared.cpp" />
     <ClCompile Include="..\..\dlls\glock.cpp" />
+    <ClCompile Include="..\..\external\imgui\backends\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="..\..\external\imgui\backends\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\..\external\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\game_shared\filesystem_utils.cpp" />
     <ClCompile Include="..\..\game_shared\vgui_checkbutton2.cpp" />
     <ClCompile Include="..\..\game_shared\vgui_grid.cpp" />
@@ -227,6 +242,14 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\cl_dll\health.h" />
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\fontawesome_brands.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_video.h" />
     <ClInclude Include="..\..\cl_dll\interpolation.h" />
     <ClInclude Include="..\..\cl_dll\in_defs.h" />
     <ClInclude Include="..\..\cl_dll\kbutton.h" />
@@ -264,6 +287,7 @@ EXIT /B 0</Command>
     <ClInclude Include="..\..\common\event_api.h" />
     <ClInclude Include="..\..\common\event_args.h" />
     <ClInclude Include="..\..\common\event_flags.h" />
+    <ClInclude Include="..\..\common\FranUtils.Filesystem.hpp" />
     <ClInclude Include="..\..\common\FranUtils.hpp" />
     <ClInclude Include="..\..\common\hltv.h" />
     <ClInclude Include="..\..\common\in_buttons.h" />
