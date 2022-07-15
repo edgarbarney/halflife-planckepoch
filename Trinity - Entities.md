@@ -67,10 +67,10 @@ For example:
 - Decal Path: gfx\textures\decals\bloodbigsplat.DDS
 - In the entity: Decal Texture = "bloodbigsplat"
 
-env_fog
+env_fog_trinity
 ===============
 ```
-@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_fog : "Client Fog" 
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_fog_trinity : "Client Fog" 
 [
   startdist(string) : "Start Distance" : "1"
   enddist(integer) : "End Distance" : 1500
