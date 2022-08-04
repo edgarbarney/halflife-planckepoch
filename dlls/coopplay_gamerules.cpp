@@ -26,7 +26,7 @@
 #include "items.h"
 #include "UserMessages.h"
 
-extern DLL_GLOBAL BOOL	g_fGameOver;
+extern DLL_GLOBAL bool	g_fGameOver;
 
 CHalfLifeCoopplay::CHalfLifeCoopplay()
 	: CHalfLifeMultiplay()
@@ -68,7 +68,7 @@ int CHalfLifeCoopplay::PlayerRelationship(CBaseEntity* pPlayer, CBaseEntity* pTa
 	return GR_TEAMMATE;
 }
 
-BOOL CHalfLifeCoopplay::ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target)
+bool CHalfLifeCoopplay::ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target)
 {
 	auto targetEntity = CBaseEntity::Instance(target);
 
@@ -182,7 +182,7 @@ float CHalfLifeCoopplay::FlAmmoRespawnTime(CBasePlayerAmmo* pAmmo)
 	return -1;
 }
 
-BOOL CHalfLifeCoopplay::FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker)
+bool CHalfLifeCoopplay::FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker)
 {
 	if (friendlyfire.value == 0 && pAttacker->IsPlayer() && pAttacker != pPlayer)
 		return false;
@@ -190,21 +190,21 @@ BOOL CHalfLifeCoopplay::FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* 
 	return CHalfLifeMultiplay::FPlayerCanTakeDamage(pPlayer, pAttacker);
 }
 
-BOOL CHalfLifeCoopplay::ClientCommand(CBasePlayer* pPlayer, const char* pcmd)
+bool CHalfLifeCoopplay::ClientCommand(CBasePlayer* pPlayer, const char* pcmd)
 {
 	if (FStrEq(pcmd, "menuselect"))
 	{
 		if (CMD_ARGC() < 2)
-			return TRUE;
+			return true;
 
 		int slot = atoi(CMD_ARGV(1));
 
 		// select the item from the current menu
 
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 float CHalfLifeCoopplay::FlWeaponTryRespawn(CBasePlayerItem* pWeapon)

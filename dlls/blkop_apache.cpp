@@ -12,8 +12,6 @@
 *   use or distribution of this code by or to any unlicensed person is illegal.
 *
 ****/
-#ifndef OEM_BUILD
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -29,8 +27,8 @@ extern DLL_GLOBAL int		g_iSkillLevel;
 
 class COFBlackOpsApache : public CBaseMonster
 {
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void Spawn() override;
@@ -56,9 +54,9 @@ class COFBlackOpsApache : public CBaseMonster
 	void ShowDamage();
 	void Flight();
 	void FireRocket();
-	BOOL FireGun();
+	bool FireGun();
 	
-	int  TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
 
 	int m_iRockets;
@@ -788,7 +786,7 @@ void COFBlackOpsApache :: FireRocket()
 
 
 
-BOOL COFBlackOpsApache :: FireGun( )
+bool COFBlackOpsApache :: FireGun( )
 {
 	UTIL_MakeAimVectors( pev->angles );
 		
@@ -856,7 +854,7 @@ BOOL COFBlackOpsApache :: FireGun( )
 			m_pBeam->SetStartPos( tr.vecEndPos );
 		}
 #endif
-		return TRUE;
+		return true;
 	}
 	else
 	{
@@ -866,7 +864,7 @@ BOOL COFBlackOpsApache :: FireGun( )
 			m_pBeam = nullptr;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -890,10 +888,10 @@ void COFBlackOpsApache :: ShowDamage()
 }
 
 
-int COFBlackOpsApache :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
+bool COFBlackOpsApache :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
 {
 	if (pevInflictor->owner == edict())
-		return 0;
+		return false;
 
 	if (bitsDamageType & DMG_BLAST)
 	{
@@ -948,8 +946,8 @@ class COFBlackOpsApacheHVR : public CGrenade
 	void EXPORT IgniteThink();
 	void EXPORT AccelerateThink();
 
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int m_iTrail;
@@ -1050,5 +1048,3 @@ void COFBlackOpsApacheHVR :: AccelerateThink()
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
-
-#endif

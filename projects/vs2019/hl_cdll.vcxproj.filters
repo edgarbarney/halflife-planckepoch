@@ -46,9 +46,6 @@
     <Filter Include="Source Files\_hl\dlls">
       <UniqueIdentifier>{a2469e54-cb56-4161-b6b1-55c9d93676c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\_hl\dlls\wpn_shared">
-      <UniqueIdentifier>{a46a0ff1-e7ad-43c4-afb8-6c93e71803a1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\_hl\cl_dll">
       <UniqueIdentifier>{5bff06ec-c232-4dd2-8642-4e2ce64f31ef}</UniqueIdentifier>
     </Filter>
@@ -69,6 +66,21 @@
     </Filter>
     <Filter Include="Header Files\engine">
       <UniqueIdentifier>{ebcb0f66-49b6-4e55-9a97-f6720cade9ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\public">
+      <UniqueIdentifier>{01f1d541-3bac-4b2c-9a83-2cadcb76ff8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external">
+      <UniqueIdentifier>{2a1aa610-44be-4793-9977-15eaf757b6b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external\imgui">
+      <UniqueIdentifier>{cb92e99f-31b8-4577-9dbb-0b8f68df953a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\imgui">
+      <UniqueIdentifier>{34149a8b-a647-4e19-b10c-231f201c3ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cl_dll\imgui">
+      <UniqueIdentifier>{666b71c4-fe16-4ef7-b3eb-681b51b3ea79}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,8 +114,8 @@
     <ClCompile Include="..\..\cl_dll\hl\hl_objects.cpp">
       <Filter>Source Files\_hl\cl_dll\hl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\wpn_shared\hl_wpn_glock.cpp">
-      <Filter>Source Files\_hl\dlls\wpn_shared</Filter>
+    <ClCompile Include="..\..\dlls\glock.cpp">
+      <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\squeakgrenade.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
@@ -178,12 +190,6 @@
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\hud.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\hud_bench.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\hud_benchtrace.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\hud_msg.cpp">
@@ -318,6 +324,9 @@
     <ClCompile Include="..\..\cl_dll\bsprenderer.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\game_shared\filesystem_utils.cpp">
+      <Filter>Source Files\game_shared</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\cl_dll\frustum.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
@@ -395,6 +404,48 @@
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\postprocess.cpp">
       <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\imgui.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\backends\imgui_impl_opengl2.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\backends\imgui_impl_sdl.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\imgui_tables.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\imgui_demo.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\imgui\imgui_draw.cpp">
+      <Filter>Source Files\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_console.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\hud_imgui_settings_video.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -493,9 +544,6 @@
     </ClInclude>
     <ClInclude Include="..\..\game_shared\voice_banmgr.h">
       <Filter>Header Files\game_shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\wrect.h">
-      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\vgui_SpectatorPanel.h">
       <Filter>Header Files\cl_dll</Filter>
@@ -632,9 +680,6 @@
     <ClInclude Include="..\..\common\in_buttons.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\interface.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\ivoicetweak.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
@@ -644,16 +689,10 @@
     <ClInclude Include="..\..\common\netadr.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\nowin.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\particledef.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\pmtrace.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\port.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\qfont.h">
@@ -686,12 +725,6 @@
     <ClInclude Include="..\..\common\weaponinfo.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\winsani_in.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\winsani_out.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\engine\edict.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
@@ -706,6 +739,18 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\mp3.h">
       <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\common_types.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\game_shared\filesystem_utils.h">
+      <Filter>Header Files\game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\interface.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\PlatformHeaders.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\glInclude.h">
       <Filter>Header Files\cl_dll</Filter>
@@ -743,8 +788,35 @@
     <ClInclude Include="..\..\pm_shared\pm_structs.h">
       <Filter>Header Files\pm_shared</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\lib\public\game_controls.lib" />
+    <ClInclude Include="..\..\cl_dll\wrect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\fontawesome_brands.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_keyboard.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_console.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_dialogbox.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\FranUtils.Filesystem.hpp">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_mouse.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_audio.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\hud_imgui_settings_video.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

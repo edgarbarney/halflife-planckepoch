@@ -16,7 +16,7 @@ Transparency code by Neil "Jed" Jedrzejewski
 #include <cstdlib>
 #include <cmath>
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
 #include <gl/glu.h>
@@ -191,7 +191,7 @@ void CPropManager::GenerateEntityList ( )
 	if(!pWorld)
 	{
 		gEngfuncs.pfnClientCmd("escape\n");	
-		MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
+		//MessageBox(nullptr, "FATAL ERROR: Failed to get world!\n\nPress Ok to quit the game.\n", "ERROR", MB_OK);
 		exit(-1);
 	}
 
@@ -456,8 +456,8 @@ void CPropManager::LoadEntVars( )
 			if(pValue)
 				continue;
 
-			// Always TRUE
-			m_pDecals[m_iNumDecals].persistent = TRUE;
+			// Always true
+			m_pDecals[m_iNumDecals].persistent = true;
 
 			pValue = ValueForKey(&m_pBSPEntities[i], "origin");
 			if (pValue)

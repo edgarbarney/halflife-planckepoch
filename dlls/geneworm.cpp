@@ -32,8 +32,8 @@ const int AE_GENEWORM_HIT_WALL = 9;
 class COFGeneWormCloud : public CBaseEntity
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	int Classify() override { return CLASS_NONE; }
@@ -56,13 +56,13 @@ public:
 	float m_lastTime;
 	float m_maxFrame;
 
-	BOOL m_bLaunched;
+	bool m_bLaunched;
 
 	float m_fadeScale;
 	float m_fadeRender;
 	float m_damageTimer;
 
-	BOOL m_fSinking;
+	bool m_fSinking;
 };
 
 TYPEDESCRIPTION	COFGeneWormCloud::m_SaveData[] =
@@ -229,8 +229,8 @@ const auto GENEWORM_SPAWN_BEAM_COUNT = 8;
 class COFGeneWormSpawn : public CBaseEntity
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	void Precache() override;
@@ -255,9 +255,9 @@ public:
 	float m_flBirthTime;
 	float m_flWarpTime;
 
-	BOOL m_bLaunched;
-	BOOL m_bWarping;
-	BOOL m_bTrooperDropped;
+	bool m_bLaunched;
+	bool m_bWarping;
+	bool m_bTrooperDropped;
 
 	CBeam* m_pBeam[ GENEWORM_SPAWN_BEAM_COUNT ];
 
@@ -554,8 +554,8 @@ int iGeneWormSpitSprite;
 class COFGeneWorm : public CBaseMonster
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	int Classify() override { return CLASS_ALIEN_MONSTER; }
@@ -574,7 +574,7 @@ public:
 	void Precache() override;
 	void Spawn() override;
 
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 
 	void TraceAttack( entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType ) override;
 
@@ -583,9 +583,9 @@ public:
 		CBaseMonster::Killed( pevAttacker, iGib );
 	}
 
-	BOOL FVisible( CBaseEntity* pEntity ) override;
+	bool FVisible( CBaseEntity* pEntity ) override;
 
-	BOOL FVisible( const Vector& vecOrigin ) override;
+	bool FVisible( const Vector& vecOrigin ) override;
 
 	void HandleAnimEvent( MonsterEvent_t* pEvent ) override;
 
@@ -603,7 +603,7 @@ public:
 
 	void NextActivity();
 
-	BOOL ClawAttack();
+	bool ClawAttack();
 
 	void SpewCloud();
 
@@ -626,15 +626,15 @@ public:
 	float m_flNextMeleeTime;
 	float m_flNextRangeTime;
 
-	BOOL m_fRightEyeHit;
-	BOOL m_fLeftEyeHit;
-	BOOL m_fGetMad;
+	bool m_fRightEyeHit;
+	bool m_fLeftEyeHit;
+	bool m_fGetMad;
 
-	BOOL m_fOrificeHit;
+	bool m_fOrificeHit;
 	float m_flOrificeOpenTime;
 	COFGeneWormSpawn* m_orificeGlow;
 
-	BOOL m_fSpawningTrooper;
+	bool m_fSpawningTrooper;
 	float m_flSpawnTrooperTime;
 
 	int m_iHitTimes;
@@ -648,12 +648,12 @@ public:
 	float m_flBeamExpireTime;
 	float m_flBeamDir;
 
-	BOOL m_fSpitting;
+	bool m_fSpitting;
 	float m_flSpitStartTime;
 
-	BOOL m_fActivated;
+	bool m_fActivated;
 	float m_flDeathStart;
-	BOOL m_fHasEntered;
+	bool m_fHasEntered;
 
 	float m_flMadDelayTime;
 };
@@ -1307,7 +1307,7 @@ void COFGeneWorm::NextActivity()
 	EMIT_SOUND_DYN( edict(), CHAN_BODY, pIdleSounds[ RANDOM_LONG( 0, ARRAYSIZE( pIdleSounds ) - 1 ) ], VOL_NORM, 0.1, 0, RANDOM_LONG( -5, 5 ) + 100 );
 }
 
-BOOL COFGeneWorm::ClawAttack()
+bool COFGeneWorm::ClawAttack()
 {
 	auto pEnemy = m_hEnemy.Entity<CBaseEntity>();
 
@@ -1376,7 +1376,7 @@ BOOL COFGeneWorm::ClawAttack()
 	return false;
 }
 
-int COFGeneWorm::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
+bool COFGeneWorm::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
 {
 	//Never actually die
 	if( flDamage >= pev->health )
@@ -1552,7 +1552,7 @@ void COFGeneWorm::TraceAttack( entvars_t* pevAttacker, float flDamage, Vector ve
 	}
 }
 
-BOOL COFGeneWorm::FVisible( CBaseEntity* pEntity )
+bool COFGeneWorm::FVisible( CBaseEntity* pEntity )
 {
 	if( !( pEntity->pev->flags & FL_NOTARGET ) )
 	{
@@ -1565,7 +1565,7 @@ BOOL COFGeneWorm::FVisible( CBaseEntity* pEntity )
 	return false;
 }
 
-BOOL COFGeneWorm::FVisible( const Vector& vecOrigin )
+bool COFGeneWorm::FVisible( const Vector& vecOrigin )
 {
 	Vector vecLookerOrigin, vecLookerAngle;
 	GetAttachment( 0, vecLookerOrigin, vecLookerAngle );

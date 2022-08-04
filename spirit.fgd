@@ -1295,6 +1295,8 @@
 //NEW 1.8
 //* To use this, simply refer to it in any field that's designated [LN].
 @PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_subratio : "Calculate number based on entity properties"
+[
+]
 @PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) iconsprite("sprites/calc.spr") = calc_numfroment : "Calculate number based on entity properties"
 [
 	target(string) : "Entity to use [LE]" : "*locus"
@@ -1345,7 +1347,7 @@
 		//* In the case above, the result would be 80%.
 		2 : "Bounce back"
 		//* Treated as 0. Or you can catch this failure with calc_fallback.
-		3 : "Fail
+		3 : "Fail"
 	]
 ]
 
@@ -2141,21 +2143,6 @@
 	holdtime(string) : "Hold Fade (seconds)" : "0"
 	renderamt(integer) : "Fade Alpha" : 255
 	rendercolor(color255) : "Fade Color (R G B)" : "0 0 0"
-]
-
-//NEW 0.6
-@PointClass base(Targetname) iconsprite("sprites/env.spr") = env_fog : "Fog effect, DMC stylee"
-[
-	fadein(integer) : "Fade in time" : 0
-	holdtime(string) : "Hold time (0 = permanent)" : "0"
-	fadeout(integer) : "Fade out time" : 0
-	startdist(integer) : "Fog start position" : 0
-      enddist(integer) : "Fog end position" : 1000
-	rendercolor(color255) : "Fog Color (R G B)" : "255 255 255"
-	spawnflags(flags) =
-	[
-		1 : "Start active"   : 0
-	]
 ]
 
 @PointClass base(Targetname, MoveWith) size(-16 -16 -16, 16 16 16) iconsprite("sprites/env.spr") = env_funnel : "Large Portal Funnel" 
@@ -3701,8 +3688,8 @@
 	m_iDistortion(integer) : "Distortion ('noise')" : 0
 	m_fFrame(integer) : "Start frame" : 0
 	m_iScrollRate(integer) : "Scroll rate" : 0
-	m_fDuration(string) : "Duration (0 = unlimited)" : 0
-	m_fDamage(string) : "Damage amount" : 0
+	m_fDuration(integer) : "Duration (0 = unlimited)" : 0
+	m_fDamage(integer) : "Damage amount" : 0
 	m_iDamageType(choices) : "Damage type" : 0 =
 	[
 		0	 : "Energy Beam"
@@ -5090,22 +5077,22 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
       satchels(choices) : "Take satchel charges" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	snarks(choices) : "Take snarks" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	tripmines(choices) : "Take tripmines" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	handgrenades(choices) : "Take handgrenades" : 0 =
 	[
 		0: "All"
-		-1: "None"
+		-3: "None"
 	]
 	hornetgun(choices) : "Take Hornet Gun" : 0 =
 	[
@@ -5116,16 +5103,15 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 	spawnflags(Flags) =
 	[
 		1: "Remove suit" : 0
-		2: "Leave crowbar" : 0
-		4: "Leave glock" : 0
-		8: "Leave 357" : 0
-		16: "Leave mp5" : 0
-		// chaingun was never used
-		64: "Leave crossbow" : 0
-		128: "Leave shotgun" : 0
-		256: "Leave rpg" : 0
-		512: "Leave gauss" : 0
-		1024: "Leave egon" : 0
+		2: "Leave crowbar" : 0 
+        4: "Leave glock" : 0 
+        8: "Leave 357" : 0 
+        32: "Leave mp5" : 0 
+        128: "Leave crossbow" : 0 
+        256: "Leave shotgun" : 0 
+        512: "Leave rpg" : 0 
+        1024: "Leave gauss" : 0 
+        2048: "Leave egon" : 0 
 	]
 ]
 
@@ -5807,8 +5793,8 @@ sequence(Choices) : "Animation Sequence (editor)" : 10 =
 		16: "Fast Fade In"
 	]
 	pattern(string) : "Custom Appearance"
-	m_iFade(string) : "Fade time" : 0
-	m_iWait(string) : "Hold time (-1 = permanent)" : -1
+	m_iFade(integer) : "Fade time" : 0
+	m_iWait(integer) : "Hold time (-1 = permanent)" : -1
 ]
 
 @PointClass base(Targetname, Targetx, Master) iconsprite("sprites/trigger.spr") = trigger_relay : "Trigger Relay"

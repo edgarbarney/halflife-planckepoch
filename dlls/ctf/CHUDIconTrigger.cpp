@@ -91,41 +91,41 @@ void CHUDIconTrigger::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYP
 		}
 	}
 }
-void CHUDIconTrigger::KeyValue(KeyValueData* pkvd)
+bool CHUDIconTrigger::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq("icon_name", pkvd->szKeyName))
 	{
 		m_iszCustomName = g_engfuncs.pfnAllocString(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq("icon_index", pkvd->szKeyName))
 	{
 		m_nCustomIndex = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq("icon_left", pkvd->szKeyName))
 	{
 		m_nLeft = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq("icon_top", pkvd->szKeyName))
 	{
 		m_nTop = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq("icon_width", pkvd->szKeyName))
 	{
 		m_nWidth = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq("icon_height", pkvd->szKeyName))
 	{
 		m_nHeight = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
-		pkvd->fHandled = false;
+		return false;
 	}
 }
 

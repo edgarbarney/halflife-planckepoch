@@ -22,62 +22,62 @@
 #include "player.h"
 #include "UserMessages.h"
 
-class CDebugger: public CBasePlayerWeapon
+class CDebugger : public CBasePlayerWeapon
 {
 public:
-	void Spawn( ) override;
-	void Precache( ) override;
-	int GetItemInfo(ItemInfo *p) override;
-	int AddToPlayer( CBasePlayer *pPlayer ) override;
-	void EXPORT Commands( BOOL type );
-	void PrimaryAttack( ) override;
-	void SecondaryAttack( ) override;
-	BOOL Deploy( ) override;
-	void Holster( int skiplocal = 0 ) override;
-//	void WeaponIdle( void );
-	void UpdateInfo ();
+	void Spawn(void);
+	void Precache(void);
+	bool GetItemInfo(ItemInfo* p);
+	bool AddToPlayer(CBasePlayer* pPlayer);
+	void EXPORT Commands(bool type);
+	void PrimaryAttack(void);
+	void SecondaryAttack(void);
+	bool Deploy(void);
+	void Holster();
+	//	void WeaponIdle( void );
+	void UpdateInfo(void);
 	int command;
 };
 
-LINK_ENTITY_TO_CLASS( weapon_debug, CDebugger );
+LINK_ENTITY_TO_CLASS(weapon_debug, CDebugger);
 
 
-void CDebugger::Spawn( )
+void CDebugger::Spawn()
 {
-	Precache( );
+	Precache();
 	m_iId = WEAPON_DEBUG;
 	SET_MODEL(ENT(pev), "models/w_9mmhandgun.mdl");
 	m_iClip = -1;
-	FallInit();// get ready to fall down.
+	FallInit(); // get ready to fall down.
 }
 
-int CDebugger::AddToPlayer( CBasePlayer *pPlayer )
+bool CDebugger::AddToPlayer(CBasePlayer* pPlayer)
 {
-	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
+	if (CBasePlayerWeapon::AddToPlayer(pPlayer))
 	{
-		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, nullptr, pPlayer->pev );
-			WRITE_BYTE( m_iId );
+		MESSAGE_BEGIN(MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev);
+		WRITE_BYTE(m_iId);
 		MESSAGE_END();
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
-void CDebugger::Holster( int skiplocal )
+void CDebugger::Holster()
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	SendWeaponAnim( 8 );
+	SendWeaponAnim(8);
 }
 
-void CDebugger::Precache( )
+void CDebugger::Precache(void)
 {
 	PRECACHE_MODEL("models/v_9mmhandgun.mdl");
 	PRECACHE_MODEL("models/w_9mmhandgun.mdl");
 	PRECACHE_MODEL("models/p_9mmhandgun.mdl");
-	PRECACHE_SOUND ("buttons/blip1.wav");
+	PRECACHE_SOUND("buttons/blip1.wav");
 }
 
-int CDebugger::GetItemInfo(ItemInfo *p)
+bool CDebugger::GetItemInfo(ItemInfo* p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = nullptr;
@@ -93,175 +93,271 @@ int CDebugger::GetItemInfo(ItemInfo *p)
 	return 1;
 }
 
-BOOL CDebugger::Deploy( )
+bool CDebugger::Deploy()
 {
-	switch (command){
-		case 0:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_TOGGLE\n");
-		}break;
-		case 1:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_ON\n");
-		}break;
-		case 2:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_OFF\n");
-		}break;
-		case 3:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Give all weapons etc\n");
-		}break;
-		case 4:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Get AI State\n");
-		}break;
-		case 5:{
-			ALERT(at_debug,"WEAPON_DEBUG -> List Globals\n");
-		}break;
-		case 6:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Player Silent On/Off\n");
-		}break;
-		case 7:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Entity Info\n");
-		}break;
-		case 8:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Show Texture Name\n" );
-		}break;
-		case 9:{
-			ALERT(at_debug,"WEAPON_DEBUG -> node_viewer_fly\n" );
-		}break;
-		case 10:{
-			ALERT(at_debug,"WEAPON_DEBUG -> node_viewer_human\n" );
-		}break;
-		case 11:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Show nearest node connections\n" );
-		}break;
-		case 12:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Random Splatter\n" );
-		}break;
-		case 13:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Remove Monster\n" );
-		}break;
-		case 14:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Spawn Grunt\n" );
-		}break;
-		}
-	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", 7, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
+	switch (command)
+	{
+	case 0:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> USE_TOGGLE\n");
+	}
+	break;
+	case 1:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> USE_ON\n");
+	}
+	break;
+	case 2:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> USE_OFF\n");
+	}
+	break;
+	case 3:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Give all weapons etc\n");
+	}
+	break;
+	case 4:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Get AI State\n");
+	}
+	break;
+	case 5:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> List Globals\n");
+	}
+	break;
+	case 6:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Player Silent On/Off\n");
+	}
+	break;
+	case 7:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Entity Info\n");
+	}
+	break;
+	case 8:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Show Texture Name\n");
+	}
+	break;
+	case 9:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> node_viewer_fly\n");
+	}
+	break;
+	case 10:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> node_viewer_human\n");
+	}
+	break;
+	case 11:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Show nearest node connections\n");
+	}
+	break;
+	case 12:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Random Splatter\n");
+	}
+	break;
+	case 13:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Remove Monster\n");
+	}
+	break;
+	case 14:
+	{
+		ALERT(at_debug, "WEAPON_DEBUG -> Spawn Grunt\n");
+	}
+	break;
+	}
+	return DefaultDeploy("models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", 7, "onehanded", /*UseDecrement() ? 1 : 0*/ 0);
 }
 
-void CDebugger::PrimaryAttack( )
+void CDebugger::PrimaryAttack(void)
 {
- 	Commands (TRUE);
+	Commands(true);
 }
 
-void CDebugger::SecondaryAttack( )
+void CDebugger::SecondaryAttack(void)
 {
-	Commands (FALSE);
+	Commands(false);
 }
 
-void CDebugger::UpdateInfo ()
+void CDebugger::UpdateInfo(void)
 {
-	SERVER_COMMAND( "impulse 106\n" );
+	SERVER_COMMAND("impulse 106\n");
 }
 
-void CDebugger::Commands( BOOL type )
+void CDebugger::Commands(bool type)
 {
 	EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "buttons/blip1.wav", 0.5, ATTN_NORM);
-	if(type){
-		switch (command){
-		case 0:{
-			SERVER_COMMAND( "impulse 93\n" );
-		}break;
-		case 1:{
-			SERVER_COMMAND( "impulse 94\n" );
-		}break;
-		case 2:{
-			SERVER_COMMAND( "impulse 95\n" );
-		}break;
-		case 3:{
-			SERVER_COMMAND( "impulse 101\n" );
-		}break;
-		case 4:{
-			SERVER_COMMAND( "impulse 103\n" );
-		}break;
-		case 5:{
-			SERVER_COMMAND( "impulse 104\n" );
-		}break;
-		case 6:{
-			SERVER_COMMAND( "impulse 105\n" );
-		}break;
-		case 7:{
-			SERVER_COMMAND( "impulse 106\n" );
-		}break;
-		case 8:{
-			SERVER_COMMAND( "impulse 107\n" );
-		}break;
-		case 9:{
-			SERVER_COMMAND( "impulse 195\n" );
-		}break;
-		case 10:{
-			SERVER_COMMAND( "impulse 197\n" );
-		}break;
-		case 11:{
-			SERVER_COMMAND( "impulse 199\n" );
-		}break;
-		case 12:{
-			SERVER_COMMAND( "impulse 202\n" );
-		}break;
-		case 13:{
-			SERVER_COMMAND( "impulse 203\n" );
-		}break;
-		case 14:{
-			SERVER_COMMAND( "impulse 76\n" );
-		}break;
+	if (type)
+	{
+		switch (command)
+		{
+		case 0:
+		{
+			SERVER_COMMAND("impulse 93\n");
 		}
-		
-	}else{
+		break;
+		case 1:
+		{
+			SERVER_COMMAND("impulse 94\n");
+		}
+		break;
+		case 2:
+		{
+			SERVER_COMMAND("impulse 95\n");
+		}
+		break;
+		case 3:
+		{
+			SERVER_COMMAND("impulse 101\n");
+		}
+		break;
+		case 4:
+		{
+			SERVER_COMMAND("impulse 103\n");
+		}
+		break;
+		case 5:
+		{
+			SERVER_COMMAND("impulse 104\n");
+		}
+		break;
+		case 6:
+		{
+			SERVER_COMMAND("impulse 105\n");
+		}
+		break;
+		case 7:
+		{
+			SERVER_COMMAND("impulse 106\n");
+		}
+		break;
+		case 8:
+		{
+			SERVER_COMMAND("impulse 107\n");
+		}
+		break;
+		case 9:
+		{
+			SERVER_COMMAND("impulse 195\n");
+		}
+		break;
+		case 10:
+		{
+			SERVER_COMMAND("impulse 197\n");
+		}
+		break;
+		case 11:
+		{
+			SERVER_COMMAND("impulse 199\n");
+		}
+		break;
+		case 12:
+		{
+			SERVER_COMMAND("impulse 202\n");
+		}
+		break;
+		case 13:
+		{
+			SERVER_COMMAND("impulse 203\n");
+		}
+		break;
+		case 14:
+		{
+			SERVER_COMMAND("impulse 76\n");
+		}
+		break;
+		}
+	}
+	else
+	{
 		command++;
-		if (command == 15)command=0;
-		
-		switch (command){
-		case 0:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_TOGGLE\n");
-		}break;
-		case 1:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_ON\n");
-		}break;
-		case 2:{
-			ALERT(at_debug,"WEAPON_DEBUG -> USE_OFF\n");
-		}break;
-		case 3:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Give all weapons etc\n");
-		}break;
-		case 4:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Get AI State\n");
-		}break;
-		case 5:{
-			ALERT(at_debug,"WEAPON_DEBUG -> List Globals\n");
-		}break;
-		case 6:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Player Silent On/Off\n");
-		}break;
-		case 7:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Entity Info\n");
-		}break;
-		case 8:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Show Texture Name\n" );
-		}break;
-		case 9:{
-			ALERT(at_debug,"WEAPON_DEBUG -> node_viewer_fly\n" );
-		}break;
-		case 10:{
-			ALERT(at_debug,"WEAPON_DEBUG -> node_viewer_human\n" );
-		}break;
-		case 11:{
-			ALERT(at_debug,"WEAPON_DEBUG -> Show nearest node connections\n" );
-		}break;
-		case 12:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Random Splatter\n" );
-		}break;
-		case 13:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Remove Monster\n" );
-		}break;
-		case 14:{
-			ALERT(at_debug, "WEAPON_DEBUG -> Spawn Grunt\n" );
-		}break;
+		if (command == 15)
+			command = 0;
+
+		switch (command)
+		{
+		case 0:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> USE_TOGGLE\n");
+		}
+		break;
+		case 1:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> USE_ON\n");
+		}
+		break;
+		case 2:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> USE_OFF\n");
+		}
+		break;
+		case 3:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Give all weapons etc\n");
+		}
+		break;
+		case 4:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Get AI State\n");
+		}
+		break;
+		case 5:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> List Globals\n");
+		}
+		break;
+		case 6:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Player Silent On/Off\n");
+		}
+		break;
+		case 7:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Entity Info\n");
+		}
+		break;
+		case 8:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Show Texture Name\n");
+		}
+		break;
+		case 9:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> node_viewer_fly\n");
+		}
+		break;
+		case 10:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> node_viewer_human\n");
+		}
+		break;
+		case 11:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Show nearest node connections\n");
+		}
+		break;
+		case 12:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Random Splatter\n");
+		}
+		break;
+		case 13:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Remove Monster\n");
+		}
+		break;
+		case 14:
+		{
+			ALERT(at_debug, "WEAPON_DEBUG -> Spawn Grunt\n");
+		}
+		break;
 		}
 	}
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.3;

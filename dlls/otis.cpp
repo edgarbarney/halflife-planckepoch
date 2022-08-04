@@ -85,8 +85,8 @@ public:
 	void RunTask( Task_t *pTask ) override;
 	void StartTask( Task_t *pTask ) override;
 	int	ObjectCaps() override { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
 	
 	void DeclineFollowing() override;
 
@@ -103,16 +103,16 @@ public:
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
 	void Killed( entvars_t *pevAttacker, int iGib ) override;
 
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 	
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	BOOL	m_fGunDrawn;
+	bool	m_fGunDrawn;
 	float	m_painTime;
 	float	m_checkAttackTime;
-	BOOL	m_lastAttackCheck;
+	bool	m_lastAttackCheck;
 
 	//These were originally used to store off the setting AND track state,
 	//but state is now tracked by calling GetBodygroup
@@ -350,7 +350,7 @@ void COtis :: SetYawSpeed ()
 //=========================================================
 // CheckRangeAttack1
 //=========================================================
-BOOL COtis :: CheckRangeAttack1 ( float flDot, float flDist )
+bool COtis :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	if ( flDist <= 1024 && flDot >= 0.5 )
 	{
@@ -364,14 +364,14 @@ BOOL COtis :: CheckRangeAttack1 ( float flDot, float flDist )
 			UTIL_TraceLine( shootOrigin, shootTarget, dont_ignore_monsters, ENT(pev), &tr );
 			m_checkAttackTime = gpGlobals->time + 1;
 			if ( tr.flFraction == 1.0 || (tr.pHit != nullptr && CBaseEntity::Instance(tr.pHit) == pEnemy) )
-				m_lastAttackCheck = TRUE;
+				m_lastAttackCheck = true;
 			else
-				m_lastAttackCheck = FALSE;
+				m_lastAttackCheck = false;
 			m_checkAttackTime = gpGlobals->time + 1.5;
 		}
 		return m_lastAttackCheck;
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -550,10 +550,10 @@ void COtis :: TalkInit()
 	m_voicePitch = 100;
 }
 
-int COtis :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
+bool COtis :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
 	// make sure friends talk about it if player hurts talkmonsters...
-	int ret = CTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
+	bool ret = CTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 	if ( !IsAlive() || pev->deadflag == DEAD_DYING )
 		return ret;
 
@@ -572,7 +572,7 @@ int COtis :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float 
 				PlaySentence( "OT_MAD", 4, VOL_NORM, ATTN_NORM );
 
 				Remember( bits_MEMORY_PROVOKED );
-				StopFollowing( TRUE );
+				StopFollowing( true );
 			}
 			else
 			{
@@ -781,7 +781,7 @@ Schedule_t *COtis :: GetSchedule ()
 			if ( !m_hTargetEnt->IsAlive() )
 			{
 				// UNDONE: Comment about the recently dead player here?
-				StopFollowing( FALSE );
+				StopFollowing( false );
 				break;
 			}
 			else
@@ -819,21 +819,21 @@ void COtis::DeclineFollowing()
 	PlaySentence( "OT_POK", 2, VOL_NORM, ATTN_NORM );
 }
 
-void COtis::KeyValue( KeyValueData* pkvd )
+bool COtis::KeyValue( KeyValueData* pkvd )
 {
 	if( FStrEq( "head", pkvd->szKeyName ) )
 	{
 		m_iOtisHead = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "bodystate", pkvd->szKeyName ) )
 	{
 		m_iOtisBody = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 	}
 }
 
@@ -855,7 +855,7 @@ public:
 	void Spawn() override;
 	int	Classify () override { return	CLASS_PLAYER_ALLY; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[5];
@@ -863,15 +863,15 @@ public:
 
 char *CDeadOtis::m_szPoses[] = { "lying_on_back", "lying_on_side", "lying_on_stomach", "stuffed_in_vent", "dead_sitting" };
 
-void CDeadOtis::KeyValue( KeyValueData *pkvd )
+bool CDeadOtis::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
 		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else 
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 LINK_ENTITY_TO_CLASS( monster_otis_dead, CDeadOtis );

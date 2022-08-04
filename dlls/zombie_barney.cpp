@@ -59,9 +59,9 @@ public:
 	static const char *pAttackMissSounds[];
 
 	// No range attacks
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override { return FALSE; }
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override { return FALSE; }
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override { return false; }
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override { return false; }
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 };
 
 LINK_ENTITY_TO_CLASS( monster_zombie_barney, CZombieBarney );
@@ -134,7 +134,7 @@ void CZombieBarney :: SetYawSpeed ()
 	pev->yaw_speed = ys;
 }
 
-int CZombieBarney :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CZombieBarney ::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
 	// Take 30% damage from bullets
 	if ( bitsDamageType == DMG_BULLET )

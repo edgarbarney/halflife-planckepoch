@@ -75,12 +75,12 @@ void CPipewrench::Precache()
 	m_usPipewrench = PRECACHE_EVENT ( 1, "events/pipewrench.sc" );
 }
 
-BOOL CPipewrench::Deploy()
+bool CPipewrench::Deploy()
 {
 	return DefaultDeploy( "models/v_pipe_wrench.mdl", "models/p_pipe_wrench.mdl", PIPEWRENCH_DRAW, "crowbar" );
 }
 
-void CPipewrench::Holster( int skiplocal )
+void CPipewrench::Holster( )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim( PIPEWRENCH_HOLSTER );
@@ -513,7 +513,7 @@ int CPipewrench::iItemSlot()
 	return 1;
 }
 
-int CPipewrench::GetItemInfo( ItemInfo* p )
+bool CPipewrench::GetItemInfo(ItemInfo* p)
 {
 	p->pszAmmo1 = nullptr;
 	p->iMaxAmmo1 = WEAPON_NOCLIP;

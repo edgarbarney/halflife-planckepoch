@@ -12,8 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef ROPE_CELECTRIFIEDWIRE_H
-#define ROPE_CELECTRIFIEDWIRE_H
+
+#pragma once
 
 #include "CRope.h"
 
@@ -27,8 +27,8 @@ public:
 	using BaseClass = CRope;
 
 	CElectrifiedWire();
-	
-	void KeyValue( KeyValueData* pkvd ) override;
+
+	bool KeyValue(KeyValueData* pkvd) override;
 
 	void Precache() override;
 
@@ -36,28 +36,28 @@ public:
 
 	void Think() override;
 
-	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue ) override;
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue) override;
 
-	int Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 
 	/**
 	*	@return Whether the wire is active.
 	*/
-	bool IsActive() const { return m_bIsActive; }
+	bool IsActive() const { return m_bIsActive != false; }
 
 	/**
 	*	@param iFrequency Frequency.
 	*	@return Whether the spark effect should be performed.
 	*/
-	bool ShouldDoEffect( const int iFrequency );
+	bool ShouldDoEffect(const int iFrequency);
 
 	/**
 	*	Do spark effects.
 	*/
-	void DoSpark( const size_t uiSegment, const bool bExertForce );
+	void DoSpark(const size_t uiSegment, const bool bExertForce);
 
 	/**
 	*	Do lightning effects.
@@ -76,11 +76,9 @@ public:
 	int m_iZJoltForce;
 
 	size_t m_uiNumUninsulatedSegments;
-	size_t m_uiUninsulatedSegments[ MAX_SEGMENTS ];
+	size_t m_uiUninsulatedSegments[MAX_SEGMENTS];
 
 	int m_iLightningSprite;
 
 	float m_flLastSparkTime;
 };
-
-#endif

@@ -1,6 +1,6 @@
 //========= Copyright � 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -40,23 +40,23 @@ extern CGameStudioModelRenderer g_StudioRenderer;
 extern int g_iWaterLevel;
 extern Vector v_origin;
 
-int UseTexture(HL_HSPRITE &hsprSpr, char * str)
+int UseTexture(HSPRITE& hsprSpr, char* str)
 {
 	if (hsprSpr == 0)
 	{
 		char sz[256];
-		sprintf( sz, "%s", str );
-		hsprSpr = SPR_Load( sz );
+		sprintf(sz, str);
+		hsprSpr = SPR_Load(sz);
 	}
 
-	return gEngfuncs.pTriAPI->SpriteTexture( (struct model_s *)gEngfuncs.GetSpritePointer( hsprSpr ), 0 );
+	return gEngfuncs.pTriAPI->SpriteTexture((struct model_s*)gEngfuncs.GetSpritePointer(hsprSpr), 0);
 }
 
 //
 //-----------------------------------------------------
 //
 
-void SetPoint( float x, float y, float z, float (*matrix)[4])
+void SetPoint(float x, float y, float z, float (*matrix)[4])
 {
 	Vector point, result;
 	point[0] = x;
@@ -77,7 +77,7 @@ Non-transparent triangles-- add them here
 */
 void DLLEXPORT HUD_DrawNormalTriangles()
 {
-//	RecClDrawNormalTriangles();
+	//	RecClDrawNormalTriangles();
 
 	//RENDERERS START
 	//2012-02-25
@@ -87,9 +87,6 @@ void DLLEXPORT HUD_DrawNormalTriangles()
 	gHUD.m_Spectator.DrawOverview();
 }
 
-#if defined( _TFC )
-void RunEventList();
-#endif
 
 /*
 =================
@@ -107,11 +104,11 @@ void DLLEXPORT HUD_DrawTransparentTriangles( void )
 	R_DrawTransparentTriangles();
 	//RENDERERS END
 
-#if defined( _TFC )
-	RunEventList();
-#endif
 
 	BlackFog();
+
+	//imgui draw. We don't need it anymore cus WE'RE DRAWING OVER BABEY!
+	//gHUD.m_clImgui.DrawImgui();
 
 	// LRC: find out the time elapsed since the last redraw
 	static float fOldTime, fTime;

@@ -24,16 +24,16 @@ class CItemGeneric : public CBaseAnimating
 public:
 	void	Spawn() override;
 	void	Precache() override;
-	void	KeyValue(KeyValueData* pkvd) override;
+	bool	KeyValue(KeyValueData* pkvd) override;
 
 	int		ObjectCaps() override { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
-	int		Save(CSave& save) override;
-	int		Restore(CRestore& restore) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	BOOL m_fDisableShadows;
-	BOOL m_fDisableDrawing;
+	bool m_fDisableShadows;
+	bool m_fDisableDrawing;
 };
 
 LINK_ENTITY_TO_CLASS(item_generic, CItemGeneric);
@@ -47,20 +47,20 @@ TYPEDESCRIPTION	CItemGeneric::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CItemGeneric, CBaseAnimating);
 
-void CItemGeneric::KeyValue(KeyValueData* pkvd)
+bool CItemGeneric::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "DisableShadows"))
 	{
 		m_fDisableShadows = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "DisableDrawing"))
 	{
 		m_fDisableDrawing = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		CBaseAnimating::KeyValue(pkvd);
+		return CBaseAnimating::KeyValue(pkvd);
 }
 
 void CItemGeneric::Precache()
@@ -82,10 +82,10 @@ void CItemGeneric::Spawn()
 
 	pev->movetype = MOVETYPE_NONE;
 
-	if (m_fDisableShadows == TRUE)
+	if (m_fDisableShadows == true)
 		pev->effects |= FL_NOSHADOW;
 
-	if (m_fDisableDrawing == TRUE)
+	if (m_fDisableDrawing == true)
 		pev->effects |= FL_NOMODEL;
 
 	pev->framerate = 1.0;

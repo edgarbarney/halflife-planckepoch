@@ -12,8 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#ifndef ROPE_CROPESAMPLE_H
-#define ROPE_CROPESAMPLE_H
+
+#pragma once
 
 class CRope;
 
@@ -42,8 +42,8 @@ public:
 
 	void Spawn() override;
 
-	int Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -55,7 +55,7 @@ public:
 
 	CRope* GetMasterRope() { return m_pMasterRope; }
 
-	void SetMasterRope( CRope* pRope )
+	void SetMasterRope(CRope* pRope)
 	{
 		m_pMasterRope = pRope;
 	}
@@ -64,5 +64,3 @@ private:
 	RopeSampleData m_Data;
 	CRope* m_pMasterRope;
 };
-
-#endif

@@ -16,6 +16,8 @@
 //  cl_dll.h
 //
 
+#pragma once
+
 // 4-23-98  JOHN
 
 //
@@ -28,13 +30,14 @@
 
 #include "Platform.h"
 
-typedef int (*pfnUserMsgHook)(const char *pszName, int iSize, void *pbuf);
+typedef int (*pfnUserMsgHook)(const char* pszName, int iSize, void* pbuf);
 
 #include "mathlib.h"
 
 #include "../engine/cdll_int.h"
 #include "../dlls/cdll_dll.h"
 
+#define CL_ENGFUNCS_DEF
 extern cl_enginefunc_t gEngfuncs;
 
 #define CONPRINT (gEngfuncs.Con_Printf) //LRC - I can't live without printf!

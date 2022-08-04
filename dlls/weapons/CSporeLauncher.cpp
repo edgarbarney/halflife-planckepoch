@@ -72,7 +72,7 @@ void CSporeLauncher::Spawn()
 	pev->framerate = 1;
 }
 
-BOOL CSporeLauncher::AddToPlayer( CBasePlayer* pPlayer )
+bool CSporeLauncher::AddToPlayer( CBasePlayer* pPlayer )
 {
 	if( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
@@ -84,12 +84,12 @@ BOOL CSporeLauncher::AddToPlayer( CBasePlayer* pPlayer )
 	return false;
 }
 
-BOOL CSporeLauncher::Deploy()
+bool CSporeLauncher::Deploy()
 {
 	return DefaultDeploy( "models/v_spore_launcher.mdl", "models/p_spore_launcher.mdl", SPLAUNCHER_DRAW1, "rpg" );
 }
 
-void CSporeLauncher::Holster( int skiplocal )
+void CSporeLauncher::Holster( )
 {
 	m_ReloadState = ReloadState::NOT_RELOADING;
 
@@ -98,7 +98,7 @@ void CSporeLauncher::Holster( int skiplocal )
 	SendWeaponAnim( SPLAUNCHER_HOLSTER1 );
 }
 
-BOOL CSporeLauncher::ShouldWeaponIdle()
+bool CSporeLauncher::ShouldWeaponIdle()
 {
 	return true;
 }
@@ -319,7 +319,7 @@ int CSporeLauncher::iItemSlot()
 	return 4;
 }
 
-int CSporeLauncher::GetItemInfo( ItemInfo* p )
+bool CSporeLauncher::GetItemInfo(ItemInfo* p)
 {
 	p->pszAmmo1 = "spores";
 	p->iMaxAmmo1 = SPORELAUNCHER_MAX_CARRY;
@@ -425,7 +425,7 @@ public:
 		SetThink( &CSporeAmmo::Idling );
 	}
 
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override
 	{
 		if( pev->body == SPOREAMMOBODY_EMPTY )
 		{
@@ -459,7 +459,7 @@ public:
 		return 0;
 	}
 
-	BOOL AddAmmo( CBaseEntity* pOther ) override
+	bool AddAmmo( CBaseEntity* pOther ) override
 	{
 		if( pOther->GiveAmmo( AMMO_SPORE_GIVE, "spores", SPORELAUNCHER_MAX_CARRY ) != -1 )
 		{

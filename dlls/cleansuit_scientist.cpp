@@ -75,7 +75,7 @@ public:
 	void RunTask( Task_t *pTask ) override;
 	void StartTask( Task_t *pTask ) override;
 	int	ObjectCaps() override { return CTalkMonster :: ObjectCaps() | FCAP_IMPULSE_USE; }
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	int FriendNumber( int arrayNumber ) override;
 	void SetActivity ( Activity newActivity ) override;
 	Activity GetStoppedActivity() override;
@@ -83,9 +83,9 @@ public:
 	void DeclineFollowing() override;
 
 	float	CoverRadius() override { return 1200; }		// Need more room for cover because scientists want to get far away!
-	BOOL	DisregardEnemy( CBaseEntity *pEnemy ) { return !pEnemy->IsAlive() || (gpGlobals->time - m_fearTime) > 15; }
+	bool	DisregardEnemy( CBaseEntity *pEnemy ) { return !pEnemy->IsAlive() || (gpGlobals->time - m_fearTime) > 15; }
 
-	BOOL	CanHeal();
+	bool	CanHeal();
 	void	Heal();
 	void	Scream();
 
@@ -101,8 +101,8 @@ public:
 
 	void			Killed( entvars_t *pevAttacker, int iGib ) override;
 	
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CUSTOM_SCHEDULES;
@@ -755,13 +755,13 @@ void CCleansuitScientist :: TalkInit()
 	}
 }
 
-int CCleansuitScientist :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+bool CCleansuitScientist :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 
 	if ( pevInflictor && pevInflictor->flags & FL_CLIENT )
 	{
 		Remember( bits_MEMORY_PROVOKED );
-		StopFollowing( TRUE );
+		StopFollowing( true );
 	}
 
 	// make sure friends talk about it if player hurts scientist...
@@ -948,7 +948,7 @@ Schedule_t *CCleansuitScientist :: GetSchedule ()
 			if ( !m_hTargetEnt->IsAlive() )
 			{
 				// UNDONE: Comment about the recently dead player here?
-				StopFollowing( FALSE );
+				StopFollowing( false );
 				break;
 			}
 
@@ -1018,14 +1018,14 @@ MONSTERSTATE CCleansuitScientist :: GetIdealState ()
 					m_IdealMonsterState = MONSTERSTATE_ALERT;
 					return m_IdealMonsterState;
 				}
-				StopFollowing( TRUE );
+				StopFollowing( true );
 			}
 		}
 		else if ( HasConditions( bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE ) )
 		{
 			// Stop following if you take damage
 			if ( IsFollowing() )
-				StopFollowing( TRUE );
+				StopFollowing( true );
 		}
 		break;
 
@@ -1064,12 +1064,12 @@ MONSTERSTATE CCleansuitScientist :: GetIdealState ()
 }
 
 
-BOOL CCleansuitScientist::CanHeal()
+bool CCleansuitScientist::CanHeal()
 { 
 	if ( (m_healTime > gpGlobals->time) || (m_hTargetEnt == nullptr) || (m_hTargetEnt->pev->health > (m_hTargetEnt->pev->max_health * 0.5)) )
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void CCleansuitScientist::Heal()
@@ -1104,21 +1104,21 @@ public:
 	void Spawn() override;
 	int	Classify () override { return	CLASS_HUMAN_PASSIVE; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue(KeyValueData* pkvd) override;
 	int	m_iPose;// which sequence to display
 	static char *m_szPoses[9];
 };
 char *CDeadCleansuitScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3", "scientist_deadpose1", "dead_against_wall" };
 
-void CDeadCleansuitScientist::KeyValue( KeyValueData *pkvd )
+bool CDeadCleansuitScientist::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
 		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 LINK_ENTITY_TO_CLASS( monster_cleansuit_scientist_dead, CDeadCleansuitScientist );
 
@@ -1170,8 +1170,8 @@ public:
 
 	void EXPORT SittingThink();
 	int	Classify () override;
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	void SetAnswerQuestion( CTalkMonster *pSpeaker ) override;
@@ -1283,7 +1283,7 @@ void CSittingCleansuitScientist :: SittingThink()
 	// try to greet player
 	if (FIdleHello())
 	{
-		pent = FindNearestFriend(TRUE);
+		pent = FindNearestFriend(true);
 		if (pent)
 		{
 			float yaw = VecToYaw(pent->pev->origin - pev->origin) - pev->angles.y;
@@ -1320,9 +1320,9 @@ void CSittingCleansuitScientist :: SittingThink()
 			// turn towards player or nearest friend and speak
 
 			if (!FBitSet(m_bitsSaid, bit_saidHelloPlayer))
-				pent = FindNearestFriend(TRUE);
+				pent = FindNearestFriend(true);
 			else
-				pent = FindNearestFriend(FALSE);
+				pent = FindNearestFriend(false);
 
 			if (!FIdleSpeak() || !pent)
 			{	
@@ -1389,7 +1389,7 @@ int CSittingCleansuitScientist :: FIdleSpeak ()
 	int pitch;
 	
 	if (!FOkToSpeak())
-		return FALSE;
+		return false;
 
 	// set global min delay for next conversation
 	CTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(4.8, 5.2);
@@ -1399,7 +1399,7 @@ int CSittingCleansuitScientist :: FIdleSpeak ()
 	// if there is a friend nearby to speak to, play sentence, set friend's response time, return
 
 	// try to talk to any standing or sitting scientists nearby
-	CBaseEntity *pentFriend = FindNearestFriend(FALSE);
+	CBaseEntity *pentFriend = FindNearestFriend(false);
 
 	if (pentFriend && RANDOM_LONG(0,1))
 	{
@@ -1410,7 +1410,7 @@ int CSittingCleansuitScientist :: FIdleSpeak ()
 		SENTENCEG_PlayRndSz( ENT(pev), m_szGrp[TLK_PQUESTION], 1.0, ATTN_IDLE, 0, pitch );
 		// set global min delay for next conversation
 		CTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(4.8, 5.2);
-		return TRUE;
+		return true;
 	}
 
 	// otherwise, play an idle statement
@@ -1419,10 +1419,10 @@ int CSittingCleansuitScientist :: FIdleSpeak ()
 		SENTENCEG_PlayRndSz( ENT(pev), m_szGrp[TLK_PIDLE], 1.0, ATTN_IDLE, 0, pitch );
 		// set global min delay for next conversation
 		CTalkMonster::g_talkWaitTime = gpGlobals->time + RANDOM_FLOAT(4.8, 5.2);
-		return TRUE;
+		return true;
 	}
 
 	// never spoke
 	CTalkMonster::g_talkWaitTime = 0;
-	return FALSE;
+	return false;
 }

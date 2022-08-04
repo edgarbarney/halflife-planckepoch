@@ -28,7 +28,7 @@
 DECLARE_MESSAGE(m_FlagIcons, FlagIcon);
 DECLARE_MESSAGE(m_FlagIcons, FlagTimer);
 
-int CHudFlagIcons::Init()
+bool CHudFlagIcons::Init()
 {
     HOOK_MESSAGE(FlagIcon);
     HOOK_MESSAGE(FlagTimer);
@@ -41,12 +41,12 @@ int CHudFlagIcons::Init()
     m_bIsTimer = false;
     m_bTimerReset = false;
 
-    return 1;
+    return true;
 }
 
-int CHudFlagIcons::VidInit()
+bool CHudFlagIcons::VidInit()
 {
-    return 1;
+    return true;
 }
 
 void CHudFlagIcons::InitHUDData()
@@ -54,7 +54,7 @@ void CHudFlagIcons::InitHUDData()
     memset(m_FlagList, 0, sizeof(m_FlagList));
 }
 
-int CHudFlagIcons::Draw(float flTime)
+bool CHudFlagIcons::Draw(float flTime)
 {
     //TODO: can this ever return 2?
     if (gEngfuncs.IsSpectateOnly() != 2)
@@ -99,7 +99,7 @@ int CHudFlagIcons::Draw(float flTime)
         }
     }
 
-    return 1;
+    return true;
 }
 
 void CHudFlagIcons::EnableFlag(const char* pszFlagName, unsigned char team_idx, unsigned char red, unsigned char green, unsigned char blue, unsigned char score)

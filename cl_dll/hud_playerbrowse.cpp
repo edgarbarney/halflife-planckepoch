@@ -29,7 +29,7 @@
 
 DECLARE_MESSAGE(m_PlayerBrowse, PlyrBrowse);
 
-int CHudPlayerBrowse::Init()
+bool CHudPlayerBrowse::Init()
 {
 	gHUD.AddHudElem(this);
 
@@ -37,12 +37,12 @@ int CHudPlayerBrowse::Init()
 
 	Reset();
 
-	return 1;
+	return true;
 }
 
-int CHudPlayerBrowse::VidInit()
+bool CHudPlayerBrowse::VidInit()
 {
-	return 1;
+	return true;
 }
 
 void CHudPlayerBrowse::InitHUDData()
@@ -52,7 +52,7 @@ void CHudPlayerBrowse::InitHUDData()
 	m_flDelayFade = 0;
 }
 
-int CHudPlayerBrowse::Draw(float flTime)
+bool CHudPlayerBrowse::Draw(float flTime)
 {
 	int r, g, b;
 
@@ -111,7 +111,7 @@ int CHudPlayerBrowse::Draw(float flTime)
 		gHUD.DrawHudString(ScreenWidth / 2 - 100, ScreenHeight * 0.75, ScreenWidth, m_szLineBuffer, r, g, b);
 	}
 
-	return 1;
+	return true;
 }
 
 int CHudPlayerBrowse::MsgFunc_PlyrBrowse(const char* pszName, int iSize, void* pbuf)

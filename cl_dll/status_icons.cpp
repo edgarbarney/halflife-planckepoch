@@ -25,39 +25,39 @@
 #include "parsemsg.h"
 #include "event_api.h"
 
-DECLARE_MESSAGE( m_StatusIcons, StatusIcon );
+DECLARE_MESSAGE(m_StatusIcons, StatusIcon);
 DECLARE_MESSAGE(m_StatusIcons, CustomIcon);
 
-int CHudStatusIcons::Init()
+bool CHudStatusIcons::Init()
 {
-	HOOK_MESSAGE( StatusIcon );
+	HOOK_MESSAGE(StatusIcon);
 	HOOK_MESSAGE(CustomIcon);
 
-	gHUD.AddHudElem( this );
+	gHUD.AddHudElem(this);
 
 	Reset();
 
-	return 1;
+	return true;
 }
 
-int CHudStatusIcons::VidInit()
+bool CHudStatusIcons::VidInit()
 {
 
-	return 1;
+	return true;
 }
 
 void CHudStatusIcons::Reset()
 {
-	memset( m_IconList, 0, sizeof m_IconList );
+	memset(m_IconList, 0, sizeof m_IconList);
 	memset(m_CustomList, 0, sizeof(m_CustomList));
 	m_iFlags &= ~HUD_ACTIVE;
 }
 
 // Draw status icons along the left-hand side of the screen
-int CHudStatusIcons::Draw( float flTime )
+bool CHudStatusIcons::Draw(float flTime)
 {
 	if (gEngfuncs.IsSpectateOnly())
-		return 1;
+		return true;
 	{
 		// find starting position to draw from, along right-hand side of screen
 		int x = 5;
@@ -99,43 +99,43 @@ int CHudStatusIcons::Draw( float flTime )
 		}
 	}
 	
-	return 1;
+	return true;
 }
 
 // Message handler for StatusIcon message
 // accepts five values:
-//		byte   : TRUE = ENABLE icon, FALSE = DISABLE icon
+//		byte   : true = ENABLE icon, false = DISABLE icon
 //		string : the sprite name to display
 //		byte   : red
 //		byte   : green
 //		byte   : blue
-int CHudStatusIcons::MsgFunc_StatusIcon( const char *pszName, int iSize, void *pbuf )
+bool CHudStatusIcons::MsgFunc_StatusIcon(const char* pszName, int iSize, void* pbuf)
 {
-	BEGIN_READ( pbuf, iSize );
+	BEGIN_READ(pbuf, iSize);
 
-	int ShouldEnable = READ_BYTE();
-	char *pszIconName = READ_STRING();
-	if ( ShouldEnable )
+	bool ShouldEnable = READ_BYTE() != 0;
+	char* pszIconName = READ_STRING();
+	if (ShouldEnable)
 	{
 		int r = READ_BYTE();
 		int g = READ_BYTE();
 		int b = READ_BYTE();
-		EnableIcon( pszIconName, r, g, b );
+		EnableIcon(pszIconName, r, g, b);
 		m_iFlags |= HUD_ACTIVE;
 	}
 	else
 	{
-		DisableIcon( pszIconName );
+		DisableIcon(pszIconName);
 	}
 
-	return 1;
+	return true;
 }
 
-int CHudStatusIcons::MsgFunc_CustomIcon(const char* pszName, int iSize, void* pbuf)
+bool CHudStatusIcons::MsgFunc_CustomIcon(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 
-	int ShouldEnable = READ_BYTE();
+	const bool ShouldEnable = READ_BYTE() != 0;
 	int index = READ_BYTE();
 
 	if (ShouldEnable)
@@ -145,7 +145,7 @@ int CHudStatusIcons::MsgFunc_CustomIcon(const char* pszName, int iSize, void* pb
 		int g = READ_BYTE();
 		int b = READ_BYTE();
 
-		wrect_t aRect;
+		Rect aRect;
 		aRect.left = READ_BYTE();
 		aRect.top = READ_BYTE();
 		aRect.right = READ_BYTE();
@@ -163,65 +163,65 @@ int CHudStatusIcons::MsgFunc_CustomIcon(const char* pszName, int iSize, void* pb
 }
 
 // add the icon to the icon list, and set it's drawing color
-void CHudStatusIcons::EnableIcon( const char *pszIconName, unsigned char red, unsigned char green, unsigned char blue )
+void CHudStatusIcons::EnableIcon(const char* pszIconName, unsigned char red, unsigned char green, unsigned char blue)
 {
 	int i;
 	// check to see if the sprite is in the current list
-	for ( i = 0; i < MAX_ICONSPRITES; i++ )
+	for (i = 0; i < MAX_ICONSPRITES; i++)
 	{
-		if ( !stricmp( m_IconList[i].szSpriteName, pszIconName ) )
+		if (!stricmp(m_IconList[i].szSpriteName, pszIconName))
 			break;
 	}
 
-	if ( i == MAX_ICONSPRITES )
+	if (i == MAX_ICONSPRITES)
 	{
 		// icon not in list, so find an empty slot to add to
-		for ( i = 0; i < MAX_ICONSPRITES; i++ )
+		for (i = 0; i < MAX_ICONSPRITES; i++)
 		{
-			if ( !m_IconList[i].spr )
+			if (0 == m_IconList[i].spr)
 				break;
 		}
 	}
 
 	// if we've run out of space in the list, overwrite the first icon
-	if ( i == MAX_ICONSPRITES )
+	if (i == MAX_ICONSPRITES)
 	{
 		i = 0;
 	}
 
 	// Load the sprite and add it to the list
 	// the sprite must be listed in hud.txt
-	int spr_index = gHUD.GetSpriteIndex( pszIconName );
-	m_IconList[i].spr = gHUD.GetSprite( spr_index );
-	m_IconList[i].rc = gHUD.GetSpriteRect( spr_index );
+	int spr_index = gHUD.GetSpriteIndex(pszIconName);
+	m_IconList[i].spr = gHUD.GetSprite(spr_index);
+	m_IconList[i].rc = gHUD.GetSpriteRect(spr_index);
 	m_IconList[i].r = red;
 	m_IconList[i].g = green;
 	m_IconList[i].b = blue;
-	strcpy( m_IconList[i].szSpriteName, pszIconName );
+	strcpy(m_IconList[i].szSpriteName, pszIconName);
 
 	// Hack: Play Timer sound when a grenade icon is played (in 0.8 seconds)
-	if ( strstr(m_IconList[i].szSpriteName, "grenade") )
+	if (strstr(m_IconList[i].szSpriteName, "grenade"))
 	{
-		cl_entity_t *pthisplayer = gEngfuncs.GetLocalPlayer();
-		gEngfuncs.pEventAPI->EV_PlaySound( pthisplayer->index, pthisplayer->origin, CHAN_STATIC, "weapons/timer.wav", 1.0, ATTN_NORM, 0, PITCH_NORM );
+		cl_entity_t* pthisplayer = gEngfuncs.GetLocalPlayer();
+		gEngfuncs.pEventAPI->EV_PlaySound(pthisplayer->index, pthisplayer->origin, CHAN_STATIC, "weapons/timer.wav", 1.0, ATTN_NORM, 0, PITCH_NORM);
 	}
 }
 
-void CHudStatusIcons::DisableIcon( const char *pszIconName )
+void CHudStatusIcons::DisableIcon(const char* pszIconName)
 {
 	// find the sprite is in the current list
-	for ( int i = 0; i < MAX_ICONSPRITES; i++ )
+	for (int i = 0; i < MAX_ICONSPRITES; i++)
 	{
-		if ( !stricmp( m_IconList[i].szSpriteName, pszIconName ) )
+		if (!stricmp(m_IconList[i].szSpriteName, pszIconName))
 		{
 			// clear the item from the list
-			memset( &m_IconList[i], 0, sizeof(icon_sprite_t) );
+			memset(&m_IconList[i], 0, sizeof(icon_sprite_t));
 			return;
 		}
 	}
 }
 
-void CHudStatusIcons::EnableCustomIcon(int nIndex, char* pszIconName, unsigned char red, unsigned char green, unsigned char blue, const wrect_t& aRect)
+void CHudStatusIcons::EnableCustomIcon(int nIndex, char* pszIconName, unsigned char red, unsigned char green, unsigned char blue, const Rect& aRect)
 {
 	if (nIndex < MAX_CUSTOMSPRITES)
 	{

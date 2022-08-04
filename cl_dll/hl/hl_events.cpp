@@ -22,8 +22,7 @@
 ======================
 Game_HookEvents
 
-Associate script file name with callback functions.  Callback's must be extern "C" so
- the engine doesn't get confused about name mangling stuff.  Note that the format is
+Associate script file name with callback functions. Note that the format is
  always the same.  Of course, a clever mod team could actually embed parameters, behavior
  into the actual .sc files and create a .sc file parser and hook their functionality through
  that.. i.e., a scripting system.
@@ -43,7 +42,7 @@ void Game_HookEvents()
 	gEngfuncs.pfnHookEvent( "events/gauss.sc",					EV_FireGauss );
 	gEngfuncs.pfnHookEvent( "events/gaussspin.sc",				EV_SpinGauss );
 	gEngfuncs.pfnHookEvent( "events/train.sc",					EV_TrainPitchAdjust );
-	gEngfuncs.pfnHookEvent("events/crowbar.sc",					EV_Crowbar);
+	gEngfuncs.pfnHookEvent( "events/crowbar.sc",				EV_Crowbar);
 	gEngfuncs.pfnHookEvent( "events/crossbow1.sc",				EV_FireCrossbow );
 	gEngfuncs.pfnHookEvent( "events/crossbow2.sc",				EV_FireCrossbow2 );
 	gEngfuncs.pfnHookEvent( "events/rpg.sc",					EV_FireRpg );

@@ -71,7 +71,7 @@ void CDisplacer::Spawn()
 	FallInit();
 }
 
-BOOL CDisplacer::AddToPlayer( CBasePlayer* pPlayer )
+bool CDisplacer::AddToPlayer( CBasePlayer* pPlayer )
 {
 	if( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
@@ -83,12 +83,12 @@ BOOL CDisplacer::AddToPlayer( CBasePlayer* pPlayer )
 	return false;
 }
 
-BOOL CDisplacer::Deploy()
+bool CDisplacer::Deploy()
 {
 	return DefaultDeploy( "models/v_displacer.mdl", "models/p_displacer.mdl", DISPLACER_DRAW, "egon" );
 }
 
-void CDisplacer::Holster( int skiplocal )
+void CDisplacer::Holster()
 {
 	m_fInReload = false;
 
@@ -445,7 +445,7 @@ int CDisplacer::iItemSlot()
 	return 4;
 }
 
-int CDisplacer::GetItemInfo( ItemInfo* p )
+bool CDisplacer::GetItemInfo( ItemInfo* p )
 {
 	p->pszAmmo1 = "uranium";
 	p->iMaxAmmo1 = URANIUM_MAX_CARRY;

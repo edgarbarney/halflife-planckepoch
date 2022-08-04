@@ -153,10 +153,10 @@ public:
 	int  Classify () override;
 	int ISoundMask () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	BOOL FCanCheckAttacks () override;
-	BOOL CheckMeleeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override;
+	bool FCanCheckAttacks () override;
+	bool CheckMeleeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override;
 	void CheckAmmo () override;
 	void SetActivity ( Activity NewActivity ) override;
 	void StartTask ( Task_t *pTask ) override;
@@ -170,21 +170,21 @@ public:
 	void GibMonster() override;
 	void SpeakSentence();
 
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	
 	CBaseEntity	*Kick();
 	Schedule_t	*GetSchedule() override;
 	Schedule_t  *GetScheduleOfType ( int Type ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
 	int IRelationship ( CBaseEntity *pTarget ) override;
 
-	BOOL FOkToSpeak();
+	bool FOkToSpeak();
 	void JustSpoke();
 
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 
 	CUSTOM_SCHEDULES;
 	static TYPEDESCRIPTION m_SaveData[];
@@ -197,13 +197,13 @@ public:
 
 	Vector	m_vecTossVelocity;
 
-	BOOL	m_fThrowGrenade;
-	BOOL	m_fStanding;
-	BOOL	m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
+	bool	m_fThrowGrenade;
+	bool	m_fStanding;
+	bool	m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
 	int		m_cClipSize;
 
 	float m_flLastShot;
-	BOOL m_fStandingGround;
+	bool m_fStandingGround;
 	float m_flStandGroundRange;
 
 	int m_voicePitch;
@@ -363,26 +363,26 @@ int CMOFAssassin :: ISoundMask ()
 //=========================================================
 // someone else is talking - don't speak
 //=========================================================
-BOOL CMOFAssassin :: FOkToSpeak()
+bool CMOFAssassin :: FOkToSpeak()
 {
 // if someone else is talking, don't speak
 	if (gpGlobals->time <= CTalkMonster::g_talkWaitTime)
-		return FALSE;
+		return false;
 
 	if ( pev->spawnflags & SF_MONSTER_GAG )
 	{
 		if ( m_MonsterState != MONSTERSTATE_COMBAT )
 		{
 			// no talking outside of combat if gagged.
-			return FALSE;
+			return false;
 		}
 	}
 
 	// if player is not in pvs, don't speak
 //	if (FNullEnt(FIND_CLIENT_IN_PVS(edict())))
-//		return FALSE;
+//		return false;
 	
-	return TRUE;
+	return true;
 }
 
 //=========================================================
@@ -411,7 +411,7 @@ void CMOFAssassin :: PrescheduleThink ()
 			if ( gpGlobals->time - MySquadLeader()->m_flLastEnemySightTime > 5 )
 			{
 				// been a while since we've seen the enemy
-				MySquadLeader()->m_fEnemyEluded = TRUE;
+				MySquadLeader()->m_fEnemyEluded = true;
 			}
 		}
 	}
@@ -429,15 +429,15 @@ void CMOFAssassin :: PrescheduleThink ()
 // this is a bad bug. Friendly machine gun fire avoidance
 // will unecessarily prevent the throwing of a grenade as well.
 //=========================================================
-BOOL CMOFAssassin :: FCanCheckAttacks ()
+bool CMOFAssassin :: FCanCheckAttacks ()
 {
 	if ( !HasConditions( bits_COND_ENEMY_TOOFAR ) )
 	{
-		return TRUE;
+		return true;
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -445,7 +445,7 @@ BOOL CMOFAssassin :: FCanCheckAttacks ()
 //=========================================================
 // CheckMeleeAttack1
 //=========================================================
-BOOL CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
+bool CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	CBaseMonster *pEnemy;
 
@@ -455,7 +455,7 @@ BOOL CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 
 		if ( !pEnemy )
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -463,9 +463,9 @@ BOOL CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 		 pEnemy->Classify() != CLASS_ALIEN_BIOWEAPON &&
 		 pEnemy->Classify() != CLASS_PLAYER_BIOWEAPON )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -476,7 +476,7 @@ BOOL CMOFAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 // occluded (throw grenade over wall, etc). We must 
 // disqualify the machine gun attack if the enemy is occluded.
 //=========================================================
-BOOL CMOFAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
+bool CMOFAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	if( pev->weapons )
 	{
@@ -492,7 +492,7 @@ BOOL CMOFAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 			if( !m_hEnemy->IsPlayer() && flDist <= 64 )
 			{
 				// kick nonclients, but don't shoot at them.
-				return FALSE;
+				return false;
 			}
 
 			Vector vecSrc = GetGunPosition();
@@ -502,29 +502,29 @@ BOOL CMOFAssassin :: CheckRangeAttack1 ( float flDot, float flDist )
 
 			if( tr.flFraction == 1.0 )
 			{
-				return TRUE;
+				return true;
 			}
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
 // CheckRangeAttack2 - this checks the Grunt's grenade
 // attack. 
 //=========================================================
-BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
+bool CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 {
 	if (! FBitSet(pev->weapons, (MAssassinWeaponFlag::HandGrenade | MAssassinWeaponFlag ::GrenadeLauncher)))
 	{
-		return FALSE;
+		return false;
 	}
 	
 	// if the grunt isn't moving, it's ok to check.
 	if ( m_flGroundSpeed != 0 )
 	{
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -539,7 +539,7 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 		//!!!BUGBUG - we should make this check movetype and make sure it isn't FLY? Players who jump a lot are unlikely to 
 		// be grenaded.
 		// don't throw grenades at anything that isn't on the ground!
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 	
@@ -579,7 +579,7 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 		{
 			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 		}
 	}
 	
@@ -587,7 +587,7 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 	{
 		// crap, I don't want to blow myself up
 		m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -601,14 +601,14 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -622,14 +622,14 @@ BOOL CMOFAssassin :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 0.3; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -662,7 +662,7 @@ void CMOFAssassin :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 // needs to forget that he is in cover if he's hurt. (Obviously
 // not in a safe place anymore).
 //=========================================================
-int CMOFAssassin :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CMOFAssassin :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	Forget( bits_MEMORY_INCOVER );
 
@@ -869,7 +869,7 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
 			CGrenade::ShootTimed( pev, GetGunPosition(), m_vecTossVelocity, 3.5 );
 
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			// !!!LATER - when in a group, only try to throw grenade if ordered.
 		}
@@ -879,7 +879,7 @@ void CMOFAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		{
 			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/glauncher.wav", 0.8, ATTN_NORM);
 			CGrenade::ShootContact( pev, GetGunPosition(), m_vecTossVelocity );
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			if (g_iSkillLevel == SKILL_HARD)
 				m_flNextGrenadeCheck = gpGlobals->time + RANDOM_FLOAT( 2, 5 );// wait a random amount of time before shooting again
 			else
@@ -968,8 +968,8 @@ void CMOFAssassin :: Spawn()
 
 	m_afCapability		= bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
 
-	m_fEnemyEluded		= FALSE;
-	m_fFirstEncounter	= TRUE;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
+	m_fEnemyEluded		= false;
+	m_fFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
 	m_HackedGunPos = Vector ( 0, 0, 55 );
 
@@ -1958,7 +1958,7 @@ Schedule_t *CMOFAssassin :: GetSchedule()
 			{
 				if ( InSquad() )
 				{
-					MySquadLeader()->m_fEnemyEluded = FALSE;
+					MySquadLeader()->m_fEnemyEluded = false;
 
 					if ( !IsLeader() )
 					{
@@ -2027,7 +2027,7 @@ Schedule_t *CMOFAssassin :: GetSchedule()
 					// little time and give the player a chance to turn.
 					if ( MySquadLeader()->m_fEnemyEluded && !HasConditions ( bits_COND_ENEMY_FACING_ME ) )
 					{
-						MySquadLeader()->m_fEnemyEluded = FALSE;
+						MySquadLeader()->m_fEnemyEluded = false;
 						return GetScheduleOfType ( SCHED_MASSASSIN_FOUND_ENEMY );
 					}
 				}
@@ -2193,7 +2193,7 @@ Schedule_t* CMOFAssassin :: GetScheduleOfType ( int Type )
 		{
 			if ( m_hEnemy->IsPlayer() && m_fFirstEncounter )
 			{
-				m_fFirstEncounter = FALSE;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
+				m_fFirstEncounter = false;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
 				return &slOFMAssassinSignalSuppress[ 0 ];
 			}
 			else
@@ -2234,20 +2234,20 @@ Schedule_t* CMOFAssassin :: GetScheduleOfType ( int Type )
 	}
 }
 
-void CMOFAssassin::KeyValue( KeyValueData* pkvd )
+bool CMOFAssassin::KeyValue( KeyValueData* pkvd )
 {
 	if( FStrEq( "head", pkvd->szKeyName ) )
 	{
 		m_iAssassinHead = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "standgroundrange", pkvd->szKeyName ) )
 	{
 		m_flStandGroundRange = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
-		CSquadMonster::KeyValue( pkvd );
+		return CSquadMonster::KeyValue( pkvd );
 }
 
 //=========================================================
@@ -2318,7 +2318,7 @@ public:
 	void Spawn() override;
 	int	Classify () override { return	CLASS_HUMAN_MILITARY; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[3];
@@ -2326,15 +2326,15 @@ public:
 
 char *CDeadMOFAssassin::m_szPoses[] = { "deadstomach", "deadside", "deadsitting" };
 
-void CDeadMOFAssassin::KeyValue( KeyValueData *pkvd )
+bool CDeadMOFAssassin::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
 		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else 
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 LINK_ENTITY_TO_CLASS( monster_massassin_dead, CDeadMOFAssassin );

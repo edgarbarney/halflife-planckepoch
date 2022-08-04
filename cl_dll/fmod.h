@@ -1063,7 +1063,7 @@ DLL_API FSOUND_DSPUNIT *F_API FSOUND_DSP_GetClipAndCopyUnit();
 /* 
     Miscellaneous DSP functions 
     Note for the spectrum analysis function to work, you have to enable the FFT DSP unit with 
-    the following code FSOUND_DSP_SetActive(FSOUND_DSP_GetFFTUnit(), TRUE);
+    the following code FSOUND_DSP_SetActive(FSOUND_DSP_GetFFTUnit(), true);
     It is off by default to save cpu usage.
 */
 
@@ -1071,7 +1071,7 @@ DLL_API signed char     F_API FSOUND_DSP_MixBuffers(void *destbuffer, void *srcb
 DLL_API void            F_API FSOUND_DSP_ClearMixBuffer();
 DLL_API int             F_API FSOUND_DSP_GetBufferLength();      /* Length of each DSP update */
 DLL_API int             F_API FSOUND_DSP_GetBufferLengthTotal(); /* Total buffer length due to FSOUND_SetBufferSize */
-DLL_API float *         F_API FSOUND_DSP_GetSpectrum();          /* Array of 512 floats - call FSOUND_DSP_SetActive(FSOUND_DSP_GetFFTUnit(), TRUE)) for this to work. */
+DLL_API float *         F_API FSOUND_DSP_GetSpectrum();          /* Array of 512 floats - call FSOUND_DSP_SetActive(FSOUND_DSP_GetFFTUnit(), true)) for this to work. */
 
 /* =================================================================================== */
 /* Reverb functions. (eax2/eax3 reverb)  (ONLY SUPPORTED ON WIN32 W/ FSOUND_HW3D FLAG) */

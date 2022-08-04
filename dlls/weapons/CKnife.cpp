@@ -58,14 +58,14 @@ void CKnife::Spawn()
 	FallInit();
 }
 
-BOOL CKnife::Deploy()
+bool CKnife::Deploy()
 {
 	return DefaultDeploy( 
 		"models/v_knife.mdl", "models/p_knife.mdl", 
 		KNIFE_DRAW, "crowbar" );
 }
 
-void CKnife::Holster( int skiplocal )
+void CKnife::Holster( )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
@@ -257,7 +257,7 @@ int CKnife::iItemSlot()
 	return 1;
 }
 
-int CKnife::GetItemInfo( ItemInfo* p )
+bool CKnife::GetItemInfo(ItemInfo* p)
 {
 	p->pszAmmo1 = nullptr;
 	p->iMaxAmmo1 = WEAPON_NOCLIP;

@@ -36,8 +36,8 @@ enum MonsterPenguinAnim
 class CPenguinGrenade : public CGrenade
 {
 public:
-	int Save(CSave& save) override;
-	int Restore(CRestore& restore) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 

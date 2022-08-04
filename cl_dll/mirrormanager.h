@@ -19,7 +19,7 @@ Additional code taken from Id Software
 #pragma once
 #endif
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "gl/gl.h"
 #include "pm_defs.h"
 #include "cl_entity.h"

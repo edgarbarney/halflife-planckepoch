@@ -15,36 +15,36 @@
 //=========================================================
 // Generic Monster - purely for scripted sequence work.
 //=========================================================
-#include	"extdll.h"
-#include	"util.h"
-#include	"cbase.h"
-#include	"monsters.h"
-#include	"schedule.h"
-#include	"animation.h"
-#include	"talkmonster.h"
-#include	"effects.h"
+#include "extdll.h"
+#include "util.h"
+#include "cbase.h"
+#include "monsters.h"
+#include "schedule.h"
+#include "animation.h"
+#include "talkmonster.h"
+#include "effects.h"
 #include "customentity.h"
 #include "soundent.h"
 
 // For holograms, make them not solid so the player can walk through them
 //LRC- this seems to interfere with SF_MONSTER_CLIP
-#define	SF_GENERICMONSTER_NOTSOLID				4 
-#define	SF_HEAD_CONTROLLER					8 
-#define SF_GENERICMONSTER_INVULNERABLE				32
-#define SF_GENERICMONSTER_PLAYERMODEL				64
+#define SF_GENERICMONSTER_NOTSOLID 4
+#define SF_HEAD_CONTROLLER 8
+#define SF_GENERICMONSTER_INVULNERABLE 32
+#define SF_GENERICMONSTER_PLAYERMODEL 64
 
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
 //G-Cont. This code - support for htorch model from Op4 ;)
-#define HTORCH_AE_SHOWGUN ( 17)
-#define HTORCH_AE_SHOWTORCH ( 18)
-#define HTORCH_AE_HIDETORCH ( 19)
-#define HTORCH_AE_ONGAS ( 20)
-#define HTORCH_AE_OFFGAS ( 21)
-#define GUN_DEAGLE			0
-#define GUN_TORCH			1
-#define GUN_NONE			2
+#define HTORCH_AE_SHOWGUN (17)
+#define HTORCH_AE_SHOWTORCH (18)
+#define HTORCH_AE_HIDETORCH (19)
+#define HTORCH_AE_ONGAS (20)
+#define HTORCH_AE_OFFGAS (21)
+#define GUN_DEAGLE 0
+#define GUN_TORCH 1
+#define GUN_NONE 2
 
 class CGenericMonster : public CTalkMonster
 {
@@ -52,67 +52,66 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void SetYawSpeed() override;
-	int  Classify () override;
-	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	int ISoundMask () override;
-	void KeyValue( KeyValueData *pkvd ) override;
-	void Torch ();
+	int Classify() override;
+	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
+	int ISoundMask() override;
+	bool KeyValue(KeyValueData* pkvd) override;
+	void Torch();
 	void MakeGas();
 	void UpdateGas();
 	void KillGas();
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
-	static	TYPEDESCRIPTION m_SaveData[];
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
 
-    int HasCustomGibs() override { return m_iszGibModel; }
+	bool HasCustomGibs() override { return m_iszGibModel; }
 
-    CBeam *m_pBeam;
+	CBeam* m_pBeam;
 	int m_iszGibModel;
 };
-LINK_ENTITY_TO_CLASS( monster_generic, CGenericMonster );
+LINK_ENTITY_TO_CLASS(monster_generic, CGenericMonster);
 
-TYPEDESCRIPTION	CGenericMonster::m_SaveData[] = 
-{
-	DEFINE_FIELD( CGenericMonster, m_iszGibModel, FIELD_STRING ),
+TYPEDESCRIPTION CGenericMonster::m_SaveData[] =
+	{
+		DEFINE_FIELD(CGenericMonster, m_iszGibModel, FIELD_STRING),
 };
 
-IMPLEMENT_SAVERESTORE( CGenericMonster, CBaseMonster );
+IMPLEMENT_SAVERESTORE(CGenericMonster, CBaseMonster);
 
-void CGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CGenericMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
-	else
-		CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue(pkvd);
 }
 
 //=========================================================
-// Classify - indicates this monster's place in the 
+// Classify - indicates this monster's place in the
 // relationship table.
 //=========================================================
-int	CGenericMonster :: Classify ()
+int CGenericMonster::Classify()
 {
-	return m_iClass?m_iClass:CLASS_PLAYER_ALLY;
+	return m_iClass ? m_iClass : CLASS_PLAYER_ALLY;
 }
 
 //=========================================================
 // SetYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-void CGenericMonster :: SetYawSpeed ()
+void CGenericMonster::SetYawSpeed()
 {
 	int ys;
 
-	switch ( m_Activity )
+	switch (m_Activity)
 	{
 	case ACT_IDLE:
 	default:
@@ -126,60 +125,60 @@ void CGenericMonster :: SetYawSpeed ()
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CGenericMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
+void CGenericMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
 	Vector vecShootDir;
 	Vector vecShootOrigin;
 
-	switch( pEvent->event )
+	switch (pEvent->event)
 	{
-		case HTORCH_AE_SHOWTORCH:
+	case HTORCH_AE_SHOWTORCH:
 		pev->body = GUN_NONE;
 		pev->body = GUN_TORCH;
 		break;
 
-		case HTORCH_AE_SHOWGUN:
+	case HTORCH_AE_SHOWGUN:
 		pev->body = GUN_NONE;
 		pev->body = GUN_DEAGLE;
 		break;
 
-		case HTORCH_AE_HIDETORCH:
+	case HTORCH_AE_HIDETORCH:
 		pev->body = GUN_NONE;
 		break;
 
-		case HTORCH_AE_ONGAS:
-		{
-			int gas = 1;
-			MakeGas();
-			UpdateGas();
-		};
-		break;
+	case HTORCH_AE_ONGAS:
+	{
+		int gas = 1;
+		MakeGas();
+		UpdateGas();
+	};
+	break;
 
-		case HTORCH_AE_OFFGAS:
-		{
-			int gas = 0;
-			KillGas();
-		};
-		break;
+	case HTORCH_AE_OFFGAS:
+	{
+		int gas = 0;
+		KillGas();
+	};
+	break;
 
-		default:
- 			CBaseMonster::HandleAnimEvent( pEvent );
-		    break;
+	default:
+		CBaseMonster::HandleAnimEvent(pEvent);
+		break;
 	}
 }
 
 //=========================================================
 // ISoundMask - generic monster can't hear.
 //=========================================================
-int CGenericMonster :: ISoundMask ()
+int CGenericMonster::ISoundMask()
 {
-	return	bits_SOUND_NONE;
+	return bits_SOUND_NONE;
 }
 
 //=========================================================
 // Spawn
 //=========================================================
-void CGenericMonster :: Spawn()
+void CGenericMonster::Spawn()
 {
 	// store the size, so we can use it to set up the hulls after Set_Model overwrites it.
 	Vector vecSize = pev->size;
@@ -196,13 +195,13 @@ void CGenericMonster :: Spawn()
 
 	Precache();
 
-	SET_MODEL( ENT(pev), STRING(pev->model) );
+	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	if (vecSize != g_vecZero)
 	{
-		Vector vecMax = vecSize/2;
+		Vector vecMax = vecSize / 2;
 		Vector vecMin = -vecMax;
-		if (!FBitSet(pev->spawnflags,SF_GENERICMONSTER_PLAYERMODEL))
+		if (!FBitSet(pev->spawnflags, SF_GENERICMONSTER_PLAYERMODEL))
 		{
 			vecMin.z = 0;
 			vecMax.z = vecSize.z;
@@ -210,35 +209,35 @@ void CGenericMonster :: Spawn()
 		UTIL_SetSize(pev, vecMin, vecMax);
 	}
 	else if (
-			pev->spawnflags & SF_GENERICMONSTER_PLAYERMODEL ||
-			FStrEq( STRING(pev->model), "models/player.mdl" ) ||
-			FStrEq( STRING(pev->model), "models/holo.mdl" )
-		)
+		pev->spawnflags & SF_GENERICMONSTER_PLAYERMODEL ||
+		FStrEq(STRING(pev->model), "models/player.mdl") ||
+		FStrEq(STRING(pev->model), "models/holo.mdl"))
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 	else
 		UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
-	pev->solid			= SOLID_SLIDEBOX;
-	pev->movetype		= MOVETYPE_STEP;
-	if (!m_bloodColor) m_bloodColor = BLOOD_COLOR_RED;
-	if (!pev->health) pev->health = 8;
-	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
-	m_MonsterState		= MONSTERSTATE_NONE;
+	pev->solid = SOLID_SLIDEBOX;
+	pev->movetype = MOVETYPE_STEP;
+	if (!m_bloodColor)
+		m_bloodColor = BLOOD_COLOR_RED;
+	if (!pev->health)
+		pev->health = 8;
+	m_flFieldOfView = 0.5; // indicates the width of this monster's forward view cone ( as a dotproduct result )
+	m_MonsterState = MONSTERSTATE_NONE;
 
 	MonsterInit();
 
-	if ( pev->spawnflags & SF_HEAD_CONTROLLER )
+	if (pev->spawnflags & SF_HEAD_CONTROLLER)
 	{
 		m_afCapability = bits_CAP_TURN_HEAD;
-
 	}
 
-	if ( pev->spawnflags & SF_GENERICMONSTER_NOTSOLID )
+	if ((pev->spawnflags & SF_GENERICMONSTER_NOTSOLID) != 0)
 	{
 		pev->solid = SOLID_NOT;
 		pev->takedamage = DAMAGE_NO;
 	}
-	else if ( pev->spawnflags & SF_GENERICMONSTER_INVULNERABLE )
+	else if (pev->spawnflags & SF_GENERICMONSTER_INVULNERABLE)
 	{
 		pev->takedamage = DAMAGE_NO;
 	}
@@ -247,14 +246,14 @@ void CGenericMonster :: Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CGenericMonster :: Precache()
+void CGenericMonster::Precache()
 {
 	CTalkMonster::Precache();
 	TalkInit();
-	PRECACHE_MODEL( (char *)STRING(pev->model) );
+	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)
-		PRECACHE_MODEL( (char*)STRING(m_iszGibModel) ); //LRC
-}	
+		PRECACHE_MODEL((char*)STRING(m_iszGibModel)); //LRC
+}
 
 //=========================================================
 // AI Schedules Specific to this monster
@@ -272,66 +271,66 @@ enum
 // =========================================================
 // TORCH SUPPORT
 // =========================================================
-void CGenericMonster :: Torch ( )
+void CGenericMonster ::Torch(void)
 {
 	Vector vecGunPos;
 	Vector vecGunAngles;
 	Vector vecShootDir;
 
-	GetAttachment( 4, vecGunPos, vecGunAngles );
-		pev->effects |= EF_MUZZLEFLASH;
+	GetAttachment(4, vecGunPos, vecGunAngles);
+	pev->effects |= EF_MUZZLEFLASH;
 
-	Vector angDir = UTIL_VecToAngles( vecShootDir );
-		SetBlending( 0, angDir.x );
+	Vector angDir = UTIL_VecToAngles(vecShootDir);
+	SetBlending(0, angDir.x);
 }
 
-void CGenericMonster::UpdateGas( ) { }
+void CGenericMonster::UpdateGas(void) {}
 
-void CGenericMonster::MakeGas( )
+void CGenericMonster::MakeGas(void)
 {
 	Vector posGun, angleGun;
 	TraceResult tr;
-	UTIL_MakeVectors( pev->angles );
+	UTIL_MakeVectors(pev->angles);
 	{
-	KillGas();
-		m_pBeam = CBeam::BeamCreate( "sprites/laserbeam.spr", 7 );
-		if ( m_pBeam )
+		KillGas();
+		m_pBeam = CBeam::BeamCreate("sprites/laserbeam.spr", 7);
+		if (m_pBeam)
 		{
-			GetAttachment( 4, posGun, angleGun );
-			GetAttachment( 3, posGun, angleGun );
+			GetAttachment(4, posGun, angleGun);
+			GetAttachment(3, posGun, angleGun);
 
 			Vector vecEnd = (gpGlobals->v_forward * 5) + posGun;
-			UTIL_TraceLine( posGun, vecEnd, dont_ignore_monsters, edict(), &tr );
+			UTIL_TraceLine(posGun, vecEnd, dont_ignore_monsters, edict(), &tr);
 
-			m_pBeam->EntsInit( entindex(), entindex() );
-			m_pBeam->SetColor( 24, 121, 239 );
-			m_pBeam->SetBrightness( 190 );
-		         	m_pBeam->SetScrollRate( 20 );
-			m_pBeam->SetStartAttachment( 4 );
-			m_pBeam->SetEndAttachment( 3 );
-			m_pBeam->DamageDecal( 28 );
-			m_pBeam->DoSparks( tr.vecEndPos, posGun );
-			m_pBeam->SetFlags( BEAM_FSHADEIN );
-			m_pBeam->pev->spawnflags |= pev->spawnflags &  SF_BEAM_SPARKSTART; //| SF_BEAM_DECALS | SF_BEAM_TOGGLE);
+			m_pBeam->EntsInit(entindex(), entindex());
+			m_pBeam->SetColor(24, 121, 239);
+			m_pBeam->SetBrightness(190);
+			m_pBeam->SetScrollRate(20);
+			m_pBeam->SetStartAttachment(4);
+			m_pBeam->SetEndAttachment(3);
+			m_pBeam->DamageDecal(28);
+			m_pBeam->DoSparks(tr.vecEndPos, posGun);
+			m_pBeam->SetFlags(BEAM_FSHADEIN);
+			m_pBeam->pev->spawnflags |= pev->spawnflags & SF_BEAM_SPARKSTART; //| SF_BEAM_DECALS | SF_BEAM_TOGGLE);
 			m_pBeam->RelinkBeam();
 
-			UTIL_Sparks( tr.vecEndPos );
-			UTIL_DecalTrace(&tr, 28 + RANDOM_LONG(0,4));
+			UTIL_Sparks(tr.vecEndPos);
+			UTIL_DecalTrace(&tr, 28 + RANDOM_LONG(0, 4));
 		}
 	}
 	// m_flNextAttack = gpGlobals->time + RANDOM_FLOAT( 0.5, 4.0 );
-	if ( int gas = 1 )
+	if (int gas = 1)
 	{
 		pev->nextthink = gpGlobals->time;
 	}
 }
 
-void CGenericMonster :: KillGas( )
+void CGenericMonster ::KillGas(void)
 {
-	if ( m_pBeam )
+	if (m_pBeam)
 	{
-		UTIL_Remove( m_pBeam );
-		m_pBeam = nullptr;
+		UTIL_Remove(m_pBeam);
+		m_pBeam = NULL;
 	}
 }
 
@@ -343,86 +342,85 @@ class CDeadGenericMonster : public CBaseMonster
 public:
 	void Spawn() override;
 	void Precache() override;
-	int	Classify () override { return CLASS_PLAYER_ALLY; }
-	void KeyValue( KeyValueData *pkvd ) override;
+	int Classify() override { return CLASS_PLAYER_ALLY; }
+	bool KeyValue(KeyValueData* pkvd) override;
 
-    int		Save( CSave &save ) override;
-    int		Restore( CRestore &restore ) override;
-	static	TYPEDESCRIPTION m_SaveData[];
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
 
-    int HasCustomGibs() override { return m_iszGibModel; }
+	bool HasCustomGibs() override { return m_iszGibModel; }
 
 	int m_iszGibModel;
 };
 
-LINK_ENTITY_TO_CLASS( monster_generic_dead, CDeadGenericMonster );
+LINK_ENTITY_TO_CLASS(monster_generic_dead, CDeadGenericMonster);
 
-TYPEDESCRIPTION	CDeadGenericMonster::m_SaveData[] = 
-{
-	DEFINE_FIELD( CDeadGenericMonster, m_iszGibModel, FIELD_STRING ),
+TYPEDESCRIPTION CDeadGenericMonster::m_SaveData[] =
+	{
+		DEFINE_FIELD(CDeadGenericMonster, m_iszGibModel, FIELD_STRING),
 };
 
-IMPLEMENT_SAVERESTORE( CDeadGenericMonster, CBaseMonster );
+IMPLEMENT_SAVERESTORE(CDeadGenericMonster, CBaseMonster);
 
-void CDeadGenericMonster::KeyValue( KeyValueData *pkvd )
+bool CDeadGenericMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "m_bloodColor"))
 	{
 		m_bloodColor = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "m_iszGibModel"))
 	{
 		m_iszGibModel = ALLOC_STRING(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
-	else
-		CBaseMonster::KeyValue( pkvd );
+	return CBaseMonster::KeyValue(pkvd);
 }
 
 //=========================================================
 // ********** DeadGenericMonster SPAWN **********
 //=========================================================
-void CDeadGenericMonster :: Spawn()
+void CDeadGenericMonster::Spawn()
 {
 	Precache();
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	pev->effects		= 0;
-	pev->yaw_speed		= 8; //LRC -- what?
-	pev->sequence		= 0;
+	pev->effects = 0;
+	pev->yaw_speed = 8; //LRC -- what?
+	pev->sequence = 0;
 
 	if (pev->netname)
 	{
-		pev->sequence = LookupSequence( STRING(pev->netname) );
+		pev->sequence = LookupSequence(STRING(pev->netname));
 
 		if (pev->sequence == -1)
 		{
-			ALERT ( at_debug, "Invalid sequence name \"%s\" in monster_generic_dead\n", STRING(pev->netname) );
+			ALERT(at_debug, "Invalid sequence name \"%s\" in monster_generic_dead\n", STRING(pev->netname));
 		}
 	}
 	else
 	{
-		pev->sequence = LookupActivity( pev->frags );
-//		if (pev->sequence == -1)
-//		{
-//			ALERT ( at_error, "monster_generic_dead - specify a sequence name or choose a different death type: model \"%s\" has no available death sequences.\n", STRING(pev->model) );
-//		}
+		pev->sequence = LookupActivity(pev->frags);
+		//		if (pev->sequence == -1)
+		//		{
+		//			ALERT ( at_error, "monster_generic_dead - specify a sequence name or choose a different death type: model \"%s\" has no available death sequences.\n", STRING(pev->model) );
+		//		}
 		//...and if that doesn't work, forget it.
 	}
 
 	// Corpses have less health
-	pev->health			= 8;
+	pev->health = 8;
 
 	MonsterInitDead();
 
-	ResetSequenceInfo( );
+	ResetSequenceInfo();
 	pev->frame = 255; // pose at the _end_ of its death sequence.
 }
 
-void CDeadGenericMonster :: Precache()
+void CDeadGenericMonster::Precache()
 {
-	PRECACHE_MODEL( (char*)STRING(pev->model) );
+	PRECACHE_MODEL((char*)STRING(pev->model));
 	if (m_iszGibModel)
-		PRECACHE_MODEL( (char*)STRING(m_iszGibModel) ); //LRC
+		PRECACHE_MODEL((char*)STRING(m_iszGibModel)); //LRC
 }

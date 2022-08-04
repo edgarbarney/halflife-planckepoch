@@ -26,18 +26,16 @@ const auto SF_ITEMCTF_IGNORE_TEAM = 1 << 3;
 
 CItemSpawnCTF* CItemCTF::m_pLastSpawn = nullptr;
 
-void CItemCTF::KeyValue( KeyValueData* pkvd )
+bool CItemCTF::KeyValue( KeyValueData* pkvd )
 {
 	if( FStrEq( "team_no", pkvd->szKeyName ) )
 	{
 		team_no = static_cast<CTFTeam>( atoi( pkvd->szValue ) );
-		pkvd->fHandled = true;
+		return true;
 	}
-	else
-	{
-		//TODO: should invoke base class KeyValue here
-		pkvd->fHandled = false;
-	}
+
+	//TODO: should invoke base class KeyValue here
+	return false;
 }
 
 void CItemCTF::Precache()

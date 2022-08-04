@@ -39,7 +39,7 @@
 
 #include "pm_shared.h"
 
-extern DLL_GLOBAL BOOL		g_fGameOver;
+extern DLL_GLOBAL bool		g_fGameOver;
 
 const int MaxTeamNameLength = 16;
 const int MaxTeamCharacters = 12;
@@ -579,7 +579,7 @@ void CHalfLifeCTFplay::Think()
 	}
 }
 
-BOOL CHalfLifeCTFplay::ClientConnected( edict_t* pEntity, const char* pszName, const char* pszAddress, char* szRejectReason )
+bool CHalfLifeCTFplay::ClientConnected( edict_t* pEntity, const char* pszName, const char* pszAddress, char* szRejectReason )
 {
 	m_fRefreshScores = true;
 
@@ -754,18 +754,18 @@ void CHalfLifeCTFplay::UpdateGameMode( CBasePlayer* pPlayer )
 	g_engfuncs.pfnMessageEnd();
 }
 
-BOOL CHalfLifeCTFplay::FPlayerCanTakeDamage( CBasePlayer* pPlayer, CBaseEntity* pAttacker )
+bool CHalfLifeCTFplay::FPlayerCanTakeDamage( CBasePlayer* pPlayer, CBaseEntity* pAttacker )
 {
 	if( pAttacker
 		&& PlayerRelationship( pPlayer, pAttacker ) == GR_TEAMMATE
 		&& pAttacker != pPlayer
 		&& friendlyfire.value == 0 )
-		return FALSE;
+		return false;
 
 	return CHalfLifeMultiplay::FPlayerCanTakeDamage( pPlayer, pAttacker );
 }
 
-BOOL CHalfLifeCTFplay::ShouldAutoAim( CBasePlayer* pPlayer, edict_t* target )
+bool CHalfLifeCTFplay::ShouldAutoAim( CBasePlayer* pPlayer, edict_t* target )
 {
 	auto v4 = CBaseEntity::Instance( target );
 
@@ -904,7 +904,7 @@ void CHalfLifeCTFplay::PlayerThink( CBasePlayer* pPlayer )
 	CHalfLifeMultiplay::PlayerThink( pPlayer );
 }
 
-BOOL CHalfLifeCTFplay::ClientCommand( CBasePlayer* pPlayer, const char* pcmd )
+bool CHalfLifeCTFplay::ClientCommand( CBasePlayer* pPlayer, const char* pcmd )
 {
 	if( !strcmp( "cancelmenu", pcmd ) )
 	{
@@ -1218,7 +1218,7 @@ void CHalfLifeCTFplay::DeathNotice( CBasePlayer* pVictim, entvars_t* pKiller, en
 	}
 }
 
-BOOL CHalfLifeCTFplay::CanHaveAmmo( CBasePlayer* pPlayer, const char* pszAmmoName, int iMaxCarry )
+bool CHalfLifeCTFplay::CanHaveAmmo( CBasePlayer* pPlayer, const char* pszAmmoName, int iMaxCarry )
 {
 	if( pszAmmoName )
 	{
@@ -1274,12 +1274,12 @@ const char* CHalfLifeCTFplay::GetIndexedTeamName( int teamIndex )
 	return "";
 }
 
-BOOL CHalfLifeCTFplay::IsValidTeam( const char* pTeamName )
+bool CHalfLifeCTFplay::IsValidTeam( const char* pTeamName )
 {
 	return GetTeamIndex( pTeamName ) != -1;
 }
 
-void CHalfLifeCTFplay::ChangePlayerTeam( CBasePlayer* pPlayer, const char* pCharName, BOOL bKill, BOOL bGib )
+void CHalfLifeCTFplay::ChangePlayerTeam( CBasePlayer* pPlayer, const char* pCharName, bool bKill, bool bGib )
 {
 	auto v5 = pPlayer->entindex();
 
@@ -1389,7 +1389,7 @@ void CHalfLifeCTFplay::ChangePlayerTeam( CBasePlayer* pPlayer, const char* pChar
 		pPlayer->m_iNewTeamNum = CTFTeam::None;
 		pPlayer->m_iCurrentMenu = MENU_NONE;
 		pPlayer->m_iTeamNum = CTFTeam::None;
-		pPlayer->SetSuitUpdate( nullptr, FALSE, SUIT_REPEAT_OK );
+		pPlayer->SetSuitUpdate( nullptr, false, SUIT_REPEAT_OK );
 		pPlayer->m_iClientHealth = 100;
 
 		g_engfuncs.pfnMessageBegin( MSG_ONE, gmsgHealth, nullptr, pPlayer->edict() );
@@ -1528,7 +1528,7 @@ const char* CHalfLifeCTFplay::TeamWithFewestPlayers()
 	return team_names[ 0 ];
 }
 
-BOOL CHalfLifeCTFplay::TeamsBalanced()
+bool CHalfLifeCTFplay::TeamsBalanced()
 {
 	int teamCount[ MaxTeams ] = {};
 

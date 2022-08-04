@@ -6,7 +6,7 @@
 #ifndef FRUSTUM_H
 #define FRUSTUM_H
 
-#include "windows.h"
+#include "PlatformHeaders.h"
 #include "gl/gl.h"
 #include "pm_defs.h"
 #include "cl_entity.h"

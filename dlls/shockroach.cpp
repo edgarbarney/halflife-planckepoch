@@ -89,9 +89,9 @@ public:
 	void PrescheduleThink() override;
 	int  Classify () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override;
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override;
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
 	virtual float GetDamageAmount() { return gSkillData.shockroachDmgBite; }
 	virtual int GetVoicePitch() { return 100; }
@@ -100,12 +100,12 @@ public:
 
 	void MonsterThink() override;
 
-	int Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	float m_flBirthTime;
-	BOOL m_fRoachSolid;
+	bool m_fRoachSolid;
 
 	CUSTOM_SCHEDULES;
 
@@ -299,7 +299,7 @@ void COFShockRoach :: Spawn()
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
 
-	m_fCanBleed = FALSE;
+	m_fCanBleed = false;
 
 	m_fRoachSolid = false;
 	m_flBirthTime = gpGlobals->time;
@@ -427,32 +427,32 @@ void COFShockRoach :: StartTask ( Task_t *pTask )
 //=========================================================
 // CheckRangeAttack1
 //=========================================================
-BOOL COFShockRoach :: CheckRangeAttack1 ( float flDot, float flDist )
+bool COFShockRoach :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	if ( FBitSet( pev->flags, FL_ONGROUND ) && flDist <= 256 && flDot >= 0.65 )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
 // CheckRangeAttack2
 //=========================================================
-BOOL COFShockRoach :: CheckRangeAttack2 ( float flDot, float flDist )
+bool COFShockRoach :: CheckRangeAttack2 ( float flDot, float flDist )
 {
-	return FALSE;
+	return false;
 	// BUGBUG: Why is this code here?  There is no ACT_RANGE_ATTACK2 animation.  I've disabled it for now.
 #if 0
 	if ( FBitSet( pev->flags, FL_ONGROUND ) && flDist > 64 && flDist <= 256 && flDot >= 0.5 )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 #endif
 }
 
-int COFShockRoach :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool COFShockRoach ::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
 	// Don't take any acid damage -- BigMomma's mortar is acid
 	if ( bitsDamageType & DMG_ACID )

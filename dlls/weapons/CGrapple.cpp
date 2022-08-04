@@ -85,7 +85,7 @@ void CGrapple::Spawn()
 	FallInit();
 }
 
-BOOL CGrapple::AddToPlayer( CBasePlayer* pPlayer )
+bool CGrapple::AddToPlayer( CBasePlayer* pPlayer )
 {
 	if( BaseClass::AddToPlayer( pPlayer ) )
 	{
@@ -99,12 +99,12 @@ BOOL CGrapple::AddToPlayer( CBasePlayer* pPlayer )
 	return false;
 }
 
-BOOL CGrapple::Deploy()
+bool CGrapple::Deploy()
 {
 	return DefaultDeploy( "models/v_bgrap.mdl", "models/p_bgrap.mdl", BGRAPPLE_UP, "gauss" );
 }
 
-void CGrapple::Holster( int skiplocal )
+void CGrapple::Holster( )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
@@ -562,7 +562,7 @@ int CGrapple::iItemSlot()
 	return 1;
 }
 
-int CGrapple::GetItemInfo( ItemInfo* p )
+bool CGrapple::GetItemInfo(ItemInfo* p)
 {
 	p->pszAmmo1 = nullptr;
 	p->iMaxAmmo1 = WEAPON_NOCLIP;

@@ -57,7 +57,7 @@ void CPenguin::Spawn()
 	pev->framerate = 1;
 }
 
-BOOL CPenguin::Deploy()
+bool CPenguin::Deploy()
 {
 	if (g_engfuncs.pfnRandomFloat(0.0, 1.0) <= 0.5)
 		EMIT_SOUND(edict(), CHAN_VOICE, "squeek/sqk_hunt2.wav", VOL_NORM, ATTN_NORM);
@@ -69,7 +69,7 @@ BOOL CPenguin::Deploy()
 	return DefaultDeploy("models/v_penguin.mdl", "models/p_penguin.mdl", PENGUIN_UP, "penguin");
 }
 
-void CPenguin::Holster(int skiplocal)
+void CPenguin::Holster()
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
@@ -195,7 +195,7 @@ int CPenguin::iItemSlot()
 	return 5;
 }
 
-int CPenguin::GetItemInfo(ItemInfo* p)
+bool CPenguin::GetItemInfo(ItemInfo* p)
 {
 	p->pszAmmo1 = "Penguins";
 	p->iMaxAmmo1 = PENGUIN_MAX_CARRY;
@@ -209,5 +209,5 @@ int CPenguin::GetItemInfo(ItemInfo* p)
 	p->iWeight = PENGUIN_WEIGHT;
 	p->iFlags = ITEM_FLAG_LIMITINWORLD | ITEM_FLAG_EXHAUSTIBLE;
 
-	return 1;
+	return true;
 }

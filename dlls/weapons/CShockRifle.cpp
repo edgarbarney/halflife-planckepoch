@@ -79,7 +79,7 @@ void CShockRifle::Spawn()
 	pev->framerate = 1;
 }
 
-BOOL CShockRifle::AddToPlayer( CBasePlayer* pPlayer )
+bool CShockRifle::AddToPlayer( CBasePlayer* pPlayer )
 {
 	if( BaseClass::AddToPlayer( pPlayer ) )
 	{
@@ -100,12 +100,12 @@ void CShockRifle::AttachToPlayer( CBasePlayer* pPlayer )
 	BaseClass::AttachToPlayer( pPlayer );
 }
 
-BOOL CShockRifle::CanDeploy()
+bool CShockRifle::CanDeploy()
 {
 	return true;
 }
 
-BOOL CShockRifle::Deploy()
+bool CShockRifle::Deploy()
 {
 	if( UTIL_IsMultiplayer() )
 	{
@@ -119,7 +119,7 @@ BOOL CShockRifle::Deploy()
 	return DefaultDeploy( "models/v_shock.mdl", "models/p_shock.mdl", SHOCKRIFLE_DRAW, "bow" );
 }
 
-void CShockRifle::Holster( int skiplocal )
+void CShockRifle::Holster( )
 {
 	m_fInReload = false;
 
@@ -301,7 +301,7 @@ int CShockRifle::iItemSlot()
 	return 4;
 }
 
-int CShockRifle::GetItemInfo( ItemInfo* p )
+bool CShockRifle::GetItemInfo( ItemInfo* p )
 {
 	p->pszAmmo1 = "shock";
 	p->iMaxAmmo1 = SHOCKRIFLE_MAX_CLIP;
@@ -314,5 +314,6 @@ int CShockRifle::GetItemInfo( ItemInfo* p )
 	p->iPosition = 1;
 	p->iId = m_iId = WEAPON_SHOCKRIFLE;
 	p->iWeight = SHOCKRIFLE_WEIGHT;
-	return 1;
+	
+	return true;
 }

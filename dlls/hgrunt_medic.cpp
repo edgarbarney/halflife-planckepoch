@@ -164,10 +164,10 @@ public:
 	int  Classify () override;
 	int ISoundMask () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	BOOL FCanCheckAttacks () override;
-	BOOL CheckMeleeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override;
+	bool FCanCheckAttacks () override;
+	bool CheckMeleeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override;
 	void CheckAmmo () override;
 	void SetActivity ( Activity NewActivity ) override;
 	void StartTask ( Task_t *pTask ) override;
@@ -181,16 +181,16 @@ public:
 	void GibMonster() override;
 	void SpeakSentence();
 
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	
 	CBaseEntity	*Kick();
 	Schedule_t	*GetSchedule() override;
 	Schedule_t  *GetScheduleOfType ( int Type ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
-	BOOL FOkToSpeak();
+	bool FOkToSpeak();
 	void JustSpoke();
 
 	int ObjectCaps() override;
@@ -201,13 +201,13 @@ public:
 
 	void DeclineFollowing() override;
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	void Killed( entvars_t* pevAttacker, int iGib ) override;
 
 	void MonsterThink() override;
 
-	BOOL HealMe( COFSquadTalkMonster* pTarget ) override;
+	bool HealMe( COFSquadTalkMonster* pTarget ) override;
 
 	void HealOff();
 
@@ -223,7 +223,7 @@ public:
 	CUSTOM_SCHEDULES;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	BOOL m_lastAttackCheck;
+	bool m_lastAttackCheck;
 	float m_flPlayerDamage;
 
 	// checking the feasibility of a grenade toss is kind of costly, so we do it every couple of seconds,
@@ -234,33 +234,33 @@ public:
 
 	Vector m_vecTossVelocity;
 
-	BOOL m_fThrowGrenade;
-	BOOL m_fStanding;
-	BOOL m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
+	bool m_fThrowGrenade;
+	bool m_fStanding;
+	bool m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
 	int m_cClipSize;
 
 	int m_iHealCharge;
-	BOOL m_fUseHealing;
-	BOOL m_fHealing;
+	bool m_fUseHealing;
+	bool m_fHealing;
 
 	float m_flLastUseTime;
 
 	EHANDLE m_hNewTargetEnt;
 
-	BOOL m_fQueueFollow;
-	BOOL m_fHealAudioPlaying;
+	bool m_fQueueFollow;
+	bool m_fHealAudioPlaying;
 
 	float m_flFollowCheckTime;
-	BOOL m_fFollowChecking;
-	BOOL m_fFollowChecked;
+	bool m_fFollowChecking;
+	bool m_fFollowChecked;
 
 	float m_flLastRejectAudio;
 
 	int m_iBlackOrWhite;
 
-	BOOL m_fGunHolstered;
-	BOOL m_fHypoHolstered;
-	BOOL m_fHealActive;
+	bool m_fGunHolstered;
+	bool m_fHypoHolstered;
+	bool m_fHealActive;
 
 	int m_iWeaponIdx;
 
@@ -417,26 +417,26 @@ int COFMedicAlly :: ISoundMask ()
 //=========================================================
 // someone else is talking - don't speak
 //=========================================================
-BOOL COFMedicAlly :: FOkToSpeak()
+bool COFMedicAlly :: FOkToSpeak()
 {
 // if someone else is talking, don't speak
 	if (gpGlobals->time <= COFSquadTalkMonster::g_talkWaitTime)
-		return FALSE;
+		return false;
 
 	if ( pev->spawnflags & SF_MONSTER_GAG )
 	{
 		if ( m_MonsterState != MONSTERSTATE_COMBAT )
 		{
 			// no talking outside of combat if gagged.
-			return FALSE;
+			return false;
 		}
 	}
 
 	// if player is not in pvs, don't speak
 //	if (FNullEnt(FIND_CLIENT_IN_PVS(edict())))
-//		return FALSE;
+//		return false;
 	
-	return TRUE;
+	return true;
 }
 
 //=========================================================
@@ -465,7 +465,7 @@ void COFMedicAlly :: PrescheduleThink ()
 			if ( gpGlobals->time - MySquadLeader()->m_flLastEnemySightTime > 5 )
 			{
 				// been a while since we've seen the enemy
-				MySquadLeader()->m_fEnemyEluded = TRUE;
+				MySquadLeader()->m_fEnemyEluded = true;
 			}
 		}
 	}
@@ -483,15 +483,15 @@ void COFMedicAlly :: PrescheduleThink ()
 // this is a bad bug. Friendly machine gun fire avoidance
 // will unecessarily prevent the throwing of a grenade as well.
 //=========================================================
-BOOL COFMedicAlly :: FCanCheckAttacks ()
+bool COFMedicAlly :: FCanCheckAttacks ()
 {
 	if ( !HasConditions( bits_COND_ENEMY_TOOFAR ) )
 	{
-		return TRUE;
+		return true;
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -499,7 +499,7 @@ BOOL COFMedicAlly :: FCanCheckAttacks ()
 //=========================================================
 // CheckMeleeAttack1
 //=========================================================
-BOOL COFMedicAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
+bool COFMedicAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	CBaseMonster *pEnemy;
 
@@ -509,7 +509,7 @@ BOOL COFMedicAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 
 		if ( !pEnemy )
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -517,9 +517,9 @@ BOOL COFMedicAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 		 pEnemy->Classify() != CLASS_ALIEN_BIOWEAPON &&
 		 pEnemy->Classify() != CLASS_PLAYER_BIOWEAPON )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -530,7 +530,7 @@ BOOL COFMedicAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 // occluded (throw grenade over wall, etc). We must 
 // disqualify the machine gun attack if the enemy is occluded.
 //=========================================================
-BOOL COFMedicAlly :: CheckRangeAttack1 ( float flDot, float flDist )
+bool COFMedicAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	//Only if we have a weapon
 	if( pev->weapons )
@@ -545,7 +545,7 @@ BOOL COFMedicAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 			//if( !pEnemy->IsPlayer() && flDist <= 64 )
 			//{
 			//	// kick nonclients, but don't shoot at them.
-			//	return FALSE;
+			//	return false;
 			//}
 
 			//TODO: kinda odd that this doesn't use GetGunPosition like the original
@@ -565,24 +565,24 @@ BOOL COFMedicAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
 // CheckRangeAttack2 - this checks the Grunt's grenade
 // attack. 
 //=========================================================
-BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
+bool COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 {
 	if ( !FBitSet( pev->weapons, MedicAllyWeaponFlag::HandGrenade ) )
 	{
-		return FALSE;
+		return false;
 	}
 	
 	// if the grunt isn't moving, it's ok to check.
 	if ( m_flGroundSpeed != 0 )
 	{
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -597,7 +597,7 @@ BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 		//!!!BUGBUG - we should make this check movetype and make sure it isn't FLY? Players who jump a lot are unlikely to 
 		// be grenaded.
 		// don't throw grenades at anything that isn't on the ground!
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 	
@@ -637,7 +637,7 @@ BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 		{
 			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 		}
 	}
 	
@@ -645,7 +645,7 @@ BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 	{
 		// crap, I don't want to blow myself up
 		m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -659,14 +659,14 @@ BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -680,14 +680,14 @@ BOOL COFMedicAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 0.3; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -738,10 +738,10 @@ void COFMedicAlly :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 // needs to forget that he is in cover if he's hurt. (Obviously
 // not in a safe place anymore).
 //=========================================================
-int COFMedicAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool COFMedicAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	// make sure friends talk about it if player hurts talkmonsters...
-	int ret = COFSquadTalkMonster::TakeDamage( pevInflictor, pevAttacker, flDamage, bitsDamageType );
+	bool ret = COFSquadTalkMonster::TakeDamage( pevInflictor, pevAttacker, flDamage, bitsDamageType );
 
 	if( !IsAlive() || pev->deadflag == DEAD_DYING )
 		return ret;
@@ -764,7 +764,7 @@ int COFMedicAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 				PlaySentence( "FG_MAD", 4, VOL_NORM, ATTN_NORM );
 
 				Remember( bits_MEMORY_PROVOKED );
-				StopFollowing( TRUE );
+				StopFollowing( true );
 				ALERT( at_console, "HGrunt Ally is now MAD!\n" );
 			}
 			else
@@ -1038,7 +1038,7 @@ void COFMedicAlly :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
 			CGrenade::ShootTimed( pev, GetGunPosition(), m_vecTossVelocity, 3.5 );
 
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			// !!!LATER - when in a group, only try to throw grenade if ordered.
 		}
@@ -1131,8 +1131,8 @@ void COFMedicAlly :: Spawn()
 
 	m_afCapability		= bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_HEAR;
 
-	m_fEnemyEluded		= FALSE;
-	m_fFirstEncounter	= TRUE;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
+	m_fEnemyEluded		= false;
+	m_fFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
 	m_HackedGunPos = Vector ( 0, 0, 55 );
 
@@ -2501,7 +2501,7 @@ Schedule_t *COFMedicAlly :: GetSchedule()
 			{
 				if ( InSquad() )
 				{
-					MySquadLeader()->m_fEnemyEluded = FALSE;
+					MySquadLeader()->m_fEnemyEluded = false;
 
 					if ( !IsLeader() )
 					{
@@ -2599,7 +2599,7 @@ Schedule_t *COFMedicAlly :: GetSchedule()
 					// little time and give the player a chance to turn.
 					if ( MySquadLeader()->m_fEnemyEluded && !HasConditions ( bits_COND_ENEMY_FACING_ME ) )
 					{
-						MySquadLeader()->m_fEnemyEluded = FALSE;
+						MySquadLeader()->m_fEnemyEluded = false;
 						return GetScheduleOfType ( SCHED_MEDIC_ALLY_FOUND_ENEMY );
 					}
 				}
@@ -2717,7 +2717,7 @@ Schedule_t *COFMedicAlly :: GetSchedule()
 				if( !m_hTargetEnt->IsAlive() )
 				{
 					// UNDONE: Comment about the recently dead player here?
-					StopFollowing( FALSE );
+					StopFollowing( false );
 					break;
 				}
 				else
@@ -2857,7 +2857,7 @@ Schedule_t* COFMedicAlly :: GetScheduleOfType ( int Type )
 		{
 			if ( m_hEnemy->IsPlayer() && m_fFirstEncounter )
 			{
-				m_fFirstEncounter = FALSE;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
+				m_fFirstEncounter = false;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
 				return &slMedicAllySignalSuppress[ 0 ];
 			}
 			else
@@ -2977,15 +2977,15 @@ void COFMedicAlly::DeclineFollowing()
 	PlaySentence( "FG_POK", 2, VOL_NORM, ATTN_NORM );
 }
 
-void COFMedicAlly::KeyValue( KeyValueData *pkvd )
+bool COFMedicAlly::KeyValue( KeyValueData *pkvd )
 {
 	if( FStrEq( pkvd->szKeyName, "head" ) )
 	{
 		m_iBlackOrWhite = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
-		COFSquadTalkMonster::KeyValue( pkvd );
+		return COFSquadTalkMonster::KeyValue( pkvd );
 }
 
 
@@ -3032,7 +3032,7 @@ void COFMedicAlly::MonsterThink()
 	COFSquadTalkMonster::MonsterThink();
 }
 
-BOOL COFMedicAlly::HealMe( COFSquadTalkMonster* pTarget )
+bool COFMedicAlly::HealMe( COFSquadTalkMonster* pTarget )
 {
 	if( pTarget )
 	{
@@ -3247,7 +3247,7 @@ void COFMedicAlly::HealerUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE
 class COFMedicAllyRepel : public CBaseMonster
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	void Spawn() override;
 	void Precache() override;
@@ -3262,25 +3262,25 @@ public:
 
 LINK_ENTITY_TO_CLASS( monster_medic_ally_repel, COFMedicAllyRepel );
 
-void COFMedicAllyRepel::KeyValue( KeyValueData *pkvd )
+bool COFMedicAllyRepel::KeyValue( KeyValueData *pkvd )
 {
 	if( FStrEq( pkvd->szKeyName, "head" ) )
 	{
 		m_iBlackOrWhite = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( pkvd->szKeyName, "UseSentence" ) )
 	{
 		m_iszUse = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if( FStrEq( pkvd->szKeyName, "UnUseSentence" ) )
 	{
 		m_iszUnUse = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 void COFMedicAllyRepel::Spawn()

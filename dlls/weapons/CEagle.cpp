@@ -63,7 +63,7 @@ void CEagle::Spawn()
 	FallInit();
 }
 
-BOOL CEagle::AddToPlayer( CBasePlayer* pPlayer )
+bool CEagle::AddToPlayer( CBasePlayer* pPlayer )
 {
 	if( BaseClass::AddToPlayer( pPlayer ) )
 	{
@@ -76,7 +76,7 @@ BOOL CEagle::AddToPlayer( CBasePlayer* pPlayer )
 	return false;
 }
 
-BOOL CEagle::Deploy()
+bool CEagle::Deploy()
 {
 	m_bSpotVisible = true;
 
@@ -86,7 +86,7 @@ BOOL CEagle::Deploy()
 		"onehanded" );
 }
 
-void CEagle::Holster( int skiplocal )
+void CEagle::Holster( )
 {
 	m_fInReload = false;
 
@@ -331,7 +331,7 @@ int CEagle::iItemSlot()
 	return 2;
 }
 
-int CEagle::GetItemInfo( ItemInfo* p )
+bool CEagle::GetItemInfo( ItemInfo* p )
 {
 	p->pszAmmo1 = "357";
 	p->iMaxAmmo1 = _357_MAX_CARRY;
@@ -385,14 +385,14 @@ class CEagleAmmo : public CBasePlayerAmmo
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 
-	BOOL AddAmmo( CBaseEntity* pOther ) override
+	bool AddAmmo( CBaseEntity* pOther ) override
 	{
 		if( pOther->GiveAmmo( AMMO_EAGLE_GIVE, "357", _357_MAX_CARRY ) != -1 )
 		{
 			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
-			return TRUE;
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 };
 

@@ -72,8 +72,8 @@ public:
 
 	void EXPORT StartTrail();
 
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	int  m_maxFrame;
@@ -241,11 +241,11 @@ public:
 	void AlertSound () override;
 	void StartTask ( Task_t *pTask ) override;
 	void RunTask ( Task_t *pTask ) override;
-	BOOL CheckMeleeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckMeleeAttack2 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckMeleeAttack1 ( float flDot, float flDist ) override;
+	bool CheckMeleeAttack2 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
 	void RunAI() override;
-	BOOL FValidateHintType ( short sHint ) override;
+	bool FValidateHintType ( short sHint ) override;
 	Schedule_t *GetSchedule() override;
 	Schedule_t *GetScheduleOfType ( int Type ) override;
 	int IRelationship ( CBaseEntity *pTarget ) override;
@@ -253,10 +253,10 @@ public:
 
 	void CheckAmmo() override;
 	void GibMonster() override;
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 
 	CUSTOM_SCHEDULES;
 	static TYPEDESCRIPTION m_SaveData[];
@@ -307,14 +307,14 @@ int CPitdrone::IRelationship ( CBaseEntity *pTarget )
 //=========================================================
 // CheckRangeAttack1
 //=========================================================
-BOOL CPitdrone :: CheckRangeAttack1 ( float flDot, float flDist )
+bool CPitdrone :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	if ( m_iInitialAmmo == -1
 		|| GetBodygroup( PitdroneBodygroup::Weapons ) == PitdroneWeapon::Empty
 		|| ( IsMoving() && flDist >= 512 ) )
 	{
 		// squid will far too far behind if he stops running to spit at this distance from the enemy.
-		return FALSE;
+		return false;
 	}
 
 	if ( flDist > 128 && flDist <= 784 && flDot >= 0.5 && gpGlobals->time >= m_flNextSpikeTime )
@@ -324,7 +324,7 @@ BOOL CPitdrone :: CheckRangeAttack1 ( float flDot, float flDist )
 			if ( fabs( pev->origin.z - m_hEnemy->pev->origin.z ) > 256 )
 			{
 				// don't try to spit at someone up really high or down really low.
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -339,34 +339,34 @@ BOOL CPitdrone :: CheckRangeAttack1 ( float flDot, float flDist )
 			m_flNextSpikeTime = gpGlobals->time + 0.5;
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
-BOOL CPitdrone :: CheckMeleeAttack1 ( float flDot, float flDist )
+bool CPitdrone :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	if ( flDist <= 64 && flDot >= 0.7 )
 	{
 		return RANDOM_LONG( 0, 3 ) == 0;
 	}
-	return FALSE;
+	return false;
 }
 
-BOOL CPitdrone :: CheckMeleeAttack2 ( float flDot, float flDist )
+bool CPitdrone :: CheckMeleeAttack2 ( float flDot, float flDist )
 {
 	if ( flDist <= 64 && flDot >= 0.7 && !HasConditions( bits_COND_CAN_MELEE_ATTACK1 ) )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }  
 
 //=========================================================
 //  FValidateHintType 
 //=========================================================
-BOOL CPitdrone :: FValidateHintType ( short sHint )
+bool CPitdrone :: FValidateHintType ( short sHint )
 {
 	int i;
 
@@ -379,12 +379,12 @@ BOOL CPitdrone :: FValidateHintType ( short sHint )
 	{
 		if ( sSquidHints[ i ] == sHint )
 		{
-			return TRUE;
+			return true;
 		}
 	}
 
 	ALERT ( at_aiconsole, "Couldn't validate hint type" );
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -1230,13 +1230,13 @@ void CPitdrone::GibMonster()
 	pev->nextthink = gpGlobals->time;
 }
 
-void CPitdrone::KeyValue( KeyValueData* pkvd )
+bool CPitdrone::KeyValue(KeyValueData* pkvd)
 {
 	if( FStrEq( "initammo", pkvd->szKeyName ) )
 	{
 		m_iInitialAmmo = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }

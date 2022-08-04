@@ -15,8 +15,8 @@
 
 //Shared Structs
 
-#ifndef PM_STRUCTSH
-#define PM_STRUCTSH
+#ifndef PM_STRUCTS_H
+#define PM_STRUCTS_H
 #pragma once
 
 #ifndef _STRING_
@@ -175,10 +175,12 @@ struct impactGroupType_s
 class CTextureAndTypesMap
 {
 private:
+	//		 TextureName, TextureType
 	std::map<std::string, textureType_s> textureTypeMap;
+	textureType_s firstmap = textureType_s(INT32_MAX);
 
 public:
-	FORCEINLINE textureType_s& operator[](std::string str)
+	textureType_s& operator[](std::string str)
 	{
 		size_t foundIndex;
 
@@ -189,12 +191,12 @@ public:
 				return value;
 		}
 
-		return textureType_s(0, "ERR");
+		return firstmap;
 	}
 
-	FORCEINLINE auto insert(std::pair<std::string, textureType_s>&& val);
+	auto insert(std::pair<std::string, textureType_s>&& val);
 
-	FORCEINLINE int findInMap(std::string name);
+	int findInMap(std::string name);
 
 	/*
 	_NODISCARD auto find(const std::string& key)
@@ -211,4 +213,4 @@ public:
 
 
 
-#endif // PM_STRUCTSH
+#endif // PM_STRUCTS_H

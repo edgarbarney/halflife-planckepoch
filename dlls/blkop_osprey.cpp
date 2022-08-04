@@ -40,8 +40,8 @@ typedef struct
 class CBlackOpsOsprey : public CBaseMonster
 {
 public:
-	int		Save( CSave &save ) override;
-	int		Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static	TYPEDESCRIPTION m_SaveData[];
 	int		ObjectCaps() override { return CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	
@@ -52,7 +52,7 @@ public:
 	void Killed( entvars_t *pevAttacker, int iGib ) override;
 
 	void UpdateGoal();
-	BOOL HasDead();
+	bool HasDead();
 	void EXPORT FlyThink();
 	void EXPORT DeployThink();
 	void Flight();
@@ -64,7 +64,7 @@ public:
 	void EXPORT DyingThink();
 	void EXPORT CommandUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
-	// int  TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	// bool    TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
 	void ShowDamage();
 
@@ -263,20 +263,20 @@ void CBlackOpsOsprey :: DeployThink()
 
 
 
-BOOL CBlackOpsOsprey :: HasDead( )
+bool CBlackOpsOsprey :: HasDead( )
 {
 	for (int i = 0; i < m_iUnits; i++)
 	{
 		if (m_hGrunt[i] == nullptr || !m_hGrunt[i]->IsAlive())
 		{
-			return TRUE;
+			return true;
 		}
 		else
 		{
 			m_vecOrigin[i] = m_hGrunt[i]->pev->origin;  // send them to where they died
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 

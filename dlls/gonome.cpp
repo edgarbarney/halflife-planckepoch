@@ -47,8 +47,8 @@ class COFGonomeGuts : public CBaseEntity
 public:
 	using BaseClass = CBaseEntity;
 
-	int Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -203,8 +203,8 @@ class COFGonome : public CBaseMonster
 public:
 	using BaseClass = CBaseMonster;
 
-	int Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -226,11 +226,11 @@ public:
 	static const char *pAttackMissSounds[];
 
 	// No range attacks
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override { return false; }
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override { return false; }
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
-	BOOL CheckMeleeAttack1( float flDot, float flDist ) override;
+	bool CheckMeleeAttack1( float flDot, float flDist ) override;
 
 	Schedule_t* GetScheduleOfType( int Type ) override;
 
@@ -247,7 +247,7 @@ public:
 
 	//TODO: needs to be EHANDLE, save/restored or a save during a windup will cause problems
 	COFGonomeGuts* m_pGonomeGuts;
-	BOOL m_fPlayerLocked;
+	bool m_fPlayerLocked;
 };
 
 TYPEDESCRIPTION	COFGonome::m_SaveData[] =
@@ -362,7 +362,7 @@ void COFGonome :: SetYawSpeed ()
 	pev->yaw_speed = ys;
 }
 
-int COFGonome :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool COFGonome :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	// Take 15% damage from bullets
 	if ( bitsDamageType == DMG_BULLET )
@@ -694,7 +694,7 @@ int COFGonome::IgnoreConditions ()
 	
 }
 
-BOOL COFGonome::CheckMeleeAttack1( float flDot, float flDist )
+bool COFGonome::CheckMeleeAttack1( float flDot, float flDist )
 {
 	if( flDist <= 64.0 && flDot >= 0.7 && m_hEnemy )
 	{
@@ -704,7 +704,7 @@ BOOL COFGonome::CheckMeleeAttack1( float flDot, float flDist )
 	return false;
 }
 
-BOOL COFGonome::CheckRangeAttack1( float flDot, float flDist )
+bool COFGonome::CheckRangeAttack1( float flDot, float flDist )
 {
 	if( flDist < 256.0 )
 		return false;
@@ -893,7 +893,7 @@ public:
 	void Spawn() override;
 	int	Classify() override { return	CLASS_ALIEN_PASSIVE; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[ 3 ];
@@ -901,15 +901,15 @@ public:
 
 char *CDeadGonome::m_szPoses[] = { "dead_on_stomach1", "dead_on_back", "dead_on_side" };
 
-void CDeadGonome::KeyValue( KeyValueData *pkvd )
+bool CDeadGonome::KeyValue( KeyValueData *pkvd )
 {
 	if( FStrEq( pkvd->szKeyName, "pose" ) )
 	{
 		m_iPose = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 LINK_ENTITY_TO_CLASS( monster_gonome_dead, CDeadGonome );

@@ -23,8 +23,8 @@
 class CMortarShell : public CGrenade
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	void Precache() override;
@@ -237,11 +237,11 @@ const auto SF_MORTAR_CONTROLLABLE = 1 << 5;
 class COp4Mortar : public CBaseMonster
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 
 	void Precache() override;
 
@@ -251,7 +251,7 @@ public:
 
 	void EXPORT MortarThink();
 
-	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType ) override;
 
 	void PlaySound();
 
@@ -282,7 +282,7 @@ public:
 	int m_iEnemyType;
 	float m_fireDelay;
 	float m_trackDelay;
-	BOOL m_tracking;
+	bool m_tracking;
 	float m_zeroYaw;
 	Vector m_vGunAngle;
 	Vector m_vIdealGunVector;
@@ -319,46 +319,46 @@ IMPLEMENT_SAVERESTORE( COp4Mortar, CBaseMonster );
 
 LINK_ENTITY_TO_CLASS( op4mortar, COp4Mortar );
 
-void COp4Mortar::KeyValue( KeyValueData* pkvd )
+bool COp4Mortar::KeyValue( KeyValueData* pkvd )
 {
 	if( FStrEq( "h_max", pkvd->szKeyName ) )
 	{
 		m_hmax = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "h_min", pkvd->szKeyName ) )
 	{
 		m_hmin = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "mortar_velocity", pkvd->szKeyName ) )
 	{
 		m_velocity = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "mindist", pkvd->szKeyName ) )
 	{
 		m_minRange = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "maxdist", pkvd->szKeyName ) )
 	{
 		m_maxRange = atof( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "enemytype", pkvd->szKeyName ) )
 	{
 		m_iEnemyType = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if( FStrEq( "firedelay", pkvd->szKeyName ) )
 	{
 		m_fireDelay = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
-		CBaseToggle::KeyValue( pkvd );
+		return CBaseToggle::KeyValue( pkvd );
 	}
 }
 
@@ -502,7 +502,7 @@ void COp4Mortar::MortarThink()
 	}
 }
 
-int COp4Mortar::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
+bool COp4Mortar::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
 {
 	//Ignore all damage
 	return CBaseMonster::TakeDamage( pevInflictor, pevAttacker, 0, bitsDamageType );
@@ -789,13 +789,13 @@ void COp4Mortar::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 class COp4MortarController : public CBaseToggle
 {
 public:
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
 	int ObjectCaps() override { return FCAP_CONTINUOUS_USE; }
 
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 
 	void Spawn() override;
 
@@ -819,16 +819,16 @@ IMPLEMENT_SAVERESTORE( COp4MortarController, CBaseToggle );
 
 LINK_ENTITY_TO_CLASS( func_op4mortarcontroller, COp4MortarController );
 
-void COp4MortarController::KeyValue( KeyValueData* pkvd )
+bool COp4MortarController::KeyValue( KeyValueData* pkvd )
 {
 	if( FStrEq( "mortar_axis", pkvd->szKeyName ) )
 	{
 		m_controller = atoi( pkvd->szValue );
-		pkvd->fHandled = true;
+		return true;
 	}
 	else
 	{
-		CBaseToggle::KeyValue( pkvd );
+		return CBaseToggle::KeyValue( pkvd );
 	}
 }
 

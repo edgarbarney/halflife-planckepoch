@@ -5,6 +5,9 @@ Differences:
 - Spirit's Placeholder A B C Factions are removed (for re-implementing later)
 - Removed AJH Custom Menu
 
+- Footstep Sound Entity. 
+  - Instead, it uses the new [Material System](https://github.com/edgarbarney/halflife-planckepoch/blob/spirit/spirit-1.8-trinity/Spirinity%20-%20Material%20System.md)
+
 Half Life 1 SDK LICENSE
 ======================
 

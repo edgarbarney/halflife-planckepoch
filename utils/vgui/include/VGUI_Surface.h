@@ -1,12 +1,11 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright ï¿½ 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
 // $NoKeywords: $
 //=============================================================================
 
-#ifndef VGUI_SURFACE_H
-#define VGUI_SURFACE_H
+#pragma once
 
 #include<VGUI.h>
 #include<VGUI_SurfaceBase.h>
@@ -33,7 +32,7 @@ public:
 	bool isWithin(int x,int y) override;
 	void GetMousePos( int &x, int &y ) override;
 protected:
-	int  createNewTextureID() override;
+	int  createNewTextureID(void) override;
 	void drawSetColor(int r,int g,int b,int a) override;
 	void drawFilledRect(int x0,int y0,int x1,int y1) override;
 	void drawOutlinedRect(int x0,int y0,int x1,int y1) override;
@@ -63,6 +62,3 @@ protected:
 };
 
 }
-
-#endif
-

@@ -179,10 +179,10 @@ public:
 	int  Classify () override;
 	int ISoundMask () override;
 	void HandleAnimEvent( MonsterEvent_t *pEvent ) override;
-	BOOL FCanCheckAttacks () override;
-	BOOL CheckMeleeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack1 ( float flDot, float flDist ) override;
-	BOOL CheckRangeAttack2 ( float flDot, float flDist ) override;
+	bool FCanCheckAttacks () override;
+	bool CheckMeleeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack1 ( float flDot, float flDist ) override;
+	bool CheckRangeAttack2 ( float flDot, float flDist ) override;
 	void CheckAmmo () override;
 	void SetActivity ( Activity NewActivity ) override;
 	void StartTask ( Task_t *pTask ) override;
@@ -197,16 +197,16 @@ public:
 	void GibMonster() override;
 	void SpeakSentence();
 
-	int	Save( CSave &save ) override;
-	int Restore( CRestore &restore ) override;
+	bool Save( CSave &save ) override;
+	bool Restore( CRestore &restore ) override;
 	
 	CBaseEntity	*Kick();
 	Schedule_t	*GetSchedule() override;
 	Schedule_t  *GetScheduleOfType ( int Type ) override;
 	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) override;
-	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
+	bool TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType ) override;
 
-	BOOL FOkToSpeak();
+	bool FOkToSpeak();
 	void JustSpoke();
 
 	int ObjectCaps() override;
@@ -219,7 +219,7 @@ public:
 
 	void ShootSaw();
 
-	void KeyValue( KeyValueData* pkvd ) override;
+	bool KeyValue( KeyValueData* pkvd ) override;
 
 	void Killed( entvars_t* pevAttacker, int iGib ) override;
 
@@ -231,7 +231,7 @@ public:
 	CUSTOM_SCHEDULES;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	BOOL m_lastAttackCheck;
+	bool m_lastAttackCheck;
 	float m_flPlayerDamage;
 
 	// checking the feasibility of a grenade toss is kind of costly, so we do it every couple of seconds,
@@ -242,9 +242,9 @@ public:
 
 	Vector m_vecTossVelocity;
 
-	BOOL m_fThrowGrenade;
-	BOOL m_fStanding;
-	BOOL m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
+	bool m_fThrowGrenade;
+	bool m_fStanding;
+	bool m_fFirstEncounter;// only put on the handsign show in the squad's first encounter.
 	int m_cClipSize;
 
 	int m_iBrassShell;
@@ -411,26 +411,26 @@ int CHGruntAlly :: ISoundMask ()
 //=========================================================
 // someone else is talking - don't speak
 //=========================================================
-BOOL CHGruntAlly :: FOkToSpeak()
+bool CHGruntAlly :: FOkToSpeak()
 {
 // if someone else is talking, don't speak
 	if (gpGlobals->time <= COFSquadTalkMonster::g_talkWaitTime)
-		return FALSE;
+		return false;
 
 	if ( pev->spawnflags & SF_MONSTER_GAG )
 	{
 		if ( m_MonsterState != MONSTERSTATE_COMBAT )
 		{
 			// no talking outside of combat if gagged.
-			return FALSE;
+			return false;
 		}
 	}
 
 	// if player is not in pvs, don't speak
 //	if (FNullEnt(FIND_CLIENT_IN_PVS(edict())))
-//		return FALSE;
+//		return false;
 	
-	return TRUE;
+	return true;
 }
 
 //=========================================================
@@ -459,7 +459,7 @@ void CHGruntAlly :: PrescheduleThink ()
 			if ( gpGlobals->time - MySquadLeader()->m_flLastEnemySightTime > 5 )
 			{
 				// been a while since we've seen the enemy
-				MySquadLeader()->m_fEnemyEluded = TRUE;
+				MySquadLeader()->m_fEnemyEluded = true;
 			}
 		}
 	}
@@ -477,15 +477,15 @@ void CHGruntAlly :: PrescheduleThink ()
 // this is a bad bug. Friendly machine gun fire avoidance
 // will unecessarily prevent the throwing of a grenade as well.
 //=========================================================
-BOOL CHGruntAlly :: FCanCheckAttacks ()
+bool CHGruntAlly :: FCanCheckAttacks ()
 {
 	if ( !HasConditions( bits_COND_ENEMY_TOOFAR ) )
 	{
-		return TRUE;
+		return true;
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -493,7 +493,7 @@ BOOL CHGruntAlly :: FCanCheckAttacks ()
 //=========================================================
 // CheckMeleeAttack1
 //=========================================================
-BOOL CHGruntAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
+bool CHGruntAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 {
 	CBaseMonster *pEnemy;
 
@@ -503,7 +503,7 @@ BOOL CHGruntAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 
 		if ( !pEnemy )
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -511,9 +511,9 @@ BOOL CHGruntAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 		 pEnemy->Classify() != CLASS_ALIEN_BIOWEAPON &&
 		 pEnemy->Classify() != CLASS_PLAYER_BIOWEAPON )
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 //=========================================================
@@ -524,7 +524,7 @@ BOOL CHGruntAlly :: CheckMeleeAttack1 ( float flDot, float flDist )
 // occluded (throw grenade over wall, etc). We must 
 // disqualify the machine gun attack if the enemy is occluded.
 //=========================================================
-BOOL CHGruntAlly :: CheckRangeAttack1 ( float flDot, float flDist )
+bool CHGruntAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 {
 	//Only if we have a weapon
 	if( pev->weapons )
@@ -541,7 +541,7 @@ BOOL CHGruntAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 			if( !pEnemy->IsPlayer() && flDist <= 64 )
 			{
 				// kick nonclients, but don't shoot at them.
-				return FALSE;
+				return false;
 			}
 
 			//TODO: kinda odd that this doesn't use GetGunPosition like the original
@@ -561,24 +561,24 @@ BOOL CHGruntAlly :: CheckRangeAttack1 ( float flDot, float flDist )
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 //=========================================================
 // CheckRangeAttack2 - this checks the Grunt's grenade
 // attack. 
 //=========================================================
-BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
+bool CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 {
 	if (! FBitSet(pev->weapons, ( HGruntAllyWeaponFlag::HandGrenade | HGruntAllyWeaponFlag::GrenadeLauncher )))
 	{
-		return FALSE;
+		return false;
 	}
 	
 	// if the grunt isn't moving, it's ok to check.
 	if ( m_flGroundSpeed != 0 )
 	{
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -593,7 +593,7 @@ BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 		//!!!BUGBUG - we should make this check movetype and make sure it isn't FLY? Players who jump a lot are unlikely to 
 		// be grenaded.
 		// don't throw grenades at anything that isn't on the ground!
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 	
@@ -633,7 +633,7 @@ BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 		{
 			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 		}
 	}
 	
@@ -641,7 +641,7 @@ BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 	{
 		// crap, I don't want to blow myself up
 		m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
-		m_fThrowGrenade = FALSE;
+		m_fThrowGrenade = false;
 		return m_fThrowGrenade;
 	}
 
@@ -655,14 +655,14 @@ BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -676,14 +676,14 @@ BOOL CHGruntAlly :: CheckRangeAttack2 ( float flDot, float flDist )
 			m_vecTossVelocity = vecToss;
 
 			// throw a hand grenade
-			m_fThrowGrenade = TRUE;
+			m_fThrowGrenade = true;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 0.3; // 1/3 second.
 		}
 		else
 		{
 			// don't throw
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			// don't check again for a while.
 			m_flNextGrenadeCheck = gpGlobals->time + 1; // one full second.
 		}
@@ -734,7 +734,7 @@ void CHGruntAlly :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 // needs to forget that he is in cover if he's hurt. (Obviously
 // not in a safe place anymore).
 //=========================================================
-int CHGruntAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+bool CHGruntAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
 	// make sure friends talk about it if player hurts talkmonsters...
 	int ret = COFSquadTalkMonster::TakeDamage( pevInflictor, pevAttacker, flDamage, bitsDamageType );
@@ -760,7 +760,7 @@ int CHGruntAlly :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 				PlaySentence( "FG_MAD", 4, VOL_NORM, ATTN_NORM );
 
 				Remember( bits_MEMORY_PROVOKED );
-				StopFollowing( TRUE );
+				StopFollowing( true );
 				ALERT( at_console, "HGrunt Ally is now MAD!\n" );
 			}
 			else
@@ -1049,7 +1049,7 @@ void CHGruntAlly :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			// CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.5 );
 			CGrenade::ShootTimed( pev, GetGunPosition(), m_vecTossVelocity, 3.5 );
 
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			// !!!LATER - when in a group, only try to throw grenade if ordered.
 		}
@@ -1059,7 +1059,7 @@ void CHGruntAlly :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		{
 			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/glauncher.wav", 0.8, ATTN_NORM);
 			CGrenade::ShootContact( pev, GetGunPosition(), m_vecTossVelocity );
-			m_fThrowGrenade = FALSE;
+			m_fThrowGrenade = false;
 			if (g_iSkillLevel == SKILL_HARD)
 				m_flNextGrenadeCheck = gpGlobals->time + RANDOM_FLOAT( 2, 5 );// wait a random amount of time before shooting again
 			else
@@ -1171,8 +1171,8 @@ void CHGruntAlly :: Spawn()
 
 	m_afCapability		= bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_HEAR;
 
-	m_fEnemyEluded		= FALSE;
-	m_fFirstEncounter	= TRUE;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
+	m_fEnemyEluded		= false;
+	m_fFirstEncounter	= true;// this is true when the grunt spawns, because he hasn't encountered an enemy yet.
 
 	m_HackedGunPos = Vector ( 0, 0, 55 );
 
@@ -2392,7 +2392,7 @@ Schedule_t *CHGruntAlly :: GetSchedule()
 			{
 				if ( InSquad() )
 				{
-					MySquadLeader()->m_fEnemyEluded = FALSE;
+					MySquadLeader()->m_fEnemyEluded = false;
 
 					if ( !IsLeader() )
 					{
@@ -2497,7 +2497,7 @@ Schedule_t *CHGruntAlly :: GetSchedule()
 					// little time and give the player a chance to turn.
 					if ( MySquadLeader()->m_fEnemyEluded && !HasConditions ( bits_COND_ENEMY_FACING_ME ) )
 					{
-						MySquadLeader()->m_fEnemyEluded = FALSE;
+						MySquadLeader()->m_fEnemyEluded = false;
 						return GetScheduleOfType ( SCHED_GRUNT_FOUND_ENEMY );
 					}
 				}
@@ -2615,7 +2615,7 @@ Schedule_t *CHGruntAlly :: GetSchedule()
 				if( !m_hTargetEnt->IsAlive() )
 				{
 					// UNDONE: Comment about the recently dead player here?
-					StopFollowing( FALSE );
+					StopFollowing( false );
 					break;
 				}
 				else
@@ -2762,7 +2762,7 @@ Schedule_t* CHGruntAlly :: GetScheduleOfType ( int Type )
 		{
 			if ( m_hEnemy->IsPlayer() && m_fFirstEncounter )
 			{
-				m_fFirstEncounter = FALSE;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
+				m_fFirstEncounter = false;// after first encounter, leader won't issue handsigns anymore when he has a new enemy
 				return &slGruntAllySignalSuppress[ 0 ];
 			}
 			else
@@ -2924,15 +2924,15 @@ void CHGruntAlly::ShootSaw()
 	SetBlending( 0, angDir.x );
 }
 
-void CHGruntAlly::KeyValue( KeyValueData *pkvd )
+bool CHGruntAlly::KeyValue( KeyValueData *pkvd )
 {
 	if( FStrEq( pkvd->szKeyName, "head" ) )
 	{
 		m_iGruntHead = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		COFSquadTalkMonster::KeyValue( pkvd );
+		return COFSquadTalkMonster::KeyValue( pkvd );
 }
 
 void CHGruntAlly::Killed( entvars_t* pevAttacker, int iGib )
@@ -2968,7 +2968,7 @@ void CHGruntAlly::Killed( entvars_t* pevAttacker, int iGib )
 class CHGruntAllyRepel : public CBaseMonster
 {
 public:
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	void Spawn() override;
 	void Precache() override;
@@ -2983,25 +2983,25 @@ public:
 
 LINK_ENTITY_TO_CLASS( monster_grunt_ally_repel, CHGruntAllyRepel );
 
-void CHGruntAllyRepel::KeyValue( KeyValueData *pkvd )
+bool CHGruntAllyRepel::KeyValue( KeyValueData *pkvd )
 {
 	if( FStrEq( pkvd->szKeyName, "head" ) )
 	{
 		m_iGruntHead = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if( FStrEq( pkvd->szKeyName, "UseSentence" ) )
 	{
 		m_iszUse = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if( FStrEq( pkvd->szKeyName, "UnUseSentence" ) )
 	{
 		m_iszUnUse = ALLOC_STRING( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 void CHGruntAllyRepel::Spawn()
@@ -3079,7 +3079,7 @@ public:
 	void Spawn() override;
 	int	Classify () override { return	CLASS_HUMAN_MILITARY_FRIENDLY; }
 
-	void KeyValue( KeyValueData *pkvd ) override;
+	bool KeyValue( KeyValueData *pkvd ) override;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	int m_iGruntHead;
@@ -3088,20 +3088,20 @@ public:
 
 char *CDeadHGruntAlly::m_szPoses[] = { "deadstomach", "deadside", "deadsitting", "dead_on_back", "hgrunt_dead_stomach", "dead_headcrabed", "dead_canyon" };
 
-void CDeadHGruntAlly::KeyValue( KeyValueData *pkvd )
+bool CDeadHGruntAlly::KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "pose"))
 	{
 		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else if( FStrEq( pkvd->szKeyName, "head" ) )
 	{
 		m_iGruntHead = atoi( pkvd->szValue );
-		pkvd->fHandled = TRUE;
+		return true;
 	}
 	else 
-		CBaseMonster::KeyValue( pkvd );
+		return CBaseMonster::KeyValue( pkvd );
 }
 
 LINK_ENTITY_TO_CLASS( monster_human_grunt_ally_dead, CDeadHGruntAlly );
