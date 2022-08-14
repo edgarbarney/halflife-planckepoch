@@ -210,7 +210,7 @@ void CClientImgui::DrawMainMenu()
 		auto qDialog = CClientImguiDialogBox::DrawDialogBox("Quit", "Do you wish to stop playing now?", DialogButtons::Quit | DialogButtons::Cancel);
 		if (qDialog == DialogButtons::Quit)
 		{
-			FranUtils::QutiGame();
+			FranUtils::QuitGame();
 		}
 		else if (qDialog == DialogButtons::Cancel) // We need another if cus result can be "None"
 		{

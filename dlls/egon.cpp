@@ -13,6 +13,13 @@
 *
 ****/
 
+#ifdef CLIENT_DLL
+#include "hud.h"
+#include "cl_dll.h"
+#include "cdll_int.h"
+#include "cl_util.h"
+#endif
+
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"

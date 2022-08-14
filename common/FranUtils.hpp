@@ -6,56 +6,38 @@
 #define FRANUTILS_H
 
 #include <string>
-
-// ==========================================================
-// START OF THE HORRIBLE HORRIBLE PREPROCESSOR HACKS SHIT THAT I HATE
-// ==========================================================
-
-#ifdef FRANUTILS_MODDIR
-
 #include <vector>
 #include <fstream>
 #include <algorithm>
-
-#ifdef _FILESYSTEM_
-
-	#ifdef CLIENT_DLL
-	extern cl_enginefunc_t gEngfuncs;
-	#define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
-	#else
-	extern enginefuncs_t g_engfuncs;
-	#define GetGameDir    (*g_engfuncs.pfnGetGameDir)
-	#endif
-
-
-	namespace FranUtils
-	{
-		inline std::string GetModDirectory(std::string endLine = "\\") //Yes, string
-		{
-			std::string temp = std::filesystem::current_path().string();
-			#ifdef CLIENT_DLL
-				const char* getGamedir;
-				getGamedir = GetGameDir();
-			#else
-				char getGamedir[120] = "\0";
-				GetGameDir(getGamedir);
-			#endif
-			temp = temp + "\\" + getGamedir + endLine;
-			return temp;
-		}
-	}
-
+#include <filesystem>
+				
+#ifdef CLIENT_DLL
+extern cl_enginefunc_t gEngfuncs;
+#define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
 #else
+extern enginefuncs_t g_engfuncs;
+#define GetGameDir    (*g_engfuncs.pfnGetGameDir)
+#endif
 
-#error "You defined FRANUTILS_MODDIR but you didn't include standard library filesystem header. Please include it in an appropriate place."
+// Filesystem
 
-#endif // _FILESYSTEM_
+namespace FranUtils
+{
+	inline std::string GetModDirectory(std::string endLine = "\\") //Yes, string
+	{
+		std::string temp = std::filesystem::current_path().string();
+		#ifdef CLIENT_DLL
+			const char* getGamedir;
+			getGamedir = GetGameDir();
+		#else
+			char getGamedir[120] = "\0";
+			GetGameDir(getGamedir);
+		#endif
+		temp = temp + "\\" + getGamedir + endLine;
+		return temp;
+	}
+}
 
-#endif // FRANUTILS_ADVANCED
-
-// ==========================================================
-// END OF THE HORRIBLE HORRIBLE PREPROCESSOR SHIT THAT I HATE
-// ==========================================================
 
 namespace FranUtils
 {
@@ -395,23 +377,6 @@ namespace FranUtils
 	}
 #endif
 
-#if defined(CLIENT_DLL) && defined(CL_ENGFUNCS_DEF)
-	inline void PauseMenu()
-	{
-		gEngfuncs.pfnClientCmd("toggleconsole");
-	}
-	inline void QutiGame()
-	{
-		gHUD.m_clImgui.FinishExtension();
-		gEngfuncs.pfnClientCmd("quit");
-	}
-	inline void RestartGame()
-	{
-		gHUD.m_clImgui.FinishExtension();
-		gEngfuncs.pfnClientCmd("_restart");
-	}
-#endif
-
 #pragma endregion
 
 	class Globals
@@ -551,8 +516,49 @@ namespace FranUtils
 
 			return gameName;
 		}
-	};
 
-}
+		
+		#if defined(CLIENT_DLL) && defined(CL_ENGFUNCS_DEF)
+		inline static void PauseMenu()
+		{
+			if (Globals::isPaused)
+				gEngfuncs.pfnClientCmd("escape");
+		
+			//gEngfuncs.pfnClientCmd("toggleconsole");
+		}
+		inline static void QuitGame()
+		{
+			gHUD.m_clImgui.FinishExtension();
+			gEngfuncs.pfnClientCmd("quit");
+		}
+		// USE AS A LAST RESORT
+		inline static void ForceShutdown()
+		{
+			// DODGE THIS, ENGINE!!
+			//PostQuitMessage(0);
+		}
+		inline static void RestartGame()
+		{
+			gHUD.m_clImgui.FinishExtension();
+			gEngfuncs.pfnClientCmd("_restart");
+		}
+		#else
+		inline static void PauseMenu() {}
+		inline static void QuitGame() {}
+		// USE AS A LAST RESORT
+		inline static void ForceShutdown() {}
+		inline static void RestartGame() {}
+		#endif
+
+	};
+	
+	// Backwards compatibility
+
+	inline void PauseMenu() { Globals::PauseMenu(); }
+	inline void QuitGame() { Globals::QuitGame(); }
+	// USE AS A LAST RESORT
+	inline void ForceShutdown() { Globals::ForceShutdown(); }
+	inline void RestartGame() { Globals::RestartGame(); }
+	}
 
 #endif
