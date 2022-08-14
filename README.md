@@ -1,3 +1,8 @@
+Current Status:
+https://www.moddb.com/mods/spirinity/news/status-report-and-a-small-announcement
+
+**Important Note** : This repo contains code for singleplayer only mods. It is NOT advised to use this base or use code from this base for a mulitplayer mod.
+
 So, basically: Spirit 1.8 + Trinity.
 
 Removed Features:
