@@ -167,13 +167,45 @@ void V_InterpolateAngles( float *start, float *end, float *output, float frac )
 	V_NormalizeAngles( output );
 } */
 
-// Quakeworld bob code, this fixes jitters in the mutliplayer since the clock (pparams->time) isn't quite linear
-float V_CalcBob(struct ref_params_s* pparams)
+// magic nipples - view lag
+float SmoothValues(float startValue, float endValue, float speed)
 {
-	static double bobtime;
-	static float bob;
+	float absd, d, finalValue;
+
+	d = endValue - startValue;
+	absd = fabs(d);
+
+	if (absd > 0.01f)
+	{
+		if (d > 0)
+			finalValue = startValue + (absd * speed);
+		else
+			finalValue = startValue - (absd * speed);
+	}
+	else
+	{
+		finalValue = endValue;
+	}
+	startValue = finalValue;
+
+	return startValue;
+
+	// gEngfuncs.Con_Printf("%f\n", startValue);
+}
+
+enum calcBobMode_t
+{
+	VB_COS,
+	VB_SIN,
+	VB_COS2,
+	VB_SIN2
+};
+
+
+// Quakeworld bob code, this fixes jitters in the mutliplayer since the clock (pparams->time) isn't quite linear
+void V_CalcBob(struct ref_params_s* pparams, float freqmod, calcBobMode_t mode, double& bobtime, float& bob, float& lasttime)
+{
 	float cycle;
-	static float lasttime;
 	Vector vel;
 
 
@@ -181,12 +213,13 @@ float V_CalcBob(struct ref_params_s* pparams)
 		pparams->time == lasttime)
 	{
 		// just use old value
-		return bob;
+		return; // bob;
 	}
 
 	lasttime = pparams->time;
 
-	bobtime += pparams->frametime;
+	bobtime += pparams->frametime * freqmod;
+
 	cycle = bobtime - (int)(bobtime / cl_bobcycle->value) * cl_bobcycle->value;
 	cycle /= cl_bobcycle->value;
 
@@ -205,11 +238,21 @@ float V_CalcBob(struct ref_params_s* pparams)
 	vel[2] = 0;
 
 	bob = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * cl_bob->value;
-	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
+
+	if (mode == VB_SIN)
+		bob = bob * 0.3 + bob * 0.7 * sin(cycle);
+	else if (mode == VB_COS)
+		bob = bob * 0.3 + bob * 0.7 * cos(cycle);
+	else if (mode == VB_SIN2)
+		bob = bob * 0.3 + bob * 0.7 * sin(cycle) * sin(cycle);
+	else if (mode == VB_COS2)
+		bob = bob * 0.3 + bob * 0.7 * cos(cycle) * cos(cycle);
+
 	bob = V_min(bob, 4);
 	bob = V_max(bob, -7);
-	return bob;
+	// return bob;
 }
+
 
 /*
 ===============
@@ -601,11 +644,14 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	cl_entity_t *ent, *view;
 	int i;
 	Vector angles;
-	float bob, waterOffset;
+	float bobRight = 0, bobUp = 0, bobForward = 0, waterOffset;
 	static viewinterp_t ViewInterp;
 
 	static float oldz = 0;
 	static float lasttime;
+
+	static double bobtimes[3] = {0, 0, 0};
+	static float lasttimes[3] = {0, 0, 0};
 
 	Vector camAngles, camForward, camRight, camUp;
 	cl_entity_t* pwater;
@@ -691,11 +737,13 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 
 	// transform the view offset by the model's matrix to get the offset from
 	// model origin for the view
-	bob = V_CalcBob(pparams);
+	V_CalcBob(pparams, 0.75f, VB_SIN, bobtimes[0], bobRight, lasttimes[0]);	  // right
+	V_CalcBob(pparams, 1.50f, VB_SIN, bobtimes[1], bobUp, lasttimes[1]);	  // up
+	V_CalcBob(pparams, 1.00f, VB_SIN, bobtimes[2], bobForward, lasttimes[2]); // forward
 
 	// refresh position
 	VectorCopy(pparams->simorg, pparams->vieworg);
-	pparams->vieworg[2] += (bob);
+	pparams->vieworg[2] += (bobRight);
 	VectorAdd(pparams->vieworg, pparams->viewheight, pparams->vieworg);
 
 	VectorCopy(pparams->cl_viewangles, pparams->viewangles);
@@ -804,21 +852,66 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	// Let the viewmodel shake at about 10% of the amplitude
 	gEngfuncs.V_ApplyShake(view->origin, view->angles, 0.9);
 
+	// magic nipples - view lag
+	float mouseX = gHUD.mouse_x * 0.045;
+	float mouseY = gHUD.mouse_y * 0.045;
+	float mouseZ = gHUD.mouse_x * 0.02;
+	float frameadj = (1.0f / pparams->frametime) * 0.01;
+
+	gHUD.lagangle_x = SmoothValues(gHUD.lagangle_x, mouseX * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_x >= 15)
+		gHUD.lagangle_x = 15;
+	if (gHUD.lagangle_x <= -15)
+		gHUD.lagangle_x = -15; // caps model from swaying too far
+	view->angles[1] -= gHUD.lagangle_x;
+
+	gHUD.lagangle_z = SmoothValues(gHUD.lagangle_z, mouseZ * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_z >= 8)
+		gHUD.lagangle_z = 8;
+	if (gHUD.lagangle_z <= -8)
+		gHUD.lagangle_z = -8;
+	view->angles[2] += gHUD.lagangle_z;
+
+	gHUD.lagangle_y = SmoothValues(gHUD.lagangle_y, mouseY * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_y >= 15)
+		gHUD.lagangle_y = 15;
+	if (gHUD.lagangle_y <= -15)
+		gHUD.lagangle_y = -15; // caps model from swaying too far
+	view->angles[0] -= gHUD.lagangle_y;
+
+	// this controls the origin of the weapon when moving up/down (jumping, etc)
+	float simvelzmid = pparams->simvel[2] * 0.01;
+	if (simvelzmid <= -1.5)
+		simvelzmid = -1.5; // another cap
+	if (simvelzmid >= 1.5)
+		simvelzmid = 1.5; // another cap
+	gHUD.velz = SmoothValues(gHUD.velz, simvelzmid, pparams->frametime * 7);
+	view->origin[2] -= gHUD.velz * 1.3;
+	view->angles[0] -= gHUD.velz * 2.5;
+
+	// this moves the weapon origin left/right, up/down based on input (very similar to the hl2 weapon lag)
+	for (int i = 0; i < 3; i++)
+	{
+		view->origin[i] -= 0.7 * gHUD.lagangle_x * pparams->right[i];
+		view->origin[i] += 0.2 * gHUD.lagangle_y * pparams->up[i];
+		view->origin[i] -= 0.2 * abs(gHUD.lagangle_x) * pparams->forward[i];
+	}
+	// END
+
 	for (i = 0; i < 3; i++)
 	{
-		view->origin[i] += bob * 0.4 * pparams->forward[i];
+		view->origin[i] += bobRight * 0.70 * pparams->right[i];
+		view->origin[i] += bobUp * 0.17 * pparams->up[i];
+		view->origin[i] += bobForward * 0 * pparams->forward[i];
 	}
-	view->origin[2] += bob;
+	view->origin[2] += bobRight;
 
 	// throw in a little tilt.
-	view->angles[YAW] -= bob * 0.5;
-	view->angles[ROLL] -= bob * 1;
-	view->angles[PITCH] -= bob * 0.3;
+	// view->angles[YAW]   -= bobForward * 0.5;
+	// view->angles[ROLL]  -= bobForward * 1.0;
+	// view->angles[PITCH] -= bobForward * 0.3;
 
-	if (0 != cl_bobtilt->value)
-	{
-		VectorCopy(view->angles, view->curstate.angles);
-	}
+	VectorCopy(view->angles, view->curstate.angles);
 
 	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem

@@ -559,6 +559,16 @@ public:
 	int m_iSkyScale;				//AJH Allows parallax for the sky. 0 means no parallax, i.e infinitly large & far away.
 	int m_iCameraMode;				//G-Cont. clipping thirdperson camera
 
+	// magic nipples - view lag
+	float lagangle_x;
+	float lagangle_y;
+	float lagangle_z;
+	float mouse_x;
+	float mouse_y;
+	float velz;
+	float bobValue[2];
+	float camValue[2];
+
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b);
 	int DrawHudString(int x, int y, int iMaxX, const char* szString, int r, int g, int b);
