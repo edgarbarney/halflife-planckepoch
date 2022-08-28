@@ -34,7 +34,9 @@ class CPropManager
 {
 public:
 	void Init( );
+	void VidInit();
 	void Shutdown( );
+	void ClearEntityData();
 
 	void GenerateEntityList( );
 	void SetupVBO( );

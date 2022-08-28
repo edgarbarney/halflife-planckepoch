@@ -169,6 +169,17 @@ Shutdown
 void CBSPRenderer::Shutdown( )
 {	
 	FreeBuffer();
+
+	// Clear previous
+	if (m_iNumSurfaces)
+	{
+		delete[] m_pSurfaces;
+		m_pSurfaces = nullptr;
+		m_iNumSurfaces = NULL;
+	}
+
+	ClearDetailObjects();
+	DeleteDecals();
 }
 
 /*
@@ -459,7 +470,10 @@ void CBSPRenderer::VidInit( )
 		for(int i = 0; i < MAX_DYNLIGHTS; i++)
 		{
 			if(m_pDynLights[i].depth != NULL)
-				glDeleteTextures(1, (GLuint *)&m_pDynLights[i].depth);
+			{
+				glDeleteTextures(1, &m_pDynLights[i].depth);
+				m_pDynLights[i].depth = 0;
+			}
 		}
 	}
 
@@ -478,6 +492,7 @@ void CBSPRenderer::VidInit( )
 	if(m_iNumSurfaces)
 	{	
 		delete [] m_pSurfaces;
+		m_pSurfaces = nullptr;
 		m_iNumSurfaces = NULL;
 	}
 
@@ -1005,6 +1020,7 @@ void CBSPRenderer::SetupRenderer ( )
 	RemoveSky();
 
 	gTextureLoader.FreeWADFiles();
+	gPropManager.ClearEntityData();
 }
 
 /*
@@ -4353,6 +4369,9 @@ void CBSPRenderer::CreateDecal( Vector endpos, Vector pnormal, const char *name,
 			
 			if(!CullDecalBBox(mins, maxs) && m_pCvarOvDecals->value < 1)
 			{
+				for (int j = 0; j < m_pDecals[i].inumpolys; j++)
+					delete[] m_pDecals[i].polys[j].pverts;
+
 				delete [] m_pDecals[i].polys;
 				memset(&m_pDecals[i], 0, sizeof(customdecal_t));
 				pDecal = &m_pDecals[i];

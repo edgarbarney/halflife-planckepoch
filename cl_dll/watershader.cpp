@@ -436,6 +436,40 @@ void CWaterShader::Init( )
 
 /*
 ====================
+ClearEntities
+
+====================
+*/
+void CWaterShader::ClearEntities(void)
+{
+	if (!m_iNumWaterEntities)
+		return;
+
+	for (int i = 0; i < m_iNumWaterEntities; i++)
+	{
+		glDeleteTextures(1, &m_pWaterEntities[i].reflect);
+		glDeleteTextures(1, &m_pWaterEntities[i].refract);
+		free(m_pWaterEntities[i].surfaces);
+	}
+
+	memset(m_pWaterEntities, NULL, sizeof(m_pWaterEntities));
+	m_iNumWaterEntities = NULL;
+}
+
+/*
+====================
+Shutdown
+
+====================
+*/
+void CWaterShader::Shutdown(void)
+{
+	ClearEntities();
+}
+
+
+/*
+====================
 VidInit
 
 ====================
@@ -456,15 +490,7 @@ void CWaterShader::VidInit( )
 		gEngfuncs.pfnClientCmd("quit\n");
 	}
 
-	for(int i = 0; i < m_iNumWaterEntities; i++)
-	{
-		glDeleteTextures(1, &m_pWaterEntities[i].reflect);
-		glDeleteTextures(1, &m_pWaterEntities[i].refract);
-		free(m_pWaterEntities[i].surfaces);
-	}
-
-	memset(m_pWaterEntities, NULL, sizeof(m_pWaterEntities));
-	m_iNumWaterEntities = NULL;
+	ClearEntities();
 }
 
 /*
@@ -573,7 +599,7 @@ ShouldReflect
 */
 bool CWaterShader::ShouldReflect( int index ) 
 {
-	if(m_pCurWater->origin.z > m_vViewOrigin.z)
+	if (GetWaterOrigin().z > m_vViewOrigin.z)
 		return false;
 
 	// Optimization: Try and find a water entity on the same z coord
@@ -581,7 +607,7 @@ bool CWaterShader::ShouldReflect( int index )
 	{
 		if(m_pWaterEntities[i].draw)
 		{
-			if(m_pWaterEntities[i].origin.z == m_pCurWater->origin.z)
+			if (GetWaterOrigin(&m_pWaterEntities[i]).z == GetWaterOrigin().z)
 				return false;
 		}
 	}
@@ -745,7 +771,7 @@ void CWaterShader::SetupClipping( ref_params_t *pparams, bool negative )
 	Vector	vUp;
 
 	AngleVectors(pparams->viewangles, vForward, vRight, vUp );
-	VectorSubtract(m_pCurWater->origin, pparams->vieworg, vDist);
+	VectorSubtract(GetWaterOrigin(), pparams->vieworg, vDist);
 	
 	VectorInverse(vRight); 
 	VectorInverse(vUp);
@@ -795,12 +821,19 @@ ViewInWater
 */
 bool CWaterShader::ViewInWater( )
 {
-	if(m_vViewOrigin[0] > m_pCurWater->entity->curstate.mins[0]
-	&& m_vViewOrigin[1] > m_pCurWater->entity->curstate.mins[1]
-	&& m_vViewOrigin[2] > m_pCurWater->entity->curstate.mins[2]
-	&& m_vViewOrigin[0] < m_pCurWater->entity->curstate.maxs[0]
-	&& m_vViewOrigin[1] < m_pCurWater->entity->curstate.maxs[1]
-	&& m_vViewOrigin[2] < m_pCurWater->entity->curstate.maxs[2])
+	Vector mins, maxs;
+	for (int i = 0; i < 3; i++)
+	{
+		mins[i] = m_pCurWater->entity->curstate.origin[i] + m_pCurWater->entity->curstate.mins[i];
+		maxs[i] = m_pCurWater->entity->curstate.origin[i] + m_pCurWater->entity->curstate.maxs[i];
+	}
+
+	if (m_vViewOrigin[0] > mins[0]
+		&& m_vViewOrigin[1] > mins[1]
+		&& m_vViewOrigin[2] > mins[2]
+		&& m_vViewOrigin[0] < maxs[0]
+		&& m_vViewOrigin[1] < maxs[1]
+		&& m_vViewOrigin[2] < maxs[2])
 		return true;
 
 	return false;
@@ -983,7 +1016,7 @@ void CWaterShader::SetupRefract( )
 
 	glViewport(GL_ZERO, GL_ZERO, m_pCvarWaterResolution->value, m_pCvarWaterResolution->value);
 
-	if(m_pCurWater->origin[2] < m_vViewOrigin[2])
+	if (GetWaterOrigin().z < m_vViewOrigin[2])
 	{
 		SetupClipping(m_pViewParams, false);
 
@@ -995,7 +1028,7 @@ void CWaterShader::SetupRefract( )
 		Vector vMins, vMaxs;
 		VectorCopy(gBSPRenderer.m_pWorld->maxs, vMaxs);
 		VectorCopy(gBSPRenderer.m_pWorld->mins, vMins); 
-		vMins.z = m_pCurWater->origin.z;
+		vMins.z = GetWaterOrigin().z;
 		
 		gHUD.viewFrustum.SetExtraCullBox(vMins, vMaxs);
 		SetupClipping(m_pViewParams, true);
@@ -1045,7 +1078,7 @@ void CWaterShader::SetupReflect( )
 	Vector vMins, vMaxs;
 	AngleVectors(m_pViewParams->viewangles, vForward, nullptr, nullptr);
 
-	float flDist = abs(m_pCurWater->origin[2] - m_vViewOrigin[2]);
+	float flDist = abs(GetWaterOrigin().z - m_vViewOrigin[2]);
 	VectorMASSE(m_vViewOrigin, -2*flDist, m_pCurWater->wplane.normal, m_pWaterParams.vieworg);
 
 	flDist = DotProduct(vForward, -m_pCurWater->wplane.normal);
@@ -1076,7 +1109,7 @@ void CWaterShader::SetupReflect( )
 	// Cull everything below the water plane
 	VectorCopy(gBSPRenderer.m_pWorld->maxs, vMaxs);
 	VectorCopy(gBSPRenderer.m_pWorld->mins, vMins); 
-	vMins.z = m_pCurWater->origin.z;
+	vMins.z = GetWaterOrigin().z;
 	
 	gHUD.viewFrustum.SetExtraCullBox(vMins, vMaxs);
 	SetupClipping(&m_pWaterParams, true);
@@ -1141,12 +1174,6 @@ void CWaterShader::DrawWater( )
 	else
 		gBSPRenderer.glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_uiVertexPrograms[0]);
 
-	glGetFloatv(GL_MODELVIEW_MATRIX, flMatrix);
-	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, flMatrix[0], flMatrix[4], flMatrix[8], flMatrix[12]);
-	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 1, flMatrix[1], flMatrix[5], flMatrix[9], flMatrix[13]);
-	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 2, flMatrix[2], flMatrix[6], flMatrix[10], flMatrix[14]);
-	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 3, flMatrix[3], flMatrix[7], flMatrix[11], flMatrix[15]);
-
 	glGetFloatv(GL_PROJECTION_MATRIX, flMatrix);
 	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 4, flMatrix[0], flMatrix[4], flMatrix[8], flMatrix[12]);
 	gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 5, flMatrix[1], flMatrix[5], flMatrix[9], flMatrix[13]);
@@ -1162,6 +1189,20 @@ void CWaterShader::DrawWater( )
 
 		if(gHUD.viewFrustum.CullBox(m_pCurWater->mins, m_pCurWater->maxs))
 			continue;
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glTranslatef(m_pCurWater->entity->curstate.origin[0], m_pCurWater->entity->curstate.origin[1], m_pCurWater->entity->curstate.origin[2]);
+
+		glGetFloatv(GL_MODELVIEW_MATRIX, flMatrix);
+		gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, flMatrix[0], flMatrix[4], flMatrix[8], flMatrix[12]);
+		gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 1, flMatrix[1], flMatrix[5], flMatrix[9], flMatrix[13]);
+		gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 2, flMatrix[2], flMatrix[6], flMatrix[10], flMatrix[14]);
+		gBSPRenderer.glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 3, flMatrix[3], flMatrix[7], flMatrix[11], flMatrix[15]);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+
 
 		if(m_vViewOrigin[2] > m_pCurWater->origin[2])
 		{
@@ -1197,7 +1238,7 @@ void CWaterShader::DrawWater( )
 		{
 			if(m_pWaterEntities[j].draw)
 			{
-				if(m_pWaterEntities[j].origin.z == m_pCurWater->origin.z)
+				if (GetWaterOrigin(&m_pWaterEntities[j]).z == GetWaterOrigin().z)
 				{
 					gBSPRenderer.Bind2DTexture(GL_TEXTURE2_ARB, m_pWaterEntities[j].reflect);
 					break;
@@ -1217,4 +1258,18 @@ void CWaterShader::DrawWater( )
 	glCullFace(GL_FRONT);
 
 	gBSPRenderer.DisableVertexArray();
+}
+
+/*
+====================
+GetWaterOrigin
+
+====================
+*/
+Vector CWaterShader::GetWaterOrigin(cl_water_t* pwater)
+{
+	if (pwater)
+		return pwater->origin + pwater->entity->curstate.origin;
+	else
+		return m_pCurWater->origin + m_pCurWater->entity->curstate.origin;
 }
