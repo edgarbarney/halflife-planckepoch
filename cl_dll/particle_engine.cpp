@@ -68,6 +68,17 @@ void CParticleEngine::Init( )
 
 /*
 ====================
+Shutdown
+
+====================
+*/
+void CParticleEngine::Shutdown(void)
+{
+	VidInit();
+}
+
+/*
+====================
 VidInit
 
 ====================

@@ -119,24 +119,7 @@ void CPropManager::Reset( )
 		m_iNumHeaders = NULL;
 	}
 
-	if(m_iNumBSPEntities)
-	{
-		for(int i = 0; i < m_iNumBSPEntities; i++)
-		{
-			epair_t *pPair = m_pBSPEntities[i].epairs;
-			while(pPair)
-			{
-				epair_t *pFree = pPair;
-				pPair = pFree->next;
-
-				delete [] pFree->key;
-				delete [] pFree->value;
-				delete [] pFree;
-			}
-		}
-		memset(m_pBSPEntities, 0, sizeof(m_pBSPEntities));
-		m_iNumBSPEntities = 0;
-	}
+	ClearEntityData();
 
 	if(m_pEntData)
 	{
@@ -174,6 +157,46 @@ void CPropManager::Init( )
 {
 	m_pCvarDrawClientEntities = CVAR_CREATE( "te_client_entities", "1", 0 );
 }
+
+/*
+====================
+VidInit
+
+====================
+*/
+void CPropManager::VidInit()
+{
+	Reset();
+}
+
+/*
+====================
+ClearEntityData
+
+====================
+*/
+void CPropManager::ClearEntityData()
+{
+	if (!m_iNumBSPEntities)
+		return;
+
+	for (int i = 0; i < m_iNumBSPEntities; i++)
+	{
+		epair_t* pPair = m_pBSPEntities[i].epairs;
+		while (pPair)
+		{
+			epair_t* pFree = pPair;
+			pPair = pFree->next;
+
+			delete[] pFree->key;
+			delete[] pFree->value;
+			delete[] pFree;
+		}
+	}
+	memset(m_pBSPEntities, 0, sizeof(m_pBSPEntities));
+	m_iNumBSPEntities = 0;
+}
+
 
 /*
 ====================

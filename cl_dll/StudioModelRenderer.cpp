@@ -1951,6 +1951,31 @@ CStudioModelRenderer::CStudioModelRenderer()
 */
 CStudioModelRenderer::~CStudioModelRenderer()
 {
+	if (m_iNumStudioModels > 0)
+	{
+		for (int i = 0; i < m_iNumStudioModels; i++)
+			delete m_pStudioModels[i].cache.data;
+	}
+
+	if (m_iNumStudioDecals)
+	{
+		for (int i = 0; i < m_iNumStudioDecals; i++)
+		{
+			if (m_pStudioDecals[i].numpolys)
+			{
+				for (int j = 0; j < m_pStudioDecals[i].numpolys; j++)
+					delete[] m_pStudioDecals[i].polys[j].verts;
+
+				delete[] m_pStudioDecals[i].polys;
+			}
+
+			if (m_pStudioDecals[i].numverts)
+				delete[] m_pStudioDecals[i].verts;
+		}
+
+		memset(m_pStudioDecals, NULL, sizeof(m_pStudioDecals));
+		m_iNumStudioDecals = NULL;
+	}
 }
 
 /*

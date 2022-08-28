@@ -361,7 +361,8 @@ int IsEntityMoved(cl_entity_t *e)
 	if (e->angles[0] || e->angles[1] || e->angles[2] ||
 		e->origin[0] || e->origin[1] || e->origin[2] ||
 		e->curstate.renderfx == 70 ||
-		e->curstate.effects & FL_CONVEYOR) // skybox models reques separate pass
+		e->curstate.effects & FL_CONVEYOR ||
+		e->curstate.frame > 0) // skybox models reques separate pass
 		return true;
 	else
 		return false;
