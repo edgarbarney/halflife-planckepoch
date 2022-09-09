@@ -148,4 +148,4 @@ This file will use every texture-material association from the vanilla HL becaus
 
 It will associate textures that __start with__ `5HJFD_SNOW` to the material `CHAR_TEX_SNOW` because `CHAR_TEX_SNOW`'s material alias is `SNOW`
 
-It will associate textures that __start with__ `H` to the material `CHAR_TEX_HOUNDEYE` because `CHAR_TEX_SNOW`'s material alias is `HOUNDEYE`
+It will associate textures that __start with__ `H` to the material `CHAR_TEX_HOUNDEYE` because `CHAR_TEX_HOUNDEYE`'s material alias is `HOUNDEYE`
