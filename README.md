@@ -9,7 +9,7 @@ Removed Features:
 - Fog. 
   - Obviously. Trinity has it's own.
   
-- Mirrors and Shiniy Surfaces. 
+- Mirrors and Shiny Surfaces. 
   - Ditto.
   
 - Particle System. 
