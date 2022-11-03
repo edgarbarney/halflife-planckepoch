@@ -1,3 +1,6 @@
+** DANGER: ** You need a font file to work with this modbase 
+https://github.com/edgarbarney/halflife-planckepoch/issues/12
+
 Current Status:
 https://www.moddb.com/mods/spirinity/news/status-report-and-a-small-announcement
 
