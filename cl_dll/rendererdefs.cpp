@@ -62,6 +62,8 @@ int current_ext_texture_id = BASE_EXT_TEXTURE_ID;
 Vector g_vecFull(1.0f, 1.0f, 1.0f); // color of 3d attenuation texture
 //Vector g_vecZero(0.0f, 0.0f, 0.0f); // color of 3d attenuation texture
 
+glstate_t g_savedGLState;
+
 double sqrt(double x);
 
 //==========================
@@ -814,7 +816,10 @@ void R_DrawNormalTriangles( )
 	gBSPRenderer.DrawNormalTriangles();
 
 	// Save everything at this point too
-	gBSPRenderer.SaveMultiTexture();
+	R_SaveGLStates();
+
+	// Apply fog
+	RenderFog();
 
 	// Render props on the list
 	gPropManager.RenderProps();
@@ -835,7 +840,7 @@ void R_DrawNormalTriangles( )
 	gParticleEngine.DrawParticles();
 
 	//Restore
-	gBSPRenderer.RestoreMultiTexture();
+	R_RestoreGLStates();
 }
 
 /*
@@ -1272,4 +1277,49 @@ void FixVectorForSpotlight( Vector &vec )
 	if (vec[ROLL] == -90) vec[ROLL] = -89;
 	if (vec[ROLL] == -180) vec[ROLL] = -179;
 	if (vec[ROLL] == -270) vec[ROLL] = -269;
+}
+
+void R_SaveGLStates(void)
+{
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_texunit);
+	glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_clienttexunit);
+
+	g_savedGLState.blending_enabled = glIsEnabled(GL_BLEND) ? true : false;
+
+	glMatrixMode(GL_TEXTURE);
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+
+	g_savedGLState.alphatest_enabled = glIsEnabled(GL_ALPHA_TEST) ? true : false;
+	glGetIntegerv(GL_ALPHA_TEST_FUNC, &g_savedGLState.alphatest_func);
+	glGetFloatv(GL_ALPHA_TEST_REF, &g_savedGLState.alphatest_value);
+
+}
+
+void R_RestoreGLStates(void)
+{
+	glPopAttrib();
+
+	// load saved matrix for steam version
+	glMatrixMode(GL_TEXTURE);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
+	gBSPRenderer.glActiveTextureARB(g_savedGLState.active_texunit);
+	gBSPRenderer.glClientActiveTextureARB(g_savedGLState.active_clienttexunit);
+
+	if (g_savedGLState.blending_enabled)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
+	if (g_savedGLState.alphatest_enabled)
+		glEnable(GL_ALPHA_TEST);
+	else
+		glDisable(GL_ALPHA_TEST);
+
+	glAlphaFunc(g_savedGLState.alphatest_func, g_savedGLState.alphatest_value);
 }

@@ -709,6 +709,27 @@ struct cabledata_t
 	short leafnums[MAX_ENT_LEAFS];
 };
 
+struct glstate_t
+{
+	glstate_t() :
+		blending_enabled(false),
+		alphatest_enabled(false),
+		alphatest_func(0),
+		alphatest_value(0),
+		active_texunit(0),
+		active_clienttexunit(0)
+	{}
+
+	bool blending_enabled;
+
+	bool alphatest_enabled;
+	GLint alphatest_func;
+	GLfloat alphatest_value;
+
+	GLint active_texunit;
+	GLint active_clienttexunit;
+};
+
 //========================================
 //				GLOBAL FUNCTION CALLS
 //
@@ -768,6 +789,13 @@ extern void		FixVectorForSpotlight( Vector &vec );
 extern void		SV_FindTouchedLeafs( entextradata_t *ent, mnode_t *node );
 
 extern byte		*ResizeArray( byte *pOriginal, int iSize, int iCount );
+
+extern void		R_SaveGLStates(void);
+extern void		R_RestoreGLStates(void);
+
+extern void		R_Init(void);
+extern void		R_VidInit(void);
+extern void		R_Shutdown(void);
 
 extern Vector	g_vecFull;
 //extern Vector	g_vecZero;

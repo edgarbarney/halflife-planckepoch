@@ -3374,7 +3374,12 @@ StudioRenderModel
 */
 void CStudioModelRenderer::StudioRenderModel()
 {
-	if (m_pCurrentEntity->curstate.renderfx == kRenderFxGlowShell)
+
+	// Save texture states before rendering, so we don't
+	// cause any bugs in HL by changing texture binds, etc
+	R_SaveGLStates();
+
+	if ( m_pCurrentEntity->curstate.renderfx == kRenderFxGlowShell )
 	{
 		m_pCurrentEntity->curstate.renderfx = kRenderFxNone;
 		StudioRenderFinal();
@@ -3392,6 +3397,9 @@ void CStudioModelRenderer::StudioRenderModel()
 	{
 		StudioRenderFinal();
 	}
+
+	// Restore saved states
+	R_RestoreGLStates();
 }
 
 /*
@@ -5038,6 +5046,10 @@ StudioRenderModelEXT
 */
 void CStudioModelRenderer::StudioRenderModelEXT()
 {
+	// Save texture states before rendering, so we don't
+	// cause any bugs in HL by changing texture binds, etc
+	R_SaveGLStates();
+
 	// I don't give a shit, make sure
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -5072,6 +5084,9 @@ void CStudioModelRenderer::StudioRenderModelEXT()
 
 	if (m_pCvarModelsBBoxDebug->value > 0)
 		StudioDrawBBox();
+
+	// Restore saved states
+	R_RestoreGLStates();
 }
 
 /*
