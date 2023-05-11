@@ -36,3 +36,18 @@
 
 // Shared header between the client DLL and the game DLLs
 #include "cdll_dll.h"
+
+#if ! _WIN32
+// no need to define cdecl on Linux
+#define __cdecl
+#define _cdecl
+
+#include <ctype.h>
+
+static inline strupr(char *buf)
+{
+	for( ; buf && *buf; buf++ )
+		*buf = toupper( *buf );
+}
+
+#endif
