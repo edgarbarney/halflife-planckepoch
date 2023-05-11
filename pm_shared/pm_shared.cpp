@@ -22,6 +22,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <algorithm>
 
 #include "Platform.h"
 
@@ -190,7 +191,7 @@ std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
 
 /*FORCEINLINE*/ auto CTextureAndTypesMap::insert(std::pair<std::string, textureType_s>&& val)
 {
-	auto& temp = textureTypeMap.insert(val);
+	auto temp = textureTypeMap.insert(val);
 	if (firstmap.texTypeID == INT32_MAX)
 		firstmap = temp.second;
 	return temp;
