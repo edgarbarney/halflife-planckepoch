@@ -259,7 +259,7 @@ void CClientImgui::SetTheme()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	//brandsFont = io.Fonts->AddFontFromMemoryCompressedTTF(fa_brands_400_compressed_data, fa_brands_400_compressed_size, 50.0f);
-	std::string fontdir = (FranUtils::GetModDirectory() + "resource\\fa-brands-400.ttf");
+	std::string fontdir = (FranUtils::GetModDirectory() + "resource/fa-brands-400.ttf");
 	brandsFont = io.Fonts->AddFontFromFileTTF(fontdir.c_str(), 20.0f, nullptr, GetGlyphRangesFontAwesome());
 	io.Fonts->Build();
 
