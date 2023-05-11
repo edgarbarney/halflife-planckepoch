@@ -124,7 +124,7 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 			}
 			else
 			{
-				return false;
+				return nullptr;
 			}
 		}
 	}
