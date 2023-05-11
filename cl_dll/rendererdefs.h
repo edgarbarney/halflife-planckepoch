@@ -16,8 +16,8 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #define RENDERERDEFS_H
 
 #include "PlatformHeaders.h"
-#include "gl/gl.h"
-#include "gl/glext.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include "dlight.h"
 #include "com_model.h"
 #include "cl_entity.h"

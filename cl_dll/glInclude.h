@@ -27,4 +27,4 @@ typedef unsigned short wchar_t;
 # pragma comment(lib,"opengl32.lib")
 #endif
 
-#include <gl/gl.h>
+#include <GL/gl.h>

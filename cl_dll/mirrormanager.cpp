@@ -19,7 +19,9 @@ Additional code taken from Id Software
 #include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
+#if _WIN32
 #include <gl/glu.h>
+#endif
 
 #include "const.h"
 #include "studio.h"

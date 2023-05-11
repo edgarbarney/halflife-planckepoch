@@ -7,7 +7,9 @@
 #include <fstream>
 
 #include "PlatformHeaders.h"
+#if _WIN32
 #include <Psapi.h>
+#endif
 
 #include "hud.h"
 #include "cl_dll.h"
@@ -16,7 +18,7 @@
 #include "parsemsg.h"
 #include "pm_shared.h"
 #include "SDL2/SDL.h"
-#include <gl/GL.h>
+#include <GL/gl.h>
 
 #include "kbutton.h"
 
@@ -197,8 +199,8 @@ void CClientImguiKeyboardSettings::DrawKeyboardSettingsTab()
 void CClientImguiKeyboardSettings::ParseKeybindFormatData()
 {
 	std::ifstream fstream;
-	//fstream.open(FranUtils::GetModDirectory() + "resource\\ControlsList.txt");
-	FranUtils::Filesystem::OpenInputFile("resource\\ControlsList.txt", fstream);
+	//fstream.open(FranUtils::GetModDirectory() + "resource/ControlsList.txt");
+	FranUtils::Filesystem::OpenInputFile("resource/ControlsList.txt", fstream);
 
 	std::string lastType;
 
