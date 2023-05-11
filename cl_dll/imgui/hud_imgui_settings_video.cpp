@@ -58,6 +58,8 @@ void CClientImguiVideoSettings::Init()
 	// Valve used registry keys to store resolution data for some reason.
 	// So we must mangle with these. But thanks to the WinReg, its not that complex.
 
+	// on Linux we can read .ini file as far as I know???
+#if _WIN32
 	HalfLifeRegKey.Open(HKEY_CURRENT_USER, L"SOFTWARE\\Valve\\Half-Life\\Settings");
 
 	if (HalfLifeRegKey.GetStringValue(L"EngineDLL") != L"hw.dll")
@@ -85,6 +87,7 @@ void CClientImguiVideoSettings::Init()
 		liveVideoSettings.refreshRate = defaultRefreshRate;
 
 	HalfLifeRegKey.SetDwordValue(L"vid_level", 0); //Disable "low quality" mode
+#endif
 
 	liveVideoSettings.windowType = WindowStatus_e::BorderlessFullscreen;
 
@@ -253,6 +256,7 @@ void CClientImguiVideoSettings::ApplyVideoSettings()
 	const auto& itemt = resolutionVector[resComboLiveIndex];
 	gEngfuncs.Con_DPrintf("W: %d, H: %d, HZ: %d\n", itemt.width, itemt.height, itemt.refreshRate);
 
+#if _WIN32
 	HalfLifeRegKey.SetDwordValue(L"ScreenBPP", liveVideoSettings.colourDepth);
 	HalfLifeRegKey.SetDwordValue(L"hdmodels", liveVideoSettings.hdModels);
 	HalfLifeRegKey.SetDwordValue(L"ScreenHeight", liveVideoSettings.screenHeight);
@@ -265,6 +269,7 @@ void CClientImguiVideoSettings::ApplyVideoSettings()
 		HalfLifeRegKey.SetDwordValue(L"ScreenWindowed", 0); // Legacy Fullscreen
 	else
 		HalfLifeRegKey.SetDwordValue(L"ScreenWindowed", 1);
+#endif
 
 	std::string vsync_cmd = "gl_vsync " + std::to_string(liveVideoSettings.vsync);
 	gEngfuncs.pfnClientCmd(vsync_cmd.c_str());
@@ -324,6 +329,8 @@ void CClientImguiVideoSettings::CheckForBorderless()
 
 void CClientImguiVideoSettings::ShutDown()
 {
+#if _WIN32
 	HalfLifeRegKey.Close();
+#endif
 }
 
