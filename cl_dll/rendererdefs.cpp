@@ -141,8 +141,9 @@ void FilenameFromPath( char *szin, char *szout )
 // SSE DotProduct Plane EQ
 //
 //==========================
-inline void SSEDotProductSub(float *result, Vector *v0, Vector *v1, float *subval )
+void SSEDotProductSub(float *result, Vector *v0, Vector *v1, float *subval )
 {
+#if _MSC_VER
 	_asm{
 		mov             esi,    v0
 		mov             edi,    v1
@@ -163,14 +164,41 @@ inline void SSEDotProductSub(float *result, Vector *v0, Vector *v1, float *subva
 		subss   xmm0,   [edx];
 		movss   [eax],  xmm0;
 	}
+#else
+__asm__ __volatile__ (
+  "     mov %0, %%esi\n"
+  "     mov %1, %%edi\n"
+  "     mov %2, %%eax\n"
+  "     mov %3, %%edx\n"
+  
+  "     movups (%%esi), %%xmm0\n"
+  "     movups (%%edi), %%xmm1\n"
+  
+  "     mulps %%xmm1, %%xmm0\n"
+  
+  "     movups %%xmm0, %%xmm2\n"
+  "     shufps $0x12, %%xmm0, %%xmm2\n"
+  "     addps %%xmm0, %%xmm2\n"
+  "     shufps $0x21, %%xmm2, %%xmm0\n"
+  "     addps %%xmm2, %%xmm0\n"
+  
+  "     subss (%%edx), %%xmm0\n"
+  "     movss %%xmm0, (%%eax)\n"
+  
+  :
+  :"m"(v0), "m"(v1), "m"(result), "m"(subval)
+  :"memory", "esi", "edi", "eax", "ebx", "ecx", "edx"
+);
+#endif
 }
  
 //==========================
 // SSE DotProduct world coord on Studio Models
 //
 //==========================
-inline void SSEDotProductWorld( float* result, const float* v0, const float* v1 )
+void SSEDotProductWorld( float* result, const float* v0, const float* v1 )
 {
+#if _MSC_VER
 	_asm{
 		mov             esi,    v0
 		mov             edi,    v1
@@ -190,14 +218,41 @@ inline void SSEDotProductWorld( float* result, const float* v0, const float* v1 
 		addss   xmm0,   [edi+12];
 		movss   [eax],  xmm0;
 	}
+#else
+__asm__ __volatile__ (
+  "     mov %0, %%esi\n"
+  "     mov %1, %%edi\n"
+  "     mov %2, %%eax\n"
+  
+  "     movups (%%esi), %%xmm0\n"
+  "     movups (%%edi), %%xmm1\n"
+  
+  "     mulps %%xmm1, %%xmm0\n"
+  
+  "     movups %%xmm0, %%xmm2\n"
+  "     shufps $0x12, %%xmm0, %%xmm2\n"
+  "     addps %%xmm0, %%xmm2\n"
+  "     shufps $0x21, %%xmm2, %%xmm0\n"
+  "     addps %%xmm2, %%xmm0\n"
+  
+  "     addss 0xc(%%edi), %%xmm0\n"
+  "     movss %%xmm0, (%%eax)\n"
+  
+  
+  :
+  :"m"(v0), "m"(v1), "m"(result)
+  :"memory", "esi", "edi", "eax", "ebx", "ecx", "edx"
+);
+#endif
 }
  
 //==========================
 // SSE DotProduct
 //
 //==========================
-inline void DotProductSSE( float* result, const float* v0, const float* v1 )
+void DotProductSSE( float* result, const float* v0, const float* v1 )
 {
+#if _MSC_VER
 	_asm{
 		mov             esi,    v0
 		mov             edi,    v1
@@ -216,6 +271,30 @@ inline void DotProductSSE( float* result, const float* v0, const float* v1 )
 
 		movss   [eax],  xmm0;   
 	}
+#else
+__asm__ __volatile__ (
+  "     mov %0, %%esi\n"
+  "     mov %1, %%edi\n"
+  "     mov %2, %%eax\n"
+  
+  "     movups (%%esi), %%xmm0\n"
+  "     movups (%%edi), %%xmm1\n"
+  
+  "     mulps %%xmm1, %%xmm0\n"
+  
+  "     movups %%xmm0, %%xmm2\n"
+  "     shufps $0x12, %%xmm0, %%xmm2\n"
+  "     addps %%xmm0, %%xmm2\n"
+  "     shufps $0x21, %%xmm2, %%xmm0\n"
+  "     addps %%xmm2, %%xmm0\n"
+  
+  "     movss %%xmm0, (%%eax)\n"
+  
+  :
+  :"m"(v0), "m"(v1), "m"(result)
+  :"memory", "esi", "edi", "eax", "ebx", "ecx", "edx"
+);
+#endif
 }
 
 /*
@@ -224,8 +303,9 @@ VectorAddSSE
 
 ====================
 */
-inline void VectorAddSSE( const float* v0, const float* v1, const float* result )
+void VectorAddSSE( const float* v0, const float* v1, const float* result )
 {
+#if _MSC_VER
 	_asm {
 		mov	esi,	v0
 		mov	edi,	v1
@@ -243,6 +323,29 @@ inline void VectorAddSSE( const float* v0, const float* v1, const float* result 
 		movss	[eax+4],	xmm1
 		movss	[eax+8],	xmm2
 	}
+#else
+__asm__ __volatile__ (
+  "     mov %0, %%esi\n"
+  "     mov %1, %%edi\n"
+  "     mov %2, %%eax\n"
+  
+  "     movss (%%esi), %%xmm0\n"
+  "     movss 0x4(%%esi), %%xmm1\n"
+  "     movss 0x8(%%esi), %%xmm2\n"
+  
+  "     addss (%%edi), %%xmm0\n"
+  "     addss 0x4(%%edi), %%xmm1\n"
+  "     addss 0x8(%%edi), %%xmm2\n"
+  
+  "     movss %%xmm0, (%%eax)\n"
+  "     movss %%xmm1, 0x4(%%eax)\n"
+  "     movss %%xmm2, 0x8(%%eax)\n"
+  
+  :
+  :"m"(v0), "m"(v1), "m"(result)
+  :"memory", "esi", "edi", "eax", "ebx", "ecx", "edx"
+);
+#endif
 }
 
 /*
@@ -251,8 +354,9 @@ VectorSubtract
 
 ====================
 */
-inline void VectorMASSE (const float *veca, float scale, const float *vecb, float *vecc)
+void VectorMASSE (const float *veca, float scale, const float *vecb, float *vecc)
 {
+#if _MSC_VER
 	_asm {
 		mov		eax,  veca;
 		mov		ebx,  vecb;
@@ -280,6 +384,39 @@ inline void VectorMASSE (const float *veca, float scale, const float *vecb, floa
 		movss	[ecx+4], xmm1;
 		movss	[ecx+8], xmm2;
 	}
+#else
+__asm__ __volatile__ (
+  "     mov %0, %%eax\n"
+  "     mov %1, %%ebx\n"
+  "     mov %2, %%ecx\n"
+  "     movss %3, %%xmm7\n"
+  
+  //scale*vecb
+  "     movss (%%ebx), %%xmm0\n"
+  "     movss 0x4(%%ebx), %%xmm1\n"
+  "     movss 0x8(%%ebx), %%xmm2\n"
+  "     mulss %%xmm7, %%xmm0\n"
+  "     mulss %%xmm7, %%xmm1\n"
+  "     mulss %%xmm7, %%xmm2\n"
+  
+  //(scale*vecb) + veca
+  "     movss (%%eax), %%xmm3\n"
+  "     movss 0x4(%%eax), %%xmm4\n"
+  "     movss 0x8(%%eax), %%xmm5\n"
+  "     addss %%xmm3, %%xmm0\n"
+  "     addss %%xmm4, %%xmm1\n"
+  "     addss %%xmm5, %%xmm2\n"
+  
+  //return_it
+  "     movss %%xmm0, (%%ecx)\n"
+  "     movss %%xmm1, 0x4(%%ecx)\n"
+  "     movss %%xmm2, 0x8(%%ecx)\n"
+  
+  :
+  :"m"(veca), "m"(vecb), "m"(vecc), "m"(scale)
+  :"memory", "esi", "edi", "eax", "ebx", "ecx", "edx"
+);
+#endif
 }
 
 /*
@@ -288,7 +425,7 @@ VectorRotateSSE
 
 ====================
 */
-inline void VectorRotateSSE (const float *in1, float in2[3][4], float *out)
+void VectorRotateSSE (const float *in1, float in2[3][4], float *out)
 {
 	DotProductSSE(&out[0], in1, in2[0]);
 	DotProductSSE(&out[1], in1, in2[1]);
@@ -301,7 +438,7 @@ VectorTransformSSE
 
 ====================
 */
-inline void VectorTransformSSE(const float *in1, float in2[3][4], float *out)
+void VectorTransformSSE(const float *in1, float in2[3][4], float *out)
 {
 	SSEDotProductWorld(&out[0], in1, in2[0]);
 	SSEDotProductWorld(&out[1], in1, in2[1]);
