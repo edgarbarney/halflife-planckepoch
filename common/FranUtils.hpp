@@ -10,7 +10,7 @@
 #include <fstream>
 #include <algorithm>
 #include <filesystem>
-				
+
 #ifdef CLIENT_DLL
 extern cl_enginefunc_t gEngfuncs;
 #define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
@@ -244,8 +244,6 @@ namespace FranUtils
 		return *buffer2 == 0 ? (char*)result : 0;
 	}
 
-#ifdef _VECTOR_
-
 	// Split quoted tokens into words
 	// e.g. 
 	// " \"Hello From The Other Side\" " 
@@ -285,10 +283,6 @@ namespace FranUtils
 		return out;
 	}
 
-#endif
-
-#ifdef _ALGORITHM_
-
 	inline void LowerCase_Ref(std::string& str)
 	{
 		std::transform(str.begin(), str.end(), str.begin(), [](unsigned char _c)
@@ -300,27 +294,6 @@ namespace FranUtils
 		LowerCase_Ref(str);
 		return str;
 	}
-
-#else
-
-	// Thanks to Adversus
-
-	template <class...>
-	struct _alwaysfalse { static constexpr bool value = false; };
-
-	template <class... Ts>
-	void LowerCase_Ref(Ts&&...)
-	{
-		static_assert(_alwaysfalse<Ts...>::value, "Lowercase Utility called without Algorihtm header. Please use include it");
-	}
-
-	template <class... Ts>
-	void LowerCase(Ts&&...)
-	{
-		static_assert(_alwaysfalse<Ts...>::value, "Lowercase Utility called without Algorihtm header. Please use include it");
-	}
-
-#endif
 
 #pragma endregion
 
@@ -335,7 +308,18 @@ namespace FranUtils
 	*/
 	inline long ftol_asm(float x)
 	{
+#if _WIN32
 		__asm mov eax, x;
+#else
+		// standard compliant float to int bits operation
+		union
+		{
+			int32_t i;
+			float f;
+		} horrible_cast;
+		horrible_cast.f = x;
+		return horrible_cast.i;
+#endif
 	}
 
 	/**
