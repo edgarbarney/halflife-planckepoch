@@ -73,6 +73,10 @@ using qboolean = int;
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #define _alloca alloca
+#define __cdecl
+#define _cdecl
+#define FALSE 0
+#define TRUE (!FALSE)
 
 #define DLLEXPORT __attribute__((visibility("default")))
 #define DLLHIDDEN __attribute__((visibility("hidden")))
