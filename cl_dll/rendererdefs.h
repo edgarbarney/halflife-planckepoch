@@ -27,6 +27,10 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #include "studio.h"
 #include "pm_defs.h"
 
+#if !_WIN32
+#include <dlfcn.h>
+#endif
+
 #include <vector>
 #include <map>
 #include <string>
@@ -796,6 +800,10 @@ extern void		R_RestoreGLStates(void);
 extern void		R_Init(void);
 extern void		R_VidInit(void);
 extern void		R_Shutdown(void);
+
+#if !_WIN32
+void *wglGetProcAddress(const char *name);
+#endif
 
 extern Vector	g_vecFull;
 //extern Vector	g_vecZero;

@@ -66,6 +66,14 @@ glstate_t g_savedGLState;
 
 double sqrt(double x);
 
+#if !_WIN32
+void *wglGetProcAddress( const char *name )
+{
+	// not really a good idea but ok
+	return dlsym( RTLD_NEXT, name );
+}
+#endif
+
 //==========================
 //	stristr
 //
