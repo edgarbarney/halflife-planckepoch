@@ -6,7 +6,7 @@
 
 // Because of Valve's broken include order, we can't just include
 // Filesystem header here. So we should inform the devs
-#if _FILESYSTEM_ || _GLIBCXX_FILESYSTEM
+#if defined _FILESYSTEM_ || defined _GLIBCXX_FILESYSTEM
 
 namespace FranUtils::Filesystem
 {
