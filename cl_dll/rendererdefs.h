@@ -16,8 +16,8 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #define RENDERERDEFS_H
 
 #include "PlatformHeaders.h"
-#include "gl/gl.h"
-#include "gl/glext.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include "dlight.h"
 #include "com_model.h"
 #include "cl_entity.h"
@@ -26,6 +26,10 @@ Written by Andrew Lucas, Richard Rohac, BUzer, Laurie, Botman and Id Software
 #include "frustum.h"
 #include "studio.h"
 #include "pm_defs.h"
+
+#if !_WIN32
+#include <dlfcn.h>
+#endif
 
 #include <vector>
 #include <map>
@@ -772,16 +776,16 @@ extern int		BoxOnPlaneSideTrin( Vector emins, Vector emaxs, mplane_t *p );
 extern char		*strLower( char *str );
 extern char		*stristr( const char *string, const char *string2 );
 
-extern inline void		DotProductSSE( float* result, const float* v0, const float* v1 );
-extern inline void		SSEDotProductWorld( float* result, const float* v0, const float* v1 );
-extern inline void		SSEDotProductWorldInt( int* result, const float* v0, const float* v1 );
-extern inline void		SSEDotProductSub( float* result, Vector *v0, Vector *v1, float *subval );
+extern void		DotProductSSE( float* result, const float* v0, const float* v1 );
+extern void		SSEDotProductWorld( float* result, const float* v0, const float* v1 );
+extern void		SSEDotProductWorldInt( int* result, const float* v0, const float* v1 );
+extern void		SSEDotProductSub( float* result, Vector *v0, Vector *v1, float *subval );
 
-extern inline void		VectorAddSSE( const float* v0, const float* v1, const float* result );
-extern inline void		VectorMASSE (const float *veca, float scale, const float *vecb, float *vecc);
-extern inline void		VectorTransformSSE(const float *in1, float in2[3][4], float *out);
-extern inline void		VectorRotateSSE(const float *in1, float in2[3][4], float *out);
-extern inline float		VectorNormalizeFast (float *v);
+extern void		VectorAddSSE( const float* v0, const float* v1, const float* result );
+extern void		VectorMASSE (const float *veca, float scale, const float *vecb, float *vecc);
+extern void		VectorTransformSSE(const float *in1, float in2[3][4], float *out);
+extern void		VectorRotateSSE(const float *in1, float in2[3][4], float *out);
+extern float		VectorNormalizeFast (float *v);
 
 extern void		VectorRotate (const float *in1, const float in2[3][4], float *out);
 extern void		VectorIRotate(const Vector &in1, const float in2[3][4], Vector &out);
@@ -796,6 +800,10 @@ extern void		R_RestoreGLStates(void);
 extern void		R_Init(void);
 extern void		R_VidInit(void);
 extern void		R_Shutdown(void);
+
+#if !_WIN32
+void *wglGetProcAddress(const char *name);
+#endif
 
 extern Vector	g_vecFull;
 //extern Vector	g_vecZero;

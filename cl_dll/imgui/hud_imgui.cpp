@@ -9,7 +9,9 @@
 #include <fstream>
 
 #include "PlatformHeaders.h"
+#if _WIN32
 #include <Psapi.h>
+#endif
 
 #include "hud.h"
 #include "cl_dll.h"
@@ -18,7 +20,7 @@
 #include "parsemsg.h"
 #include "pm_shared.h"
 #include "SDL2/SDL.h"
-#include <gl/GL.h>
+#include <GL/gl.h>
 
 #include "kbutton.h"
 
@@ -66,6 +68,9 @@ void ClientImGui_HWHook()
 	// Thanks to half payne's developer for the idea
 	// Changed some types for constant size things
 
+// a1ba: this is evil
+// but I guess there isn't a better solution for GoldSource to draw ImGUI while in GameUI
+#if _WIN32
 	#pragma warning( disable : 6387 )
 
 	unsigned int origin = 0;
@@ -101,15 +106,17 @@ void ClientImGui_HWHook()
 			return;
 		}
 	}
-	else 
+	else
 	{
 		gEngfuncs.Con_DPrintf("Failed to embed ImGUI: failed to get hw.dll memory base address.\n");
 		return;
 	}
+#endif
 
 	ImGui_ImplOpenGL2_Init();
 	ImGui_ImplSDL2_InitForOpenGL(mainWindow, ImGui::GetCurrentContext());
 
+#if _WIN32
 	// To make a detour, an offset to dedicated function must be calculated and then correctly replaced
 	unsigned int detourFunctionAddress = (unsigned int)&ClientImGui_HookedDraw;
 	unsigned int offset = (detourFunctionAddress)-origin - 5;
@@ -124,6 +131,7 @@ void ClientImGui_HWHook()
 	// This is WinAPI call, blatantly overwriting the memory with raw pointer would crash the program
 	// Notice the 1 byte offset from the origin
 	WriteProcessMemory(GetCurrentProcess(), (void*)(origin + 1), offsetBytes, 4, nullptr);
+#endif
 
 	SDL_AddEventWatch(ClientImGui_EventWatch, nullptr);
 
@@ -257,7 +265,7 @@ void CClientImgui::SetTheme()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	//brandsFont = io.Fonts->AddFontFromMemoryCompressedTTF(fa_brands_400_compressed_data, fa_brands_400_compressed_size, 50.0f);
-	std::string fontdir = (FranUtils::GetModDirectory() + "resource\\fa-brands-400.ttf");
+	std::string fontdir = (FranUtils::GetModDirectory() + "resource/fa-brands-400.ttf");
 	brandsFont = io.Fonts->AddFontFromFileTTF(fontdir.c_str(), 20.0f, nullptr, GetGlyphRangesFontAwesome());
 	io.Fonts->Build();
 

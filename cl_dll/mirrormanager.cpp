@@ -19,7 +19,9 @@ Additional code taken from Id Software
 #include "PlatformHeaders.h"
 #include "hud.h"
 #include "cl_util.h"
+#if _WIN32
 #include <gl/glu.h>
+#endif
 
 #include "const.h"
 #include "studio.h"
@@ -47,7 +49,7 @@ Additional code taken from Id Software
 #include "GameStudioModelRenderer.h"
 extern CGameStudioModelRenderer g_StudioRenderer;
 
-inline float sgn(float a)
+float sgn(float a)
 {
     if (a > 0.0F) return (1.0F);
     if (a < 0.0F) return (-1.0F);

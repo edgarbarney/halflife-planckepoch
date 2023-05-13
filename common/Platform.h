@@ -65,7 +65,11 @@ using qboolean = int;
 #define stricmp _stricmp
 #define strnicmp _strnicmp
 #define itoa _itoa
-#define strupr _strupr
+
+// #define strupr _strupr
+#define strupr strupr_dep
+[[deprecated("strupr is deprecated. Use FranUtils::UpperCase instead.")]]
+inline void strupr_dep(char* buf) {};
 
 #define DLLEXPORT __declspec(dllexport)
 #define DLLHIDDEN
@@ -73,6 +77,10 @@ using qboolean = int;
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #define _alloca alloca
+#define __cdecl
+#define _cdecl
+#define FALSE 0
+#define TRUE (!FALSE)
 
 #define DLLEXPORT __attribute__((visibility("default")))
 #define DLLHIDDEN __attribute__((visibility("hidden")))

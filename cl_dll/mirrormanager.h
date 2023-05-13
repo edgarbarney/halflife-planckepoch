@@ -20,7 +20,7 @@ Additional code taken from Id Software
 #endif
 
 #include "PlatformHeaders.h"
-#include "gl/gl.h"
+#include <GL/gl.h>
 #include "pm_defs.h"
 #include "cl_entity.h"
 #include "ref_params.h"

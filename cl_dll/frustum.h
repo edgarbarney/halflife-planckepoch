@@ -7,7 +7,7 @@
 #define FRUSTUM_H
 
 #include "PlatformHeaders.h"
-#include "gl/gl.h"
+#include <GL/gl.h>
 #include "pm_defs.h"
 #include "cl_entity.h"
 #include "com_model.h"

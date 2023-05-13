@@ -4,7 +4,13 @@
 #define HUD_IMGUI_SETTINGS_VIDEO_H
 
 #include <set>
+#if _WIN32
 #include "WinReg/WinReg.hpp"
+#else
+#include <stdint.h>
+
+typedef uint32_t DWORD;
+#endif
 
 enum class WindowStatus_e : DWORD
 {
@@ -94,7 +100,9 @@ struct VideoSettings_s
 class CClientImguiVideoSettings
 {
 private:
+#if _WIN32
 	winreg::RegKey HalfLifeRegKey;
+#endif
 
 	// Video settings that are being controlled live
 	VideoSettings_s liveVideoSettings;

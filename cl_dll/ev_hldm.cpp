@@ -41,6 +41,8 @@
 #include "r_studioint.h"
 #include "com_model.h"
 
+#include "FranUtils.hpp"
+
 extern engine_studio_api_t IEngineStudio;
 
 static int tracerCount[MAX_PLAYERS];
@@ -117,14 +119,14 @@ char *EV_HLDM_HDDecal( pmtrace_t *ptr, physent_t *pe, float *vecSrc, float *vecE
 				// '}}'
 				strcpy( szbuffer, pTextureName );
 				szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+				FranUtils::UpperCase(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 				// get texture type
 				//chTextureType = PM_FindTextureTypeID( szbuffer );	
 				chTextureType = g_TypedTextureMap[szbuffer];
 			}
 			else
 			{
-				return false;
+				return nullptr;
 			}
 		}
 	}
@@ -247,7 +249,7 @@ float EV_HLDM_PlayTextureSound(int idx, pmtrace_t* ptr, float* vecSrc, float* ve
 			// '}}'
 			strcpy( szbuffer, pTextureName );
 			szbuffer[ CBTEXTURENAMEMAX - 1 ] = 0;
-			strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+			FranUtils::UpperCase(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 			// get texture type
 			//chTextureType = PM_FindTextureTypeID( szbuffer );	
 			chTextureType = g_TextureTypeMap[szbuffer];

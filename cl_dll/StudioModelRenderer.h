@@ -20,9 +20,12 @@ Transparency code by Neil "Jed" Jedrzejewski
 #pragma once
 #endif
 
+#if _WIN32
 #include "windows.h"
-#include "gl/gl.h"
-#include "gl/glext.h"
+#endif
+
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include "dlight.h"
 
 #include "rendererdefs.h"

@@ -22,6 +22,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <algorithm>
 
 #include "Platform.h"
 
@@ -190,7 +191,7 @@ std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
 
 /*FORCEINLINE*/ auto CTextureAndTypesMap::insert(std::pair<std::string, textureType_s>&& val)
 {
-	auto& temp = textureTypeMap.insert(val);
+	auto temp = textureTypeMap.insert(val);
 	if (firstmap.texTypeID == INT32_MAX)
 		firstmap = temp.second;
 	return temp;
@@ -208,7 +209,7 @@ std::vector<impactGroupType_s> g_texTypeImpactTypeVector;
 }
 
 
-std::string PM_GetModdir(std::string endLine = "\\") //Yes, string
+std::string PM_GetModdir(std::string endLine = "/") //Yes, string
 {
 	std::string temp = std::filesystem::current_path().string();
 #ifdef CLIENT_DLL
@@ -218,7 +219,7 @@ std::string PM_GetModdir(std::string endLine = "\\") //Yes, string
 	char getGamedir[120] = "\0";
 	GetGameDir(getGamedir);
 #endif
-	temp = temp + "\\" + getGamedir + endLine;
+	temp = temp + "/" + getGamedir + endLine;
 	return temp;
 }
 
@@ -355,8 +356,8 @@ void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 	}
 	else
 	{
-		fstream.open(std::filesystem::current_path().string() + "\\" + path);
-		pmove->Con_Printf("\n =========== Parsing file: %s =========== \n", (std::filesystem::current_path().string() + "\\" + path).c_str());
+		fstream.open(std::filesystem::current_path().string() + "/" + path);
+		pmove->Con_Printf("\n =========== Parsing file: %s =========== \n", (std::filesystem::current_path().string() + "/" + path).c_str());
 	}
 
 	
@@ -418,7 +419,7 @@ void PM_ParseTextureMaterialsFile(std::string path, bool relative = true)
 void PM_ParseStepTypesFile()
 {
 	std::ifstream fstream;
-	fstream.open(PM_GetModdir() + "sound\\steptypes.txt");
+	fstream.open(PM_GetModdir() + "sound/steptypes.txt");
 
 	std::string lastType;
 
@@ -592,7 +593,7 @@ void PM_ParseStepTypesFile()
 void PM_ParseMaterialImpactsFile()
 {
 	std::ifstream fstream;
-	fstream.open(PM_GetModdir() + "sound\\materialimpacts.txt");
+	fstream.open(PM_GetModdir() + "sound/materialimpacts.txt");
 
 	std::string lastType;
 
@@ -759,7 +760,7 @@ void PM_ParseMaterialImpactsFile()
 void PM_ParseMaterialTypesFile()
 {
 	std::ifstream fstream;
-	fstream.open(PM_GetModdir() + "sound\\materialtypes.txt");
+	fstream.open(PM_GetModdir() + "sound/materialtypes.txt");
 
 	int lineIteration = 0;
 	int texTypeIteration = 0;
@@ -3796,7 +3797,7 @@ void PM_Init(struct playermove_s* ppmove)
 	PM_ParseMaterialTypesFile();
 	PM_ParseMaterialImpactsFile();
 
-	PM_ParseTextureMaterialsFile("sound\\materials.txt");
+	PM_ParseTextureMaterialsFile("sound/materials.txt");
 
 	pm_shared_initialized = 1;
 }

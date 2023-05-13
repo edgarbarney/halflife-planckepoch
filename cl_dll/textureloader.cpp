@@ -17,7 +17,7 @@ Written by Andrew Lucas
 #include "bsprenderer.h"
 #include "propmanager.h"
 #include "PlatformHeaders.h"
-#include "gl/glext.h"
+#include <GL/glext.h>
 
 #pragma warning( disable: 4018 )
 

@@ -336,7 +336,7 @@ CL_GetModelData
 
 ==========================
 */
-extern "C" __declspec( dllexport ) void CL_GetModelByIndex(int iIndex, void **pPointer)
+extern "C" DLLEXPORT void CL_GetModelByIndex(int iIndex, void **pPointer)
 {
 	void *pModel = IEngineStudio.GetModelByIndex(iIndex);
 	*pPointer = pModel;

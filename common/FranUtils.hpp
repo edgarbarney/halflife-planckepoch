@@ -10,7 +10,7 @@
 #include <fstream>
 #include <algorithm>
 #include <filesystem>
-				
+
 #ifdef CLIENT_DLL
 extern cl_enginefunc_t gEngfuncs;
 #define GetGameDir    (*gEngfuncs.pfnGetGameDirectory)
@@ -244,8 +244,6 @@ namespace FranUtils
 		return *buffer2 == 0 ? (char*)result : 0;
 	}
 
-#ifdef _VECTOR_
-
 	// Split quoted tokens into words
 	// e.g. 
 	// " \"Hello From The Other Side\" " 
@@ -285,10 +283,6 @@ namespace FranUtils
 		return out;
 	}
 
-#endif
-
-#ifdef _ALGORITHM_
-
 	inline void LowerCase_Ref(std::string& str)
 	{
 		std::transform(str.begin(), str.end(), str.begin(), [](unsigned char _c)
@@ -301,53 +295,41 @@ namespace FranUtils
 		return str;
 	}
 
-#else
-
-	// Thanks to Adversus
-
-	template <class...>
-	struct _alwaysfalse { static constexpr bool value = false; };
-
-	template <class... Ts>
-	void LowerCase_Ref(Ts&&...)
+	inline void UpperCase_Ref(std::string& str)
 	{
-		static_assert(_alwaysfalse<Ts...>::value, "Lowercase Utility called without Algorihtm header. Please use include it");
+		std::transform(str.begin(), str.end(), str.begin(), [](unsigned char _c)
+			{ return std::toupper(_c); });
 	}
 
-	template <class... Ts>
-	void LowerCase(Ts&&...)
+	inline std::string UpperCase(std::string str)
 	{
-		static_assert(_alwaysfalse<Ts...>::value, "Lowercase Utility called without Algorihtm header. Please use include it");
+		UpperCase_Ref(str);
+		return str;
 	}
-
-#endif
 
 #pragma endregion
 
 #pragma region General Utilities
 
+	[[deprecated("FranUtils::ftol_asm is deprecated. Use FranUtils::ftol instead")]]
+	inline long ftol_asm(float x) { return -1; }
+
 	/**
-	* ASSEMBLY | For HL Messages - Returns a long that contains float information
+	* For HL Messages - Returns a long that contains float information
 	*
 	* @see FranUtils::ftol
 	* @param x : Float to store
 	* @return Long to send over
 	*/
-	inline long ftol_asm(float x)
-	{
-		__asm mov eax, x;
-	}
-
-	/**
-	* For HL Messages - Returns a long that contains float information
-	*
-	* @see FranUtils::ftol_asm
-	* @param x : Float to store
-	* @return Long to send over
-	*/
 	inline long ftol(float x)
 	{
-		return *(long*)(&x);
+		union
+		{
+			int32_t i; //long?
+			float f;
+		} horrible_cast;
+		horrible_cast.f = x;
+		return horrible_cast.i;
 	}
 
 #if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL)
@@ -371,7 +353,7 @@ namespace FranUtils
 			WRITE_BYTE(colour.x);		// r
 			WRITE_BYTE(colour.y);		// g
 			WRITE_BYTE(colour.z);		// b
-			WRITE_LONG(FranUtils::ftol_asm(time));  //WRITE_BYTE(time);			// time * 10
+			WRITE_LONG(FranUtils::ftol(time));  //WRITE_BYTE(time);			// time * 10
 			WRITE_BYTE(decay);			// decay * 0.1
 		MESSAGE_END();
 	}

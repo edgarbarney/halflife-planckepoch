@@ -62,15 +62,20 @@
 #include "imgui_impl_sdl.h"
 
 // SDL
-#include <SDL2\SDL.h>
+#include <SDL2/SDL.h>
 //Fix Packing Errors
+#if _WIN32
 #include <windows.h>
-#include <SDL2\SDL_syswm.h>
+#endif
+
+#include <SDL2/SDL_syswm.h>
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 #endif
 
-#if SDL_VERSION_ATLEAST(2,0,4) && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) && !(defined(__APPLE__) && TARGET_OS_IOS)
+// Half-Life SDK ships with very old SDL2 that doen't have this feature yet in binaries
+// yet somehow it does in headers
+#if SDL_VERSION_ATLEAST(2,0,4) && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) && !(defined(__APPLE__) && TARGET_OS_IOS) && !defined(CLIENT_DLL)
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE    1
 #else
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE    0

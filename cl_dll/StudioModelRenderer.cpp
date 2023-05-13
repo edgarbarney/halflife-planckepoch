@@ -20,8 +20,8 @@ Transparency code by Neil "Jed" Jedrzejewski
 #include <cmath>
 
 #include "PlatformHeaders.h"
-#include <gl/gl.h>
-#include "gl/glext.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 #include "hud.h"
 #include "cl_util.h"
