@@ -311,39 +311,25 @@ namespace FranUtils
 
 #pragma region General Utilities
 
+	[[deprecated("FranUtils::ftol_asm is deprecated. Use FranUtils::ftol instead")]]
+	inline long ftol_asm(float x) { return -1; }
+
 	/**
-	* ASSEMBLY | For HL Messages - Returns a long that contains float information
+	* For HL Messages - Returns a long that contains float information
 	*
 	* @see FranUtils::ftol
 	* @param x : Float to store
 	* @return Long to send over
 	*/
-	inline long ftol_asm(float x)
+	inline long ftol(float x)
 	{
-#if _WIN32
-		__asm mov eax, x;
-#else
-		// standard compliant float to int bits operation
 		union
 		{
-			int32_t i;
+			int32_t i; //long?
 			float f;
 		} horrible_cast;
 		horrible_cast.f = x;
 		return horrible_cast.i;
-#endif
-	}
-
-	/**
-	* For HL Messages - Returns a long that contains float information
-	*
-	* @see FranUtils::ftol_asm
-	* @param x : Float to store
-	* @return Long to send over
-	*/
-	inline long ftol(float x)
-	{
-		return *(long*)(&x);
 	}
 
 #if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL)
@@ -367,7 +353,7 @@ namespace FranUtils
 			WRITE_BYTE(colour.x);		// r
 			WRITE_BYTE(colour.y);		// g
 			WRITE_BYTE(colour.z);		// b
-			WRITE_LONG(FranUtils::ftol_asm(time));  //WRITE_BYTE(time);			// time * 10
+			WRITE_LONG(FranUtils::ftol(time));  //WRITE_BYTE(time);			// time * 10
 			WRITE_BYTE(decay);			// decay * 0.1
 		MESSAGE_END();
 	}

@@ -1188,9 +1188,9 @@ void RadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker
 				{
 					// Call Grayscale in
 					MESSAGE_BEGIN(MSG_ONE, gmsgPPGray, nullptr, pEntity->pev);
-					WRITE_LONG(FranUtils::ftol_asm(0));	// StartPower
-					WRITE_LONG(FranUtils::ftol_asm(1));	// EndPower
-					WRITE_LONG(FranUtils::ftol_asm(1));	// Time
+					WRITE_LONG(FranUtils::ftol(0));	// StartPower
+					WRITE_LONG(FranUtils::ftol(1));	// EndPower
+					WRITE_LONG(FranUtils::ftol(1));	// Time
 					WRITE_SHORT(false);					// Stay?
 					WRITE_SHORT(false);					// Reset
 					MESSAGE_END();
