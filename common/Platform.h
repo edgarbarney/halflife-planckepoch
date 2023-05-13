@@ -65,7 +65,11 @@ using qboolean = int;
 #define stricmp _stricmp
 #define strnicmp _strnicmp
 #define itoa _itoa
-#define strupr _strupr
+
+// #define strupr _strupr
+#define strupr strupr_dep
+[[deprecated("strupr is deprecated. Use FranUtils::UpperCase instead.")]]
+inline void strupr_dep(char* buf) {};
 
 #define DLLEXPORT __declspec(dllexport)
 #define DLLHIDDEN

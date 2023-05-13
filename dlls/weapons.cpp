@@ -31,6 +31,8 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
+#include "FranUtils.hpp"
+
 #define NOT_USED 255
 
 #define TRACER_FREQ 4 // Tracers fire every fourth bullet
@@ -164,7 +166,7 @@ char *DamageDecal( CBaseEntity *pEntity, int bitsDamageType, Vector vecSrc, Vect
 					pTextureName++;
 				strcpy(szbuffer, pTextureName);
 				szbuffer[CBTEXTURENAMEMAX - 1] = 0;
-				strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+				FranUtils::UpperCase(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 				//chTextureType = &g_TypedTextureMap[szbuffer];
 				chTextureType = g_TypedTextureMap[szbuffer];
 			}

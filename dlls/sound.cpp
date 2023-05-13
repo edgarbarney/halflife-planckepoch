@@ -25,6 +25,8 @@
 #include "gamerules.h"
 #include "locus.h"
 
+#include "FranUtils.hpp"
+
 static char* memfgets(byte* pMemFile, int fileSize, int& filePos, char* pBuffer, int bufferSize);
 
 
@@ -1824,7 +1826,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 			// '}}'
 			strcpy(szbuffer, pTextureName);
 			szbuffer[CBTEXTURENAMEMAX - 1] = 0;
-			strupr(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
+			FranUtils::UpperCase(szbuffer); //Make String Uppercase TODO: STANDARDIZE. THIS IS WINDOWS ONLY
 			// ALERT ( at_console, "texture hit: %s\n", szbuffer);
 
 			// get texture type

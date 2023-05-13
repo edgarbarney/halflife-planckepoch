@@ -44,10 +44,11 @@
 
 #include <ctype.h>
 
-static inline strupr(char *buf)
-{
-	for( ; buf && *buf; buf++ )
-		*buf = toupper( *buf );
-}
+[[deprecated("strupr is deprecated. Use FranUtils::UpperCase instead.")]]
+static inline void strupr(char *buf) {}
+//{
+//	for( ; buf && *buf; buf++ )
+//		*buf = toupper( *buf );
+//}
 
 #endif

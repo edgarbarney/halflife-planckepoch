@@ -295,6 +295,18 @@ namespace FranUtils
 		return str;
 	}
 
+	inline void UpperCase_Ref(std::string& str)
+	{
+		std::transform(str.begin(), str.end(), str.begin(), [](unsigned char _c)
+			{ return std::toupper(_c); });
+	}
+
+	inline std::string UpperCase(std::string str)
+	{
+		UpperCase_Ref(str);
+		return str;
+	}
+
 #pragma endregion
 
 #pragma region General Utilities
