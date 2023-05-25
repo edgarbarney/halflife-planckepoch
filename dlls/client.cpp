@@ -24,7 +24,7 @@
 */
 
 #if !_WIN32
-#include <dlsym.h>
+#include <dlfcn.h> // <- It is correct for latest Linux version!!!
 #endif
 #include "extdll.h"
 #include "util.h"
