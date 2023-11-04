@@ -364,7 +364,7 @@ namespace FranUtils
 	*/
 	inline void EmitDlight(Vector emitOrigin, int radius, Vector colour, float time, int decay)
 	{
-#if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL)
+#if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL) && defined(HL_SPIRINITY)
 		MESSAGE_BEGIN(MSG_PVS, gmsgCreateDLight, emitOrigin);
 			//WRITE_BYTE(TE_DLIGHT);
 			WRITE_COORD(emitOrigin.x);	// X
@@ -394,7 +394,7 @@ namespace FranUtils
 	 */
 	inline void EmitSound(entvars_t* _entity, int _channel, const char* _sample, float _volume, float _attenuation, int _flags, int _pitch, int _spawnflags = 0)
 	{
-#if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL)
+#if defined(ENGINECALLBACK_H) && !defined(CLIENT_DLL) && defined(HL_SPIRINITY)
 		MESSAGE_BEGIN(MSG_PVS, gmsgCreateSound, _entity->origin);
 			WRITE_SHORT(CBaseEntity::Instance(_entity)->entindex());
 			WRITE_SHORT(_channel); // Replace this with WRITE_LONG when required
