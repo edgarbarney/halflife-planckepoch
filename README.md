@@ -1,3 +1,6 @@
+Because the 25th anniversary update broke the Trinity backend and Imgui injection method;
+# This project is archived and in hiatus indefinitely.
+
 ** DANGER: ** You need a font file to work with this modbase 
 https://github.com/edgarbarney/halflife-planckepoch/issues/12
 
