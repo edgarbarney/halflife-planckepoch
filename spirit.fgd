@@ -6117,3 +6117,25 @@ m_flWindY(integer) : "Wind Y" : 0
 m_flRandX(integer) : "Rand X" : 0 
 m_flRandY(integer) : "Rand Y" : 0 
 ] 
+
+@PointClass base(Targetname, Angles, MoveWith, RenderFields) studio() = env_staticprop : "Static props" 
+[
+	model(studio) : "Model name"
+	skin(integer) : "Skin" : 0
+	body(integer) : "Body" : 0
+	scale(string) : "Scale (1.0 = normal size)"
+	sequence(integer) : "Sequence" : 0
+	DisableShadows(choices) : "Disable shadows" : 0 = 
+	[
+		0: "Off"
+		1: "On"
+	]
+	lightorigin(string) : "Light origin"
+]
+
+@PointClass base(Target, Targetname, Angles, MoveWith, RenderFields) studio() = env_cable : "Clientside cables" 
+[
+	falldepth(integer) : "Fall depth" : 100
+	spritewidth(integer) : "Cable width" : 1
+	segments(integer) : "Segments" : 32
+]
