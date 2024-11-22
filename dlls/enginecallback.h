@@ -17,18 +17,27 @@
 
 #define ENGINECALLBACK_H
 
+#include <vector>
+#include <string>
+
 #include "event_flags.h"
 
 // Must be provided by user of this code
 // Holds engine functionality callbacks
 inline enginefuncs_t g_engfuncs;
 
-inline int emptyFuncThatReturnsMinus1(const char* s) { return -1; };
+inline std::vector<std::string> g_soundsToBePrecached;
+
+inline int addToPrecacheList(const char* s) 
+{
+	g_soundsToBePrecached.push_back(s);
+	return -1; 
+};
 
 // The actual engine callbacks
 #define GETPLAYERUSERID (*g_engfuncs.pfnGetPlayerUserId)
 #define PRECACHE_MODEL (*g_engfuncs.pfnPrecacheModel)
-#define PRECACHE_SOUND (*emptyFuncThatReturnsMinus1)
+#define PRECACHE_SOUND (*addToPrecacheList)
 //#define PRECACHE_SOUND (*g_engfuncs.pfnPrecacheSound)
 #define PRECACHE_GENERIC (*g_engfuncs.pfnPrecacheGeneric)
 #define SET_MODEL (*g_engfuncs.pfnSetModel)

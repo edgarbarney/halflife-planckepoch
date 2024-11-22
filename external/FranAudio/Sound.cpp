@@ -257,7 +257,12 @@ void FranAudio::Sound::KillAllSounds()
 	}
 }
 
-inline bool FranAudio::Sound::PrecacheSound(std::string _dir)
+bool FRANAUDIO_API FranAudio::Sound::PrecacheSoundLegacy(const char* _dir)
+{
+	return PrecacheSound(_dir);
+}
+
+bool FranAudio::Sound::PrecacheSound(std::string _dir)
 {
 	if (SoundWaveMap.find(_dir) == SoundWaveMap.end())
 	{

@@ -105,6 +105,9 @@ namespace FranAudio
 
 		static void KillAllSounds();
 		
+		// Same with PrecacheSound, but exportable for DLL and uses C strings
+		static bool FRANAUDIO_API PrecacheSoundLegacy(const char* _dir);
+
 		// Named "precache" but its actually just "cache"
 		static bool PrecacheSound(std::string _dir);
 
