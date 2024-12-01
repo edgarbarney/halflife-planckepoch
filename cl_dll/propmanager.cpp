@@ -503,7 +503,7 @@ void CPropManager::LoadEntVars( )
 			strcpy(m_pDecals[m_iNumDecals].name, pValue);
 			m_iNumDecals++;
 		}
-		else if(!strcmp( pValue, "item_generic"))
+		else if (!strcmp(pValue, "item_generic") || !strcmp(pValue, "env_staticprop"))
 		{
 			pValue = ValueForKey(&m_pBSPEntities[i], "targetname");
 
